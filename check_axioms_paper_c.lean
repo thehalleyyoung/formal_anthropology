@@ -1,0 +1,33 @@
+import FormalAnthropology.PaperC_DiversityTheorems_Revision
+import FormalAnthropology.PaperC_RevisionPlan_Theorems
+import FormalAnthropology.PaperC_NewTheorems_D10
+import FormalAnthropology.PaperC_NewTheorems_D11
+import FormalAnthropology.PaperC_NewTheorems_D12
+import FormalAnthropology.PaperC_NewTheorems_D13_D14
+import FormalAnthropology.PaperC_NewTheorems_D15
+import FormalAnthropology.PaperC_NewTheorems_D16_D20
+import FormalAnthropology.PaperC_NewTheorems_D21_D26
+
+-- Check axioms for D1-D5
+#print axioms PaperC_DiversityRevision.transmission_monotonicity
+#print axioms PaperC_DiversityRevision.primitive_richness_increases_diversity
+
+-- Check axioms for D6-D9
+#print axioms PaperC_RevisionPlan_Theorems.phase_transition_diversity_explosion
+#print axioms PaperC_RevisionPlan_Theorems.transmission_filtering_quantifiable
+
+-- Check axioms for D10-D14
+#print axioms PaperC_NewTheorems_D10.depth_range_expansion
+#print axioms PaperC_NewTheorems_D13_D14.diversity_necessity_for_high_depth
+
+-- Check axioms for D15-D20
+#print axioms PaperC_NewTheorems_D15.innovation_creates_diversity
+#print axioms PaperC_NewTheorems_D16_D20.diversity_ceiling_growth
+
+-- Check axioms for D21-D26
+#print axioms PaperC_NewTheorems_D21_D26.diversity_ceiling_from_primitives
+#print axioms PaperC_NewTheorems_D21_D26.innovation_monotonicity
+#print axioms PaperC_NewTheorems_D21_D26.concentration_bounds_entropy
+#print axioms PaperC_NewTheorems_D21_D26.diversity_optimization_exists
+#print axioms PaperC_NewTheorems_D21_D26.selection_collapses_diversity_single_step
+#print axioms PaperC_NewTheorems_D21_D26.diversity_ordering_refl

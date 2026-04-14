@@ -1,0 +1,11 @@
+import FormalAnthropology.Learning_DiversityDominatesDepth
+
+open DiversityDominatesDepth
+
+#print axioms diversity_independent_of_depth_via_gadget
+#print axioms depth_diversity_orthogonal
+#print axioms depth_diversity_orthogonal_general
+#print axioms gadget_instantiates_general_principle
+#print axioms quantitative_orthogonality
+#print axioms structural_decomposition_of_access
+#print axioms depth_diversity_non_substitutable

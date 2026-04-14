@@ -1,0 +1,25 @@
+# Lean build artifacts
+.lake/
+lake-packages/
+build/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.swp
+*.swo
+*~
+
+# Zsh log
+zsh.log

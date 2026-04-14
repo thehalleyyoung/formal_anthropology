@@ -1,0 +1,9 @@
+import FormalAnthropology.Learning_PolynomialGenerators
+
+open PolynomialGenerators
+
+#print axioms strict_multiplicative_expansion
+#print axioms depth_d_reaches_degree_d
+#print axioms depth_d_necessary
+#print axioms diversity_necessity_for_monomials
+#print axioms nonconstant_are_emergent

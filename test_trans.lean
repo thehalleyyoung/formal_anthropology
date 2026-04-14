@@ -1,0 +1,5 @@
+import FormalAnthropology.Collective_IdeaTranslationNetworks
+
+#check IdeaTranslationNetworks.EpistemicFrame
+#check IdeaTranslationNetworks.TranslationFunction
+#check IdeaTranslationNetworks.translation_fidelity_distance_law
