@@ -1060,6 +1060,1182 @@ theorem negation_void_antithesis (a : I) :
     negation a (void : I) = 0 := by
   unfold negation synthesize; simp [rs_void_right', rs_void_left']
 
+/-! ## §29. Lukács's Reification and Class Consciousness
+
+Lukács argues that under commodity production, social relations are
+"reified" — perceived as natural things rather than historical products.
+Class consciousness is the dialectical overcoming of reification:
+the proletariat recognizes the social totality and its own role within it.
+In IDT, reification flattens emergence; class consciousness recovers it. -/
+
+/-- Reification index: how much emergence is lost when we measure the
+    synthesis against void (treating it as a mere thing) rather than
+    against itself (recognizing its social/relational nature). -/
+noncomputable def reificationIndex (a b : I) : ℝ :=
+  emergence a b (compose a b) - emergence a b (void : I)
+
+/-- Reification index simplifies: emergence against void is always 0,
+    so reification index equals self-emergence. -/
+theorem reificationIndex_eq (a b : I) :
+    reificationIndex a b = emergence a b (compose a b) := by
+  unfold reificationIndex; rw [emergence_against_void]; ring
+
+/-- Reification index equals aufhebung. Lukács's insight:
+    reification erases exactly the dialectical surplus. -/
+theorem reificationIndex_eq_aufhebung (a b : I) :
+    reificationIndex a b = aufhebung a b := by
+  rw [reificationIndex_eq]
+  unfold aufhebung dialecticalEmergence synthesize; rfl
+
+/-- Class consciousness: the total resonance recovered when the
+    proletariat (p) recognizes itself in the product of labor (compose p m). -/
+noncomputable def classConsciousness (proletariat material : I) : ℝ :=
+  rs proletariat (compose proletariat material) +
+  emergence proletariat material proletariat
+
+/-- Class consciousness of void proletariat vanishes:
+    without a subject, there is no consciousness. -/
+theorem classConsciousness_void_proletariat (m : I) :
+    classConsciousness (void : I) m = 0 := by
+  unfold classConsciousness; simp [rs_void_left', emergence_void_left]
+
+/-- Class consciousness with void material reduces to pure self-resonance. -/
+theorem classConsciousness_void_material (p : I) :
+    classConsciousness p (void : I) = rs p p := by
+  unfold classConsciousness; simp [emergence_void_right, rs_void_right']
+
+/-- The reification gap: difference between total resonance of
+    the product and the class consciousness of the producer. -/
+noncomputable def reificationGap (worker material : I) : ℝ :=
+  rs (compose worker material) (compose worker material) -
+  classConsciousness worker material
+
+/-- Reification gap expansion in terms of resonance. -/
+theorem reificationGap_eq (w m : I) :
+    reificationGap w m =
+    rs m (compose w m) + emergence w m (compose w m) -
+    emergence w m w := by
+  unfold reificationGap classConsciousness
+  rw [rs_compose_eq w m (compose w m)]
+  ring
+
+/-- Commodity fetishism: the degree to which a product's resonance
+    with itself exceeds its resonance with its producer. -/
+noncomputable def commodityFetishism (worker material : I) : ℝ :=
+  rs (compose worker material) (compose worker material) -
+  rs (compose worker material) worker
+
+/-- Commodity fetishism with void material is zero. -/
+theorem commodityFetishism_void_material (w : I) :
+    commodityFetishism w (void : I) = 0 := by
+  unfold commodityFetishism; simp [rs_void_right']
+
+/-- Totality awareness: how much an idea resonates with the
+    dialectical whole (composed system) versus in isolation.
+    Lukács: the standpoint of totality is the key to class consciousness. -/
+noncomputable def totalityAwareness (part whole : I) : ℝ :=
+  rs part (compose part whole) - rs part part
+
+/-- Totality awareness with void whole vanishes. -/
+theorem totalityAwareness_void_whole (p : I) :
+    totalityAwareness p (void : I) = 0 := by
+  unfold totalityAwareness; simp [rs_void_right']
+
+/-! ## §30. Benjamin's Dialectical Images (Passagen-Werk)
+
+Walter Benjamin's "dialectical image" is a flash of recognition where
+past and present collide — producing a "now of recognizability"
+(Jetzt der Erkennbarkeit). In IDT, this is modeled as the emergence
+from composing a historical fragment with a contemporary moment.
+The dialectical image is NOT a synthesis but a constellation. -/
+
+/-- Dialectical image: the emergence when a past fragment meets a
+    present moment, measured from the standpoint of the present.
+    Benjamin: "It is not that what is past casts its light on what is
+    present... rather, image is that wherein what has been comes
+    together in a flash with the now." -/
+noncomputable def dialecticalImage (past present : I) : ℝ :=
+  emergence past present present
+
+/-- Dialectical image with void past: no history, no image. -/
+theorem dialecticalImage_void_past (p : I) :
+    dialecticalImage (void : I) p = 0 := by
+  unfold dialecticalImage; exact emergence_void_left p p
+
+/-- Dialectical image with void present: no now, no recognizability. -/
+theorem dialecticalImage_void_present (h : I) :
+    dialecticalImage h (void : I) = 0 := by
+  unfold dialecticalImage; exact emergence_void_right h (void : I)
+
+/-- The aura: Benjamin's concept of the unique presence of an artwork.
+    Measured as the self-emergence of composing the work with its
+    context of reception. -/
+noncomputable def aura (work context : I) : ℝ :=
+  emergence work context (compose work context)
+
+/-- Aura vanishes in void context — mechanical reproduction
+    strips the context of tradition. -/
+theorem aura_void_context (w : I) :
+    aura w (void : I) = 0 := by
+  unfold aura; exact emergence_void_right w (compose w (void : I))
+
+/-- Aura equals aufhebung: the dialectical surplus of work-in-context. -/
+theorem aura_eq_aufhebung (w c : I) :
+    aura w c = aufhebung w c := by
+  unfold aura aufhebung dialecticalEmergence synthesize; rfl
+
+/-- Constellation: Benjamin's alternative to synthesis. Rather than
+    resolving thesis and antithesis, ideas are held in tension.
+    The constellation value is the sum of tensions across a set. -/
+noncomputable def constellation (center : I) (elements : List I) : ℝ :=
+  elements.foldl (fun acc e => acc + emergence center e center) 0
+
+/-- Empty constellation has zero value. -/
+theorem constellation_nil (c : I) :
+    constellation c ([] : List I) = 0 := rfl
+
+/-- Messianic index: Benjamin's idea that every moment contains a
+    "weak messianic power." The potential for revolutionary emergence
+    from even the smallest historical fragment. -/
+noncomputable def messianicIndex (fragment moment : I) : ℝ :=
+  emergence fragment moment fragment + emergence fragment moment moment
+
+/-- Messianic index with void fragment vanishes. -/
+theorem messianicIndex_void_fragment (m : I) :
+    messianicIndex (void : I) m = 0 := by
+  unfold messianicIndex; rw [emergence_void_left, emergence_void_left]; ring
+
+/-- Messianic index with void moment vanishes. -/
+theorem messianicIndex_void_moment (f : I) :
+    messianicIndex f (void : I) = 0 := by
+  unfold messianicIndex; rw [emergence_void_right, emergence_void_right]; ring
+
+/-- Messianic index equals tension. Benjamin's "weak messianic power"
+    is exactly the dialectical tension. -/
+theorem messianicIndex_eq_tension (f m : I) :
+    messianicIndex f m = tension f m := by
+  unfold messianicIndex tension; ring
+
+/-! ## §31. Žižek's Parallax View
+
+Žižek's parallax: the gap between two perspectives that cannot be
+reconciled into a higher synthesis. The "parallax gap" is irreducible —
+it IS the Real. In IDT, this is the asymmetry of emergence: the
+emergence of a∘b measured from a's viewpoint versus from b's viewpoint. -/
+
+/-- The parallax gap: the irreducible difference between how the
+    composition looks from the thesis's standpoint versus the antithesis's.
+    Žižek: "The parallax gap is not something that can be overcome." -/
+noncomputable def parallaxGap (a b : I) : ℝ :=
+  emergence a b a - emergence a b b
+
+/-- The parallax gap is antisymmetric under exchange of viewpoints. -/
+theorem parallaxGap_antisymm_views (a b : I) :
+    parallaxGap a b = -(emergence a b b - emergence a b a) := by
+  unfold parallaxGap; ring
+
+/-- Parallax gap with void vanishes from both sides. -/
+theorem parallaxGap_void_left (b : I) :
+    parallaxGap (void : I) b = 0 := by
+  unfold parallaxGap; rw [emergence_void_left, emergence_void_left]; ring
+
+theorem parallaxGap_void_right (a : I) :
+    parallaxGap a (void : I) = 0 := by
+  unfold parallaxGap; rw [emergence_void_right, emergence_void_right]; ring
+
+/-- The parallax gap decomposes via resonance. -/
+theorem parallaxGap_eq (a b : I) :
+    parallaxGap a b =
+    rs (compose a b) a - rs a a - rs b a -
+    (rs (compose a b) b - rs a b - rs b b) := by
+  unfold parallaxGap emergence; ring
+
+/-- Total parallax: the sum of the parallax gap in both composition orders.
+    This captures the full non-commutativity of the dialectical encounter. -/
+noncomputable def totalParallax (a b : I) : ℝ :=
+  parallaxGap a b + parallaxGap b a
+
+/-- Total parallax decomposes into emergence differences. -/
+theorem totalParallax_eq (a b : I) :
+    totalParallax a b =
+    (emergence a b a - emergence a b b) +
+    (emergence b a b - emergence b a a) := by
+  unfold totalParallax parallaxGap; ring
+
+/-- Total parallax relation to meaning curvature. -/
+theorem totalParallax_via_curvature (a b : I) :
+    totalParallax a b =
+    (emergence a b a - emergence b a a) -
+    (emergence a b b - emergence b a b) := by
+  unfold totalParallax parallaxGap; ring
+
+/-- The Lacanian Real: Žižek identifies the parallax gap with Lacan's Real.
+    The Real is what resists symbolization — in IDT, the part of resonance
+    that cannot be captured from any single viewpoint. -/
+noncomputable def lacanianReal (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) -
+  rs (compose a b) a - rs (compose a b) b
+
+/-- The Lacanian Real relates to emergence. -/
+theorem lacanianReal_eq (a b : I) :
+    lacanianReal a b =
+    rs (compose a b) (compose a b) -
+    rs (compose a b) a - rs (compose a b) b := rfl
+
+/-- Lacanian Real with void vanishes. -/
+theorem lacanianReal_void_right (a : I) :
+    lacanianReal a (void : I) = 0 := by
+  unfold lacanianReal; simp [rs_void_right']
+
+theorem lacanianReal_void_left (b : I) :
+    lacanianReal (void : I) b = 0 := by
+  unfold lacanianReal; simp [rs_void_left', rs_void_right']
+
+/-- Žižek's "ticklish subject": the subject constituted by the gap.
+    The subject's self-resonance MINUS its resonance with the symbolic
+    order (compose a b). -/
+noncomputable def ticklishSubject (subject symbolic : I) : ℝ :=
+  rs subject subject - rs subject (compose subject symbolic)
+
+/-- Ticklish subject with void symbolic is zero. -/
+theorem ticklishSubject_void_symbolic (s : I) :
+    ticklishSubject s (void : I) = 0 := by
+  unfold ticklishSubject; simp [rs_void_right']
+
+/-- The ticklish subject equals the non-identical remainder (Adorno's concept
+    reappears in Žižek). -/
+theorem ticklishSubject_eq_nonIdentical (s o : I) :
+    ticklishSubject s o = nonIdentical s o := by
+  unfold ticklishSubject nonIdentical synthesize; rfl
+
+/-! ## §32. Badiou's Dialectical Materialism: Event, Truth, Subject
+
+Badiou's ontology: Being is structured as a situation (a set-theoretic
+universe). An Event is a rupture that cannot be derived from the situation.
+A Truth is the infinite generic subset traced by a subject faithful to
+the Event. In IDT, the Event is an idea whose emergence with the
+situation exceeds what the situation "expects." -/
+
+/-- The event intensity: how much a potential event e exceeds what
+    the situation s "predicts." A true Badiouian event has emergence
+    that ruptures the situation's resonance structure. -/
+noncomputable def eventIntensity (situation event : I) : ℝ :=
+  emergence situation event (compose situation event)
+
+/-- Event intensity equals aufhebung: Badiou's event IS the
+    dialectical surplus of the situation encountering novelty. -/
+theorem eventIntensity_eq_aufhebung (s e : I) :
+    eventIntensity s e = aufhebung s e := by
+  unfold eventIntensity aufhebung dialecticalEmergence synthesize; rfl
+
+/-- No event from void situation: without a structured situation,
+    no event can rupture it. -/
+theorem eventIntensity_void_situation (e : I) :
+    eventIntensity (void : I) e = 0 := by
+  rw [eventIntensity_eq_aufhebung]; exact aufhebung_void_thesis e
+
+/-- Void event: nothing happens, no intensity. -/
+theorem eventIntensity_void_event (s : I) :
+    eventIntensity s (void : I) = 0 := by
+  rw [eventIntensity_eq_aufhebung]; exact aufhebung_void_antithesis s
+
+/-- Fidelity: the degree to which a subject remains faithful to
+    an event, measured as the subject's resonance with the post-evental
+    situation (compose situation event). -/
+noncomputable def fidelity (subject situation event : I) : ℝ :=
+  rs subject (compose situation event)
+
+/-- Fidelity to void event equals resonance with the unchanged situation. -/
+theorem fidelity_void_event (sub sit : I) :
+    fidelity sub sit (void : I) = rs sub sit := by
+  unfold fidelity; simp [rs_void_right']
+
+/-- Truth procedure: Badiou's truth is the accumulated synthesis of
+    a subject investigating consequences of an event. Modeled as
+    iterated synthesis of the subject with the post-evental situation. -/
+noncomputable def truthProcedure (subject situation event : I) (n : ℕ) : I :=
+  iteratedSynthesis subject (compose situation event) n
+
+/-- Truth procedure at step 0 is the subject unchanged. -/
+theorem truthProcedure_zero (sub sit evt : I) :
+    truthProcedure sub sit evt 0 = sub := rfl
+
+/-- Truth procedure monotonically enriches: faithful investigation
+    always builds understanding. -/
+theorem truthProcedure_enriches (sub sit evt : I) (n : ℕ) :
+    rs (truthProcedure sub sit evt (n + 1))
+       (truthProcedure sub sit evt (n + 1)) ≥
+    rs (truthProcedure sub sit evt n)
+       (truthProcedure sub sit evt n) := by
+  unfold truthProcedure; exact iteratedSynthesis_enriches sub (compose sit evt) n
+
+/-- Forcing: how much the truth procedure at step n exceeds the
+    original subject's self-resonance. -/
+noncomputable def forcing (sub sit evt : I) (n : ℕ) : ℝ :=
+  rs (truthProcedure sub sit evt n) (truthProcedure sub sit evt n) -
+  rs sub sub
+
+/-- Forcing is non-negative: truth never diminishes the subject. -/
+theorem forcing_nonneg (sub sit evt : I) (n : ℕ) :
+    forcing sub sit evt n ≥ 0 := by
+  unfold forcing truthProcedure
+  have := iteratedSynthesis_nondecreasing sub (compose sit evt) 0 n (Nat.zero_le n)
+  simp [iteratedSynthesis] at this
+  linarith
+
+/-- Forcing at step 0 is zero. -/
+theorem forcing_zero (sub sit evt : I) :
+    forcing sub sit evt 0 = 0 := by
+  unfold forcing truthProcedure iteratedSynthesis; ring
+
+/-- Forcing is monotonically non-decreasing. -/
+theorem forcing_mono (sub sit evt : I) (m n : ℕ) (h : m ≤ n) :
+    forcing sub sit evt n ≥ forcing sub sit evt m := by
+  unfold forcing truthProcedure
+  linarith [iteratedSynthesis_nondecreasing sub (compose sit evt) m n h]
+
+/-! ## §33. Jameson's Political Unconscious
+
+Fredric Jameson: "Always historicize!" The political unconscious is
+the repressed historical content that structures a text's form.
+Every cultural artifact contains a utopian dimension alongside its
+ideological function. In IDT, the political unconscious is the
+emergence that a text's formal structure conceals. -/
+
+/-- The political unconscious of a text in a social context:
+    the emergence created by their composition but NOT visible
+    from the text's surface (i.e., not from the text's own viewpoint). -/
+noncomputable def politicalUnconscious (text socialContext : I) : ℝ :=
+  emergence text socialContext (compose text socialContext) -
+  emergence text socialContext text
+
+/-- Political unconscious with void text vanishes. -/
+theorem politicalUnconscious_void_text (s : I) :
+    politicalUnconscious (void : I) s = 0 := by
+  unfold politicalUnconscious; rw [emergence_void_left, emergence_void_left]; ring
+
+/-- Political unconscious with void social context vanishes. -/
+theorem politicalUnconscious_void_context (t : I) :
+    politicalUnconscious t (void : I) = 0 := by
+  unfold politicalUnconscious; rw [emergence_void_right, emergence_void_right]; ring
+
+/-- Utopian surplus: Jameson argues every cultural text contains a
+    utopian dimension — a vision of a better social arrangement.
+    This is the positive emergence of the text with its context. -/
+noncomputable def utopianSurplus (text context : I) : ℝ :=
+  emergence text context context
+
+/-- Utopian surplus with void context vanishes: no social context,
+    no utopian horizon. -/
+theorem utopianSurplus_void_context (t : I) :
+    utopianSurplus t (void : I) = 0 := by
+  unfold utopianSurplus; exact emergence_void_right t (void : I)
+
+/-- Utopian surplus with void text vanishes. -/
+theorem utopianSurplus_void_text (c : I) :
+    utopianSurplus (void : I) c = 0 := by
+  unfold utopianSurplus; exact emergence_void_left c c
+
+/-- Ideological function: the text's resonance with the dominant
+    social structure minus the utopian surplus. What serves the
+    status quo versus what gestures beyond it. -/
+noncomputable def ideologicalFunction (text context : I) : ℝ :=
+  rs text context - utopianSurplus text context
+
+/-- Ideological function expansion. -/
+theorem ideologicalFunction_eq (t c : I) :
+    ideologicalFunction t c =
+    rs t c - (rs (compose t c) c - rs t c - rs c c) := by
+  unfold ideologicalFunction utopianSurplus emergence; ring
+
+/-- Narrative totalization: Jameson's concept that narrative imposes
+    an ideological closure. Measured as how much the dialectical sequence
+    exceeds the sum of its parts. -/
+noncomputable def narrativeTotalization (thesis : I) (moments : List I) : ℝ :=
+  rs (dialecticalSequence thesis moments) (dialecticalSequence thesis moments) -
+  rs thesis thesis
+
+/-- Narrative totalization is non-negative: narrative always adds weight. -/
+theorem narrativeTotalization_nonneg (t : I) (ms : List I) :
+    narrativeTotalization t ms ≥ 0 := by
+  unfold narrativeTotalization
+  linarith [dialecticalSequence_enriches t ms]
+
+/-- Empty narrative has zero totalization. -/
+theorem narrativeTotalization_nil (t : I) :
+    narrativeTotalization t ([] : List I) = 0 := by
+  unfold narrativeTotalization dialecticalSequence; ring
+
+/-! ## §34. Habermas's Discourse Ethics as Dialectical
+
+Habermas: rational discourse achieves consensus through the "unforced
+force of the better argument." This is a dialectical process where
+interlocutors synthesize their positions. The ideal speech situation
+is one where emergence is maximized — the conversation produces more
+than either party brings individually. -/
+
+/-- Communicative rationality: the symmetric part of the emergence
+    from discourse between two interlocutors. Habermas insists on
+    symmetry and reciprocity — both parties must benefit. -/
+noncomputable def communicativeRationality (a b : I) : ℝ :=
+  (emergence a b a + emergence a b b +
+   emergence b a a + emergence b a b) / 2
+
+/-- Communicative rationality is symmetric. -/
+theorem communicativeRationality_symm (a b : I) :
+    communicativeRationality a b = communicativeRationality b a := by
+  unfold communicativeRationality; ring
+
+/-- Communicative rationality with void vanishes. -/
+theorem communicativeRationality_void (a : I) :
+    communicativeRationality a (void : I) = 0 := by
+  unfold communicativeRationality
+  rw [emergence_void_right, emergence_void_right,
+      emergence_void_left, emergence_void_left]; ring
+
+/-- Discourse deficit: how much the actual discourse falls short
+    of perfect communicative rationality (measured by asymmetry). -/
+noncomputable def discourseDeficit (a b : I) : ℝ :=
+  (emergence a b a - emergence b a a) +
+  (emergence a b b - emergence b a b)
+
+/-- Discourse deficit is antisymmetric: a's deficit is b's surplus. -/
+theorem discourseDeficit_antisymm (a b : I) :
+    discourseDeficit a b = -discourseDeficit b a := by
+  unfold discourseDeficit; ring
+
+/-- Discourse deficit with void vanishes. -/
+theorem discourseDeficit_void (a : I) :
+    discourseDeficit a (void : I) = 0 := by
+  unfold discourseDeficit
+  rw [emergence_void_right, emergence_void_right,
+      emergence_void_left, emergence_void_left]; ring
+
+/-- Ideal speech: discourse where the deficit vanishes.
+    Both parties contribute equally to the emergent understanding. -/
+def idealSpeech (a b : I) : Prop :=
+  discourseDeficit a b = 0
+
+/-- Void always satisfies ideal speech trivially. -/
+theorem idealSpeech_void (a : I) : idealSpeech a (void : I) := by
+  unfold idealSpeech; exact discourseDeficit_void a
+
+/-- Validity claim: the total emergence a discourse participant brings,
+    normalized by self-resonance. The "force of the better argument." -/
+noncomputable def validityClaim (speaker context : I) : ℝ :=
+  emergence speaker context speaker + emergence speaker context context
+
+/-- Validity claim equals tension. -/
+theorem validityClaim_eq_tension (s c : I) :
+    validityClaim s c = tension s c := by
+  unfold validityClaim tension; ring
+
+/-- Consensus formation: the iterated synthesis of interlocutors
+    converges in weight. Each round of discourse enriches. -/
+theorem consensus_enriches (a b : I) (n : ℕ) :
+    rs (iteratedSynthesis a b (n + 1)) (iteratedSynthesis a b (n + 1)) ≥
+    rs (iteratedSynthesis a b n) (iteratedSynthesis a b n) :=
+  iteratedSynthesis_enriches a b n
+
+/-! ## §35. Deleuze's Difference and Repetition (Anti-Dialectics)
+
+Deleuze rejects the Hegelian dialectic: difference is NOT subordinate
+to identity, and repetition is NOT the return of the same. In IDT,
+Deleuze's "difference in itself" is captured by meaning curvature
+(the antisymmetric part of emergence), and "repetition" by the
+non-identity of iterated composition with itself. -/
+
+/-- Difference in itself: Deleuze's pure difference is not the difference
+    BETWEEN two things (which presupposes identity) but the internal
+    differentiation of a thing from itself under repetition.
+    Measured as the gap between a composed with itself and doubled
+    self-resonance. -/
+noncomputable def differenceInItself (a : I) : ℝ :=
+  rs (compose a a) a - 2 * rs a a
+
+/-- Difference in itself equals semantic charge / immanent critique.
+    Deleuze's pure difference is Hegel's semantic charge seen from
+    a non-dialectical angle. -/
+theorem differenceInItself_eq_semanticCharge (a : I) :
+    differenceInItself a = semanticCharge a := by
+  unfold differenceInItself semanticCharge emergence; ring
+
+/-- Difference in itself for void is zero: void does not differ from itself. -/
+theorem differenceInItself_void :
+    differenceInItself (void : I) = 0 := by
+  rw [differenceInItself_eq_semanticCharge]; exact semanticCharge_void
+
+/-- Repetition with difference: composing a with itself n times
+    produces not the "same" but something that gains weight at each step.
+    Deleuze: "Repetition changes nothing in the object repeated,
+    but does change something in the mind which contemplates it." -/
+noncomputable def repetitionDifference (a : I) (n : ℕ) : ℝ :=
+  rs (composeN a (n + 1)) (composeN a (n + 1)) -
+  rs (composeN a n) (composeN a n)
+
+/-- Every repetition creates non-negative difference. -/
+theorem repetitionDifference_nonneg (a : I) (n : ℕ) :
+    repetitionDifference a n ≥ 0 := by
+  unfold repetitionDifference
+  linarith [rs_composeN_mono a n]
+
+/-- The virtual: Deleuze's concept of the virtual as the field of
+    differential relations that are "real without being actual."
+    In IDT, the virtual of an idea is its total emergence potential —
+    the sum of self-emergence over all compositions with itself. -/
+noncomputable def virtualIntensity (a : I) (n : ℕ) : ℝ :=
+  rs (composeN a n) (composeN a n) - (n : ℝ) * rs a a
+
+/-- Virtual intensity at step 0 is zero. -/
+theorem virtualIntensity_zero (a : I) :
+    virtualIntensity a 0 = 0 := by
+  unfold virtualIntensity; simp [rs_void_void]
+
+/-- Virtual intensity at step 1 is zero. -/
+theorem virtualIntensity_one (a : I) :
+    virtualIntensity a 1 = 0 := by
+  unfold virtualIntensity composeN; simp [rs_void_left']
+
+/-- Rhizomatic connection: Deleuze and Guattari's rhizome connects
+    any point to any other. The rhizomatic resonance between two ideas
+    is the symmetric part of their cross-resonance. -/
+noncomputable def rhizomaticConnection (a b : I) : ℝ :=
+  (rs a b + rs b a) / 2
+
+/-- Rhizomatic connection is symmetric (unlike dialectical opposition). -/
+theorem rhizomaticConnection_symm (a b : I) :
+    rhizomaticConnection a b = rhizomaticConnection b a := by
+  unfold rhizomaticConnection; ring
+
+/-- Rhizomatic connection with void vanishes. -/
+theorem rhizomaticConnection_void (a : I) :
+    rhizomaticConnection a (void : I) = 0 := by
+  unfold rhizomaticConnection; simp [rs_void_left', rs_void_right']
+
+/-- Line of flight: Deleuze's concept of escape from stratified systems.
+    The line of flight from a system a via deterritorialization b is
+    the emergence that escapes the system's self-resonance. -/
+noncomputable def lineOfFlight (system deterritorialization : I) : ℝ :=
+  emergence system deterritorialization deterritorialization
+
+/-- Line of flight with void deterritorialization: no escape. -/
+theorem lineOfFlight_void_deterr (s : I) :
+    lineOfFlight s (void : I) = 0 := by
+  unfold lineOfFlight; exact emergence_void_right s (void : I)
+
+/-- Line of flight from void system: nothing to escape from. -/
+theorem lineOfFlight_void_system (d : I) :
+    lineOfFlight (void : I) d = 0 := by
+  unfold lineOfFlight; exact emergence_void_left d d
+
+/-- Body without organs: the limit of deterritorialization.
+    The difference between total composition and stratified parts. -/
+noncomputable def bodyWithoutOrgans (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs a a - rs b b
+
+/-- Body without organs is the enlightenment surplus (same formula). -/
+theorem bodyWithoutOrgans_eq_enlightenmentSurplus (a b : I) :
+    bodyWithoutOrgans a b = enlightenmentSurplus a b := by
+  unfold bodyWithoutOrgans enlightenmentSurplus; ring
+
+/-- Body without organs with void is zero. -/
+theorem bodyWithoutOrgans_void_right (a : I) :
+    bodyWithoutOrgans a (void : I) = 0 := by
+  unfold bodyWithoutOrgans; simp [rs_void_right']
+
+/-! ## §36. Derrida's Deconstruction as Quasi-Dialectics
+
+Derrida's deconstruction is not synthesis but the exposure of the
+"undecidable" within every binary opposition. The trace, différance,
+and the supplement show that meaning is always deferred and differential.
+In IDT, deconstruction reveals that the emergence term is irreducible
+— you cannot eliminate the non-linear remainder. -/
+
+/-- The trace: Derrida's concept that every idea carries the trace
+    of what it excludes. The trace of a in the context of b is what
+    b contributes to the composition that a cannot account for. -/
+noncomputable def trace (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs a (compose a b)
+
+/-- Trace of void equals the full self-resonance: void contributes
+    nothing, so the entire composition is "trace" of the other. -/
+theorem trace_void_left (b : I) :
+    trace (void : I) b = rs b b := by
+  unfold trace; simp [void_left', rs_void_left]
+
+/-- Trace with void: nothing to trace. -/
+theorem trace_void_right (a : I) :
+    trace a (void : I) = rs a a - rs a a := by
+  unfold trace; simp [rs_void_right']
+
+/-- Trace with void simplifies to zero. -/
+theorem trace_void_right_eq (a : I) :
+    trace a (void : I) = 0 := by
+  rw [trace_void_right]; ring
+
+/-- Différance: Derrida's neologism for the play of difference and
+    deferral. In IDT, différance between a and b is the gap between
+    emergence in opposite composition orders — meaning is never settled. -/
+noncomputable def differance (a b : I) : ℝ :=
+  emergence a b (compose a b) - emergence b a (compose b a)
+
+/-- Différance is antisymmetric. -/
+theorem differance_antisymm (a b : I) :
+    differance a b = -differance b a := by
+  unfold differance; ring
+
+/-- Différance with void vanishes: no play of difference without
+    a differential partner. -/
+theorem differance_void_right (a : I) :
+    differance a (void : I) = 0 := by
+  unfold differance; rw [emergence_void_right, emergence_void_left]; ring
+
+theorem differance_void_left (b : I) :
+    differance (void : I) b = 0 := by
+  unfold differance; rw [emergence_void_left, emergence_void_right]; ring
+
+/-- The supplement: Derrida shows that what is supposedly "added" to
+    a complete whole is in fact constitutive. The supplement of b to a
+    is the emergence — the "addition" that transforms the whole. -/
+noncomputable def supplement (whole addition : I) : ℝ :=
+  emergence whole addition (compose whole addition)
+
+/-- Supplement equals aufhebung: Derrida's supplement IS the dialectical
+    surplus, seen from the deconstructive angle. -/
+theorem supplement_eq_aufhebung (w a : I) :
+    supplement w a = aufhebung w a := by
+  unfold supplement aufhebung dialecticalEmergence synthesize; rfl
+
+/-- The undecidable: an idea pair where the parallax gap equals zero
+    but neither emergence vanishes. Meaning oscillates without settling. -/
+def undecidable (a b : I) : Prop :=
+  emergence a b a = emergence a b b ∧ emergence a b a ≠ 0
+
+/-- Pharmakon: Derrida's analysis of concepts that are simultaneously
+    remedy and poison. The pharmakon value is the tension — positive
+    emergence on one side, negative on another. -/
+noncomputable def pharmakon (remedy poison : I) : ℝ :=
+  emergence remedy poison remedy - emergence remedy poison poison
+
+/-- Pharmakon equals parallax gap. Derrida and Žižek converge. -/
+theorem pharmakon_eq_parallaxGap (r p : I) :
+    pharmakon r p = parallaxGap r p := by
+  unfold pharmakon parallaxGap; ring
+
+/-- Pharmakon with void vanishes. -/
+theorem pharmakon_void (a : I) :
+    pharmakon a (void : I) = 0 := by
+  rw [pharmakon_eq_parallaxGap]; exact parallaxGap_void_right a
+
+/-- Iterability: Derrida's argument that meaning requires repeatability,
+    but every repetition alters. The iterability index measures how
+    much double-composition enriches beyond simple self-resonance. -/
+noncomputable def iterability (a : I) : ℝ :=
+  rs (compose a a) (compose a a) - rs a a
+
+/-- Iterability is non-negative: repetition always enriches. -/
+theorem iterability_nonneg (a : I) :
+    iterability a ≥ 0 := by
+  unfold iterability
+  linarith [compose_enriches' a a]
+
+/-- Void iterability is zero. -/
+theorem iterability_void :
+    iterability (void : I) = 0 := by
+  unfold iterability; simp [rs_void_void]
+
+/-! ## §37. Deep Math: Dialectical Fixed Points
+
+A fixed point of the dialectical process is an idea that synthesizing
+with any element of a given class leaves it unchanged (in self-resonance).
+We study conditions for dialectical fixed points and their properties. -/
+
+/-- An idea is a dialectical fixed point with respect to b if the aufhebung
+    vanishes: synthesizing with b creates no new emergence. -/
+def dialecticalFixedPoint (a b : I) : Prop :=
+  aufhebung a b = 0
+
+/-- Void is a fixed point of any dialectic. -/
+theorem void_dialecticalFixedPoint (b : I) :
+    dialecticalFixedPoint (void : I) b := by
+  unfold dialecticalFixedPoint; exact aufhebung_void_thesis b
+
+/-- Any idea is a fixed point of the void dialectic. -/
+theorem dialecticalFixedPoint_void (a : I) :
+    dialecticalFixedPoint a (void : I) := by
+  unfold dialecticalFixedPoint; exact aufhebung_void_antithesis a
+
+/-- At a fixed point, the aufhebung decomposition simplifies:
+    self-resonance = preservation + negation. -/
+theorem fixedPoint_decomposition (a b : I) (h : dialecticalFixedPoint a b) :
+    rs (synthesize a b) (synthesize a b) =
+    preservation a b + negation a b := by
+  have := aufhebung_decomposition a b
+  unfold dialecticalFixedPoint at h
+  unfold transcendence at this
+  linarith
+
+/-- Fixed point criterion: a is a fixed point w.r.t. b iff the
+    self-resonance of the synthesis equals preservation + negation. -/
+theorem fixedPoint_iff (a b : I) :
+    dialecticalFixedPoint a b ↔
+    rs (synthesize a b) (synthesize a b) =
+    preservation a b + negation a b := by
+  constructor
+  · exact fixedPoint_decomposition a b
+  · intro h
+    unfold dialecticalFixedPoint
+    have := aufhebung_decomposition a b
+    unfold transcendence at this
+    linarith
+
+/-- The aufhebung squared bound at fixed points. -/
+theorem fixedPoint_aufhebung_sq (a b : I) (h : dialecticalFixedPoint a b) :
+    (aufhebung a b) ^ 2 = 0 := by
+  unfold dialecticalFixedPoint at h; rw [h]; ring
+
+/-- Mutual fixed points: a and b are mutual fixed points if
+    both aufhebungen vanish. -/
+def mutualFixedPoint (a b : I) : Prop :=
+  dialecticalFixedPoint a b ∧ dialecticalFixedPoint b a
+
+/-- Void is a mutual fixed point with anything. -/
+theorem void_mutualFixedPoint (a : I) :
+    mutualFixedPoint (void : I) a :=
+  ⟨void_dialecticalFixedPoint a, dialecticalFixedPoint_void a⟩
+
+/-- Mutual fixed points are symmetric. -/
+theorem mutualFixedPoint_symm (a b : I) :
+    mutualFixedPoint a b → mutualFixedPoint b a :=
+  fun ⟨h1, h2⟩ => ⟨h2, h1⟩
+
+/-! ## §38. Deep Math: Convergence of Synthesis Sequences
+
+We study the convergence properties of iterated synthesis sequences.
+While we cannot prove convergence in general (since we have no topology),
+we can prove that the self-resonance sequence is monotone and bounded
+below, and derive consequences. -/
+
+/-- The self-resonance sequence of iterated synthesis is monotone
+    non-decreasing. This is a key structural result. -/
+theorem synthesis_sequence_monotone (a b : I) :
+    ∀ n : ℕ,
+    rs (iteratedSynthesis a b (n + 1)) (iteratedSynthesis a b (n + 1)) ≥
+    rs (iteratedSynthesis a b n) (iteratedSynthesis a b n) :=
+  iteratedSynthesis_enriches a b
+
+/-- The self-resonance of stage n is bounded below by the initial value. -/
+theorem synthesis_sequence_bounded_below (a b : I) (n : ℕ) :
+    rs (iteratedSynthesis a b n) (iteratedSynthesis a b n) ≥ rs a a :=
+  iteratedSynthesis_nondecreasing a b 0 n (Nat.zero_le n)
+
+/-- The gain from stage n to stage n+1 is non-negative. -/
+theorem synthesis_gain_nonneg (a b : I) (n : ℕ) :
+    rs (iteratedSynthesis a b (n + 1)) (iteratedSynthesis a b (n + 1)) -
+    rs (iteratedSynthesis a b n) (iteratedSynthesis a b n) ≥ 0 := by
+  linarith [iteratedSynthesis_enriches a b n]
+
+/-- If the synthesis ever reaches a fixed point (gain = 0 at step n),
+    then the negation residue at that step vanishes: the synthesis
+    has absorbed all the weight it can from the antithesis. -/
+theorem synthesis_fixedPoint_criterion (a b : I) (n : ℕ)
+    (h : rs (iteratedSynthesis a b (n + 1)) (iteratedSynthesis a b (n + 1)) =
+         rs (iteratedSynthesis a b n) (iteratedSynthesis a b n)) :
+    negationResidue (iteratedSynthesis a b n) b = 0 := by
+  unfold negationResidue synthesize
+  rw [← iteratedSynthesis_succ]; linarith
+
+/-- The total weight accumulated over N stages. -/
+noncomputable def totalAccumulation (a b : I) (n : ℕ) : ℝ :=
+  rs (iteratedSynthesis a b n) (iteratedSynthesis a b n) - rs a a
+
+/-- Total accumulation is non-negative. -/
+theorem totalAccumulation_nonneg (a b : I) (n : ℕ) :
+    totalAccumulation a b n ≥ 0 := by
+  unfold totalAccumulation
+  linarith [synthesis_sequence_bounded_below a b n]
+
+/-- Total accumulation at step 0 is 0. -/
+theorem totalAccumulation_zero (a b : I) :
+    totalAccumulation a b 0 = 0 := by
+  unfold totalAccumulation iteratedSynthesis; ring
+
+/-- Total accumulation is monotone non-decreasing. -/
+theorem totalAccumulation_mono (a b : I) (m n : ℕ) (h : m ≤ n) :
+    totalAccumulation a b n ≥ totalAccumulation a b m := by
+  unfold totalAccumulation
+  linarith [iteratedSynthesis_nondecreasing a b m n h]
+
+/-! ## §39. Deep Math: Dialectical Topology
+
+Without assuming a metric or topology on ideas, we can still define
+"topological" notions intrinsically using resonance. These capture
+the structure of dialectical neighborhoods and open sets. -/
+
+/-- Resonance ball: the set of ideas that resonate above threshold
+    with a given center idea. A kind of "dialectical neighborhood." -/
+def resonanceBall (center : I) (threshold : ℝ) (x : I) : Prop :=
+  rs center x > threshold
+
+/-- Void is never in a positive-threshold ball. -/
+theorem void_not_in_ball (c : I) (t : ℝ) (ht : t ≥ 0) :
+    ¬resonanceBall c t (void : I) := by
+  unfold resonanceBall; rw [rs_void_right']; linarith
+
+/-- Every non-void idea is in its own ball at threshold 0. -/
+theorem self_in_ball (a : I) (h : a ≠ void) :
+    resonanceBall a 0 a := by
+  unfold resonanceBall; exact rs_self_pos a h
+
+/-- Dialectical neighborhood: ideas that resonate positively with
+    the synthesis of a and b. These are ideas "compatible" with the
+    dialectical outcome. -/
+def dialecticalNeighborhood (a b : I) (x : I) : Prop :=
+  rs (synthesize a b) x > 0
+
+/-- Opposition frontier: the set of ideas where resonance changes sign.
+    These are the ideas on the boundary between resonance and opposition. -/
+def oppositionFrontier (a : I) (x : I) : Prop :=
+  rs a x = 0
+
+/-- Void is always on the opposition frontier. -/
+theorem void_on_frontier (a : I) :
+    oppositionFrontier a (void : I) := by
+  unfold oppositionFrontier; exact rs_void_right' a
+
+/-- Every idea has void on its frontier. -/
+theorem frontier_of_void (a : I) :
+    oppositionFrontier (void : I) a := by
+  unfold oppositionFrontier; exact rs_void_left' a
+
+/-- Dialectical density: a measure of how "rich" the dialectical
+    structure is around an idea, based on self-resonance growth. -/
+noncomputable def dialecticalDensity (a : I) : ℝ :=
+  rs (compose a a) (compose a a) - rs a a
+
+/-- Dialectical density is non-negative. -/
+theorem dialecticalDensity_nonneg (a : I) :
+    dialecticalDensity a ≥ 0 := by
+  unfold dialecticalDensity
+  linarith [compose_enriches' a a]
+
+/-- Void has zero dialectical density. -/
+theorem dialecticalDensity_void :
+    dialecticalDensity (void : I) = 0 := by
+  unfold dialecticalDensity; simp [rs_void_void]
+
+/-- The dialectical density relates to the negation residue of self-synthesis. -/
+theorem dialecticalDensity_eq_negationResidue_self (a : I) :
+    dialecticalDensity a = negationResidue a a := by
+  unfold dialecticalDensity negationResidue synthesize; ring
+
+/-! ## §40. Synthesis Algebra: Interaction Laws
+
+Deep algebraic properties of how dialectical operations compose
+and interact with each other. -/
+
+/-- Double synthesis associativity: synthesizing (synthesize a b) with c
+    equals composing a with (compose b c), by associativity. -/
+theorem doubleSynthesis_assoc (a b c : I) :
+    synthesize (synthesize a b) c = compose a (compose b c) := by
+  unfold synthesize; simp [compose_assoc']
+
+/-- The aufhebung of a synthesis reduces to emergence of its components. -/
+theorem aufhebung_of_synthesis (a b c : I) :
+    aufhebung (synthesize a b) c =
+    emergence (compose a b) c (compose (compose a b) c) := by
+  unfold aufhebung dialecticalEmergence synthesize; rfl
+
+/-- Synthesis with compose is associative. -/
+theorem synthesis_compose_assoc (a b c d : I) :
+    rs (synthesize (synthesize a b) c) d =
+    rs (compose a (compose b c)) d := by
+  unfold synthesize; simp [compose_assoc']
+
+/-- Three-stage dialectical weight is monotone. -/
+theorem three_stage_enriches (a b c : I) :
+    rs (triadCompose a b c) (triadCompose a b c) ≥ rs a a := by
+  exact triadCompose_enriches_thesis a b c
+
+/-- Dialectical absorption: when synthesis with b and then with c
+    produces the same weight as synthesis with compose b c. -/
+theorem dialectical_absorption (a b c : I) :
+    rs (synthesize (synthesize a b) c) (synthesize (synthesize a b) c) =
+    rs (compose a (compose b c)) (compose a (compose b c)) := by
+  unfold synthesize; simp [compose_assoc']
+
+/-- The emergence transfer: how emergence shifts when we change
+    the decomposition of a dialectical pair. -/
+theorem emergence_transfer (a b c d : I) :
+    emergence a b d + emergence (compose a b) c d =
+    emergence b c d + emergence a (compose b c) d :=
+  cocycle_condition a b c d
+
+/-! ## §41. Dialectical Spectrum Analysis
+
+Every dialectical pair generates a "spectrum" of values as we iterate.
+We analyze the algebraic structure of these spectra. -/
+
+/-- The n-th dialectical spectrum value: the self-resonance at stage n. -/
+noncomputable def dialecticalSpectrum (a b : I) (n : ℕ) : ℝ :=
+  rs (iteratedSynthesis a b n) (iteratedSynthesis a b n)
+
+/-- Spectrum at 0 is the initial self-resonance. -/
+theorem dialecticalSpectrum_zero (a b : I) :
+    dialecticalSpectrum a b 0 = rs a a := rfl
+
+/-- The spectrum is monotone non-decreasing. -/
+theorem dialecticalSpectrum_mono (a b : I) (m n : ℕ) (h : m ≤ n) :
+    dialecticalSpectrum a b n ≥ dialecticalSpectrum a b m := by
+  unfold dialecticalSpectrum
+  exact iteratedSynthesis_nondecreasing a b m n h
+
+/-- The spectrum increment: how much the spectrum grows at each step. -/
+noncomputable def spectrumIncrement (a b : I) (n : ℕ) : ℝ :=
+  dialecticalSpectrum a b (n + 1) - dialecticalSpectrum a b n
+
+/-- Spectrum increment is non-negative. -/
+theorem spectrumIncrement_nonneg (a b : I) (n : ℕ) :
+    spectrumIncrement a b n ≥ 0 := by
+  unfold spectrumIncrement dialecticalSpectrum
+  linarith [iteratedSynthesis_enriches a b n]
+
+/-- The spectrum increment equals the stage gain. -/
+theorem spectrumIncrement_eq_stageGain (a b : I) (n : ℕ) :
+    spectrumIncrement a b n = stageGain a b n := by
+  unfold spectrumIncrement dialecticalSpectrum stageGain; ring
+
+/-- Telescoping: the spectrum at n minus the initial value equals
+    the sum of all increments. -/
+theorem spectrum_telescopes (a b : I) (n : ℕ) :
+    dialecticalSpectrum a b n - dialecticalSpectrum a b 0 =
+    (Finset.range n).sum (fun k => spectrumIncrement a b k) := by
+  have h : ∀ k, spectrumIncrement a b k = stageGain a b k :=
+    spectrumIncrement_eq_stageGain a b
+  simp_rw [h]
+  unfold dialecticalSpectrum
+  exact total_gain_telescopes a b n
+
+/-! ## §42. Dialectical Energy and Potential
+
+Defining "energy" concepts for dialectical processes using the
+resonance structure. These provide measures of dialectical activity. -/
+
+/-- Dialectical kinetic energy: the emergence of the current synthesis
+    with the antithesis — the "active" part of the dialectic. -/
+noncomputable def dialecticalKineticEnergy (a b : I) (n : ℕ) : ℝ :=
+  emergence (iteratedSynthesis a b n) b (iteratedSynthesis a b (n + 1))
+
+/-- Kinetic energy equals the aufhebung at step n. -/
+theorem kineticEnergy_eq_aufhebungN (a b : I) (n : ℕ) :
+    dialecticalKineticEnergy a b n = aufhebungN a b (n + 1) := by
+  unfold dialecticalKineticEnergy aufhebungN aufhebung dialecticalEmergence
+    synthesize
+  rfl
+
+/-- Dialectical potential energy: the self-resonance accumulated. -/
+noncomputable def dialecticalPotentialEnergy (a b : I) (n : ℕ) : ℝ :=
+  rs (iteratedSynthesis a b n) (iteratedSynthesis a b n)
+
+/-- Potential energy at step 0 equals initial self-resonance. -/
+theorem potentialEnergy_zero (a b : I) :
+    dialecticalPotentialEnergy a b 0 = rs a a := rfl
+
+/-- Potential energy is monotone. -/
+theorem potentialEnergy_mono (a b : I) (n : ℕ) :
+    dialecticalPotentialEnergy a b (n + 1) ≥
+    dialecticalPotentialEnergy a b n := by
+  unfold dialecticalPotentialEnergy
+  exact iteratedSynthesis_enriches a b n
+
+/-- Total dialectical energy: kinetic + potential at each stage. -/
+noncomputable def totalDialecticalEnergy (a b : I) (n : ℕ) : ℝ :=
+  dialecticalPotentialEnergy a b n + dialecticalKineticEnergy a b n
+
+/-- Total energy decomposition via aufhebung stage decomposition. -/
+theorem totalEnergy_eq (a b : I) (n : ℕ) :
+    totalDialecticalEnergy a b n =
+    dialecticalPotentialEnergy a b n + aufhebungN a b (n + 1) := by
+  unfold totalDialecticalEnergy
+  rw [kineticEnergy_eq_aufhebungN]
+
+/-! ## §43. Dialectical Curvature and Torsion
+
+Higher-order dialectical structure: how the "direction" of dialectical
+development changes (curvature) and how it twists (torsion). -/
+
+/-- Dialectical curvature: the change in the spectrum increment.
+    Positive curvature means acceleration of dialectical development;
+    negative means deceleration. -/
+noncomputable def dialecticalCurvature (a b : I) (n : ℕ) : ℝ :=
+  spectrumIncrement a b (n + 1) - spectrumIncrement a b n
+
+/-- Dialectical curvature expansion. -/
+theorem dialecticalCurvature_eq (a b : I) (n : ℕ) :
+    dialecticalCurvature a b n =
+    dialecticalSpectrum a b (n + 2) -
+    2 * dialecticalSpectrum a b (n + 1) +
+    dialecticalSpectrum a b n := by
+  unfold dialecticalCurvature spectrumIncrement; ring
+
+/-- Dialectical torsion: the non-commutativity at stage n.
+    How much the order of synthesis matters at each stage. -/
+noncomputable def dialecticalTorsion (a b : I) (n : ℕ) : ℝ :=
+  rs (iteratedSynthesis a b n) b - rs b (iteratedSynthesis a b n)
+
+/-- Torsion at stage 0 is just the asymmetry. -/
+theorem dialecticalTorsion_zero (a b : I) :
+    dialecticalTorsion a b 0 = rs a b - rs b a := by
+  unfold dialecticalTorsion iteratedSynthesis; ring
+
+/-- Torsion with void is zero. -/
+theorem dialecticalTorsion_void_antithesis (a : I) (n : ℕ) :
+    dialecticalTorsion a (void : I) n = 0 := by
+  unfold dialecticalTorsion; simp [rs_void_left', rs_void_right']
+
+/-! ## §44. Dialectical Invariants and Conservation Laws
+
+Quantities that are preserved under dialectical transformation.
+These are the "conserved charges" of the dialectical process. -/
+
+/-- The dialectical charge: a quantity preserved under re-bracketing
+    of composition. -/
+noncomputable def dialecticalCharge (a b c d : I) : ℝ :=
+  emergence a b d + emergence (compose a b) c d
+
+/-- Dialectical charge conservation: the charge is the same regardless
+    of how we bracket the composition (by the cocycle condition). -/
+theorem dialecticalCharge_conservation (a b c d : I) :
+    dialecticalCharge a b c d =
+    emergence b c d + emergence a (compose b c) d := by
+  unfold dialecticalCharge; exact cocycle_condition a b c d
+
+/-- The dialectical cocycle residue: the difference between left and
+    right bracketed charges. Always zero by associativity. -/
+noncomputable def cocycleResidue (a b c d : I) : ℝ :=
+  dialecticalCharge a b c d - (emergence b c d + emergence a (compose b c) d)
+
+/-- Cocycle residue always vanishes: this is the conservation law. -/
+theorem cocycleResidue_vanishes (a b c d : I) :
+    cocycleResidue a b c d = 0 := by
+  unfold cocycleResidue dialecticalCharge
+  linarith [cocycle_condition a b c d]
+
+/-- Resonance under rebracketing is invariant. -/
+theorem dialectical_invariance (a b c d : I) :
+    rs (compose (compose a b) c) d =
+    rs (compose a (compose b c)) d := by
+  rw [compose_assoc']
+
+/-! ## §45. Advanced Alienation Theory
+
+Extending Marx's alienation concepts with deeper algebraic structure. -/
+
+/-- Species-being deficit: how much the product (compose w m) fails
+    to reflect the worker's full potential (self-resonance).
+    Marx: alienation from species-being. Measured as the worker's
+    self-resonance minus how the product resonates with the worker. -/
+noncomputable def speciesBeingDeficit (worker material : I) : ℝ :=
+  rs worker worker - rs worker (compose worker material)
+
+/-- Species-being deficit with void material is zero: without
+    external material, there is no alienation. -/
+theorem speciesBeingDeficit_void_material (w : I) :
+    speciesBeingDeficit w (void : I) = 0 := by
+  unfold speciesBeingDeficit; simp [rs_void_right']
+
+/-- Species-being deficit equals alienation index: same concept,
+    same formula. -/
+theorem speciesBeingDeficit_eq_alienation (w m : I) :
+    speciesBeingDeficit w m = alienationIndex w m := rfl
+
+/-- Double alienation: the alienation of the alienated product.
+    What happens when the worker is alienated from the product,
+    and the product is itself alienated from its use-value. -/
+noncomputable def doubleAlienation (w m : I) : ℝ :=
+  alienationIndex w m + alienationIndex (compose w m) m
+
+/-- Double alienation with void material is zero. -/
+theorem doubleAlienation_void (w : I) :
+    doubleAlienation w (void : I) = 0 := by
+  unfold doubleAlienation alienationIndex; simp [rs_void_right']
+
+/-! ## §46. Dialectical Category Theory
+
+The category of dialectical processes: morphisms between dialectical
+pairs that preserve the aufhebung structure. -/
+
+/-- A dialectical process preserves aufhebung if composing with a
+    "transformer" t does not change the aufhebung value. -/
+def preservesAufhebung (a b t : I) : Prop :=
+  aufhebung (compose t a) (compose t b) = aufhebung a b
+
+/-- Void transformer always preserves aufhebung. -/
+theorem void_preservesAufhebung (a b : I) :
+    preservesAufhebung a b (void : I) := by
+  unfold preservesAufhebung; simp
+
+/-- A dialectical pair is "tight" if the aufhebung squared equals
+    the product of self-resonances. This is the saturated case
+    of the emergence bound. -/
+def dialecticallyTight (a b : I) : Prop :=
+  (aufhebung a b) ^ 2 =
+  rs (compose a b) (compose a b) * rs (compose a b) (compose a b)
+
+/-- Void-void pairs are trivially tight. -/
+theorem void_dialecticallyTight :
+    dialecticallyTight (void : I) (void : I) := by
+  unfold dialecticallyTight aufhebung dialecticalEmergence synthesize
+  simp [rs_void_void, void_left']
+  unfold emergence; simp [rs_void_void]
+
+/-! ## §47. Dialectical Information Theory
+
+Information-theoretic interpretations of dialectical quantities.
+The aufhebung as "dialectical information gain." -/
+
+/-- Dialectical information: the total non-additive resonance created
+    by a synthesis. Analogous to mutual information. -/
+noncomputable def dialecticalInformation (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs a a - rs b b
+
+/-- Dialectical information with void is zero. -/
+theorem dialecticalInformation_void_right (a : I) :
+    dialecticalInformation a (void : I) = 0 := by
+  unfold dialecticalInformation; simp [rs_void_right']
+
+theorem dialecticalInformation_void_left (b : I) :
+    dialecticalInformation (void : I) b = 0 := by
+  unfold dialecticalInformation; simp [rs_void_left', rs_void_void]
+
+/-- Dialectical information decomposes into emergence terms. -/
+theorem dialecticalInformation_eq (a b : I) :
+    dialecticalInformation a b =
+    (rs a (compose a b) - rs a a) +
+    (rs b (compose a b) - rs b b) +
+    emergence a b (compose a b) := by
+  unfold dialecticalInformation
+  rw [rs_compose_eq a b (compose a b)]
+  ring
+
+/-- The dialectical redundancy: how much of the synthesis's weight
+    comes from the parts versus from emergence. -/
+noncomputable def dialecticalRedundancy (a b : I) : ℝ :=
+  rs a (compose a b) + rs b (compose a b) - rs a a - rs b b
+
+/-- Dialectical redundancy with void is zero. -/
+theorem dialecticalRedundancy_void (a : I) :
+    dialecticalRedundancy a (void : I) = 0 := by
+  unfold dialecticalRedundancy; simp [rs_void_right', rs_void_left']
+
+/-- Total dialectical information = redundancy + aufhebung. -/
+theorem dialecticalInformation_decomp (a b : I) :
+    dialecticalInformation a b =
+    dialecticalRedundancy a b + aufhebung a b := by
+  unfold dialecticalInformation dialecticalRedundancy aufhebung
+    dialecticalEmergence synthesize emergence
+  ring
+
 end Dialectics
 
 end IDT3
