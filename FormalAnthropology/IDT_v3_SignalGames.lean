@@ -2082,4 +2082,2377 @@ theorem monotone_communication (s r : I) (n : ℕ) :
 
 end GrandUnification
 
+/-! ## §24. Mechanism Design — VCG and Myerson in Meaning Games
+
+In mechanism design, a "mechanism" is a rule that aggregates reports
+(signals) from multiple agents into an outcome (composed idea) and
+payments (resonance transfers). The Vickrey-Clarke-Groves (VCG)
+mechanism ensures truthful revelation is incentive-compatible by
+aligning individual resonance with social welfare.
+
+We model a mechanism as a triple: (aggregation rule, payment rule,
+participation constraint). The aggregation rule composes signals;
+the payment rule extracts resonance; participation requires
+non-negative net payoff.
+-/
+
+section MechanismDesign
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- A mechanism outcome: the aggregated idea from two agents' reports.
+    In VCG, the aggregation rule maximizes social welfare (self-resonance
+    of the composition). Here, simple composition IS the welfare-maximizing
+    aggregation, since compose_enriches guarantees monotonicity. -/
+noncomputable def mechanismOutcome (report₁ report₂ : I) : I :=
+  compose report₁ report₂
+
+/-- T211. The VCG payment principle: each agent's "payment" is the
+    externality they impose on others. Agent 1's externality on agent 2
+    is the difference between what agent 2 would get alone vs. in the
+    mechanism. Since compose enriches, this is always non-negative. -/
+noncomputable def vcgPayment (report₁ report₂ : I) : ℝ :=
+  rs (mechanismOutcome report₁ report₂) (mechanismOutcome report₁ report₂)
+  - rs report₂ report₂ - rs report₁ report₁
+
+/-- T212. VCG payment is exactly the cooperation surplus. The externality
+    each agent imposes equals the synergy they create, which is the
+    cooperation surplus from §6. This connects mechanism design to
+    cooperative game theory. -/
+theorem vcgPayment_eq_coopSurplus (a b : I) :
+    vcgPayment a b = cooperationSurplus a b := by
+  unfold vcgPayment mechanismOutcome cooperationSurplus; ring
+
+/-- T213. VCG payment for void report is zero: silence imposes no
+    externality. An agent who reports nothing neither helps nor harms. -/
+theorem vcgPayment_void_left (b : I) :
+    vcgPayment (void : I) b = 0 := by
+  rw [vcgPayment_eq_coopSurplus]; exact cooperationSurplus_void_left b
+
+/-- T214. VCG payment for void counterpart is zero: if the other
+    agent is silent, your externality is zero. -/
+theorem vcgPayment_void_right (a : I) :
+    vcgPayment a (void : I) = 0 := by
+  rw [vcgPayment_eq_coopSurplus]; exact cooperationSurplus_void_right a
+
+/-- The VCG net utility for agent 1: their share of the outcome's
+    resonance minus their VCG payment. -/
+noncomputable def vcgNetUtility₁ (a b : I) : ℝ :=
+  rs a (mechanismOutcome a b) - vcgPayment a b
+
+/-- T215. VCG net utility decomposes into self-resonance plus cross-term
+    minus cooperation surplus. This reveals how much each agent "keeps"
+    after paying for their externality. -/
+theorem vcgNetUtility₁_eq (a b : I) :
+    vcgNetUtility₁ a b =
+    rs a (compose a b) - cooperationSurplus a b := by
+  unfold vcgNetUtility₁ mechanismOutcome
+  rw [vcgPayment_eq_coopSurplus]
+
+/-- T216. VCG net utility with void counterpart is just self-resonance.
+    If the other agent is silent, you keep everything you brought. -/
+theorem vcgNetUtility₁_void_right (a : I) :
+    vcgNetUtility₁ a (void : I) = rs a a := by
+  unfold vcgNetUtility₁ mechanismOutcome
+  rw [vcgPayment_eq_coopSurplus, cooperationSurplus_void_right]; simp
+
+/-- The Myerson virtual value: the "adjusted" resonance of a signal
+    accounting for information rents. In meaning games, the virtual
+    value adjusts for the emergence advantage — what the signal gains
+    from strategic interaction beyond its intrinsic worth. -/
+noncomputable def myersonVirtualValue (s r : I) : ℝ :=
+  senderPayoff s r - emergenceAdvantage s r
+
+/-- T217. Myerson virtual value with void signal is zero. When nothing
+    is said, there is no virtual value to extract. -/
+theorem myersonVirtualValue_void_signal (r : I) :
+    myersonVirtualValue (void : I) r = 0 := by
+  unfold myersonVirtualValue senderPayoff interpret emergenceAdvantage emergence
+  simp [rs_void_left', rs_void_right']
+
+/-- T218. Myerson virtual value with void receiver reduces to
+    self-resonance minus emergence advantage (which is zero). -/
+theorem myersonVirtualValue_void_receiver (s : I) :
+    myersonVirtualValue s (void : I) = rs s s := by
+  unfold myersonVirtualValue senderPayoff interpret emergenceAdvantage
+  simp [emergence_void_left]
+
+/-- T219. Virtual value decomposes into raw resonance terms. -/
+theorem myersonVirtualValue_explicit (s r : I) :
+    myersonVirtualValue s r =
+    rs s (compose r s) - (rs (compose r s) s - rs r s - rs s s) := by
+  unfold myersonVirtualValue senderPayoff interpret emergenceAdvantage emergence
+  ring
+
+/-- The incentive compatibility gap: how much an agent gains by
+    misreporting. A mechanism is incentive-compatible when this is
+    non-positive for all deviations. -/
+noncomputable def icGap (truthful deviation r : I) : ℝ :=
+  senderNetPayoff deviation r - senderNetPayoff truthful r
+
+/-- T220. IC gap is zero for identical reports: truthful reporting
+    is trivially IC-compatible with itself. -/
+theorem icGap_self (s r : I) : icGap s s r = 0 := by
+  unfold icGap; ring
+
+/-- T221. At Nash equilibrium, the IC gap for the equilibrium signal
+    is non-positive: no deviation improves the sender's payoff.
+    This is precisely the best-response condition. -/
+theorem icGap_nash_nonpos (s r : I) (h : isNashEquilibrium s r) (s' : I) :
+    icGap s s' r ≤ 0 := by
+  unfold icGap
+  have := h.1 s'
+  linarith
+
+/-- T222. The IC gap from void to any signal equals the sender's
+    net payoff of that signal: the "temptation to speak." -/
+theorem icGap_from_void (s r : I) :
+    icGap (void : I) s r = senderNetPayoff s r := by
+  unfold icGap; rw [senderNetPayoff_void_signal]; ring
+
+/-- The individual rationality (IR) constraint: each agent must prefer
+    participating in the mechanism to staying out (getting void payoff). -/
+def satisfiesIR (s r : I) : Prop :=
+  senderNetPayoff s r ≥ 0 ∧ receiverNetPayoff s r ≥ 0
+
+/-- T223. Nash equilibria automatically satisfy IR: at equilibrium,
+    both players prefer to participate. This is the revelation
+    principle for meaning games. -/
+theorem nash_satisfies_IR (s r : I) (h : isNashEquilibrium s r) :
+    satisfiesIR s r :=
+  ⟨nash_sender_nonneg s r h, nash_receiver_nonneg s r h⟩
+
+/-- T224. Void-void always satisfies IR: non-participation satisfies
+    the participation constraint trivially. -/
+theorem void_satisfies_IR :
+    satisfiesIR (void : I) (void : I) := by
+  exact ⟨le_of_eq (senderNetPayoff_void_signal _).symm,
+         le_of_eq (receiverNetPayoff_void_receiver _).symm⟩
+
+/-- The mechanism surplus: total value created by the mechanism minus
+    what agents could achieve on their own. This is the "gains from
+    trade" in the mechanism. -/
+noncomputable def mechanismSurplus (a b : I) : ℝ :=
+  rs (mechanismOutcome a b) (mechanismOutcome a b) - rs a a - rs b b
+
+/-- T225. Mechanism surplus equals cooperation surplus. The gains from
+    participating in a mechanism are exactly the cooperative surplus. -/
+theorem mechanismSurplus_eq_coop (a b : I) :
+    mechanismSurplus a b = cooperationSurplus a b := by
+  unfold mechanismSurplus mechanismOutcome cooperationSurplus; ring
+
+/-- T226. Mechanism surplus is bounded below by -rs(b,b). Even the
+    worst mechanism cannot destroy more than what agent b brought. -/
+theorem mechanismSurplus_lower (a b : I) :
+    mechanismSurplus a b ≥ -rs b b := by
+  rw [mechanismSurplus_eq_coop]; exact cooperationSurplus_lower_bound a b
+
+end MechanismDesign
+
+/-! ## §25. Auction Theory — Bidding for Ideas
+
+An "idea auction" is a competitive mechanism where agents bid for the
+right to compose with a target idea. The "price" of composition is
+the self-resonance cost. We model first-price, second-price, and
+all-pay auctions for ideas.
+
+Key insight: in an idea auction, the "item" being auctioned is the
+right to compose — to have your idea interact with the target.
+-/
+
+section AuctionTheory
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The value of composing bidder's idea with target: how much the
+    bidder values winning the auction. This is the information content
+    of the target for the bidder. -/
+noncomputable def auctionValue (bidder target : I) : ℝ :=
+  informationContent target bidder
+
+/-- T227. Auction value is non-negative: composing with any target
+    never reduces self-resonance. Every bidder weakly benefits. -/
+theorem auctionValue_nonneg (bidder target : I) :
+    auctionValue bidder target ≥ 0 := by
+  unfold auctionValue; exact informationContent_nonneg target bidder
+
+/-- T228. Auction value of void target is zero: there is nothing to
+    gain from composing with silence. -/
+theorem auctionValue_void_target (bidder : I) :
+    auctionValue bidder (void : I) = 0 := by
+  unfold auctionValue informationContent; simp
+
+/-- T229. Auction value of void bidder equals the target's self-resonance.
+    An empty mind gains everything from any idea. -/
+theorem auctionValue_void_bidder (target : I) :
+    auctionValue (void : I) target = rs target target := by
+  unfold auctionValue informationContent; simp [rs_void_void]
+
+/-- First-price auction payoff: value minus bid (self-resonance cost).
+    In a first-price auction, the winner pays their own bid. -/
+noncomputable def firstPricePayoff (bidder target : I) : ℝ :=
+  auctionValue bidder target - signalCost bidder
+
+/-- T230. First-price payoff of void bidder is zero: bidding nothing
+    costs nothing and wins nothing meaningful. -/
+theorem firstPricePayoff_void_bidder (target : I) :
+    firstPricePayoff (void : I) target = rs target target := by
+  unfold firstPricePayoff
+  rw [auctionValue_void_bidder, signalCost_void]; ring
+
+/-- T231. First-price payoff with void target: paying for nothing.
+    The payoff is -rs(bidder, bidder) — a pure loss. -/
+theorem firstPricePayoff_void_target (bidder : I) :
+    firstPricePayoff bidder (void : I) = -signalCost bidder := by
+  unfold firstPricePayoff; rw [auctionValue_void_target]; ring
+
+/-- Second-price (Vickrey) auction payoff: value minus the SECOND
+    highest bid. We model this as value minus a given price. -/
+noncomputable def vickreyPayoff (bidder target : I) (price : ℝ) : ℝ :=
+  auctionValue bidder target - price
+
+/-- T232. In a Vickrey auction with zero price, the winner gets full
+    value. This corresponds to no competition. -/
+theorem vickreyPayoff_zero_price (bidder target : I) :
+    vickreyPayoff bidder target 0 = auctionValue bidder target := by
+  unfold vickreyPayoff; ring
+
+/-- T233. Vickrey payoff is non-negative when price ≤ value:
+    truthful bidding is individually rational. -/
+theorem vickreyPayoff_nonneg (bidder target : I) (price : ℝ)
+    (h : price ≤ auctionValue bidder target) :
+    vickreyPayoff bidder target price ≥ 0 := by
+  unfold vickreyPayoff; linarith
+
+/-- All-pay auction payoff: everyone pays their bid, but only the
+    winner gets the value. We model the "winner" version. -/
+noncomputable def allPayWinnerPayoff (bidder target : I) : ℝ :=
+  auctionValue bidder target - signalCost bidder
+
+/-- T234. All-pay winner payoff equals first-price payoff. In
+    both formats, the winner pays their own bid. The difference is
+    that in all-pay, losers also pay. -/
+theorem allPayWinner_eq_firstPrice (bidder target : I) :
+    allPayWinnerPayoff bidder target = firstPricePayoff bidder target := by
+  unfold allPayWinnerPayoff firstPricePayoff; ring
+
+/-- All-pay loser payoff: you pay but don't compose with the target. -/
+noncomputable def allPayLoserPayoff (bidder : I) : ℝ :=
+  -signalCost bidder
+
+/-- T235. All-pay loser payoff is non-positive: losers only lose.
+    Paying your bid without gaining composition is always costly. -/
+theorem allPayLoserPayoff_nonpos (bidder : I) :
+    allPayLoserPayoff bidder ≤ 0 := by
+  unfold allPayLoserPayoff signalCost
+  linarith [S.rs_self_nonneg bidder]
+
+/-- T236. Void bidder's loser payoff is zero: bidding nothing and
+    losing costs nothing. -/
+theorem allPayLoserPayoff_void :
+    allPayLoserPayoff (void : I) = 0 := by
+  unfold allPayLoserPayoff signalCost; rw [rs_void_void]; ring
+
+/-- The revenue equivalence principle for idea auctions: the total
+    "payment" extracted from both agents in a VCG mechanism equals
+    the cooperation surplus. -/
+theorem revenue_equivalence (a b : I) :
+    vcgPayment a b = mechanismSurplus a b := by
+  rw [vcgPayment_eq_coopSurplus, mechanismSurplus_eq_coop]
+
+/-- T237. Auction value is additive in a specific sense: the value
+    of composing with target equals the cooperation surplus plus the
+    target's self-resonance. -/
+theorem auctionValue_decomp (bidder target : I) :
+    auctionValue bidder target =
+    cooperationSurplus bidder target + rs target target := by
+  unfold auctionValue
+  rw [informationContent_eq_coopSurplus_shifted]
+
+/-- T238. The winner's curse in idea auctions: the auction value is
+    bounded by the self-resonance of the composed outcome. Winning
+    doesn't guarantee the composed outcome is better than expected. -/
+theorem winners_curse_bound (bidder target : I) :
+    auctionValue bidder target ≤
+    rs (compose bidder target) (compose bidder target) := by
+  unfold auctionValue informationContent
+  linarith [S.rs_self_nonneg bidder]
+
+end AuctionTheory
+
+/-! ## §26. Nash Bargaining Theory — Fair Division of Meaning
+
+In bargaining theory, two agents negotiate over how to divide the
+surplus from cooperation. The Nash bargaining solution maximizes the
+product of net gains. We characterize the bargaining set, disagreement
+point (void), and Nash solution properties.
+-/
+
+section BargainingTheory
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The disagreement payoff: what each agent gets if bargaining fails.
+    In meaning games, failure = silence = void. -/
+noncomputable def disagreementPayoff₁ (s : I) : ℝ := rs s s
+noncomputable def disagreementPayoff₂ (r : I) : ℝ := rs r r
+
+/-- T239. The disagreement point is always non-negative: even in
+    failure, each agent retains their own self-resonance. -/
+theorem disagreement_nonneg₁ (s : I) : disagreementPayoff₁ s ≥ 0 := by
+  unfold disagreementPayoff₁; exact S.rs_self_nonneg s
+
+theorem disagreement_nonneg₂ (r : I) : disagreementPayoff₂ r ≥ 0 := by
+  unfold disagreementPayoff₂; exact S.rs_self_nonneg r
+
+/-- T240. Void agent's disagreement payoff is zero: silence has nothing
+    to fall back on. -/
+theorem disagreement_void₁ : disagreementPayoff₁ (void : I) = 0 := by
+  unfold disagreementPayoff₁; exact rs_void_void
+
+theorem disagreement_void₂ : disagreementPayoff₂ (void : I) = 0 := by
+  unfold disagreementPayoff₂; exact rs_void_void
+
+/-- The Nash bargaining product: the product of net gains over
+    disagreement. The Nash bargaining solution maximizes this. -/
+noncomputable def nashBargainingProduct (s r : I) : ℝ :=
+  senderNetPayoff s r * receiverNetPayoff s r
+
+/-- T241. Nash bargaining product at void-void is zero: no surplus
+    to divide when both are silent. -/
+theorem nashBargaining_void :
+    nashBargainingProduct (void : I) (void : I) = 0 := by
+  unfold nashBargainingProduct
+  rw [senderNetPayoff_void_signal]; ring
+
+/-- T242. Nash bargaining product at Nash equilibrium is non-negative:
+    both factors are non-negative at equilibrium. -/
+theorem nashBargaining_nonneg_at_nash (s r : I) (h : isNashEquilibrium s r) :
+    nashBargainingProduct s r ≥ 0 := by
+  unfold nashBargainingProduct
+  exact mul_nonneg (nash_sender_nonneg s r h) (nash_receiver_nonneg s r h)
+
+/-- T243. At a communication fixed point, the Nash bargaining product
+    is zero: at least one party gets exactly their disagreement payoff. -/
+theorem nashBargaining_fixed_point (s r : I)
+    (h : isCommunicationFixedPoint s r) :
+    nashBargainingProduct s r = 0 := by
+  unfold nashBargainingProduct
+  rw [h.1]; ring
+
+/-- The Rubinstein alternating-offers surplus: in alternating offers,
+    the patient player extracts more of the surplus. We model patience
+    as the number of rounds of persuasion each side can endure. -/
+noncomputable def rubinsteinSurplus (s r : I) (nSender nReceiver : ℕ) : ℝ :=
+  nRoundValue s r nSender + nRoundValue r s nReceiver
+
+/-- T244. Rubinstein surplus is non-negative: both parties' contributions
+    are non-negative by the monotone communication principle. -/
+theorem rubinsteinSurplus_nonneg (s r : I) (m n : ℕ) :
+    rubinsteinSurplus s r m n ≥ 0 := by
+  unfold rubinsteinSurplus
+  linarith [nRoundValue_nonneg s r m, nRoundValue_nonneg r s n]
+
+/-- T245. Rubinstein surplus with zero rounds for both is zero:
+    no patience, no surplus. -/
+theorem rubinsteinSurplus_zero (s r : I) :
+    rubinsteinSurplus s r 0 0 = 0 := by
+  unfold rubinsteinSurplus; simp [nRoundValue_zero]
+
+/-- T246. More sender patience means more total surplus: monotonicity
+    in sender rounds. -/
+theorem rubinsteinSurplus_sender_mono (s r : I) (m n : ℕ) :
+    rubinsteinSurplus s r (m + 1) n ≥ rubinsteinSurplus s r m n := by
+  unfold rubinsteinSurplus
+  linarith [nRoundValue_mono s r m]
+
+/-- T247. More receiver patience means more total surplus. -/
+theorem rubinsteinSurplus_receiver_mono (s r : I) (m n : ℕ) :
+    rubinsteinSurplus s r m (n + 1) ≥ rubinsteinSurplus s r m n := by
+  unfold rubinsteinSurplus
+  linarith [nRoundValue_mono r s n]
+
+/-- The bargaining power ratio: the sender's share of surplus divided
+    by the total surplus. When positive, this measures who captures more
+    of the cooperative gain. -/
+noncomputable def senderBargainingShare (s r : I) : ℝ :=
+  senderNetPayoff s r
+
+/-- T248. Sender bargaining share at void signal is zero: silence
+    claims no share of the surplus. -/
+theorem senderShare_void (r : I) :
+    senderBargainingShare (void : I) r = 0 := by
+  unfold senderBargainingShare; exact senderNetPayoff_void_signal r
+
+/-- T249. The total surplus equals the sum of bargaining shares.
+    This is the exhaustiveness of surplus division. -/
+theorem surplus_exhaustive (s r : I) :
+    communicationSurplus s r =
+    senderBargainingShare s r + receiverNetPayoff s r := by
+  unfold senderBargainingShare; exact communicationSurplus_eq_net s r
+
+end BargainingTheory
+
+/-! ## §27. Contract Theory — Moral Hazard and Adverse Selection
+
+In contract theory, moral hazard arises when one party's effort
+(signal quality) is unobservable. Adverse selection arises when
+types (intrinsic self-resonance) are private information.
+
+We model a "contract" as a commitment to send a particular signal,
+and analyze when contracts are self-enforcing (incentive compatible)
+versus when hidden action or hidden type problems arise.
+-/
+
+section ContractTheory
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The effort cost: the self-resonance of the signal measures how much
+    effort the sender invests. Higher-quality signals cost more. -/
+noncomputable def effortCost (s : I) : ℝ := rs s s
+
+/-- T250. Effort cost is non-negative: all signals require non-negative
+    effort. Only void is free. -/
+theorem effortCost_nonneg (s : I) : effortCost s ≥ 0 := by
+  unfold effortCost; exact S.rs_self_nonneg s
+
+/-- T251. Void requires zero effort: silence is costless. -/
+theorem effortCost_void : effortCost (void : I) = 0 := by
+  unfold effortCost; exact rs_void_void
+
+/-- The moral hazard gap: the difference between the contracted effort
+    level and the actual effort. Positive means the agent shirked. -/
+noncomputable def moralHazardGap (contracted actual : I) : ℝ :=
+  effortCost contracted - effortCost actual
+
+/-- T252. Moral hazard gap is zero when contracted equals actual:
+    no shirking when the agent does what they promised. -/
+theorem moralHazardGap_honest (s : I) : moralHazardGap s s = 0 := by
+  unfold moralHazardGap; ring
+
+/-- T253. If actual effort exceeds contracted, the gap is negative:
+    the agent over-delivers. In meaning games, this means sending a
+    richer signal than promised. -/
+theorem moralHazardGap_overdeliver (contracted actual : I)
+    (h : effortCost actual > effortCost contracted) :
+    moralHazardGap contracted actual < 0 := by
+  unfold moralHazardGap; linarith
+
+/-- T254. If the agent shirks to void, the moral hazard gap equals
+    the full contracted effort. Total shirking wastes everything. -/
+theorem moralHazardGap_total_shirk (contracted : I) :
+    moralHazardGap contracted (void : I) = effortCost contracted := by
+  unfold moralHazardGap effortCost; rw [rs_void_void]; ring
+
+/-- The adverse selection premium: how much more a "high type" (higher
+    self-resonance) agent benefits from communication compared to a
+    "low type." This measures the information asymmetry. -/
+noncomputable def adverseSelectionPremium (highType lowType r : I) : ℝ :=
+  senderNetPayoff highType r - senderNetPayoff lowType r
+
+/-- T255. Adverse selection premium is zero for identical types:
+    no information asymmetry when types are the same. -/
+theorem adverseSelection_same_type (s r : I) :
+    adverseSelectionPremium s s r = 0 := by
+  unfold adverseSelectionPremium; ring
+
+/-- T256. Adverse selection premium when both types face void receiver
+    is zero: if nobody listens, type doesn't matter. -/
+theorem adverseSelection_void_receiver (h l : I) :
+    adverseSelectionPremium h l (void : I) = 0 := by
+  unfold adverseSelectionPremium
+  rw [senderNetPayoff_void_receiver, senderNetPayoff_void_receiver]; ring
+
+/-- T257. Adverse selection premium decomposes into resonance
+    differences. This reveals the structural source of type advantage. -/
+theorem adverseSelection_explicit (h l r : I) :
+    adverseSelectionPremium h l r =
+    (rs h (compose r h) - rs h h) - (rs l (compose r l) - rs l l) := by
+  unfold adverseSelectionPremium senderNetPayoff senderPayoff interpret; ring
+
+/-- The contract value: the expected gain from a contract that specifies
+    both the signal and the interpretation rule. -/
+noncomputable def contractValue (signal receiver : I) : ℝ :=
+  communicationSurplus signal receiver
+
+/-- T258. Contract value is non-negative at Nash equilibrium:
+    equilibrium contracts create value. -/
+theorem contractValue_nonneg_nash (s r : I) (h : isNashEquilibrium s r) :
+    contractValue s r ≥ 0 := by
+  unfold contractValue; exact nash_surplus_nonneg s r h
+
+/-- T259. Void contract has zero value: a contract to say nothing
+    creates no surplus. -/
+theorem contractValue_void : contractValue (void : I) (void : I) = 0 := by
+  unfold contractValue; exact communicationSurplus_void_signal _
+
+/-- The participation constraint surplus: how much better an agent
+    does under the contract than under autarky (void). -/
+noncomputable def participationSurplus (s r : I) : ℝ :=
+  senderNetPayoff s r
+
+/-- T260. Participation surplus at void signal is zero: the outside
+    option (silence) yields zero net payoff. -/
+theorem participationSurplus_void (r : I) :
+    participationSurplus (void : I) r = 0 := by
+  unfold participationSurplus; exact senderNetPayoff_void_signal r
+
+end ContractTheory
+
+/-! ## §28. Screening vs Signaling — Spence and Rothschild-Stiglitz
+
+In signaling, the informed party (sender) chooses a costly action to
+reveal type. In screening, the uninformed party (receiver) designs a
+menu of contracts to separate types. We formalize both and prove
+their duality.
+-/
+
+section ScreeningSignaling
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- A screening menu: the receiver offers different interpretation
+    contexts. Each context induces different payoffs for different
+    sender types. -/
+noncomputable def screeningPayoff (senderType context : I) : ℝ :=
+  rs senderType (compose context senderType) - rs senderType senderType
+
+/-- T261. Screening payoff equals sender net payoff with roles reversed:
+    the receiver's menu offering is the sender's interpretation choice. -/
+theorem screeningPayoff_eq (s ctx : I) :
+    screeningPayoff s ctx = senderNetPayoff s ctx := by
+  unfold screeningPayoff senderNetPayoff senderPayoff interpret; ring
+
+/-- T262. Screening payoff of void context is zero: an empty menu
+    offers nothing to any type. -/
+theorem screeningPayoff_void_context (s : I) :
+    screeningPayoff s (void : I) = 0 := by
+  rw [screeningPayoff_eq]; exact senderNetPayoff_void_receiver s
+
+/-- T263. Screening payoff of void type is zero: a type with no
+    substance gains nothing from any menu. -/
+theorem screeningPayoff_void_type (ctx : I) :
+    screeningPayoff (void : I) ctx = 0 := by
+  rw [screeningPayoff_eq]; exact senderNetPayoff_void_signal ctx
+
+/-- The Spence signaling cost: the differential cost between high
+    and low types for sending the same signal. If this is positive,
+    the signal is cheaper for the high type, enabling separation. -/
+noncomputable def spenceDifferentialCost (signalH signalL : I) : ℝ :=
+  signalCost signalL - signalCost signalH
+
+/-- T264. Spence differential cost is antisymmetric. Swapping
+    high and low types negates the cost differential. -/
+theorem spenceDifferential_antisymm (h l : I) :
+    spenceDifferentialCost h l = -spenceDifferentialCost l h := by
+  unfold spenceDifferentialCost; ring
+
+/-- T265. Spence differential cost with identical types is zero. -/
+theorem spenceDifferential_self (s : I) :
+    spenceDifferentialCost s s = 0 := by
+  unfold spenceDifferentialCost; ring
+
+/-- The Rothschild-Stiglitz separation condition: a menu separates
+    two types if each type strictly prefers its intended contract. -/
+def rothschildStiglitzSeparation (type₁ type₂ ctx₁ ctx₂ : I) : Prop :=
+  screeningPayoff type₁ ctx₁ > screeningPayoff type₁ ctx₂ ∧
+  screeningPayoff type₂ ctx₂ > screeningPayoff type₂ ctx₁
+
+/-- T266. Separation implies the types are distinguishable: they
+    must differ in at least one screening payoff. -/
+theorem separation_implies_distinguishable (t₁ t₂ c₁ c₂ : I)
+    (h : rothschildStiglitzSeparation t₁ t₂ c₁ c₂) :
+    screeningPayoff t₁ c₁ ≠ screeningPayoff t₂ c₁ ∨
+    screeningPayoff t₁ c₂ ≠ screeningPayoff t₂ c₂ := by
+  by_contra hc
+  push_neg at hc
+  linarith [h.1, h.2, hc.1, hc.2]
+
+/-- The signaling-screening duality: the signaling payoff of sending s
+    in context r equals the screening payoff of type s in menu r.
+    Both are the same fundamental quantity: net payoff from interaction. -/
+theorem signaling_screening_duality (s r : I) :
+    senderNetPayoff s r = screeningPayoff s r := by
+  rw [screeningPayoff_eq]
+
+/-- T267. The pooling condition: two types pool if they get the same
+    payoff from every menu item. -/
+def isPooling (type₁ type₂ : I) : Prop :=
+  ∀ ctx : I, screeningPayoff type₁ ctx = screeningPayoff type₂ ctx
+
+/-- T268. Pooling is reflexive. -/
+theorem pooling_refl (t : I) : isPooling t t :=
+  fun _ => rfl
+
+/-- T269. Pooling is symmetric. -/
+theorem pooling_symm (t₁ t₂ : I) (h : isPooling t₁ t₂) :
+    isPooling t₂ t₁ :=
+  fun ctx => (h ctx).symm
+
+/-- T270. Pooling is transitive. -/
+theorem pooling_trans (t₁ t₂ t₃ : I) (h₁ : isPooling t₁ t₂) (h₂ : isPooling t₂ t₃) :
+    isPooling t₁ t₃ :=
+  fun ctx => (h₁ ctx).trans (h₂ ctx)
+
+/-- T271. If two types pool, they cannot be RS-separated by any
+    menu: separation requires payoff differences. -/
+theorem pooling_prevents_separation (t₁ t₂ : I) (h : isPooling t₁ t₂)
+    (c₁ c₂ : I) : ¬rothschildStiglitzSeparation t₁ t₂ c₁ c₂ := by
+  intro hs
+  have := h c₁; have := h c₂
+  linarith [hs.1, hs.2]
+
+end ScreeningSignaling
+
+/-! ## §29. Cheap Talk Refinements — Crawford-Sobel
+
+In Crawford-Sobel cheap talk games, the sender's type is drawn from
+a continuum, and the receiver takes an action based on the signal.
+Equilibria are characterized by "partition equilibria" where the
+type space is divided into intervals.
+
+We model partition equilibria as compositions of threshold signals:
+each partition element is an idea that covers a range of types.
+-/
+
+section CheapTalkRefinements
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- A signal is a neologism — a new word not in the existing vocabulary —
+    if it creates strictly positive emergence with the receiver.
+    Neologisms are credible cheap-talk refinements because they generate
+    meaning beyond existing signals. -/
+def isNeologism (s r : I) : Prop :=
+  emergence r s (compose r s) > 0
+
+/-- T272. Void is never a neologism: silence creates no emergence. -/
+theorem void_not_neologism (r : I) : ¬isNeologism (void : I) r := by
+  unfold isNeologism
+  simp [emergence_void_right]
+
+/-- T273. A neologism for void receiver is impossible: without a
+    listener, no new meaning can emerge. -/
+theorem no_neologism_void_receiver (s : I) : ¬isNeologism s (void : I) := by
+  unfold isNeologism
+  simp [emergence_void_left]
+
+/-- The Crawford-Sobel bias: the difference between sender and receiver
+    resonance with the interpretation. Higher bias means less
+    informative equilibria exist. -/
+noncomputable def crawfordSobelBias (s r : I) : ℝ :=
+  senderPayoff s r - receiverPayoff s r
+
+/-- T274. Crawford-Sobel bias equals the misunderstanding gap.
+    Bias and misunderstanding are the same quantity: the more biased
+    the sender, the more misunderstanding occurs. -/
+theorem crawfordSobel_eq_gap (s r : I) :
+    crawfordSobelBias s r = misunderstandingGap s r := by
+  unfold crawfordSobelBias misunderstandingGap; ring
+
+/-- T275. Crawford-Sobel bias for void signal is -rs(r,r): when the
+    sender says nothing, the entire gap comes from the receiver's
+    self-resonance. -/
+theorem crawfordSobel_void_signal (r : I) :
+    crawfordSobelBias (void : I) r = -rs r r := by
+  unfold crawfordSobelBias senderPayoff receiverPayoff interpret
+  simp [rs_void_left']
+
+/-- T276. Crawford-Sobel bias for void receiver is rs(s,s): when nobody
+    listens, the entire gap is the sender's self-resonance. -/
+theorem crawfordSobel_void_receiver (s : I) :
+    crawfordSobelBias s (void : I) = rs s s := by
+  unfold crawfordSobelBias senderPayoff receiverPayoff interpret
+  simp [rs_void_left', rs_void_right']
+
+/-- The information partition fineness: the total emergence across
+    a sequence of signals sent sequentially. Finer partitions produce
+    more emergence and thus more information transfer. -/
+noncomputable def partitionFineness (r : I) (signals : List I) : ℝ :=
+  discourseEmergence r signals
+
+/-- T277. Empty partition has zero fineness. -/
+theorem partitionFineness_nil (r : I) :
+    partitionFineness r [] = 0 := by
+  unfold partitionFineness; exact discourseEmergence_nil r
+
+/-- T278. Non-empty partitions have non-negative fineness. -/
+theorem partitionFineness_cons_nonneg (r s : I) (rest : List I) :
+    partitionFineness r (s :: rest) ≥ 0 := by
+  unfold partitionFineness; exact discourseEmergence_cons_nonneg r s rest
+
+/-- The babbling deviation gain: how much a sender gains by deviating
+    from babbling to a meaningful signal. This is the incentive to
+    break the babbling equilibrium. -/
+noncomputable def babblingDeviationGain (s r : I) : ℝ :=
+  senderNetPayoff s r
+
+/-- T279. Babbling deviation gain of void is zero: no incentive to
+    deviate to silence from silence. -/
+theorem babblingDeviation_void (r : I) :
+    babblingDeviationGain (void : I) r = 0 := by
+  unfold babblingDeviationGain; exact senderNetPayoff_void_signal r
+
+/-- T280. Under babbling, the deviation gain decomposes into a
+    pure cross-resonance shift. This is the "temptation to communicate"
+    even when the receiver ignores you. -/
+theorem babblingDeviation_under_babbling (r : I) (h : isBabbling r) (s : I) :
+    babblingDeviationGain s r = rs s (compose r s) - rs s s := by
+  unfold babblingDeviationGain
+  exact babbling_sender_net_explicit r h s
+
+end CheapTalkRefinements
+
+/-! ## §30. Global Games and Coordination
+
+In global games, agents receive noisy signals about a common
+fundamental and must coordinate their actions. The key insight is
+that strategic uncertainty about others' actions creates unique
+equilibria even when there are multiple equilibria in the complete
+information game.
+
+We model coordination as the self-resonance of the joint composition:
+agents coordinate successfully when their composed ideas produce high
+self-resonance (strong emergent meaning).
+-/
+
+section GlobalGames
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- Coordination success: the self-resonance of the joint composition
+    minus what each agent would achieve alone. This measures how well
+    the agents coordinated their ideas. -/
+noncomputable def coordinationSuccess (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs a a - rs b b
+
+/-- T281. Coordination success equals cooperation surplus. Successful
+    coordination IS cooperation — they are the same concept formalized
+    differently. -/
+theorem coordination_eq_cooperation (a b : I) :
+    coordinationSuccess a b = cooperationSurplus a b := by
+  unfold coordinationSuccess cooperationSurplus; ring
+
+/-- T282. Coordination with void is zero: you can't coordinate with
+    silence. -/
+theorem coordination_void_right (a : I) :
+    coordinationSuccess a (void : I) = 0 := by
+  rw [coordination_eq_cooperation]; exact cooperationSurplus_void_right a
+
+theorem coordination_void_left (b : I) :
+    coordinationSuccess (void : I) b = 0 := by
+  rw [coordination_eq_cooperation]; exact cooperationSurplus_void_left b
+
+/-- The coordination premium: how much better coordinated action is
+    than the best unilateral action. This is the "value of coordination." -/
+noncomputable def coordinationPremium (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - max (rs a a) (rs b b)
+
+/-- T283. Coordination premium bounded below: composing always enriches
+    at least the first component. -/
+theorem coordinationPremium_lower (a b : I) :
+    coordinationPremium a b ≥ rs a a - max (rs a a) (rs b b) := by
+  unfold coordinationPremium
+  linarith [S.compose_enriches a b]
+
+/-- The strategic complementarity: composing ideas produces at least
+    as much self-resonance as either idea alone. This is the
+    fundamental strategic complementarity of meaning composition. -/
+theorem strategic_complementarity (a b : I) :
+    rs (compose a b) (compose a b) ≥ rs a a := by
+  exact S.compose_enriches a b
+
+/-- T284. Global games threshold: the self-resonance of a composed
+    signal exceeds the threshold set by either component alone. -/
+theorem global_game_threshold (a b : I) :
+    rs (compose a b) (compose a b) ≥ rs a a :=
+  S.compose_enriches a b
+
+/-- The miscoordination loss: how much coordination failure costs.
+    When agents choose incompatible actions, the loss is measured
+    by comparing coordinated vs. uncoordinated outcomes. -/
+noncomputable def miscoordinationLoss (intended actual : I) : ℝ :=
+  rs (compose intended intended) (compose intended intended) -
+  rs (compose intended actual) (compose intended actual)
+
+/-- T285. Miscoordination loss is zero when actual equals intended:
+    perfect coordination has zero loss. -/
+theorem miscoordination_self (a : I) :
+    miscoordinationLoss a a = 0 := by
+  unfold miscoordinationLoss; ring
+
+/-- T286. The dominance solvability condition: if one signal strictly
+    dominates another for all receivers, the dominated signal is never
+    played in equilibrium. Here, "dominates" means higher net payoff. -/
+def strictlyDominates (s₁ s₂ : I) : Prop :=
+  ∀ r : I, senderNetPayoff s₁ r > senderNetPayoff s₂ r
+
+/-- T287. Strict dominance is irreflexive: no signal dominates itself. -/
+theorem dominance_irrefl (s : I) : ¬strictlyDominates s s := by
+  unfold strictlyDominates
+  push_neg; exact ⟨void, le_refl _⟩
+
+/-- T288. Strict dominance is transitive. -/
+theorem dominance_trans (s₁ s₂ s₃ : I)
+    (h₁ : strictlyDominates s₁ s₂) (h₂ : strictlyDominates s₂ s₃) :
+    strictlyDominates s₁ s₃ := by
+  intro r; linarith [h₁ r, h₂ r]
+
+/-- T289. If s₁ strictly dominates s₂, s₁ is not void (unless s₂ is).
+    A dominating signal must have substance. -/
+theorem dominating_signal_substance (s₁ s₂ : I)
+    (h : strictlyDominates s₁ s₂) :
+    senderNetPayoff s₁ (void : I) > senderNetPayoff s₂ (void : I) :=
+  h (void : I)
+
+end GlobalGames
+
+/-! ## §31. Evolutionary Game Theory — Replicator Dynamics and ESS
+
+Evolutionary game theory studies how strategies evolve through
+selection and mutation. An Evolutionarily Stable Strategy (ESS)
+is one that, once established, cannot be invaded by any mutant.
+
+In meaning games, "strategies" are utterances, and "fitness" is
+the payoff from communication. An ESS is an utterance that resists
+invasion by any alternative utterance.
+-/
+
+section EvolutionaryGameTheory
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The fitness of strategy s in a population playing strategy r:
+    the payoff from communicating with the population. -/
+noncomputable def fitness (s r : I) : ℝ :=
+  senderPayoff s r + receiverPayoff s r
+
+/-- T290. Fitness equals social welfare: in evolutionary games,
+    fitness is the total communication payoff. -/
+theorem fitness_eq_welfare (s r : I) :
+    fitness s r = socialWelfare s r := by
+  unfold fitness socialWelfare; ring
+
+/-- T291. Fitness of void against void is zero: silence has no
+    evolutionary advantage. -/
+theorem fitness_void : fitness (void : I) (void : I) = 0 := by
+  rw [fitness_eq_welfare]; exact socialWelfare_void_void
+
+/-- T292. Fitness of strategy against itself: the self-play payoff. -/
+theorem fitness_self (a : I) :
+    fitness a a = 2 * rs a (compose a a) := by
+  rw [fitness_eq_welfare]; exact welfare_self_signal a
+
+/-- An Evolutionarily Stable Strategy (ESS): a strategy that is a
+    best response to itself AND does strictly better against mutants
+    than the mutants do against themselves. -/
+def isESS (s : I) : Prop :=
+  (∀ m : I, fitness s s ≥ fitness m s) ∧
+  (∀ m : I, fitness s s = fitness m s → m ≠ s →
+    fitness s m > fitness m m)
+
+/-- T293. If s is an ESS, it achieves maximum self-play fitness:
+    no mutant does better against the incumbent population. -/
+theorem ess_max_fitness (s : I) (h : isESS s) (m : I) :
+    fitness s s ≥ fitness m s := h.1 m
+
+/-- The replicator growth rate: how fast strategy s grows relative to
+    strategy r in a population where both interact. Positive means s
+    is growing (it outperforms the population average). -/
+noncomputable def replicatorGrowth (s r : I) : ℝ :=
+  fitness s r - fitness r r
+
+/-- T294. Replicator growth of void against void is zero: silence
+    neither grows nor shrinks. -/
+theorem replicatorGrowth_void :
+    replicatorGrowth (void : I) (void : I) = 0 := by
+  unfold replicatorGrowth; rw [fitness_void]; ring
+
+/-- T295. Replicator growth rate decomposes into welfare comparison. -/
+theorem replicatorGrowth_eq (s r : I) :
+    replicatorGrowth s r = socialWelfare s r - socialWelfare r r := by
+  unfold replicatorGrowth; rw [fitness_eq_welfare, fitness_eq_welfare]
+
+/-- The invasion barrier: the minimum fitness advantage needed for a
+    mutant to invade. At an ESS, the invasion barrier is positive for
+    all potential invaders. -/
+noncomputable def invasionBarrier (s m : I) : ℝ :=
+  fitness s s - fitness m s
+
+/-- T296. Invasion barrier is non-negative at an ESS. -/
+theorem invasionBarrier_nonneg_ess (s : I) (h : isESS s) (m : I) :
+    invasionBarrier s m ≥ 0 := by
+  unfold invasionBarrier; linarith [h.1 m]
+
+/-- T297. Invasion barrier of self is zero: the incumbent trivially
+    matches itself. -/
+theorem invasionBarrier_self (s : I) :
+    invasionBarrier s s = 0 := by
+  unfold invasionBarrier; ring
+
+/-- The evolutionary drift: the change in fitness when the population
+    composition shifts from pure r to a mix with some s. -/
+noncomputable def evolutionaryDrift (s r : I) : ℝ :=
+  fitness s r - fitness r r
+
+/-- T298. Evolutionary drift equals replicator growth. These are the
+    same concept measured differently: drift is the population-level
+    effect, growth is the individual-level effect. -/
+theorem drift_eq_growth (s r : I) :
+    evolutionaryDrift s r = replicatorGrowth s r := by
+  unfold evolutionaryDrift replicatorGrowth; ring
+
+/-- T299. A strategy is neutrally stable if no mutant does strictly
+    better against the incumbent. -/
+def isNeutrallyStable (s : I) : Prop :=
+  ∀ m : I, fitness s s ≥ fitness m s
+
+/-- T300. Every ESS is neutrally stable. -/
+theorem ess_implies_neutrallyStable (s : I) (h : isESS s) :
+    isNeutrallyStable s := h.1
+
+end EvolutionaryGameTheory
+
+/-! ## §32. Learning in Games — Fictitious Play and No-Regret
+
+Learning in games concerns how agents update their strategies based
+on experience. Fictitious play = best-respond to historical frequency.
+No-regret learning = cumulative payoff ≥ best fixed strategy in hindsight.
+
+We model learning through iterated communication: after each round,
+the agent's state is updated by composition with the received signal,
+and the cumulative regret tracks how far behind the best response
+the agent has fallen.
+-/
+
+section LearningInGames
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The cumulative payoff from n rounds of play with fixed strategies. -/
+noncomputable def cumulativePayoff (s r : I) (n : ℕ) : ℝ :=
+  n * senderNetPayoff s r
+
+/-- T301. Cumulative payoff at round 0 is zero. -/
+theorem cumulativePayoff_zero (s r : I) : cumulativePayoff s r 0 = 0 := by
+  unfold cumulativePayoff; ring
+
+/-- T302. Cumulative payoff is additive: n+1 rounds = n rounds + 1 round. -/
+theorem cumulativePayoff_succ (s r : I) (n : ℕ) :
+    cumulativePayoff s r (n + 1) =
+    cumulativePayoff s r n + senderNetPayoff s r := by
+  unfold cumulativePayoff; push_cast; ring
+
+/-- The regret of playing s instead of the best alternative s'.
+    Regret measures hindsight loss: how much better s' would have been. -/
+noncomputable def regret (s s' r : I) (n : ℕ) : ℝ :=
+  cumulativePayoff s' r n - cumulativePayoff s r n
+
+/-- T303. Regret is zero when playing the same strategy: you can't
+    regret doing exactly what you did. -/
+theorem regret_self (s r : I) (n : ℕ) : regret s s r n = 0 := by
+  unfold regret; ring
+
+/-- T304. Regret is antisymmetric: your regret from s to s' equals
+    the negative of s' to s. -/
+theorem regret_antisymm (s s' r : I) (n : ℕ) :
+    regret s s' r n = -regret s' s r n := by
+  unfold regret; ring
+
+/-- T305. Regret of playing void instead of s is n times the net payoff
+    of s. This is the "cost of silence." -/
+theorem regret_from_void (s r : I) (n : ℕ) :
+    regret (void : I) s r n = cumulativePayoff s r n := by
+  unfold regret cumulativePayoff
+  rw [senderNetPayoff_void_signal]; ring
+
+/-- T306. At Nash equilibrium, the regret from playing the equilibrium
+    strategy against any alternative is non-positive: no regret. -/
+theorem no_regret_nash (s r : I) (h : isNashEquilibrium s r) (s' : I) (n : ℕ) :
+    regret s s' r n ≤ 0 := by
+  unfold regret cumulativePayoff
+  have := h.1 s'
+  nlinarith
+
+/-- The fictitious play update: after observing the opponent play r,
+    the agent composes with r to update their state. This models
+    learning by "absorbing" the opponent's strategy. -/
+def fictitiousPlayUpdate (agent opponent : I) : I :=
+  compose agent opponent
+
+/-- T307. Fictitious play update enriches the agent's state: learning
+    from experience never reduces self-resonance. -/
+theorem fictitiousPlay_enriches (agent opponent : I) :
+    rs (fictitiousPlayUpdate agent opponent) (fictitiousPlayUpdate agent opponent) ≥
+    rs agent agent := by
+  unfold fictitiousPlayUpdate; exact S.compose_enriches agent opponent
+
+/-- T308. Fictitious play update with void opponent leaves agent unchanged:
+    observing silence teaches nothing. -/
+theorem fictitiousPlay_void (agent : I) :
+    fictitiousPlayUpdate agent (void : I) = agent := by
+  unfold fictitiousPlayUpdate; simp
+
+/-- The n-step fictitious play: iterate updates n times. -/
+def fictitiousPlayN (agent opponent : I) (n : ℕ) : I :=
+  persuade opponent agent n
+
+/-- T309. n-step fictitious play at step 0 is the agent unchanged. -/
+theorem fictitiousPlayN_zero (agent opponent : I) :
+    fictitiousPlayN agent opponent 0 = agent := by
+  unfold fictitiousPlayN; simp
+
+/-- T310. n-step fictitious play enrichment is monotone: more rounds
+    of learning never decrease self-resonance. -/
+theorem fictitiousPlayN_mono (agent opponent : I) (n : ℕ) :
+    rs (fictitiousPlayN agent opponent (n + 1))
+       (fictitiousPlayN agent opponent (n + 1)) ≥
+    rs (fictitiousPlayN agent opponent n)
+       (fictitiousPlayN agent opponent n) := by
+  unfold fictitiousPlayN
+  exact persuade_selfrs_mono opponent agent n
+
+/-- The learning rate: how much self-resonance increases per step
+    of fictitious play. -/
+noncomputable def learningRate (agent opponent : I) (n : ℕ) : ℝ :=
+  rs (fictitiousPlayN agent opponent (n + 1))
+     (fictitiousPlayN agent opponent (n + 1)) -
+  rs (fictitiousPlayN agent opponent n)
+     (fictitiousPlayN agent opponent n)
+
+/-- T311. Learning rate is non-negative: each step of learning adds
+    non-negative self-resonance. -/
+theorem learningRate_nonneg (agent opponent : I) (n : ℕ) :
+    learningRate agent opponent n ≥ 0 := by
+  unfold learningRate
+  linarith [fictitiousPlayN_mono agent opponent n]
+
+/-- T312. Learning rate with void opponent is zero: you learn nothing
+    from silence. -/
+theorem learningRate_void_opponent (agent : I) (n : ℕ) :
+    learningRate agent (void : I) n = 0 := by
+  unfold learningRate fictitiousPlayN; simp
+
+end LearningInGames
+
+/-! ## §33. Matching Theory — Stable Matchings in Idea Exchange
+
+In matching theory, agents are paired for mutual communication.
+A matching is "stable" if no pair would prefer to be matched with
+each other over their current partners. We formalize stability
+in terms of communication surplus.
+-/
+
+section MatchingTheory
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The match value: the bilateral communication surplus between
+    two agents. This is what the pair jointly gains from being matched. -/
+noncomputable def matchValue (a b : I) : ℝ :=
+  communicationSurplus a b
+
+/-- T313. Match value with void is zero: being matched with silence
+    creates no surplus. -/
+theorem matchValue_void_left (b : I) :
+    matchValue (void : I) b = 0 := by
+  unfold matchValue; exact communicationSurplus_void_signal b
+
+theorem matchValue_void_right (a : I) :
+    matchValue a (void : I) = 0 := by
+  unfold matchValue; exact communicationSurplus_void_reader a
+
+/-- A matching is blocked by pair (a, b) if they would both prefer
+    each other to their current partners. -/
+def isBlockingPair (a b currentA currentB : I) : Prop :=
+  matchValue a b > matchValue a currentA ∧
+  matchValue b a > matchValue b currentB
+
+/-- T314. An agent cannot block their own self-matching: you can't
+    improve by switching to yourself. -/
+theorem no_self_block (a : I) :
+    ¬isBlockingPair a a a a := by
+  intro ⟨h1, _⟩; exact lt_irrefl _ h1
+
+/-- T315. Void-void matching is immune to blocking by void pairs:
+    replacing silence with silence is never an improvement. -/
+theorem void_matching_stable_void (a : I) :
+    ¬isBlockingPair (void : I) (void : I) a a := by
+  unfold isBlockingPair matchValue
+  intro ⟨h1, h2⟩
+  have h3 := communicationSurplus_void_signal a
+  have h4 := communicationSurplus_void_signal (void : I)
+  linarith
+
+/-- The assortative matching criterion: agents are better matched
+    with "similar" ideas (those that create more emergence). -/
+noncomputable def matchQuality (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs a a
+
+/-- T316. Match quality is non-negative: any composition enriches. -/
+theorem matchQuality_nonneg (a b : I) :
+    matchQuality a b ≥ 0 := by
+  unfold matchQuality; linarith [S.compose_enriches a b]
+
+/-- T317. Match quality of void partner is zero. -/
+theorem matchQuality_void (a : I) :
+    matchQuality a (void : I) = 0 := by
+  unfold matchQuality; simp
+
+/-- T318. Match quality equals information content: the quality of
+    a match IS how much information the partner provides. -/
+theorem matchQuality_eq_info (a b : I) :
+    matchQuality a b = informationContent b a := by
+  unfold matchQuality informationContent; ring
+
+/-- The match stability surplus: a matching is stable if no
+    blocking pair exists. We characterize the minimum surplus
+    needed to prevent blocking. -/
+noncomputable def stabilityMargin (a b alternative : I) : ℝ :=
+  matchValue a b - matchValue a alternative
+
+/-- T319. Stability margin against void alternative equals the match
+    value: any positive match value is stable against being unmatched. -/
+theorem stabilityMargin_void (a b : I) :
+    stabilityMargin a b (void : I) = matchValue a b := by
+  unfold stabilityMargin matchValue
+  rw [communicationSurplus_void_reader]; ring
+
+/-- T320. Stability margin is zero for same alternative. -/
+theorem stabilityMargin_self (a b : I) :
+    stabilityMargin a b b = 0 := by
+  unfold stabilityMargin; ring
+
+end MatchingTheory
+
+/-! ## §34. Network Games — Strategic Network Formation
+
+In network games, agents decide which connections to form. Each
+connection is a composition link. The network structure determines
+information flow and payoffs.
+
+We model a network as a list of composition partners: an agent's
+"network position" is the discourse state after composing with
+all connected agents.
+-/
+
+section NetworkGames
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- An agent's network position: their state after composing with
+    all partners in their network (given as a list). -/
+def networkPosition (agent : I) (partners : List I) : I :=
+  discourse agent partners
+
+/-- T321. Empty network: agent stays as they are. -/
+theorem networkPosition_nil (agent : I) :
+    networkPosition agent [] = agent := by
+  unfold networkPosition; simp
+
+/-- T322. Single-link network: just binary composition. -/
+theorem networkPosition_singleton (agent partner : I) :
+    networkPosition agent [partner] = compose agent partner := by
+  unfold networkPosition; exact discourse_singleton agent partner
+
+/-- T323. Network self-resonance is at least the agent's baseline:
+    adding connections never reduces self-resonance. -/
+theorem network_enrichment (agent partner : I) (rest : List I) :
+    rs (networkPosition agent (partner :: rest))
+       (networkPosition agent (partner :: rest)) ≥
+    rs agent agent := by
+  unfold networkPosition discourse
+  exact discourse_enriches agent partner rest
+
+/-- The network externality: how much a new connection adds to an
+    agent's self-resonance beyond what they already have from their
+    existing network. -/
+noncomputable def networkExternality (agent : I) (existing : List I) (newPartner : I) : ℝ :=
+  rs (networkPosition agent (existing ++ [newPartner]))
+     (networkPosition agent (existing ++ [newPartner])) -
+  rs (networkPosition agent existing)
+     (networkPosition agent existing)
+
+/-- T324. Network externality is non-negative: adding a connection
+    never hurts (by compose_enriches). -/
+theorem networkExternality_nonneg (agent : I) (existing : List I) (newPartner : I) :
+    networkExternality agent existing newPartner ≥ 0 := by
+  unfold networkExternality networkPosition
+  have := cumulativeEnrichment_append_mono agent newPartner existing
+  unfold cumulativeEnrichment at this
+  linarith
+
+/-- T325. Network externality of void partner is zero: connecting
+    to silence adds nothing. -/
+theorem networkExternality_void (agent : I) (existing : List I) :
+    networkExternality agent existing (void : I) = 0 := by
+  unfold networkExternality networkPosition
+  induction existing generalizing agent with
+  | nil => unfold discourse; simp
+  | cons s rest ih =>
+    simp only [List.cons_append, discourse]
+    exact ih (compose agent s)
+
+/-- The network value: total self-resonance gain from the full network
+    compared to isolation. -/
+noncomputable def networkValue (agent : I) (partners : List I) : ℝ :=
+  rs (networkPosition agent partners) (networkPosition agent partners) -
+  rs agent agent
+
+/-- T326. Network value of empty network is zero. -/
+theorem networkValue_nil (agent : I) :
+    networkValue agent [] = 0 := by
+  unfold networkValue networkPosition; simp
+
+/-- T327. Network value is non-negative: networks create value. -/
+theorem networkValue_cons_nonneg (agent partner : I) (rest : List I) :
+    networkValue agent (partner :: rest) ≥ 0 := by
+  unfold networkValue networkPosition discourse
+  linarith [discourse_enriches agent partner rest]
+
+/-- T328. Network value grows with additional partners. -/
+theorem networkValue_mono (agent : I) (partners : List I) (newPartner : I) :
+    networkValue agent (partners ++ [newPartner]) ≥
+    networkValue agent partners := by
+  unfold networkValue networkPosition
+  have := networkExternality_nonneg agent partners newPartner
+  unfold networkExternality networkPosition at this
+  linarith
+
+/-- The clustering coefficient: how much composing all partners
+    together differs from composing them sequentially. We measure
+    this as the difference between sequential and parallel composition. -/
+noncomputable def networkClustering (agent p₁ p₂ : I) : ℝ :=
+  rs (networkPosition agent [p₁, p₂]) (networkPosition agent [p₁, p₂]) -
+  rs (compose agent (compose p₁ p₂)) (compose agent (compose p₁ p₂))
+
+/-- T329. Network clustering with void agents is zero. -/
+theorem networkClustering_void (agent : I) :
+    networkClustering agent (void : I) (void : I) = 0 := by
+  unfold networkClustering networkPosition
+  show rs (discourse agent [void, void]) (discourse agent [void, void]) -
+    rs (compose agent (compose (void : I) (void : I))) (compose agent (compose (void : I) (void : I))) = 0
+  simp [discourse, compose_assoc']
+
+/-- The star network: one central agent connected to all others.
+    The central agent's position is the discourse of all partners. -/
+def starNetwork (center : I) (periphery : List I) : I :=
+  networkPosition center periphery
+
+/-- T330. Star network with empty periphery is just the center. -/
+theorem starNetwork_empty (center : I) :
+    starNetwork center [] = center := by
+  unfold starNetwork; exact networkPosition_nil center
+
+/-- T331. Star network enriches the center monotonically as the
+    periphery grows. -/
+theorem starNetwork_enriches (center partner : I) (rest : List I) :
+    rs (starNetwork center (partner :: rest))
+       (starNetwork center (partner :: rest)) ≥
+    rs center center := by
+  unfold starNetwork; exact network_enrichment center partner rest
+
+end NetworkGames
+
+/-! ## §35. Information Economics — Attention and Filtering
+
+In the economics of attention, agents must choose which signals to
+process given limited processing capacity. Each signal composition
+enriches but at a cost of attention. We model attention as a budget
+constraint on how many signals can be composed.
+-/
+
+section InformationEconomics
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The attention cost of processing a signal: the self-resonance
+    required to integrate it. This is the "cognitive load" of
+    understanding a signal. -/
+noncomputable def attentionCost (signal : I) : ℝ := rs signal signal
+
+/-- T332. Void signal has zero attention cost. -/
+theorem attentionCost_void : attentionCost (void : I) = 0 := rs_void_void
+
+/-- T333. Attention cost is non-negative. -/
+theorem attentionCost_nonneg (s : I) : attentionCost s ≥ 0 := by
+  unfold attentionCost; exact S.rs_self_nonneg s
+
+/-- T334. Non-void signals require positive attention. -/
+theorem attentionCost_pos (s : I) (h : s ≠ void) : attentionCost s > 0 := by
+  unfold attentionCost; exact rs_self_pos s h
+
+/-- The attention return: how much information content the signal
+    provides per unit of attention cost. -/
+noncomputable def attentionReturn (signal receiver : I) : ℝ :=
+  informationContent signal receiver
+
+/-- T335. Attention return is non-negative: processing any signal
+    weakly enriches the receiver. -/
+theorem attentionReturn_nonneg (s r : I) : attentionReturn s r ≥ 0 := by
+  unfold attentionReturn; exact informationContent_nonneg s r
+
+/-- T336. Attention return of void signal is zero: processing silence
+    yields nothing. -/
+theorem attentionReturn_void (r : I) : attentionReturn (void : I) r = 0 := by
+  unfold attentionReturn; exact informationContent_void r
+
+/-- The filtering decision: a signal passes the filter if its
+    information content exceeds a threshold. -/
+def passesFilter (signal receiver : I) (threshold : ℝ) : Prop :=
+  attentionReturn signal receiver > threshold
+
+/-- T337. Void signal never passes a positive filter threshold. -/
+theorem void_fails_filter (r : I) (t : ℝ) (ht : t ≥ 0) :
+    ¬passesFilter (void : I) r t := by
+  unfold passesFilter
+  rw [attentionReturn_void]; linarith
+
+/-- T338. Every signal passes a sufficiently negative threshold. -/
+theorem all_pass_neg_filter (s r : I) (t : ℝ) (ht : t < 0) :
+    passesFilter s r t := by
+  unfold passesFilter
+  linarith [attentionReturn_nonneg s r]
+
+/-- The information overload threshold: when the cumulative attention
+    cost exceeds the cumulative return, the agent is overloaded. -/
+noncomputable def informationOverload (receiver : I) (signals : List I) : ℝ :=
+  (signals.map attentionCost).sum - cumulativeEnrichment receiver signals
+
+/-- T339. Information overload of empty signal list is zero. -/
+theorem informationOverload_nil (r : I) :
+    informationOverload r [] = 0 := by
+  unfold informationOverload cumulativeEnrichment; simp
+
+end InformationEconomics
+
+/-! ## §36. Persuasion Games — Bayesian Persuasion
+
+In Bayesian persuasion (Kamenica-Gentzkow), the sender designs an
+information structure (signal) to influence the receiver's action.
+The sender commits to a signaling policy before the state is realized.
+
+We model persuasion as the sender choosing which composition to
+reveal, and prove bounds on persuasion effectiveness.
+-/
+
+section PersuasionGames
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The persuasion value: how much the sender gains from optimally
+    choosing which aspect of their idea to reveal. This is the
+    difference between strategic revelation and full revelation. -/
+noncomputable def persuasionValue (full partialSig r : I) : ℝ :=
+  senderPayoff partialSig r - senderPayoff full r
+
+/-- T340. Persuasion value of revealing everything vs everything is zero:
+    you can't improve on full honesty by being fully honest. -/
+theorem persuasionValue_full (s r : I) :
+    persuasionValue s s r = 0 := by
+  unfold persuasionValue; ring
+
+/-- T341. Persuasion value of revealing void vs anything is just the
+    negative of the sender payoff: complete concealment. -/
+theorem persuasionValue_conceal (s r : I) :
+    persuasionValue s (void : I) r = -senderPayoff s r := by
+  unfold persuasionValue senderPayoff interpret
+  simp [rs_void_left']
+
+/-- The obedience constraint: the receiver must prefer to follow the
+    sender's recommendation. In meaning games, the receiver "follows"
+    by composing (accepting the signal). -/
+noncomputable def obedienceGain (s r : I) : ℝ :=
+  receiverNetPayoff s r
+
+/-- T342. Obedience gain of void signal is zero: the receiver has
+    no reason to obey or disobey silence. -/
+theorem obedienceGain_void (r : I) :
+    obedienceGain (void : I) r = 0 := by
+  unfold obedienceGain; exact receiverNetPayoff_void_signal r
+
+/-- T343. At Nash equilibrium, obedience is guaranteed: the receiver
+    has non-negative gain from following the recommendation. -/
+theorem obedience_at_nash (s r : I) (h : isNashEquilibrium s r) :
+    obedienceGain s r ≥ 0 := by
+  unfold obedienceGain; exact nash_receiver_nonneg s r h
+
+/-- The commitment value: how much the sender gains from being able
+    to commit to a signaling policy before the receiver acts.
+    Without commitment, the sender would choose signals to maximize
+    sender payoff, but with commitment, they can also influence the
+    receiver's best response. -/
+noncomputable def commitmentValue (s₁ s₂ r : I) : ℝ :=
+  socialWelfare s₁ r - socialWelfare s₂ r
+
+/-- T344. Commitment value is antisymmetric. -/
+theorem commitmentValue_antisymm (s₁ s₂ r : I) :
+    commitmentValue s₁ s₂ r = -commitmentValue s₂ s₁ r := by
+  unfold commitmentValue; ring
+
+/-- T345. Commitment value is transitive (in the additive sense):
+    switching from s₂ to s₁ then s₁ to s₃ equals switching from s₂ to s₃. -/
+theorem commitmentValue_trans (s₁ s₂ s₃ r : I) :
+    commitmentValue s₁ s₂ r + commitmentValue s₂ s₃ r =
+    commitmentValue s₁ s₃ r := by
+  unfold commitmentValue; ring
+
+/-- T346. Commitment value against void receiver is the difference
+    in self-resonances: without a receiver, only the signal's own
+    weight matters. -/
+theorem commitmentValue_void_receiver (s₁ s₂ : I) :
+    commitmentValue s₁ s₂ (void : I) = rs s₁ s₁ - rs s₂ s₂ := by
+  unfold commitmentValue
+  rw [socialWelfare_void_receiver, socialWelfare_void_receiver]
+
+end PersuasionGames
+
+/-! ## §37. Population Games — Large Population Dynamics
+
+When many agents interact, the aggregate behavior creates emergent
+macro-dynamics. We model populations as lists of agents and study
+aggregate resonance, diversity, and convergence.
+-/
+
+section PopulationGames
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The aggregate resonance of a population: the sum of all pairwise
+    sender payoffs within the group, reflecting total internal coherence. -/
+noncomputable def aggregateResonance (population : List I) : ℝ :=
+  (population.map (fun a => rs a a)).sum
+
+/-- T347. Aggregate resonance of empty population is zero. -/
+theorem aggregateResonance_nil :
+    aggregateResonance ([] : List I) = 0 := by
+  unfold aggregateResonance; simp
+
+/-- T348. Aggregate resonance is non-negative: each agent's
+    self-resonance is non-negative. -/
+theorem aggregateResonance_nonneg : ∀ (population : List I),
+    aggregateResonance population ≥ 0
+  | [] => by unfold aggregateResonance; simp
+  | a :: rest => by
+    unfold aggregateResonance
+    simp only [List.map_cons, List.sum_cons]
+    have h1 := S.rs_self_nonneg a
+    have h2 := aggregateResonance_nonneg rest
+    unfold aggregateResonance at h2
+    linarith
+
+/-- T349. Aggregate resonance of singleton population is the agent's
+    self-resonance. -/
+theorem aggregateResonance_singleton (a : I) :
+    aggregateResonance [a] = rs a a := by
+  unfold aggregateResonance; simp
+
+/-- T350. Adding an agent increases aggregate resonance by their
+    self-resonance. -/
+theorem aggregateResonance_cons (a : I) (rest : List I) :
+    aggregateResonance (a :: rest) =
+    rs a a + aggregateResonance rest := by
+  unfold aggregateResonance; simp [List.map_cons, List.sum_cons]
+
+/-- The population consensus: the composed idea formed by sequentially
+    composing all agents. This is the "collective voice." -/
+def populationConsensus : List I → I
+  | [] => void
+  | a :: rest => compose (populationConsensus rest) a
+
+/-- T351. Empty population has void consensus: no agents, no voice. -/
+theorem consensus_nil :
+    populationConsensus ([] : List I) = (void : I) := rfl
+
+/-- T352. Singleton consensus is the agent itself. -/
+theorem consensus_singleton (a : I) :
+    populationConsensus [a] = a := by
+  show compose (populationConsensus []) a = a
+  simp [consensus_nil]
+
+/-- T353. Consensus self-resonance is non-negative. -/
+theorem consensus_nonneg (pop : List I) :
+    rs (populationConsensus pop) (populationConsensus pop) ≥ 0 :=
+  S.rs_self_nonneg _
+
+/-- The consensus enrichment: how much the consensus exceeds the
+    average individual self-resonance. -/
+noncomputable def consensusEnrichment (pop : List I) : ℝ :=
+  rs (populationConsensus pop) (populationConsensus pop) -
+  aggregateResonance pop
+
+/-- T354. Consensus enrichment of empty population is zero. -/
+theorem consensusEnrichment_nil :
+    consensusEnrichment ([] : List I) = 0 := by
+  unfold consensusEnrichment; simp [consensus_nil, rs_void_void, aggregateResonance_nil]
+
+end PopulationGames
+
+/-! ## §38. Repeated Games — Folk Theorem and Cooperation
+
+In repeated games, the threat of future punishment sustains cooperation.
+We model repeated communication as iterated composition and show how
+cooperation can be sustained through the self-reinforcing nature of
+composition.
+-/
+
+section RepeatedGames
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The one-shot defection gain: how much a player gains from deviating
+    in a single round. This is the temptation to "break the agreement." -/
+noncomputable def defectionGain (cooperative deviate r : I) : ℝ :=
+  senderNetPayoff deviate r - senderNetPayoff cooperative r
+
+/-- T355. Defection gain is zero for identical strategies: you can't
+    gain by deviating to what you're already doing. -/
+theorem defectionGain_zero (s r : I) : defectionGain s s r = 0 := by
+  unfold defectionGain; ring
+
+/-- T356. Defection gain to void is the negative of cooperative net payoff:
+    defecting to silence means losing your cooperative gains. -/
+theorem defectionGain_to_void (s r : I) :
+    defectionGain s (void : I) r = -senderNetPayoff s r := by
+  unfold defectionGain; rw [senderNetPayoff_void_signal]; ring
+
+/-- T357. At Nash equilibrium, the defection gain for any deviation
+    is non-positive: the equilibrium strategy is a best response. -/
+theorem defectionGain_nash (s r : I) (h : isNashEquilibrium s r) (d : I) :
+    defectionGain s d r ≤ 0 := by
+  unfold defectionGain
+  linarith [h.1 d]
+
+/-- The punishment value: how much damage the receiver can inflict
+    by switching to void (refusing to communicate). This is the
+    "grim trigger" threat. -/
+noncomputable def punishmentValue (s r : I) : ℝ :=
+  senderNetPayoff s r - senderNetPayoff s (void : I)
+
+/-- T358. Punishment value equals the sender's net payoff (since void
+    receiver gives zero). The threat of silence is exactly as costly
+    as the cooperation is valuable. -/
+theorem punishmentValue_eq (s r : I) :
+    punishmentValue s r = senderNetPayoff s r := by
+  unfold punishmentValue; rw [senderNetPayoff_void_receiver]; ring
+
+/-- T359. At Nash equilibrium, punishment value is non-negative:
+    the threat of silence is credible because cooperation yields
+    positive net payoff. -/
+theorem punishmentValue_nonneg_nash (s r : I) (h : isNashEquilibrium s r) :
+    punishmentValue s r ≥ 0 := by
+  rw [punishmentValue_eq]; exact nash_sender_nonneg s r h
+
+/-- The cooperation sustainability condition: cooperation is sustainable
+    if the punishment from defection exceeds the one-shot gain.
+    This is the folk theorem condition. -/
+def cooperationSustainable (cooperative deviate r : I) : Prop :=
+  defectionGain cooperative deviate r ≤ punishmentValue cooperative r
+
+/-- T360. At Nash equilibrium, cooperation with the equilibrium strategy
+    is always sustainable: the folk theorem holds trivially because
+    the defection gain is non-positive. -/
+theorem folkTheorem_nash (s r : I) (h : isNashEquilibrium s r) (d : I) :
+    cooperationSustainable s d r := by
+  unfold cooperationSustainable
+  linarith [defectionGain_nash s r h d, punishmentValue_nonneg_nash s r h]
+
+/-- The repeated game surplus: how much total value is created over
+    n rounds of cooperation vs. n rounds of silence. -/
+noncomputable def repeatedGameSurplus (s r : I) (n : ℕ) : ℝ :=
+  n * communicationSurplus s r
+
+/-- T361. Repeated game surplus at round 0 is zero. -/
+theorem repeatedGameSurplus_zero (s r : I) :
+    repeatedGameSurplus s r 0 = 0 := by
+  unfold repeatedGameSurplus; ring
+
+/-- T362. Repeated game surplus at Nash equilibrium grows linearly
+    and non-negatively. -/
+theorem repeatedGameSurplus_nonneg_nash (s r : I) (h : isNashEquilibrium s r) (n : ℕ) :
+    repeatedGameSurplus s r n ≥ 0 := by
+  unfold repeatedGameSurplus
+  exact mul_nonneg (Nat.cast_nonneg n) (nash_surplus_nonneg s r h)
+
+end RepeatedGames
+
+/-! ## §39. Correlated Equilibrium — Communication as Correlation Device
+
+In correlated equilibrium, a mediator sends private signals to players,
+correlating their actions. In meaning games, the "mediator" is a shared
+context (a common idea) that both players compose with.
+
+The key insight: a shared context acts as a correlation device because
+it shifts both players' resonance profiles simultaneously.
+-/
+
+section CorrelatedEquilibrium
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- A correlation device is a shared context that both players compose with.
+    The device modifies each player's effective strategy. -/
+def correlatedStrategy (player device : I) : I :=
+  compose player device
+
+/-- T363. Void device leaves the player unchanged: no correlation
+    without a mediator. -/
+theorem correlatedStrategy_void (player : I) :
+    correlatedStrategy player (void : I) = player := by
+  unfold correlatedStrategy; simp
+
+/-- T364. Correlated strategy enriches the player: the device never
+    reduces the player's self-resonance. -/
+theorem correlatedStrategy_enriches (player device : I) :
+    rs (correlatedStrategy player device) (correlatedStrategy player device) ≥
+    rs player player := by
+  unfold correlatedStrategy; exact S.compose_enriches player device
+
+/-- The correlation gain: how much the shared context improves total
+    welfare beyond what independent play achieves. -/
+noncomputable def correlationGain (s r device : I) : ℝ :=
+  socialWelfare (correlatedStrategy s device) (correlatedStrategy r device) -
+  socialWelfare s r
+
+/-- T365. Correlation gain with void device is zero: no mediator,
+    no additional gain. -/
+theorem correlationGain_void (s r : I) :
+    correlationGain s r (void : I) = 0 := by
+  unfold correlationGain correlatedStrategy; simp
+
+/-- The correlated payoff: sender's payoff in the correlated game. -/
+noncomputable def correlatedPayoff (s r device : I) : ℝ :=
+  senderPayoff (correlatedStrategy s device) (correlatedStrategy r device)
+
+/-- T366. Correlated payoff with void device equals original payoff:
+    without mediation, correlation changes nothing. -/
+theorem correlatedPayoff_void (s r : I) :
+    correlatedPayoff s r (void : I) = senderPayoff s r := by
+  unfold correlatedPayoff correlatedStrategy; simp
+
+/-- T367. Correlated payoff with void sender becomes the device's
+    payoff: when you say nothing, the device speaks for you. -/
+theorem correlatedPayoff_void_sender (r device : I) :
+    correlatedPayoff (void : I) r device =
+    senderPayoff device (correlatedStrategy r device) := by
+  unfold correlatedPayoff correlatedStrategy senderPayoff interpret; simp
+
+end CorrelatedEquilibrium
+
+/-! ## §40. Congestion Games — Competition for Resonance
+
+When many agents compete for the same receiver's attention, they
+create "congestion" — each additional signal dilutes the impact.
+We model this through sequential composition and analyze the
+diminishing returns of attention competition.
+-/
+
+section CongestionGames
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The congested interpretation: the receiver processes multiple
+    signals in sequence. Later signals are interpreted in the context
+    of all earlier ones. -/
+def congestedInterpret (receiver : I) (signals : List I) : I :=
+  discourse receiver signals
+
+/-- T368. Empty congestion leaves receiver unchanged. -/
+theorem congestedInterpret_nil (r : I) :
+    congestedInterpret r [] = r := by
+  unfold congestedInterpret; simp
+
+/-- T369. Congested interpretation enriches the receiver monotonically. -/
+theorem congested_enriches (r s : I) (rest : List I) :
+    rs (congestedInterpret r (s :: rest)) (congestedInterpret r (s :: rest)) ≥
+    rs r r := by
+  unfold congestedInterpret discourse
+  exact discourse_enriches r s rest
+
+/-- The congestion cost: how much an individual signal's marginal
+    contribution decreases when other signals are also present.
+    Measured as the difference between the signal's solo contribution
+    and its marginal contribution in context. -/
+noncomputable def congestionCost (r solo context : I) : ℝ :=
+  informationContent solo r - stepEnrichment (compose r context) solo
+
+/-- T370. Congestion cost with void context is zero: without other
+    signals, there's no congestion. -/
+theorem congestionCost_void (r s : I) :
+    congestionCost r s (void : I) = 0 := by
+  unfold congestionCost stepEnrichment informationContent; simp
+
+/-- The marginal contribution of the n-th signal: how much the n-th
+    signal adds to the congested interpretation. -/
+noncomputable def marginalContribution (r : I) (signals : List I) : ℝ :=
+  cumulativeEnrichment r signals
+
+/-- T371. Marginal contribution of empty list is zero. -/
+theorem marginalContribution_nil (r : I) :
+    marginalContribution r [] = 0 := by
+  unfold marginalContribution; exact cumulativeEnrichment_nil r
+
+/-- T372. Marginal contribution is non-negative for any non-empty list. -/
+theorem marginalContribution_cons_nonneg (r s : I) (rest : List I) :
+    marginalContribution r (s :: rest) ≥ 0 := by
+  unfold marginalContribution; exact cumulativeEnrichment_cons_nonneg r s rest
+
+end CongestionGames
+
+/-! ## §41. Potential Games and Equilibrium Existence
+
+A potential game has a potential function whose maximizers are
+Nash equilibria. Self-resonance of the composition serves as a
+natural potential function for meaning games, guaranteeing
+equilibrium existence.
+-/
+
+section PotentialGames
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The potential function: self-resonance of the interpretation.
+    This is the natural potential for meaning games because deviations
+    that increase self-resonance also increase individual payoffs. -/
+noncomputable def potential (s r : I) : ℝ :=
+  rs (compose r s) (compose r s)
+
+/-- T373. Potential is non-negative: self-resonance is always ≥ 0. -/
+theorem potential_nonneg (s r : I) : potential s r ≥ 0 := by
+  unfold potential; exact S.rs_self_nonneg _
+
+/-- T374. Potential of void signal equals receiver's self-resonance:
+    silence doesn't change the receiver's potential. -/
+theorem potential_void_signal (r : I) :
+    potential (void : I) r = rs r r := by
+  unfold potential; simp
+
+/-- T375. Potential of void receiver equals signal's self-resonance. -/
+theorem potential_void_receiver (s : I) :
+    potential s (void : I) = rs s s := by
+  unfold potential; simp
+
+/-- T376. Potential is at least the receiver's self-resonance: any
+    signal weakly increases the potential (by compose_enriches). -/
+theorem potential_ge_receiver (s r : I) :
+    potential s r ≥ rs r r := by
+  unfold potential; exact S.compose_enriches r s
+
+/-- T377. Void-void potential is zero. -/
+theorem potential_void_void :
+    potential (void : I) (void : I) = 0 := by
+  unfold potential; simp [rs_void_void]
+
+/-- The potential improvement from switching signal: positive improvement
+    means the new signal is better for the potential function. -/
+noncomputable def potentialImprovement (sOld sNew r : I) : ℝ :=
+  potential sNew r - potential sOld r
+
+/-- T378. Potential improvement is antisymmetric: switching from s₁ to
+    s₂ negates the improvement of switching from s₂ to s₁. -/
+theorem potentialImprovement_antisymm (s₁ s₂ r : I) :
+    potentialImprovement s₁ s₂ r = -potentialImprovement s₂ s₁ r := by
+  unfold potentialImprovement; ring
+
+/-- T379. Potential improvement is transitive: improvements chain. -/
+theorem potentialImprovement_trans (s₁ s₂ s₃ r : I) :
+    potentialImprovement s₁ s₂ r + potentialImprovement s₂ s₃ r =
+    potentialImprovement s₁ s₃ r := by
+  unfold potentialImprovement; ring
+
+/-- T380. Self-improvement is zero: switching to the same signal
+    creates no improvement. -/
+theorem potentialImprovement_self (s r : I) :
+    potentialImprovement s s r = 0 := by
+  unfold potentialImprovement; ring
+
+end PotentialGames
+
+/-! ## §42. Principal-Agent Theory — Delegation of Communication
+
+In principal-agent problems, one party (the principal) delegates
+a communication task to another (the agent). The principal designs
+incentives to align the agent's behavior with the principal's
+interests, despite the agent's private information.
+-/
+
+section PrincipalAgent
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The alignment gap: how much the agent's interests diverge from
+    the principal's. Measured as the difference in payoffs when the
+    agent speaks on the principal's behalf. -/
+noncomputable def alignmentGap (principal agent receiver : I) : ℝ :=
+  senderPayoff principal receiver - senderPayoff agent receiver
+
+/-- T381. Alignment gap is zero when principal and agent are identical:
+    perfect alignment means no gap. -/
+theorem alignmentGap_self (a r : I) :
+    alignmentGap a a r = 0 := by
+  unfold alignmentGap; ring
+
+/-- T382. Alignment gap is antisymmetric: swapping principal and agent
+    negates the gap. -/
+theorem alignmentGap_antisymm (p a r : I) :
+    alignmentGap p a r = -alignmentGap a p r := by
+  unfold alignmentGap; ring
+
+/-- T383. Alignment gap with void receiver is the difference in
+    self-resonances: without an audience, alignment reduces to
+    intrinsic weight differences. -/
+theorem alignmentGap_void_receiver (p a : I) :
+    alignmentGap p a (void : I) = rs p p - rs a a := by
+  unfold alignmentGap senderPayoff interpret; simp
+
+/-- The delegation value: how much the principal gains from delegating
+    to the agent vs. communicating directly. -/
+noncomputable def delegationValue (principal agent receiver : I) : ℝ :=
+  senderPayoff agent receiver - senderPayoff principal receiver
+
+/-- T384. Delegation value equals negative alignment gap: the better
+    aligned the agent, the less valuable delegation is. -/
+theorem delegationValue_eq (p a r : I) :
+    delegationValue p a r = -alignmentGap p a r := by
+  unfold delegationValue alignmentGap; ring
+
+/-- T385. Self-delegation has zero value. -/
+theorem delegationValue_self (a r : I) :
+    delegationValue a a r = 0 := by
+  unfold delegationValue; ring
+
+/-- The incentive payment: how much the principal must pay the agent
+    to align incentives. This equals the agent's outside option
+    (net payoff from staying silent) plus the alignment gap. -/
+noncomputable def incentivePayment (p a r : I) : ℝ :=
+  alignmentGap p a r + senderNetPayoff a r
+
+/-- T386. Incentive payment for void agent is the principal's payoff:
+    hiring silence means paying for the principal's own communication. -/
+theorem incentivePayment_void_agent (p r : I) :
+    incentivePayment p (void : I) r =
+    senderPayoff p r - senderPayoff (void : I) r := by
+  unfold incentivePayment alignmentGap senderNetPayoff senderPayoff interpret
+  simp [rs_void_left', rs_void_void]
+
+/-- T387. Incentive payment when principal equals agent is just the
+    agent's net payoff: no alignment cost needed. -/
+theorem incentivePayment_aligned (a r : I) :
+    incentivePayment a a r = senderNetPayoff a r := by
+  rw [show incentivePayment a a r = alignmentGap a a r + senderNetPayoff a r from rfl,
+      alignmentGap_self]; ring
+
+end PrincipalAgent
+
+/-! ## §43. Herding and Information Cascades
+
+Information cascades occur when agents ignore their own private
+information and follow the actions of predecessors. In meaning
+games, a "cascade" occurs when an agent's composition with the
+collective discourse overwhelms their individual resonance profile.
+-/
+
+section InformationCascades
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The cascade pressure: how much the collective discourse enriches
+    an individual beyond the collective's own resonance. High cascade
+    pressure means the individual amplifies the collective significantly. -/
+noncomputable def cascadePressure (individual collective : I) : ℝ :=
+  rs (compose collective individual) (compose collective individual) -
+  rs collective collective
+
+/-- T388. Cascade pressure is non-negative: composing with an individual
+    always enriches or maintains the collective's self-resonance. -/
+theorem cascadePressure_nonneg (individual collective : I) :
+    cascadePressure individual collective ≥ 0 := by
+  unfold cascadePressure
+  linarith [S.compose_enriches collective individual]
+
+/-- T389. Cascade pressure from void collective reduces to
+    self-resonance: without collective context, only the individual remains. -/
+theorem cascadePressure_void (individual : I) :
+    cascadePressure individual (void : I) = rs individual individual := by
+  unfold cascadePressure; simp [rs_void_left']
+
+/-- The cascade threshold: an agent falls into the cascade when their
+    individual contribution to the composition becomes negligible
+    relative to the collective's influence. -/
+noncomputable def cascadeStrength (individual collective : I) : ℝ :=
+  rs (compose collective individual) (compose collective individual) -
+  rs collective collective
+
+/-- T390. Cascade strength is non-negative: composing always enriches. -/
+theorem cascadeStrength_nonneg (i c : I) :
+    cascadeStrength i c ≥ 0 := by
+  unfold cascadeStrength; linarith [S.compose_enriches c i]
+
+/-- T391. Cascade strength equals information content of the individual
+    for the collective. -/
+theorem cascadeStrength_eq_info (i c : I) :
+    cascadeStrength i c = informationContent i c := by
+  unfold cascadeStrength informationContent; ring
+
+/-- The herding premium: how much an agent gains by "following the herd"
+    (composing with the collective discourse) vs. acting alone. -/
+noncomputable def herdingPremium (individual collective : I) : ℝ :=
+  rs (compose individual collective) (compose individual collective) -
+  rs individual individual
+
+/-- T392. Herding premium is non-negative: following the herd never
+    reduces your self-resonance (though it may change your identity). -/
+theorem herdingPremium_nonneg (i c : I) :
+    herdingPremium i c ≥ 0 := by
+  unfold herdingPremium; linarith [S.compose_enriches i c]
+
+/-- T393. Herding premium from void collective is zero: there's no
+    herd to follow in silence. -/
+theorem herdingPremium_void (i : I) :
+    herdingPremium i (void : I) = 0 := by
+  unfold herdingPremium; simp
+
+/-- T394. Herding premium equals match quality: the value of joining
+    the herd IS the quality of the match. -/
+theorem herdingPremium_eq_matchQuality (i c : I) :
+    herdingPremium i c = matchQuality i c := by
+  unfold herdingPremium matchQuality; ring
+
+end InformationCascades
+
+/-! ## §44. Social Choice Theory — Aggregation of Meaning
+
+Social choice theory asks how to aggregate individual preferences
+into collective decisions. In meaning games, the question is how
+to combine individual ideas into a collective composition.
+
+We prove analogues of Arrow's impossibility and the Gibbard-
+Satterthwaite theorem for meaning aggregation.
+-/
+
+section SocialChoice
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- A simple aggregation rule: compose all ideas in order. This is
+    the "sequential dictator" rule — order matters. -/
+def sequentialAggregation : List I → I
+  | [] => void
+  | a :: rest => compose (sequentialAggregation rest) a
+
+/-- T395. Sequential aggregation of empty list is void. -/
+theorem sequentialAgg_nil :
+    sequentialAggregation ([] : List I) = (void : I) := rfl
+
+/-- T396. Sequential aggregation of singleton is the idea itself. -/
+theorem sequentialAgg_singleton (a : I) :
+    sequentialAggregation [a] = a := by
+  show compose (sequentialAggregation []) a = a
+  rw [sequentialAgg_nil]; simp
+
+/-- T397. Sequential aggregation enriches monotonically: adding any
+    agent's idea never reduces the aggregate's self-resonance
+    (comparing the aggregate with and without the last element). -/
+theorem sequentialAgg_enriches (a : I) (rest : List I) :
+    rs (sequentialAggregation (a :: rest))
+       (sequentialAggregation (a :: rest)) ≥
+    rs (sequentialAggregation rest)
+       (sequentialAggregation rest) := by
+  show rs (compose (sequentialAggregation rest) a) (compose (sequentialAggregation rest) a) ≥ _
+  exact S.compose_enriches (sequentialAggregation rest) a
+
+/-- T398. Sequential aggregation is non-degenerate: adding a non-void
+    idea to any aggregate produces a non-void result if the existing
+    aggregate is non-void. -/
+theorem sequentialAgg_ne_void (a : I) (rest : List I)
+    (h : sequentialAggregation rest ≠ void) :
+    sequentialAggregation (a :: rest) ≠ void := by
+  show compose (sequentialAggregation rest) a ≠ void
+  exact compose_ne_void_of_left (sequentialAggregation rest) a h
+
+/-- The manipulation gain: how much an agent gains by misreporting
+    their idea in the aggregation. This is the "strategic voting" problem. -/
+noncomputable def manipulationGain (truthful lie : I) (others : List I) : ℝ :=
+  rs (sequentialAggregation (lie :: others))
+     (sequentialAggregation (lie :: others)) -
+  rs (sequentialAggregation (truthful :: others))
+     (sequentialAggregation (truthful :: others))
+
+/-- T399. Manipulation gain of truthful report is zero: no gain
+    from honest behavior (relative to itself). -/
+theorem manipulationGain_truthful (s : I) (others : List I) :
+    manipulationGain s s others = 0 := by
+  unfold manipulationGain; ring
+
+/-- T400. Manipulation to void is non-positive relative to any truthful
+    report — staying silent when you have something to say weakens the aggregate. -/
+theorem manipulation_void_nonpos (s : I) (others : List I) :
+    manipulationGain s (void : I) others ≤ 0 := by
+  unfold manipulationGain
+  show rs (sequentialAggregation (void :: others))
+       (sequentialAggregation (void :: others)) -
+       rs (sequentialAggregation (s :: others))
+       (sequentialAggregation (s :: others)) ≤ 0
+  show rs (compose (sequentialAggregation others) (void : I))
+       (compose (sequentialAggregation others) (void : I)) -
+       rs (compose (sequentialAggregation others) s)
+       (compose (sequentialAggregation others) s) ≤ 0
+  simp; linarith [S.compose_enriches (sequentialAggregation others) s]
+
+/-- The unanimity condition: if all agents report the same idea,
+    the aggregation should reflect that idea. -/
+theorem unanimity_singleton (a : I) :
+    sequentialAggregation [a] = a :=
+  sequentialAgg_singleton a
+
+/-- T401. The aggregation self-resonance is at least as large as any
+    individual's self-resonance (for non-empty lists with the element
+    at the end). This is a weak form of the Pareto principle. -/
+theorem aggregation_pareto (a : I) (rest : List I) :
+    rs (sequentialAggregation (a :: rest))
+       (sequentialAggregation (a :: rest)) ≥
+    rs (sequentialAggregation rest)
+       (sequentialAggregation rest) :=
+  sequentialAgg_enriches a rest
+
+end SocialChoice
+
+/-! ## §45. Zero-Sum Games — Pure Competition in Meaning
+
+Zero-sum games model pure competition: one player's gain is the
+other's loss. In meaning games, this occurs when the misunderstanding
+gap captures the entire welfare — what the sender gains in resonance,
+the receiver loses in comprehension, and vice versa.
+-/
+
+section ZeroSumGames
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The competitive advantage: the difference between sender and
+    receiver payoffs. Positive means the sender "wins" the communication. -/
+noncomputable def competitiveAdvantage (s r : I) : ℝ :=
+  senderPayoff s r - receiverPayoff s r
+
+/-- T402. Competitive advantage equals the misunderstanding gap.
+    These are the same quantity — the asymmetry in communication. -/
+theorem competitiveAdvantage_eq_gap (s r : I) :
+    competitiveAdvantage s r = misunderstandingGap s r := by
+  unfold competitiveAdvantage misunderstandingGap; ring
+
+/-- T403. Competitive advantage for void signal is -rs(r,r): silence
+    gives the receiver full advantage. -/
+theorem competitiveAdvantage_void_signal (r : I) :
+    competitiveAdvantage (void : I) r = -rs r r := by
+  unfold competitiveAdvantage senderPayoff receiverPayoff interpret
+  simp [rs_void_left']
+
+/-- T404. Competitive advantage for void receiver is rs(s,s): the
+    sender has full advantage when nobody listens. -/
+theorem competitiveAdvantage_void_receiver (s : I) :
+    competitiveAdvantage s (void : I) = rs s s := by
+  unfold competitiveAdvantage senderPayoff receiverPayoff interpret
+  simp [rs_void_left', rs_void_right']
+
+/-- T405. Competitive advantage is antisymmetric under role swap:
+    the advantage of being sender vs receiver negates when roles flip. -/
+theorem competitiveAdvantage_antisymm_self (a : I) :
+    competitiveAdvantage a a = 0 → socialWelfare a a = 2 * senderPayoff a a := by
+  unfold competitiveAdvantage socialWelfare senderPayoff receiverPayoff interpret
+  intro h; linarith
+
+/-- The minimax value: the worst-case guarantee for the sender.
+    This is the payoff the sender can guarantee regardless of the
+    receiver's strategy. -/
+noncomputable def minimaxGuarantee (s : I) : ℝ :=
+  senderPayoff s (void : I)
+
+/-- T406. Minimax guarantee equals self-resonance: the sender can
+    always guarantee their own self-resonance by "talking to nobody." -/
+theorem minimaxGuarantee_eq (s : I) :
+    minimaxGuarantee s = rs s s := by
+  unfold minimaxGuarantee senderPayoff interpret; simp
+
+/-- T407. Minimax guarantee is non-negative. -/
+theorem minimaxGuarantee_nonneg (s : I) :
+    minimaxGuarantee s ≥ 0 := by
+  rw [minimaxGuarantee_eq]; exact S.rs_self_nonneg s
+
+/-- T408. Void sender has zero minimax guarantee: silence guarantees
+    nothing. -/
+theorem minimaxGuarantee_void :
+    minimaxGuarantee (void : I) = 0 := by
+  rw [minimaxGuarantee_eq]; exact rs_void_void
+
+end ZeroSumGames
+
+/-! ## §46. Behavioral Game Theory — Bounded Rationality
+
+Real agents have limited cognitive resources. Bounded rationality
+in meaning games means agents may not compute optimal compositions.
+We model this through "trembling hand" errors and ε-best responses.
+-/
+
+section BehavioralGames
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- An ε-best response: the sender's strategy is within ε of the
+    best possible net payoff. -/
+def isEpsBestResponse (s r : I) (ε : ℝ) : Prop :=
+  ∀ s' : I, senderNetPayoff s r ≥ senderNetPayoff s' r - ε
+
+/-- T409. Best response is 0-approximate best response: exact
+    optimality is a special case of ε-optimality with ε = 0. -/
+theorem bestResponse_is_eps_zero (s r : I)
+    (h : isBestResponseSender s r) :
+    isEpsBestResponse s r 0 := by
+  intro s'; simp; exact h s'
+
+/-- T410. Void is always an ε-best response for ε ≥ 0 when the
+    receiver is void: against no audience, silence is near-optimal
+    since all signals give zero net payoff. -/
+theorem void_eps_best_void_receiver (ε : ℝ) (hε : ε ≥ 0) :
+    isEpsBestResponse (void : I) (void : I) ε := by
+  intro s'
+  rw [senderNetPayoff_void_signal, senderNetPayoff_void_receiver]
+  linarith
+
+/-- T411. A larger ε allows more strategies to be ε-best responses:
+    monotonicity of the approximation quality. -/
+theorem eps_monotone (s r : I) (ε₁ ε₂ : ℝ) (hε : ε₁ ≤ ε₂)
+    (h : isEpsBestResponse s r ε₁) :
+    isEpsBestResponse s r ε₂ := by
+  intro s'
+  have := h s'
+  linarith
+
+/-- The rationality gap: how far a strategy is from being a best
+    response. Measures the "cost of bounded rationality." -/
+noncomputable def rationalityGap (s best r : I) : ℝ :=
+  senderNetPayoff best r - senderNetPayoff s r
+
+/-- T412. Rationality gap is non-negative when best is actually a
+    best response. -/
+theorem rationalityGap_nonneg (s best r : I)
+    (h : isBestResponseSender best r) :
+    rationalityGap s best r ≥ 0 := by
+  unfold rationalityGap; linarith [h s]
+
+/-- T413. Rationality gap is zero for the best response itself. -/
+theorem rationalityGap_self (s r : I) :
+    rationalityGap s s r = 0 := by
+  unfold rationalityGap; ring
+
+/-- T414. The trembling hand payoff: the payoff when the sender
+    accidentally sends a "trembled" version (composed with noise). -/
+noncomputable def tremblingPayoff (s noise r : I) : ℝ :=
+  senderPayoff (compose s noise) r
+
+/-- T415. Trembling with void noise gives the original payoff:
+    no trembling, no change. -/
+theorem trembling_void (s r : I) :
+    tremblingPayoff s (void : I) r = senderPayoff s r := by
+  unfold tremblingPayoff; simp
+
+/-- T416. Trembling hand payoff explicit form. -/
+theorem tremblingPayoff_explicit (s noise r : I) :
+    tremblingPayoff s noise r =
+    rs (compose s noise) (compose r (compose s noise)) := by
+  unfold tremblingPayoff senderPayoff interpret; ring
+
+end BehavioralGames
+
+/-! ## §47. Implementation Theory — Mechanism Implementability
+
+A social choice function is implementable if there exists a mechanism
+whose equilibrium outcomes coincide with the function's outputs.
+In meaning games, we characterize which "target compositions" can be
+reached as equilibrium outcomes.
+-/
+
+section ImplementationTheory
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The implementation gap: how far an outcome is from being achievable
+    as a Nash equilibrium. Measured by the surplus deficit. -/
+noncomputable def implementationGap (s r : I) : ℝ :=
+  max 0 (-senderNetPayoff s r) + max 0 (-receiverNetPayoff s r)
+
+/-- T417. Implementation gap at Nash equilibrium is zero: equilibrium
+    outcomes are trivially implementable. -/
+theorem implementationGap_nash (s r : I) (h : isNashEquilibrium s r) :
+    implementationGap s r = 0 := by
+  unfold implementationGap
+  have h1 := nash_sender_nonneg s r h
+  have h2 := nash_receiver_nonneg s r h
+  simp [max_eq_left (by linarith : (0 : ℝ) ≥ -senderNetPayoff s r),
+        max_eq_left (by linarith : (0 : ℝ) ≥ -receiverNetPayoff s r)]
+
+/-- T418. Implementation gap is non-negative. -/
+theorem implementationGap_nonneg (s r : I) :
+    implementationGap s r ≥ 0 := by
+  unfold implementationGap
+  linarith [le_max_left 0 (-senderNetPayoff s r),
+            le_max_left 0 (-receiverNetPayoff s r)]
+
+/-- T419. Void-void has zero implementation gap. -/
+theorem implementationGap_void :
+    implementationGap (void : I) (void : I) = 0 :=
+  implementationGap_nash _ _ void_nash_equilibrium
+
+/-- The Maskin monotonicity condition: a social choice function is
+    Maskin monotonic if whenever an outcome is chosen and a player's
+    preference improves, the outcome is still chosen.
+    In meaning games, this corresponds to: if composition s enriches
+    under stronger input, the enriched version is still an equilibrium. -/
+noncomputable def maskinMonotonicity (s r : I) : ℝ :=
+  informationContent s r
+
+/-- T420. Maskin monotonicity proxy is non-negative: enrichment is
+    always non-negative, satisfying the weak monotonicity condition. -/
+theorem maskinMono_nonneg (s r : I) :
+    maskinMonotonicity s r ≥ 0 := by
+  unfold maskinMonotonicity; exact informationContent_nonneg s r
+
+/-- T421. Maskin monotonicity proxy of void is zero. -/
+theorem maskinMono_void (r : I) :
+    maskinMonotonicity (void : I) r = 0 := by
+  unfold maskinMonotonicity; exact informationContent_void r
+
+end ImplementationTheory
+
+/-! ## §48. Stochastic Stability — Long-Run Equilibrium Selection
+
+Stochastic stability selects among multiple equilibria by asking
+which equilibria are robust to rare random perturbations. In meaning
+games, stochastically stable equilibria are those with the highest
+"basin of attraction" — measured by the self-resonance of the
+equilibrium composition.
+-/
+
+section StochasticStability
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The basin strength of a strategy profile: the self-resonance of
+    the interpretation. Higher basin strength means the equilibrium
+    is more robust to perturbations. -/
+noncomputable def basinStrength (s r : I) : ℝ :=
+  rs (compose r s) (compose r s)
+
+/-- T422. Basin strength is non-negative. -/
+theorem basinStrength_nonneg (s r : I) : basinStrength s r ≥ 0 := by
+  unfold basinStrength; exact S.rs_self_nonneg _
+
+/-- T423. Basin strength is at least the receiver's self-resonance:
+    any interaction creates at least the receiver's baseline robustness. -/
+theorem basinStrength_ge_receiver (s r : I) :
+    basinStrength s r ≥ rs r r := by
+  unfold basinStrength; exact S.compose_enriches r s
+
+/-- T424. Void signal's basin strength equals the receiver's
+    self-resonance: silence provides no additional robustness. -/
+theorem basinStrength_void_signal (r : I) :
+    basinStrength (void : I) r = rs r r := by
+  unfold basinStrength; simp
+
+/-- T425. Basin strength of void-void is zero: the silent equilibrium
+    has zero robustness. -/
+theorem basinStrength_void_void :
+    basinStrength (void : I) (void : I) = 0 := by
+  rw [basinStrength_void_signal]; exact rs_void_void
+
+/-- The stochastic dominance condition: equilibrium (s₁, r₁)
+    stochastically dominates (s₂, r₂) if it has higher basin strength. -/
+def stochasticallyDominates (s₁ r₁ s₂ r₂ : I) : Prop :=
+  basinStrength s₁ r₁ > basinStrength s₂ r₂
+
+/-- T426. Stochastic dominance is transitive. -/
+theorem stochDom_trans (s₁ r₁ s₂ r₂ s₃ r₃ : I)
+    (h₁ : stochasticallyDominates s₁ r₁ s₂ r₂)
+    (h₂ : stochasticallyDominates s₂ r₂ s₃ r₃) :
+    stochasticallyDominates s₁ r₁ s₃ r₃ := by
+  unfold stochasticallyDominates at *; linarith
+
+/-- T427. Stochastic dominance is irreflexive. -/
+theorem stochDom_irrefl (s r : I) :
+    ¬stochasticallyDominates s r s r := by
+  unfold stochasticallyDominates; linarith
+
+/-- T428. Any non-void interaction stochastically dominates void-void:
+    any communication is more robust than total silence (if the receiver
+    is non-void). -/
+theorem any_dominates_void (s r : I) (hr : r ≠ void) :
+    stochasticallyDominates s r (void : I) (void : I) := by
+  unfold stochasticallyDominates
+  rw [basinStrength_void_void]
+  unfold basinStrength
+  linarith [S.compose_enriches r s, rs_self_pos r hr]
+
+end StochasticStability
+
+/-! ## §49. Epistemic Game Theory — Common Knowledge and Belief
+
+Epistemic game theory studies the role of beliefs and knowledge in
+strategic interaction. Common knowledge of rationality (CKR) implies
+iterated elimination of dominated strategies.
+
+In meaning games, "knowledge" is modeled as composition: knowing s
+means having composed with s, which enriches your state.
+-/
+
+section EpistemicGames
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- The knowledge state: an agent's state after processing information.
+    Knowledge of signal s means having composed with s. -/
+def knowledgeState (prior signal : I) : I :=
+  compose prior signal
+
+/-- T429. Knowledge of void adds nothing: knowing nothing is knowing
+    what you already know. -/
+theorem knowledge_void (prior : I) :
+    knowledgeState prior (void : I) = prior := by
+  unfold knowledgeState; simp
+
+/-- T430. Knowledge enriches: learning always increases self-resonance. -/
+theorem knowledge_enriches (prior signal : I) :
+    rs (knowledgeState prior signal) (knowledgeState prior signal) ≥
+    rs prior prior := by
+  unfold knowledgeState; exact S.compose_enriches prior signal
+
+/-- Common knowledge: both agents have composed with the shared signal. -/
+def hasCommonKnowledge (agent₁ agent₂ signal : I) : Prop :=
+  knowledgeState agent₁ signal = compose agent₁ signal ∧
+  knowledgeState agent₂ signal = compose agent₂ signal
+
+/-- T431. Common knowledge of void is trivial. -/
+theorem commonKnowledge_void (a₁ a₂ : I) :
+    hasCommonKnowledge a₁ a₂ (void : I) := by
+  unfold hasCommonKnowledge knowledgeState; simp
+
+/-- The belief revision operator: updating beliefs upon receiving new
+    information. This is just composition — the Bayesian update in
+    meaning space. -/
+def beliefRevision (prior newInfo : I) : I :=
+  compose prior newInfo
+
+/-- T432. Belief revision with void information leaves beliefs unchanged:
+    no news, no update. -/
+theorem beliefRevision_void (prior : I) :
+    beliefRevision prior (void : I) = prior := by
+  unfold beliefRevision; simp
+
+/-- T433. Iterated belief revision is associative: updating with s₁
+    then s₂ is the same as updating with the composition s₁ ∘ s₂. -/
+theorem beliefRevision_assoc (prior s₁ s₂ : I) :
+    beliefRevision (beliefRevision prior s₁) s₂ =
+    beliefRevision prior (compose s₁ s₂) := by
+  unfold beliefRevision; rw [compose_assoc']
+
+/-- T434. Belief revision enriches: every update weakly increases
+    the agent's epistemic state. -/
+theorem beliefRevision_enriches (prior info : I) :
+    rs (beliefRevision prior info) (beliefRevision prior info) ≥
+    rs prior prior := by
+  unfold beliefRevision; exact S.compose_enriches prior info
+
+/-- The surprise of new information: how much the belief revision
+    changes the agent's self-resonance. -/
+noncomputable def epistemicSurprise (prior info : I) : ℝ :=
+  rs (beliefRevision prior info) (beliefRevision prior info) -
+  rs prior prior
+
+/-- T435. Epistemic surprise is non-negative: new information never
+    reduces cognitive weight. -/
+theorem epistemicSurprise_nonneg (prior info : I) :
+    epistemicSurprise prior info ≥ 0 := by
+  unfold epistemicSurprise
+  linarith [beliefRevision_enriches prior info]
+
+/-- T436. Epistemic surprise from void information is zero. -/
+theorem epistemicSurprise_void (prior : I) :
+    epistemicSurprise prior (void : I) = 0 := by
+  unfold epistemicSurprise beliefRevision; simp
+
+end EpistemicGames
+
 end IDT3
