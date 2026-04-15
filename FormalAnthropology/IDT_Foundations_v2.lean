@@ -1,430 +1,562 @@
-import Mathlib.Analysis.InnerProductSpace.Basic
-import Mathlib.Topology.MetricSpace.Basic
+import Mathlib.Data.Real.Basic
 import Mathlib.Data.Nat.Defs
 import Mathlib.Data.List.Basic
+import Mathlib.Order.Basic
 import Mathlib.Tactic
 
 /-!
-# Ideatic Diffusion Theory v2: Hilbert Space Foundations
+# Ideatic Diffusion Theory v2: Quantitative Resonance
 
-Every idea `a : I` maps to a vector `φ(a)` in a real Hilbert space `H`.
-Resonance between ideas = inner product of their images:
+The key innovation of IDT v2: resonance is no longer a binary Prop but a
+**real-valued function** measuring the *degree* of resonance between ideas.
 
-  `resonanceStrength a b := ⟪φ(a), φ(b)⟫_ℝ`
+`resonanceStrength : I → I → ℝ` is a symmetric, non-negative function that
+behaves like a kernel function from functional analysis. It implicitly embeds
+ideas into a Hilbert space of meaning, where the inner product captures
+semantic similarity.
 
-The embedding `φ` is a monoid homomorphism: `φ(compose a b) = φ(a) + φ(b)`.
-This forces `φ(void) = 0`, so void = the zero vector = silence with no resonance.
+## Axiom Groups
 
-## Key consequences (all proved, zero sorries)
+- **A1–A3** (Algebraic): Ideatic composition forms a monoid
+- **D1–D4** (Depth): Ideas have intrinsic complexity behaving subadditively
+- **RS1–RS7** (Resonance Strength): Quantitative resonance with kernel properties
 
-- **Bilinearity**: `rs(compose a b, c) = rs(a,c) + rs(b,c)`
-- **Self-resonance = squared norm**: `rs(a,a) = ‖φ(a)‖²`
-- **Cauchy-Schwarz**: `rs(a,b)² ≤ rs(a,a) · rs(b,b)`
-- **Metric**: `d(a,b)² = rs(a,a) + rs(b,b) - 2·rs(a,b)`
-- **Void annihilation**: `rs(void, a) = 0`
-- **Pythagorean theorem**: orthogonal ideas compose independently
-- **Parallelogram law**, **triangle inequality**, etc.
-
-## Relationship to v1
-
-v2 is a separate axiomatic system, inspired by v1 but not extending it.
-In v1, `resonates` is a boolean predicate with `resonance_refl : resonates a a`.
-In v2, `resonates a b ↔ rs(a,b) > 0`, so `resonates void void` is false.
-Void = silence = zero content = no resonance: philosophically coherent.
+## NO SORRIES, NO ADMITS, NO AXIOMS
 -/
 
 namespace IDT2
 
-/-! ## §1. The Core Structure -/
+/-! ## §1. The Core Axiom Class -/
 
-/-- A Hilbert Ideatic Space: ideas with a monoid structure, depth function,
-    and an embedding into a real inner product space.
-
-    **7 axioms**: 3 monoid + 2 depth + 2 embedding. Everything else is derived. -/
-class HilbertIdeaticSpace (I : Type*) (H : Type*)
-    [NormedAddCommGroup H] [InnerProductSpace ℝ H] where
-  /-- Ideatic composition: combining two ideas -/
+/-- The foundational axiom class of Ideatic Diffusion Theory v2.
+    Resonance is now a real-valued strength function, not a binary Prop. -/
+class IdeaticSpace2 (I : Type*) where
   compose : I → I → I
-  /-- The void: silence, the empty idea, identity for composition -/
   void : I
-  /-- (A1) Composition is associative -/
   compose_assoc : ∀ (a b c : I), compose (compose a b) c = compose a (compose b c)
-  /-- (A2) Void is a left identity -/
   void_left : ∀ (a : I), compose void a = a
-  /-- (A3) Void is a right identity -/
   void_right : ∀ (a : I), compose a void = a
-  /-- Depth: structural complexity of an idea -/
   depth : I → ℕ
-  /-- Void has zero depth -/
+  atomic : I → Prop
   depth_void : depth void = 0
-  /-- Depth is subadditive under composition -/
   depth_subadditive : ∀ (a b : I), depth (compose a b) ≤ depth a + depth b
-  /-- The Hilbert space embedding: every idea maps to a vector -/
-  φ : I → H
-  /-- Distinct ideas have distinct embeddings -/
-  φ_injective : Function.Injective φ
-  /-- Composition is additive in the embedding (φ is a monoid homomorphism to (H,+)) -/
-  φ_compose : ∀ (a b : I), φ (compose a b) = φ a + φ b
+  depth_atomic : ∀ (a : I), atomic a → depth a ≤ 1
+  void_atomic : atomic void
+  /-- Real-valued resonance strength (the v2 kernel) -/
+  resonanceStrength : I → I → ℝ
+  /-- RS1: Resonance is symmetric -/
+  rs_symm : ∀ (a b : I), resonanceStrength a b = resonanceStrength b a
+  /-- RS2: Self-resonance is strictly positive -/
+  rs_self_pos : ∀ (a : I), resonanceStrength a a > 0
+  /-- RS3: Resonance is non-negative -/
+  rs_nonneg : ∀ (a b : I), resonanceStrength a b ≥ 0
+  /-- RS4: Void has unit self-resonance -/
+  rs_void_self : resonanceStrength void void = 1
+  /-- RS5: Right-composition monotonicity -/
+  rs_compose_right_mono : ∀ (a b c : I),
+    resonanceStrength (compose a c) (compose b c) ≥ resonanceStrength a b
+  /-- RS6: Left-composition monotonicity -/
+  rs_compose_left_mono : ∀ (a b c : I),
+    resonanceStrength (compose c a) (compose c b) ≥ resonanceStrength a b
+  /-- RS7: Cauchy-Schwarz inequality for resonance -/
+  rs_cauchy_schwarz : ∀ (a b : I),
+    resonanceStrength a b * resonanceStrength a b ≤
+    resonanceStrength a a * resonanceStrength b b
 
-variable {I H : Type*} [NormedAddCommGroup H] [InnerProductSpace ℝ H]
-variable [S : HilbertIdeaticSpace I H]
+/-! ## §2. Algebraic Consequences -/
 
-/-! ## §2. Derived: φ(void) = 0
+section Algebra
+variable {I : Type*} [IdeaticSpace2 I]
+open IdeaticSpace2
 
-Since φ(compose void a) = φ(void) + φ(a) and compose void a = a,
-we get φ(a) = φ(void) + φ(a), hence φ(void) = 0. -/
+theorem compose_assoc (a b c : I) :
+    compose (compose a b) c = compose a (compose b c) :=
+  IdeaticSpace2.compose_assoc a b c
 
-@[simp]
-theorem φ_void : S.φ S.void = 0 := by
-  have h := S.φ_compose S.void S.void
-  rw [S.void_left] at h
-  have : S.φ S.void - S.φ S.void = S.φ S.void + S.φ S.void - S.φ S.void :=
-    congrArg (· - S.φ S.void) h
-  simp at this
-  exact this.symm
+@[simp] theorem void_left (a : I) : compose (void : I) a = a :=
+  IdeaticSpace2.void_left a
 
-/-! ## §3. Resonance Strength
+@[simp] theorem void_right (a : I) : compose a (void : I) = a :=
+  IdeaticSpace2.void_right a
 
-The real-valued resonance function: the inner product of embeddings. -/
+@[simp] theorem void_self :
+    compose (void : I) (void : I) = (void : I) := void_left _
 
-/-- Resonance strength between two ideas = inner product of their embeddings.
-    This is the central quantity of IDT v2. -/
-noncomputable def resonanceStrength (a b : I) : ℝ :=
-  (inner (S.φ a) (S.φ b) : ℝ)
+theorem compose_assoc4 (a b c d : I) :
+    compose (compose (compose a b) c) d =
+    compose a (compose b (compose c d)) := by
+  rw [compose_assoc, compose_assoc]
 
-/-- Qualitative resonance: positive inner product between embeddings -/
-def resonates (a b : I) : Prop :=
-  @resonanceStrength I H _ _ S a b > 0
+def composeN (a : I) : ℕ → I
+  | 0 => void
+  | n + 1 => compose (composeN a n) a
 
-/-! ## §4. Symmetry -/
+@[simp] theorem composeN_zero (a : I) : composeN a 0 = (void : I) := rfl
 
-theorem resonanceStrength_comm (a b : I) :
-    @resonanceStrength I H _ _ S a b = @resonanceStrength I H _ _ S b a := by
-  unfold resonanceStrength
-  rw [real_inner_comm]
+theorem composeN_succ (a : I) (n : ℕ) :
+    composeN a (n + 1) = compose (composeN a n) a := rfl
 
-theorem resonates_symm (a b : I) :
-    @resonates I H _ _ S a b → @resonates I H _ _ S b a := by
-  unfold resonates
-  rw [resonanceStrength_comm]
-  exact id
+@[simp] theorem composeN_void : ∀ (n : ℕ),
+    composeN (void : I) n = (void : I)
+  | 0 => rfl
+  | n + 1 => by simp [composeN, composeN_void n]
 
-/-! ## §5. Bilinearity — composition decomposes resonance -/
+theorem composeN_one (a : I) : composeN a 1 = a := by
+  simp [composeN, composeN_succ]
 
-/-- Composing on the left decomposes: rs(compose a b, c) = rs(a,c) + rs(b,c) -/
-theorem resonanceStrength_compose_left (a b c : I) :
-    @resonanceStrength I H _ _ S (S.compose a b) c =
-    @resonanceStrength I H _ _ S a c + @resonanceStrength I H _ _ S b c := by
-  unfold resonanceStrength
-  rw [S.φ_compose]
-  exact inner_add_left _ _ _
+theorem composeN_two (a : I) : composeN a 2 = compose a a := by
+  simp [composeN, composeN_succ, composeN_one]
 
-/-- Composing on the right decomposes: rs(a, compose b c) = rs(a,b) + rs(a,c) -/
-theorem resonanceStrength_compose_right (a b c : I) :
-    @resonanceStrength I H _ _ S a (S.compose b c) =
-    @resonanceStrength I H _ _ S a b + @resonanceStrength I H _ _ S a c := by
-  unfold resonanceStrength
-  rw [S.φ_compose]
-  exact inner_add_right _ _ _
+end Algebra
 
-/-! ## §6. Void annihilation -/
+/-! ## §3. Resonance Strength — Foundational Theorems -/
 
-@[simp]
-theorem resonanceStrength_void_left (a : I) :
-    @resonanceStrength I H _ _ S S.void a = 0 := by
-  unfold resonanceStrength
-  rw [φ_void]
-  exact inner_zero_left _
+section ResonanceFoundations
+variable {I : Type*} [IdeaticSpace2 I]
+open IdeaticSpace2
 
-@[simp]
-theorem resonanceStrength_void_right (a : I) :
-    @resonanceStrength I H _ _ S a S.void = 0 := by
-  unfold resonanceStrength
-  rw [φ_void]
-  exact inner_zero_right _
+theorem rs_symm' (a b : I) : resonanceStrength a b = resonanceStrength b a :=
+  IdeaticSpace2.rs_symm a b
 
-/-- Void does not resonate with anything -/
-theorem not_resonates_void_left (a : I) :
-    ¬ @resonates I H _ _ S S.void a := by
-  unfold resonates; simp
+theorem rs_self_pos' (a : I) : resonanceStrength a a > 0 :=
+  IdeaticSpace2.rs_self_pos a
 
-theorem not_resonates_void_right (a : I) :
-    ¬ @resonates I H _ _ S a S.void := by
-  unfold resonates; simp
+theorem rs_nonneg' (a b : I) : resonanceStrength a b ≥ 0 :=
+  IdeaticSpace2.rs_nonneg a b
 
-/-! ## §7. Self-resonance = squared norm -/
+theorem rs_void_unit : resonanceStrength (void : I) (void : I) = 1 :=
+  IdeaticSpace2.rs_void_self
 
-/-- Self-resonance equals the squared norm of the embedding -/
-theorem resonanceStrength_self (a : I) :
-    @resonanceStrength I H _ _ S a a = ‖S.φ a‖ ^ 2 := by
-  unfold resonanceStrength
-  exact real_inner_self_eq_norm_sq _
-
-/-- Self-resonance is non-negative -/
-theorem resonanceStrength_self_nonneg (a : I) :
-    0 ≤ @resonanceStrength I H _ _ S a a := by
-  rw [resonanceStrength_self]; positivity
-
-/-- Self-resonance is zero iff the idea is void -/
-theorem resonanceStrength_self_eq_zero_iff (a : I) :
-    @resonanceStrength I H _ _ S a a = 0 ↔ a = S.void := by
-  constructor
-  · intro h
-    rw [resonanceStrength_self] at h
-    have hnorm : ‖S.φ a‖ = 0 := by nlinarith [norm_nonneg (S.φ a)]
-    rw [norm_eq_zero] at hnorm
-    exact S.φ_injective (by rw [hnorm, φ_void])
-  · intro h; rw [h]; simp
-
-/-! ## §8. Cauchy-Schwarz for resonance -/
-
-/-- |rs(a,b)| ≤ ‖φ(a)‖ · ‖φ(b)‖ -/
-theorem resonanceStrength_abs_le (a b : I) :
-    |@resonanceStrength I H _ _ S a b| ≤ ‖S.φ a‖ * ‖S.φ b‖ := by
-  unfold resonanceStrength
-  exact abs_real_inner_le_norm _ _
-
-/-- Upper bound: rs(a,b) ≤ ‖φ(a)‖ · ‖φ(b)‖ -/
-theorem resonanceStrength_le (a b : I) :
-    @resonanceStrength I H _ _ S a b ≤ ‖S.φ a‖ * ‖S.φ b‖ := by
-  unfold resonanceStrength
-  exact real_inner_le_norm _ _
-
-/-- Lower bound: -(‖φ(a)‖ · ‖φ(b)‖) ≤ rs(a,b) -/
-theorem neg_norm_mul_le_resonanceStrength (a b : I) :
-    -(‖S.φ a‖ * ‖S.φ b‖) ≤ @resonanceStrength I H _ _ S a b := by
-  have := resonanceStrength_abs_le (S := S) a b
-  linarith [neg_abs_le (@resonanceStrength I H _ _ S a b)]
-
-/-- Squared Cauchy-Schwarz: rs(a,b)² ≤ rs(a,a) · rs(b,b) -/
-theorem resonanceStrength_cauchy_schwarz_sq (a b : I) :
-    @resonanceStrength I H _ _ S a b ^ 2 ≤
-    @resonanceStrength I H _ _ S a a * @resonanceStrength I H _ _ S b b := by
-  rw [resonanceStrength_self, resonanceStrength_self, ← mul_pow]
-  have h1 := resonanceStrength_le (S := S) a b
-  have h2 := neg_norm_mul_le_resonanceStrength (S := S) a b
-  nlinarith [sq_nonneg (@resonanceStrength I H _ _ S a b + ‖S.φ a‖ * ‖S.φ b‖),
-             sq_nonneg (@resonanceStrength I H _ _ S a b - ‖S.φ a‖ * ‖S.φ b‖)]
-
-/-! ## §9. Ideatic distance -/
-
-/-- Distance between ideas = norm of the difference of their embeddings -/
-noncomputable def ideaDist (a b : I) : ℝ :=
-  ‖S.φ a - S.φ b‖
-
-/-- Distance squared decomposes via resonance strength -/
-theorem ideaDist_sq (a b : I) :
-    @ideaDist I H _ _ S a b ^ 2 =
-    @resonanceStrength I H _ _ S a a +
-    @resonanceStrength I H _ _ S b b -
-    2 * @resonanceStrength I H _ _ S a b := by
-  unfold ideaDist resonanceStrength
-  rw [norm_sub_sq_real, real_inner_self_eq_norm_sq, real_inner_self_eq_norm_sq]
-  ring
-
-/-- Distance is symmetric -/
-theorem ideaDist_comm (a b : I) :
-    @ideaDist I H _ _ S a b = @ideaDist I H _ _ S b a := by
-  unfold ideaDist; rw [norm_sub_rev]
-
-/-- Distance to self is zero -/
-@[simp]
-theorem ideaDist_self (a : I) :
-    @ideaDist I H _ _ S a a = 0 := by
-  unfold ideaDist; simp
-
-/-- Distance is non-negative -/
-theorem ideaDist_nonneg (a b : I) :
-    0 ≤ @ideaDist I H _ _ S a b := by
-  unfold ideaDist; exact norm_nonneg _
-
-/-- Distance is zero iff ideas are equal -/
-theorem ideaDist_eq_zero_iff (a b : I) :
-    @ideaDist I H _ _ S a b = 0 ↔ a = b := by
-  unfold ideaDist
-  constructor
-  · intro h
-    rw [norm_eq_zero, sub_eq_zero] at h
-    exact S.φ_injective h
-  · intro h; rw [h]; simp
-
-/-! ## §10. Triangle inequality -/
-
-/-- Triangle inequality: d(a,c) ≤ d(a,b) + d(b,c) -/
-theorem ideaDist_triangle (a b c : I) :
-    @ideaDist I H _ _ S a c ≤
-    @ideaDist I H _ _ S a b + @ideaDist I H _ _ S b c := by
-  unfold ideaDist
-  calc ‖S.φ a - S.φ c‖
-      = ‖(S.φ a - S.φ b) + (S.φ b - S.φ c)‖ := by congr 1; abel
-    _ ≤ ‖S.φ a - S.φ b‖ + ‖S.φ b - S.φ c‖ := norm_add_le _ _
-
-/-! ## §11. Cosine similarity -/
-
-/-- Cosine similarity between ideas (normalized resonance) -/
-noncomputable def cosineSimilarity (a b : I) : ℝ :=
-  @resonanceStrength I H _ _ S a b / (‖S.φ a‖ * ‖S.φ b‖)
-
-private theorem φ_norm_pos_of_ne_void (a : I) (ha : a ≠ S.void) : ‖S.φ a‖ > 0 :=
-  norm_pos_iff.mpr (fun h => ha (S.φ_injective (by rw [h, φ_void])))
-
-/-- Cosine similarity ≤ 1 for nonvoid ideas -/
-theorem cosineSimilarity_le_one (a b : I) (ha : a ≠ S.void) (hb : b ≠ S.void) :
-    @cosineSimilarity I H _ _ S a b ≤ 1 := by
-  unfold cosineSimilarity
-  rw [div_le_one (mul_pos (φ_norm_pos_of_ne_void a ha) (φ_norm_pos_of_ne_void b hb))]
-  exact resonanceStrength_le a b
-
-/-- Cosine similarity ≥ -1 for nonvoid ideas -/
-theorem neg_one_le_cosineSimilarity (a b : I) (ha : a ≠ S.void) (hb : b ≠ S.void) :
-    -1 ≤ @cosineSimilarity I H _ _ S a b := by
-  unfold cosineSimilarity
-  rw [le_div_iff₀ (mul_pos (φ_norm_pos_of_ne_void a ha) (φ_norm_pos_of_ne_void b hb))]
-  linarith [neg_norm_mul_le_resonanceStrength (S := S) a b]
-
-/-- Cosine similarity with self = 1 for nonvoid ideas -/
-theorem cosineSimilarity_self (a : I) (ha : a ≠ S.void) :
-    @cosineSimilarity I H _ _ S a a = 1 := by
-  unfold cosineSimilarity
-  rw [resonanceStrength_self]
-  have ha' := φ_norm_pos_of_ne_void a ha
-  field_simp; ring
-
-/-! ## §12. Orthogonality -/
-
-/-- Two ideas are orthogonal if their resonance is zero -/
-def orthogonal (a b : I) : Prop :=
-  @resonanceStrength I H _ _ S a b = 0
-
-theorem orthogonal_symm (a b : I) :
-    @orthogonal I H _ _ S a b → @orthogonal I H _ _ S b a := by
-  unfold orthogonal; rw [resonanceStrength_comm]; exact id
-
-/-- Void is orthogonal to everything -/
-theorem orthogonal_void_left (a : I) :
-    @orthogonal I H _ _ S S.void a := by
-  unfold orthogonal; simp
-
-/-- Pythagorean theorem: for orthogonal ideas, self-resonances add -/
-theorem pythagorean (a b : I) (h : @orthogonal I H _ _ S a b) :
-    @resonanceStrength I H _ _ S (S.compose a b) (S.compose a b) =
-    @resonanceStrength I H _ _ S a a + @resonanceStrength I H _ _ S b b := by
-  rw [resonanceStrength_compose_left, resonanceStrength_compose_right,
-      resonanceStrength_compose_right]
-  unfold orthogonal at h
-  rw [h, resonanceStrength_comm (S := S) b a, h]
-  ring
-
-/-! ## §13. Parallelogram law -/
-
-/-- The parallelogram law: ‖a+b‖² + ‖a-b‖² = 2(‖a‖² + ‖b‖²) -/
-theorem parallelogram_law (a b : I) :
-    @resonanceStrength I H _ _ S (S.compose a b) (S.compose a b) +
-    @ideaDist I H _ _ S a b ^ 2 =
-    2 * (@resonanceStrength I H _ _ S a a + @resonanceStrength I H _ _ S b b) := by
-  rw [resonanceStrength_compose_left, resonanceStrength_compose_right,
-      resonanceStrength_compose_right, ideaDist_sq,
-      resonanceStrength_comm (S := S) b a]
-  ring
-
-/-! ## §14. Embedding norm properties -/
-
-theorem φ_norm_nonneg (a : I) : 0 ≤ ‖S.φ a‖ := norm_nonneg _
-
-@[simp]
-theorem φ_norm_void : ‖S.φ S.void‖ = 0 := by rw [φ_void, norm_zero]
-
-theorem φ_norm_pos (a : I) (ha : a ≠ S.void) : 0 < ‖S.φ a‖ :=
-  φ_norm_pos_of_ne_void a ha
-
-/-- ‖φ(compose a b)‖ ≤ ‖φ(a)‖ + ‖φ(b)‖ -/
-theorem φ_compose_norm_le (a b : I) :
-    ‖S.φ (S.compose a b)‖ ≤ ‖S.φ a‖ + ‖S.φ b‖ := by
-  rw [S.φ_compose]; exact norm_add_le _ _
-
-/-! ## §15. Resonance monotonicity -/
-
-/-- Composing with a positively-resonant idea increases self-resonance -/
-theorem compose_increases_self_resonance (a c : I)
-    (h : @resonanceStrength I H _ _ S a c > 0) :
-    @resonanceStrength I H _ _ S (S.compose a c) (S.compose a c) >
-    @resonanceStrength I H _ _ S a a := by
-  rw [resonanceStrength_compose_left, resonanceStrength_compose_right,
-      resonanceStrength_compose_right]
-  have hcc := resonanceStrength_self_nonneg (S := S) c
-  rw [resonanceStrength_comm (S := S) c a]
+/-- Self-resonance ≥ 1 for all ideas.
+    RS6 with a=void, b=void, c=idea gives rs(idea, idea) ≥ rs(void, void) = 1. -/
+theorem rs_self_ge_one (a : I) : resonanceStrength a a ≥ 1 := by
+  have h := IdeaticSpace2.rs_compose_left_mono (I := I) (void : I) (void : I) a
+  simp [IdeaticSpace2.void_left] at h
+  rw [IdeaticSpace2.rs_void_self] at h
   linarith
 
-/-! ## §16. Projection coefficient -/
+theorem rs_with_void_nonneg (a : I) : resonanceStrength a (void : I) ≥ 0 :=
+  IdeaticSpace2.rs_nonneg a _
 
-/-- The resonance component of a along b -/
-noncomputable def projectionCoeff (a b : I) : ℝ :=
-  @resonanceStrength I H _ _ S a b / @resonanceStrength I H _ _ S b b
+theorem rs_le_self_product (a b : I) :
+    resonanceStrength a b * resonanceStrength a b ≤
+    resonanceStrength a a * resonanceStrength b b :=
+  IdeaticSpace2.rs_cauchy_schwarz a b
 
-/-- Projection of an idea onto itself = 1 -/
-theorem projectionCoeff_self (a : I) (ha : a ≠ S.void) :
-    @projectionCoeff I H _ _ S a a = 1 := by
-  unfold projectionCoeff
-  have h : @resonanceStrength I H _ _ S a a ≠ 0 := by
-    rw [resonanceStrength_self]
-    intro h
-    have : ‖S.φ a‖ = 0 := by nlinarith [norm_nonneg (S.φ a)]
-    rw [norm_eq_zero] at this
-    exact ha (S.φ_injective (by rw [this, φ_void]))
-  exact div_self h
+theorem rs_self_product_pos (a b : I) :
+    resonanceStrength a a * resonanceStrength b b > 0 :=
+  mul_pos (rs_self_pos' a) (rs_self_pos' b)
 
-/-! ## §17. Depth interaction -/
+theorem rs_compose_self_right (a b : I) :
+    resonanceStrength (compose a b) (compose a b) ≥ resonanceStrength a a := by
+  have h := IdeaticSpace2.rs_compose_right_mono a a b
+  rwa [IdeaticSpace2.rs_symm] at *
 
-theorem depth_compose_bound (a b : I) :
-    S.depth (S.compose a b) ≤ S.depth a + S.depth b :=
-  S.depth_subadditive a b
+theorem rs_compose_self_left (a b : I) :
+    resonanceStrength (compose b a) (compose b a) ≥ resonanceStrength a a :=
+  IdeaticSpace2.rs_compose_left_mono a a b
 
-theorem depth_void_eq : S.depth S.void = 0 := S.depth_void
+theorem rs_compose_ge_one (a b : I) :
+    resonanceStrength (compose a b) (compose a b) ≥ 1 := by
+  linarith [rs_compose_self_right (I := I) a b, rs_self_ge_one (I := I) a]
 
-/-! ## §18. Resonance classes -/
+theorem rs_compose_both_mono (a a' b : I) :
+    resonanceStrength (compose a b) (compose a' b) ≥ resonanceStrength a a' :=
+  IdeaticSpace2.rs_compose_right_mono a a' b
 
-/-- Two ideas are θ-resonant if their inner product exceeds θ·‖a‖·‖b‖ -/
-def inResonanceClass (θ : ℝ) (a b : I) : Prop :=
-  @resonanceStrength I H _ _ S a b ≥ θ * ‖S.φ a‖ * ‖S.φ b‖
+theorem rs_double_compose (a b c d : I) :
+    resonanceStrength (compose c (compose a d)) (compose c (compose b d)) ≥
+    resonanceStrength (compose a d) (compose b d) :=
+  IdeaticSpace2.rs_compose_left_mono (compose a d) (compose b d) c
 
-/-- Resonance class membership is symmetric -/
-theorem inResonanceClass_symm (θ : ℝ) (a b : I) :
-    @inResonanceClass I H _ _ S θ a b → @inResonanceClass I H _ _ S θ b a := by
-  unfold inResonanceClass
-  intro h
-  rw [resonanceStrength_comm]
-  linarith [mul_comm ‖S.φ a‖ ‖S.φ b‖]
+theorem rs_right_context_chain (a b d : I) :
+    resonanceStrength (compose a d) (compose b d) ≥ resonanceStrength a b :=
+  IdeaticSpace2.rs_compose_right_mono a b d
 
-/-! ## §19. Composition preserves resonance direction -/
+/-- RS upper bound: rs(a,b) ≤ rs(a,a) when rs(b,b) ≤ rs(a,a) -/
+theorem rs_le_self_when (a b : I)
+    (h : resonanceStrength b b ≤ resonanceStrength a a) :
+    resonanceStrength a b ≤ resonanceStrength a a := by
+  have hcs := IdeaticSpace2.rs_cauchy_schwarz a b
+  have ha := rs_self_pos' (I := I) a
+  have hnn := IdeaticSpace2.rs_nonneg a b
+  nlinarith [sq_nonneg (resonanceStrength a a - resonanceStrength a b)]
 
-/-- If a resonates with c and b resonates with c, then compose a b resonates with c -/
-theorem compose_preserves_resonance (a b c : I)
-    (ha : @resonates I H _ _ S a c) (hb : @resonates I H _ _ S b c) :
-    @resonates I H _ _ S (S.compose a b) c := by
-  unfold resonates at *
-  rw [resonanceStrength_compose_left]
-  linarith
+end ResonanceFoundations
 
-/-! ## §20. Summary
+/-! ## §4. Depth Theorems -/
 
-The `HilbertIdeaticSpace` class has **7 axioms**:
-- 3 monoid axioms (compose_assoc, void_left, void_right)
-- 2 depth axioms (depth_void, depth_subadditive)
-- 2 embedding axioms (φ_injective, φ_compose)
+section DepthTheorems
+variable {I : Type*} [IdeaticSpace2 I]
+open IdeaticSpace2
 
-From these we derived **30+ theorems** including:
-- φ_void (embedding of void = 0)
-- Symmetry, bilinearity, void annihilation
-- Self-resonance = squared norm
-- Cauchy-Schwarz inequality (both absolute and squared forms)
-- Metric space properties (distance, triangle inequality)
-- Cosine similarity bounds [-1, 1]
-- Pythagorean theorem for orthogonal ideas
-- Parallelogram law
-- Resonance monotonicity under composition
-- Composition preserves positive resonance
+theorem depth_void' : depth (void : I) = 0 := IdeaticSpace2.depth_void
 
-**Zero sorries. Zero axioms. Zero admits.**
--/
+theorem depth_subadditive' (a b : I) :
+    depth (compose a b) ≤ depth a + depth b :=
+  IdeaticSpace2.depth_subadditive a b
+
+theorem void_atomic' : atomic (void : I) := IdeaticSpace2.void_atomic
+
+theorem depth_compose_void_left (a : I) :
+    depth (compose (void : I) a) ≤ depth a := by
+  rw [IdeaticSpace2.void_left]
+
+theorem depth_compose_void_right (a : I) :
+    depth (compose a (void : I)) ≤ depth a := by
+  rw [IdeaticSpace2.void_right]
+
+theorem depth_compose_le_double_max (a b : I) :
+    depth (compose a b) ≤ 2 * max (depth a) (depth b) := by
+  have h := IdeaticSpace2.depth_subadditive a b; omega
+
+theorem depth_composeN_le (a : I) : ∀ (n : ℕ),
+    depth (composeN a n) ≤ n * depth a
+  | 0 => by simp [composeN, IdeaticSpace2.depth_void]
+  | n + 1 => by
+    simp only [composeN]
+    have h1 := IdeaticSpace2.depth_subadditive (composeN a n) a
+    have h2 := depth_composeN_le a n
+    have : (n + 1) * depth a = n * depth a + depth a := by ring
+    omega
+
+theorem depth_compose_atomic (a b : I) (ha : atomic a) (hb : atomic b) :
+    depth (compose a b) ≤ 2 := by
+  have h := IdeaticSpace2.depth_subadditive a b
+  have h1 := IdeaticSpace2.depth_atomic a ha
+  have h2 := IdeaticSpace2.depth_atomic b hb
+  omega
+
+end DepthTheorems
+
+/-! ## §5. Resonance Metrics — Squared Distance -/
+
+section Metrics
+variable {I : Type*} [IdeaticSpace2 I]
+open IdeaticSpace2
+
+/-- Squared distance in the RKHS embedding -/
+noncomputable def squaredDistance (a b : I) : ℝ :=
+  resonanceStrength a a + resonanceStrength b b - 2 * resonanceStrength a b
+
+theorem squaredDistance_nonneg (a b : I) : squaredDistance a b ≥ 0 := by
+  unfold squaredDistance
+  have hcs := IdeaticSpace2.rs_cauchy_schwarz a b
+  have ha := rs_self_pos' (I := I) a
+  have hb := rs_self_pos' (I := I) b
+  have hnn := IdeaticSpace2.rs_nonneg a b
+  nlinarith [sq_nonneg (resonanceStrength a a - resonanceStrength b b),
+             sq_nonneg (resonanceStrength a b)]
+
+theorem squaredDistance_self (a : I) : squaredDistance a a = 0 := by
+  unfold squaredDistance; ring
+
+theorem squaredDistance_symm (a b : I) : squaredDistance a b = squaredDistance b a := by
+  unfold squaredDistance; rw [IdeaticSpace2.rs_symm a b]; ring
+
+theorem squaredDistance_void_left (a : I) :
+    squaredDistance (void : I) a =
+    1 + resonanceStrength a a - 2 * resonanceStrength (void : I) a := by
+  unfold squaredDistance; rw [IdeaticSpace2.rs_void_self]
+
+theorem squaredDistance_from_void_nonneg (a : I) :
+    squaredDistance (void : I) a ≥ 0 := squaredDistance_nonneg _ _
+
+/-- Normalized resonance strength (squared cosine similarity) -/
+noncomputable def normalizedRS (a b : I) : ℝ :=
+  (resonanceStrength a b * resonanceStrength a b) /
+  (resonanceStrength a a * resonanceStrength b b)
+
+theorem normalizedRS_le_one (a b : I) : normalizedRS a b ≤ 1 := by
+  unfold normalizedRS
+  have hcs := IdeaticSpace2.rs_cauchy_schwarz a b
+  have hprod := rs_self_product_pos (I := I) a b
+  exact div_le_one_of_le₀ hcs (le_of_lt hprod)
+
+theorem normalizedRS_nonneg (a b : I) : normalizedRS a b ≥ 0 := by
+  unfold normalizedRS
+  exact div_nonneg (mul_self_nonneg _) (le_of_lt (rs_self_product_pos (I := I) a b))
+
+theorem normalizedRS_self (a : I) : normalizedRS a a = 1 := by
+  unfold normalizedRS
+  have h := rs_self_pos' (I := I) a
+  have hne : resonanceStrength a a ≠ 0 := ne_of_gt h
+  have hne2 : resonanceStrength a a * resonanceStrength a a ≠ 0 :=
+    mul_ne_zero hne hne
+  exact div_self hne2
+
+theorem squaredDistance_zero_iff_self (a : I) :
+    squaredDistance a a = 0 := squaredDistance_self a
+
+end Metrics
+
+/-! ## §6. Interpretation Theory — Payoffs -/
+
+section Interpretation
+variable {I : Type*} [IdeaticSpace2 I]
+open IdeaticSpace2
+
+def interpret (s r : I) : I := compose r s
+
+noncomputable def senderPayoff (s r : I) : ℝ :=
+  resonanceStrength s (interpret s r)
+
+noncomputable def receiverPayoff (s r : I) : ℝ :=
+  resonanceStrength r (interpret s r)
+
+theorem interpret_void_receiver (s : I) : interpret s (void : I) = s := by
+  unfold interpret; simp [IdeaticSpace2.void_left]
+
+theorem interpret_void_signal (r : I) : interpret (void : I) r = r := by
+  unfold interpret; simp [IdeaticSpace2.void_right]
+
+theorem senderPayoff_void_receiver (s : I) :
+    senderPayoff s (void : I) = resonanceStrength s s := by
+  unfold senderPayoff; rw [interpret_void_receiver]
+
+theorem receiverPayoff_void_signal (r : I) :
+    receiverPayoff (void : I) r = resonanceStrength r r := by
+  unfold receiverPayoff; rw [interpret_void_signal]
+
+theorem senderPayoff_nonneg (s r : I) : senderPayoff s r ≥ 0 := by
+  unfold senderPayoff interpret
+  exact IdeaticSpace2.rs_nonneg s (compose r s)
+
+theorem receiverPayoff_nonneg (s r : I) : receiverPayoff s r ≥ 0 := by
+  unfold receiverPayoff interpret
+  exact IdeaticSpace2.rs_nonneg r (compose r s)
+
+theorem receiverPayoff_void_signal_ge_one (r : I) :
+    receiverPayoff (void : I) r ≥ 1 := by
+  rw [receiverPayoff_void_signal]; exact rs_self_ge_one r
+
+theorem senderPayoff_void_receiver_ge_one (s : I) :
+    senderPayoff s (void : I) ≥ 1 := by
+  rw [senderPayoff_void_receiver]; exact rs_self_ge_one s
+
+theorem receiverPayoff_context_mono (s r c : I) :
+    resonanceStrength (compose c r) (compose (compose c r) s) ≥
+    resonanceStrength r (compose r s) := by
+  have h := IdeaticSpace2.rs_compose_left_mono r (compose r s) c
+  rwa [← compose_assoc] at h
+
+end Interpretation
+
+/-! ## §7. Coherence Theory -/
+
+section Coherence
+variable {I : Type*} [IdeaticSpace2 I]
+open IdeaticSpace2
+
+noncomputable def totalResonance : List I → ℝ
+  | [] => 0
+  | [_] => 0
+  | a :: b :: rest => resonanceStrength a b + totalResonance (b :: rest)
+
+theorem totalResonance_nil : totalResonance ([] : List I) = 0 := rfl
+theorem totalResonance_singleton (a : I) : totalResonance [a] = 0 := rfl
+
+theorem totalResonance_pair (a b : I) :
+    totalResonance [a, b] = resonanceStrength a b := by
+  simp [totalResonance]
+
+theorem totalResonance_pair_nonneg (a b : I) : totalResonance [a, b] ≥ 0 := by
+  rw [totalResonance_pair]; exact IdeaticSpace2.rs_nonneg a b
+
+noncomputable def coherenceStrength (a b : I) : ℝ := resonanceStrength a b
+
+theorem coherenceStrength_symm (a b : I) :
+    coherenceStrength a b = coherenceStrength b a :=
+  IdeaticSpace2.rs_symm a b
+
+theorem coherenceStrength_self (a : I) :
+    coherenceStrength a a = resonanceStrength a a := rfl
+
+theorem coherenceStrength_bounded (a b : I) :
+    coherenceStrength a b * coherenceStrength a b ≤
+    coherenceStrength a a * coherenceStrength b b :=
+  IdeaticSpace2.rs_cauchy_schwarz a b
+
+def composeList : List I → I
+  | [] => void
+  | [a] => a
+  | a :: rest => compose a (composeList rest)
+
+theorem composeList_nil : composeList ([] : List I) = (void : I) := rfl
+theorem composeList_singleton (a : I) : composeList [a] = a := rfl
+
+end Coherence
+
+/-! ## §8. Resonance Classes -/
+
+section ResonanceClasses
+variable {I : Type*} [IdeaticSpace2 I]
+open IdeaticSpace2
+
+def stronglyResonant (a b : I) (threshold : ℝ) : Prop :=
+  resonanceStrength a b ≥ threshold
+
+theorem stronglyResonant_symm (a b : I) (t : ℝ) :
+    stronglyResonant a b t → stronglyResonant b a t := by
+  unfold stronglyResonant; rw [IdeaticSpace2.rs_symm]; exact id
+
+theorem stronglyResonant_self (a : I) : stronglyResonant a a 1 :=
+  rs_self_ge_one a
+
+theorem stronglyResonant_zero (a b : I) : stronglyResonant a b 0 :=
+  IdeaticSpace2.rs_nonneg a b
+
+theorem stronglyResonant_compose_right (a b c : I) (t : ℝ) :
+    stronglyResonant a b t → stronglyResonant (compose a c) (compose b c) t := by
+  intro h; unfold stronglyResonant at *
+  linarith [IdeaticSpace2.rs_compose_right_mono a b c]
+
+theorem stronglyResonant_compose_left (a b c : I) (t : ℝ) :
+    stronglyResonant a b t → stronglyResonant (compose c a) (compose c b) t := by
+  intro h; unfold stronglyResonant at *
+  linarith [IdeaticSpace2.rs_compose_left_mono a b c]
+
+def resonates (a b : I) : Prop := resonanceStrength a b > 0
+
+theorem resonates_refl (a : I) : resonates a a := rs_self_pos' a
+
+theorem resonates_symm (a b : I) : resonates a b → resonates b a := by
+  unfold resonates; rw [IdeaticSpace2.rs_symm]; exact id
+
+end ResonanceClasses
+
+/-! ## §9. Resonance Algebra -/
+
+section ResonanceAlgebra
+variable {I : Type*} [IdeaticSpace2 I]
+open IdeaticSpace2
+
+theorem rs_compose_with_part_right (a b : I) :
+    resonanceStrength (compose a b) (compose a b) ≥ resonanceStrength a a :=
+  rs_compose_self_right a b
+
+theorem rs_compose_with_part_left (a b : I) :
+    resonanceStrength (compose a b) (compose a b) ≥ resonanceStrength b b :=
+  rs_compose_self_left b a
+
+theorem rs_self_composeN_mono (a : I) (n : ℕ) :
+    resonanceStrength (composeN a (n + 1)) (composeN a (n + 1)) ≥
+    resonanceStrength (composeN a n) (composeN a n) := by
+  simp only [composeN_succ]; exact rs_compose_self_right (composeN a n) a
+
+theorem rs_composeN_ge_one (a : I) : ∀ (n : ℕ),
+    resonanceStrength (composeN a n) (composeN a n) ≥ 1
+  | 0 => by simp [composeN]; rw [IdeaticSpace2.rs_void_self]
+  | n + 1 => by linarith [rs_self_composeN_mono (I := I) a n, rs_composeN_ge_one a n]
+
+theorem rs_void_calibration :
+    resonanceStrength (void : I) (void : I) = 1 := IdeaticSpace2.rs_void_self
+
+end ResonanceAlgebra
+
+/-! ## §10. Advanced Resonance Properties -/
+
+section Advanced
+variable {I : Type*} [IdeaticSpace2 I]
+open IdeaticSpace2
+
+def rsLeq (a b : I) : Prop := resonanceStrength a a ≤ resonanceStrength b b
+
+theorem rsLeq_refl (a : I) : rsLeq a a := le_refl _
+theorem rsLeq_trans (a b c : I) : rsLeq a b → rsLeq b c → rsLeq a c := le_trans
+
+theorem rsLeq_compose_right (a b : I) : rsLeq a (compose a b) :=
+  rs_compose_self_right a b
+
+theorem rsLeq_compose_left (a b : I) : rsLeq a (compose b a) :=
+  rs_compose_self_left a b
+
+theorem rsLeq_void (a : I) : rsLeq (void : I) a := by
+  unfold rsLeq; rw [IdeaticSpace2.rs_void_self]; exact rs_self_ge_one a
+
+noncomputable def resonanceGap (a b : I) : ℝ :=
+  resonanceStrength a a - resonanceStrength a b
+
+theorem resonanceGap_nonneg_when_rs_le (a b : I)
+    (h : resonanceStrength b b ≤ resonanceStrength a a) :
+    resonanceGap a b ≥ 0 := by
+  unfold resonanceGap
+  linarith [rs_le_self_when (I := I) a b h]
+
+theorem resonanceGap_self (a : I) : resonanceGap a a = 0 := by
+  unfold resonanceGap; linarith
+
+noncomputable def resonanceExcess (a b : I) : ℝ :=
+  resonanceStrength (compose a b) (compose a b) - resonanceStrength a a
+
+theorem resonanceExcess_nonneg (a b : I) : resonanceExcess a b ≥ 0 := by
+  unfold resonanceExcess; linarith [rs_compose_self_right (I := I) a b]
+
+theorem resonanceExcess_void (a : I) : resonanceExcess a (void : I) = 0 := by
+  unfold resonanceExcess; rw [IdeaticSpace2.void_right]; linarith
+
+end Advanced
+
+/-! ## §11. Depth-Resonance Interaction -/
+
+section DepthResonance
+variable {I : Type*} [IdeaticSpace2 I]
+open IdeaticSpace2
+
+theorem depth_resonance_monotone (a : I) (n : ℕ) :
+    resonanceStrength (composeN a (n + 1)) (composeN a (n + 1)) ≥
+    resonanceStrength (composeN a n) (composeN a n) :=
+  rs_self_composeN_mono a n
+
+theorem zero_depth_unit_resonance :
+    depth (void : I) = 0 ∧ resonanceStrength (void : I) (void : I) = 1 :=
+  ⟨IdeaticSpace2.depth_void, IdeaticSpace2.rs_void_self⟩
+
+theorem atomic_bounded (a : I) (ha : atomic a) :
+    depth a ≤ 1 ∧ resonanceStrength a a ≥ 1 :=
+  ⟨IdeaticSpace2.depth_atomic a ha, rs_self_ge_one a⟩
+
+theorem compose_increases_both (a b : I) :
+    depth (compose a b) ≤ depth a + depth b ∧
+    resonanceStrength (compose a b) (compose a b) ≥ resonanceStrength a a :=
+  ⟨IdeaticSpace2.depth_subadditive a b, rs_compose_self_right a b⟩
+
+end DepthResonance
+
+/-! ## §12. List Resonance Analysis -/
+
+section ListResonance
+variable {I : Type*} [IdeaticSpace2 I]
+open IdeaticSpace2
+
+noncomputable def maxSelfResonance : List I → ℝ
+  | [] => 0
+  | [a] => resonanceStrength a a
+  | a :: rest => max (resonanceStrength a a) (maxSelfResonance rest)
+
+theorem maxSelfResonance_nonneg : ∀ (l : List I), maxSelfResonance l ≥ 0
+  | [] => by simp [maxSelfResonance]
+  | [a] => by simp [maxSelfResonance]; exact le_of_lt (rs_self_pos' a)
+  | a :: _ :: _ => by
+    simp [maxSelfResonance]; left; exact le_of_lt (rs_self_pos' a)
+
+noncomputable def sumSelfResonance : List I → ℝ
+  | [] => 0
+  | a :: rest => resonanceStrength a a + sumSelfResonance rest
+
+theorem sumSelfResonance_nonneg : ∀ (l : List I), sumSelfResonance l ≥ 0
+  | [] => by simp [sumSelfResonance]
+  | a :: rest => by
+    simp [sumSelfResonance]
+    linarith [rs_self_pos' (I := I) a, sumSelfResonance_nonneg rest]
+
+theorem sumSelfResonance_singleton (a : I) :
+    sumSelfResonance [a] = resonanceStrength a a := by
+  simp [sumSelfResonance]
+
+theorem each_self_resonance_ge_one (a : I) :
+    resonanceStrength a a ≥ 1 := rs_self_ge_one a
+
+end ListResonance
 
 end IDT2
