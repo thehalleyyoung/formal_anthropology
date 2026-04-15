@@ -1,0 +1,450 @@
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 1: Hermeneutic Foundations
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{Hermeneutic Foundations: Repertoires, Interpretation, and the Hermeneutic Bound}
+\label{ch:hermeneutic}
+
+\epigraph{``The limits of my language mean the limits of my world.''}{Ludwig Wittgenstein, \textit{Tractatus Logico-Philosophicus} (5.6)}
+
+% ── Introduction ──────────────────────────────────────────────────────
+
+Every human mind is a repertoire: a stock of ideas accumulated through
+enculturation.  When a signal arrives---a gesture, an utterance, a ritual
+act---the receiver does not passively absorb it.  They \emph{interpret}
+it by composing it with their existing ideas.  This chapter builds the
+foundational structures on which the entire sequel rests.
+
+In the language of Bourdieu~\cite{bourdieu1984}, a repertoire is the
+cognitive component of \emph{habitus}---the durable, transposable
+dispositions through which agents perceive and act in the social world.
+In the language of Saussure~\cite{saussure1916}, each element of the
+repertoire is a signified, and interpretation is the operation that maps
+a signifier to a new signified by composing it with an existing one.  In
+the language of Peirce~\cite{peirce1931}, interpretation is the
+generation of an \emph{interpretant} from the encounter of a sign with a
+prior sign.
+
+The payoff in a signalling game is \emph{never} about the signal
+itself---it is always about the interpretations the signal produces in
+other minds.  This insight, already present in Gadamer's
+\emph{Truth and Method}~\cite{gadamer1960}, receives its first fully
+formal treatment here.
+
+\medskip
+\noindent\textbf{Chapter overview.}  We introduce four core concepts:
+\emph{repertoire} (\S\ref{sec:ch1:core}), \emph{interpretation} and the
+\emph{hermeneutic bound} (\S\ref{sec:ch1:hermeneutic-bound}), \emph{silence}
+(\S\ref{sec:ch1:silence}), and \emph{cultural consensus}
+(\S\ref{sec:ch1:consensus}).
+We close with the \emph{telephone game} (\S\ref{sec:ch1:telephone}) and
+structural invariants (\S\ref{sec:ch1:invariants}).  All sixteen theorems
+are machine-verified in Lean~4 with zero \texttt{sorry} axioms.
+
+% ── §1. Core Definitions ─────────────────────────────────────────────
+\section{Core Definitions}
+\label{sec:ch1:core}
+
+We work within an ideatic space $(\IS, \compose, \void, \depth, \res)$
+as established in the IDT Foundations.
+
+\begin{definition}[Repertoire]
+\label{def:repertoire}
+A \emph{repertoire} is a finite list of ideas:
+\[
+  \Rep = [r_1, r_2, \ldots, r_n] \in \IS^{*}.
+\]
+In Bourdieu's terms, this is the \emph{habitus} made formal---the
+totality of schemas through which an agent perceives and interprets the
+social world.
+\end{definition}
+
+\begin{definition}[Interpretation]
+\label{def:interpretation}
+When a receiver with repertoire $\Rep = [r_1, \ldots, r_n]$ encounters
+signal~$s$, they produce the list of interpretations
+\[
+  \operatorname{interpret}(\Rep, s) 
+  = [r_1 \compose s,\; r_2 \compose s,\; \ldots,\; r_n \compose s].
+\]
+This is Gadamer's \emph{Horizontverschmelzung} (fusion of horizons):
+each background idea merges with the incoming signal.
+\end{definition}
+
+In Lean~4, the definition is:
+
+\begin{lstlisting}[caption={Interpretation in Lean~4},label=lst:interpret]
+def interpret (rep : Repertoire I) (signal : I) : List I :=
+  rep.map (fun r => IdeaticSpace.compose r signal)
+\end{lstlisting}
+
+\begin{definition}[Maximum Interpretation Depth]
+\label{def:maxinterpdepth}
+The \emph{maximum interpretation depth} of a list of ideas is
+\[
+  \operatorname{maxInterpDepth}([a_1, \ldots, a_n])
+  = \max_{i} \depth(a_i).
+\]
+\end{definition}
+
+\begin{definition}[Depth Sum]
+\label{def:depthsum}
+The \emph{depth sum} of a list of ideas is
+$\operatorname{depthSum}([a_1, \ldots, a_n]) = \sum_i \depth(a_i)$.
+\end{definition}
+
+% ── §2. The Hermeneutic Bound ────────────────────────────────────────
+\section{The Hermeneutic Bound}
+\label{sec:ch1:hermeneutic-bound}
+
+``You can only understand what you are prepared to understand.''
+The following two theorems make this aphorism precise.
+
+\begin{theorem}[Total Hermeneutic Bound]
+\label{thm:total-hermeneutic-bound}
+For any repertoire $\Rep$ and signal~$s$,
+\[
+  \operatorname{depthSum}(\operatorname{interpret}(\Rep, s))
+  \;\leq\;
+  \operatorname{depthSum}(\Rep) + |\Rep| \cdot \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $|\Rep|$.  The base case ($\Rep = []$) is trivial.
+For $\Rep = r :: \Rep'$, we use the depth-composition bound
+$\depth(r \compose s) \leq \depth(r) + \depth(s)$ and the
+inductive hypothesis on~$\Rep'$.
+The full proof is verified in \texttt{IDT\_Signal\_Ch01.lean},
+theorem \texttt{total\_hermeneutic\_bound}.
+\end{proof}
+
+\begin{remark}[Mass Media]
+This theorem explains why mass media (one signal, many receivers) has
+bounded total interpretive impact per receiver.  A richer repertoire
+absorbs more, but the signal's contribution scales only linearly with
+audience size.
+\end{remark}
+
+\begin{theorem}[MaxDepth Interpretation Bound]
+\label{thm:max-interp-depth}
+For any repertoire $\Rep$ and signal~$s$,
+\[
+  \operatorname{maxInterpDepth}(\operatorname{interpret}(\Rep, s))
+  \;\leq\;
+  \operatorname{maxInterpDepth}(\Rep) + \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $|\Rep|$.  At each step, we bound
+$\depth(r \compose s) \leq \depth(r) + \depth(s)$ and propagate
+through the maximum.  See theorem \texttt{max\_interp\_depth\_bound}.
+\end{proof}
+
+\begin{remark}
+Even the most sophisticated listener adds only $\depth(s)$ to their
+best existing understanding.  No single signal can vault a receiver
+beyond their current horizon by more than the signal's intrinsic
+complexity.
+\end{remark}
+
+% ── §3. Silence and the Unsaid ───────────────────────────────────────
+\section{Silence and the Unsaid}
+\label{sec:ch1:silence}
+
+\begin{theorem}[Silence is Transparent]
+\label{thm:silence-transparent}
+The void signal leaves the mind unchanged:
+\[
+  \operatorname{interpret}(\Rep, \void) = \Rep.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $\Rep$.  For each $r \in \Rep$, the void-right identity
+$r \compose \void = r$ yields the result immediately.
+See \texttt{silence\_is\_transparent}.
+\end{proof}
+
+\begin{remark}[Ritual Silence]
+Quaker meetings, Buddhist \emph{noble silence}, the minute of silence
+for the dead---all exploit this principle.  By saying nothing, the
+receiver's existing framework remains undisturbed.  The void signal is
+the formal foundation of taboo: what must not be said leaves the mind in
+its current state.
+\end{remark}
+
+\begin{theorem}[The Blank Receiver]
+\label{thm:blank-receiver}
+A receiver whose only idea is $\void$ interprets any signal as the
+signal itself:
+\[
+  \operatorname{interpret}([\void], s) = [s].
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Direct computation: $\void \compose s = s$ by the void-left identity.
+See \texttt{blank\_receiver}.
+\end{proof}
+
+\begin{remark}[The Objective Observer]
+The impossible ideal of the ``objective observer'' requires total
+cultural amnesia: a repertoire consisting solely of~$\void$.  Only then
+does interpretation reduce to transparent reception.
+\end{remark}
+
+\begin{theorem}[Negative Capability / Keats's Theorem]
+\label{thm:negative-capability}
+If $\void \in \Rep$, then $s \in \operatorname{interpret}(\Rep, s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Since $\void \in \Rep$, the map sends $\void \mapsto \void \compose s = s$,
+so $s$ appears in the output.
+See \texttt{negative\_capability}.
+\end{proof}
+
+\begin{remark}
+Keats described \emph{negative capability} as the capacity for ``being
+in uncertainties, Mysteries, doubts, without any irritable reaching after
+fact \& reason'' \cite{keats1817}.  In our framework, a mind retaining a
+slot of pure receptivity ($\void$ in the repertoire) captures the signal
+in its original form alongside culturally mediated versions.
+\end{remark}
+
+% ── §4. Cultural Consensus ───────────────────────────────────────────
+\section{Cultural Consensus}
+\label{sec:ch1:consensus}
+
+The next three theorems establish that resonance in backgrounds implies
+resonance in interpretations---the structural foundation of cultural
+consensus.
+
+\begin{theorem}[Durkheimian Consensus]
+\label{thm:durkheimian-consensus}
+If $r_1 \res r_2$ and both receive signal~$s$, then
+$r_1 \compose s \;\res\; r_2 \compose s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Direct application of the resonance-compose-right lemma from IDT
+Foundations.  See \texttt{durkheimian\_consensus}.
+\end{proof}
+
+\begin{remark}
+Two members of the same culture (shared myths, shared categories)
+\emph{always} produce resonant interpretations of the same event.
+Cultural consensus is a structural consequence of shared
+background---Durkheim's \emph{conscience collective}~\cite{durkheim1893}.
+\end{remark}
+
+\begin{theorem}[L\'evi-Strauss's Mythical Transformation]
+\label{thm:mythical-transformation}
+For any receiver~$r$, if $s_1 \res s_2$ then
+$r \compose s_1 \;\res\; r \compose s_2$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By resonance-compose-left.  See \texttt{mythical\_transformation}.
+\end{proof}
+
+\begin{remark}
+Ritual repetition-with-variation works because the participant's
+invariant background ensures that structurally similar performances
+produce resonant experiences.  L\'evi-Strauss's mythical
+``transformations'' are perceived as ``the same story told differently''
+precisely because the listener's background resonates with both
+variants~\cite{levistrauss1962}.
+\end{remark}
+
+\begin{theorem}[Intercultural Solidarity / Turner's Communitas]
+\label{thm:turners-communitas}
+If $r_1 \res r_2$ and $s_1 \res s_2$, then
+\[
+  r_1 \compose s_1 \;\res\; r_2 \compose s_2.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the full resonance-compose lemma.  See \texttt{turners\_communitas}.
+\end{proof}
+
+\begin{remark}
+Members of allied cultures witnessing similar rituals produce resonant
+interpretations.  This is the formal basis of what Turner called
+\emph{communitas}~\cite{turner1969}: the spontaneous solidarity that
+arises when structurally similar participants undergo similar experiences.
+\end{remark}
+
+% ── §5. The Telephone Game ───────────────────────────────────────────
+\section{The Telephone Game: Cultural Transmission Chains}
+\label{sec:ch1:telephone}
+
+\begin{theorem}[Bartlett's Serial Reproduction]
+\label{thm:bartlett}
+Two-stage interpretation through different minds equals single-stage
+interpretation through the composed mind:
+\[
+  r_B \compose (r_A \compose s)
+  \;=\;
+  (r_B \compose r_A) \compose s.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+This is the associativity axiom of the ideatic space, applied to the
+triple $(r_B, r_A, s)$.
+See \texttt{bartletts\_serial\_reproduction}.
+\end{proof}
+
+\begin{remark}
+Bartlett's (1932) serial reproduction experiments~\cite{bartlett1932}
+showed that stories change predictably through chains of retelling.  This
+theorem shows \emph{why}: the chain of interpreters is structurally
+equivalent to a single composite interpreter.  Oral tradition scholars
+can study the ``net effect'' of a transmission chain without tracking
+each individual retelling.
+\end{remark}
+
+\begin{theorem}[Telephone Depth Bound]
+\label{thm:telephone-depth}
+The depth after two-stage interpretation satisfies
+\[
+  \depth(r_B \compose (r_A \compose s))
+  \;\leq\;
+  \depth(r_B) + \depth(r_A) + \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Rewrite using associativity, then apply depth-compose-le twice.
+See \texttt{telephone\_depth}.
+\end{proof}
+
+\begin{theorem}[Resonant Transmission Lines]
+\label{thm:resonant-transmission}
+If $r_{A_1} \res r_{A_2}$ and $r_{B_1} \res r_{B_2}$, then
+\[
+  r_{B_1} \compose (r_{A_1} \compose s)
+  \;\res\;
+  r_{B_2} \compose (r_{A_2} \compose s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Apply associativity to both sides, then use resonance-compose twice.
+See \texttt{resonant\_transmission\_lines}.
+\end{proof}
+
+\begin{remark}
+Independent lines of ritual transmission (e.g., different griots in West
+Africa, different monastic orders transmitting the same texts) produce
+resonant outcomes if corresponding specialists resonate.  Ritual
+orthodoxy can be maintained across geographically separated communities
+without central authority.
+\end{remark}
+
+% ── §6. Structural Invariants ────────────────────────────────────────
+\section{Structural Invariants of Interpretation}
+\label{sec:ch1:invariants}
+
+\begin{theorem}[Void is Unpersuasive]
+\label{thm:void-unpersuasive}
+$\depth(r \compose \void) = \depth(r)$.  Silence contributes zero
+marginal depth.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the depth-compose-void identity.  See \texttt{void\_is\_unpersuasive}.
+\end{proof}
+
+\begin{remark}[Game-theoretic significance]
+The null message (babbling) contributes zero information.  This is
+\emph{why} babbling equilibria always exist: silence costs nothing and
+changes nothing.
+\end{remark}
+
+\begin{theorem}[Interpretation Conserves Count]
+\label{thm:conserves-count}
+$|\operatorname{interpret}(\Rep, s)| = |\Rep|$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the length-preserving property of \texttt{List.map}.
+See \texttt{interpretation\_conserves\_count}.
+\end{proof}
+
+\begin{theorem}[Durkheim's Division of Labor]
+\label{thm:division-of-labor}
+$\operatorname{interpret}(\Rep_1 \mathbin{+\!+} \Rep_2, s)
+ = \operatorname{interpret}(\Rep_1, s) \mathbin{+\!+}
+   \operatorname{interpret}(\Rep_2, s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By \texttt{List.map\_append}.  See \texttt{durkheims\_division\_of\_labor}.
+\end{proof}
+
+\begin{remark}
+A polymath's interpretation equals the union of specialist
+interpretations.  Interdisciplinary understanding is \emph{not}
+synergistic---it is the disjoint union of specialist understandings.
+This formalizes Durkheim's cognitive division of labor~\cite{durkheim1893}.
+\end{remark}
+
+\begin{theorem}[Silence Preserves DepthSum]
+\label{thm:silence-depthsum}
+$\operatorname{depthSum}(\operatorname{interpret}(\Rep, \void))
+ = \operatorname{depthSum}(\Rep)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Follows immediately from Theorem~\ref{thm:silence-transparent}.
+See \texttt{silence\_preserves\_depthSum}.
+\end{proof}
+
+\begin{theorem}[Three-Stage Telephone]
+\label{thm:three-stage}
+\[
+  r_C \compose (r_B \compose (r_A \compose s))
+  \;=\;
+  ((r_C \compose r_B) \compose r_A) \compose s.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Three applications of associativity.
+See \texttt{three\_stage\_telephone}.
+\end{proof}
+
+\begin{remark}
+Arbitrarily long chains of cultural transmission collapse into a single
+composite interpreter.  This is why we can meaningfully speak of ``the
+Western tradition'' as a single interpretive lens, despite it being the
+product of thousands of individual acts of interpretation.
+\end{remark}
+
+% ── Summary ──────────────────────────────────────────────────────────
+\section*{Chapter Summary}
+
+This chapter established the foundational apparatus of the signalling-game
+framework within IDT\@.  We introduced \emph{repertoires} as formal models
+of culturally constituted minds, and \emph{interpretation} as
+compositional fusion of horizons.  The \emph{Total Hermeneutic Bound}
+(Theorem~\ref{thm:total-hermeneutic-bound}) shows that no signal can
+inject more complexity into a mind than the signal's depth times the
+repertoire's size.  \emph{Silence is Transparent}
+(Theorem~\ref{thm:silence-transparent}) provides the formal foundation
+for babbling equilibria.  The \emph{Durkheimian Consensus}
+(Theorem~\ref{thm:durkheimian-consensus}) and \emph{Turner's Communitas}
+(Theorem~\ref{thm:turners-communitas}) establish that resonant
+backgrounds guarantee resonant interpretations, providing the formal
+basis of cultural consensus.  The \emph{Telephone Game} theorems
+(Theorems~\ref{thm:bartlett}--\ref{thm:resonant-transmission}) show that
+sequential interpretation chains collapse into single composite
+interpreters via associativity.
+
+All sixteen theorems are verified in
+\texttt{FormalAnthropology/IDT\_Signal\_Ch01.lean}.

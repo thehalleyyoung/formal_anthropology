@@ -1,0 +1,388 @@
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 4: Resonance Activation and Cultural Priming
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{Resonance Activation and Cultural Priming}
+\label{ch:activation}
+
+\epigraph{``The question of relevance is the question of what is
+activated.''}{Dan Sperber, \textit{Explaining Culture}}
+
+% ── Introduction ──────────────────────────────────────────────────────
+
+When a signal arrives at a mind, it does not activate the entire
+repertoire uniformly.  It selectively \emph{activates} those ideas with
+which it resonates---Sperber's (1996) relevance theory~\cite{sperber1996}
+formalised.  A Catholic seeing a cross activates christological schemas.
+A Hindu seeing the same cross might activate geometric symmetry schemas.
+The signal is identical; the activation pattern differs because different
+repertoire elements resonate with it.
+
+This chapter builds the formal theory of activation: signals do not just
+produce interpretations---they \emph{select which interpretations
+matter} through resonance.  We connect this to Bourdieu's
+\emph{habitus}~\cite{bourdieu1984}: the culturally acquired dispositions
+that determine what is ``relevant'' are precisely the resonance structure
+of the repertoire.
+
+\medskip
+\noindent\textbf{Chapter overview.}  We define activation
+(\S\ref{sec:ch4:activation}), study its interaction with interpretation
+(\S\ref{sec:ch4:interaction}), analyse sequential (double) activation
+(\S\ref{sec:ch4:double}), establish depth bounds
+(\S\ref{sec:ch4:depth-bounds}), and trace resonance chains
+(\S\ref{sec:ch4:chains}).
+
+% ── §1. Activation ───────────────────────────────────────────────────
+\section{Activation}
+\label{sec:ch4:activation}
+
+\begin{definition}[Activation]
+\label{def:activation}
+An idea~$r$ is \emph{activated} by signal~$s$ if they resonate:
+$\operatorname{activated}(r, s) \iff r \res s$.
+Activation is the formal counterpart of Sperber's ``relevance'': a
+signal is relevant to a schema if and only if it resonates with it.
+\end{definition}
+
+\begin{definition}[Activated Subset]
+\label{def:activated-subset}
+The \emph{activated subset} of repertoire~$\Rep$ under selection
+predicate $\sigma$ is $\operatorname{activatedSubset}(\Rep, \sigma)
+= \operatorname{filter}(\sigma, \Rep)$.
+\end{definition}
+
+\begin{definition}[Activated Interpretations]
+\label{def:activated-interp}
+The \emph{activated interpretations} compose only the selected elements
+with the signal:
+\[
+  \operatorname{activatedInterpretations}(\Rep, s, \sigma)
+  = \operatorname{map}(\lambda r.\; r \compose s,\;
+    \operatorname{filter}(\sigma, \Rep)).
+\]
+This models selective attention: only relevant schemas participate in
+interpretation.
+\end{definition}
+
+\begin{theorem}[Self-Activation]
+\label{thm:self-activation}
+Every idea activates itself: $\operatorname{activated}(r, r)$ for all~$r$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By reflexivity of resonance.  See \texttt{self\_activation}.
+\end{proof}
+
+\begin{remark}
+The formal basis of self-recognition.  Familiar symbols are immediately
+meaningful because they resonate with what is already there.
+\end{remark}
+
+\begin{theorem}[Activation Symmetry]
+\label{thm:activation-symm}
+If $\operatorname{activated}(r, s)$, then $\operatorname{activated}(s, r)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By symmetry of resonance.  See \texttt{activation\_symm}.
+\end{proof}
+
+\begin{remark}
+Relevance is reciprocal.  If a Christian schema is activated by a cross,
+then the cross-schema would be activated by a Christian symbol.
+Cultural exchange is inherently bidirectional.
+\end{remark}
+
+\begin{theorem}[Void Self-Activates]
+\label{thm:void-self-activates}
+$\operatorname{activated}(\void, \void)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By reflexivity: $\void \res \void$.
+See \texttt{void\_self\_activates}.
+\end{proof}
+
+\begin{theorem}[Composition Preserves Activation (Right)]
+\label{thm:activation-compose-right}
+If $\operatorname{activated}(r, s)$, then
+$\operatorname{activated}(r \compose c,\; s \compose c)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By resonance-compose-right.  See \texttt{activation\_compose\_right}.
+\end{proof}
+
+\begin{theorem}[Composition Preserves Activation (Left)]
+\label{thm:activation-compose-left}
+If $\operatorname{activated}(r, s)$, then
+$\operatorname{activated}(c \compose r,\; c \compose s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By resonance-compose-left.  See \texttt{activation\_compose\_left}.
+\end{proof}
+
+\begin{remark}
+A ritual frame (opening prayer, spatial arrangement) that precedes two
+resonant symbols does not destroy their mutual activation.  Context
+preserves relevance.
+\end{remark}
+
+% ── §2. Activation and Interpretation ────────────────────────────────
+\section{Activation and Interpretation Interaction}
+\label{sec:ch4:interaction}
+
+\begin{theorem}[Activated Interpretations Are a Sublist]
+\label{thm:activated-sublist}
+\[
+  |\operatorname{activatedInterpretations}(\Rep, s, \sigma)|
+  \leq |\operatorname{interpret}(\Rep, s)|.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Filtering can only reduce list length; mapping preserves it.
+See \texttt{activated\_interp\_sublist}.
+\end{proof}
+
+\begin{remark}
+Attention is a filter, not a generator.  Selective attention can only
+\emph{reduce} the set of interpretations, never add new ones.
+\end{remark}
+
+\begin{theorem}[Universal Activation = Full Interpretation]
+\label{thm:universal-activation}
+If $\sigma(r) = \mathtt{true}$ for all~$r$, then
+$\operatorname{activatedInterpretations}(\Rep, s, \sigma)
+ = \operatorname{interpret}(\Rep, s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Filtering with the constant-true predicate is the identity.
+See \texttt{universal\_activation}.
+\end{proof}
+
+\begin{remark}
+A mind with zero attentional filters (the ``open mind'' ideal) interprets
+everything.  Pure receptivity means every schema participates.
+\end{remark}
+
+\begin{theorem}[Null Activation = Empty Interpretation]
+\label{thm:null-activation}
+If $\sigma(r) = \mathtt{false}$ for all~$r$, then
+$\operatorname{activatedInterpretations}(\Rep, s, \sigma) = []$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Filtering with the constant-false predicate yields the empty list.
+See \texttt{null\_activation}.
+\end{proof}
+
+\begin{remark}
+Total cognitive shutdown---when nothing in your repertoire is deemed
+relevant---produces zero interpretations.  This models culture shock or
+the ``deer in headlights'' response to incomprehensible stimuli.
+\end{remark}
+
+% ── §3. Double Activation ────────────────────────────────────────────
+\section{Double Activation: Sequential Signals}
+\label{sec:ch4:double}
+
+\begin{theorem}[Sequential Interpretation Associativity]
+\label{thm:sequential-activation}
+\[
+  \operatorname{interpret}(\operatorname{interpret}(\Rep, s_1), s_2)
+  = \operatorname{interpret}(\Rep, s_1 \compose s_2).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By functoriality of map and associativity of composition.
+See \texttt{sequential\_activation}.
+\end{proof}
+
+\begin{remark}
+Cultural priming works because sequential exposure to signals is
+equivalent to a single compound signal.  Ritual sequences (opening chant
+$\to$ sacrifice $\to$ closing prayer) produce the same interpretations
+as a single complex ritual.
+\end{remark}
+
+\begin{theorem}[Resonant Sequential Identity]
+\label{thm:resonant-sequential}
+For any background~$r$ and signals $s_1, s_2$:
+\[
+  r \compose (s_1 \compose s_2) = (r \compose s_1) \compose s_2.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By associativity.  See \texttt{resonant\_sequential\_identity}.
+\end{proof}
+
+\begin{theorem}[Void Priming is Identity]
+\label{thm:void-priming}
+\[
+  \operatorname{interpret}(\operatorname{interpret}(\Rep, \void), s)
+  = \operatorname{interpret}(\Rep, s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\operatorname{interpret}(\Rep, \void) = \Rep$ by silence transparency,
+so the second interpretation acts on the original repertoire.
+See \texttt{void\_priming}.
+\end{proof}
+
+\begin{remark}
+A ritual preceded by silence produces the same interpretations as the
+ritual alone.  The ``pregnant pause'' before a sermon adds drama but not
+information.
+\end{remark}
+
+\begin{theorem}[Post-Void is Identity]
+\label{thm:post-void}
+\[
+  \operatorname{interpret}(\operatorname{interpret}(\Rep, s), \void)
+  = \operatorname{interpret}(\Rep, s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By silence transparency applied to $\operatorname{interpret}(\Rep, s)$.
+See \texttt{post\_void}.
+\end{proof}
+
+% ── §4. Activation Depth Bounds ──────────────────────────────────────
+\section{Activation Depth Bounds}
+\label{sec:ch4:depth-bounds}
+
+\begin{theorem}[Activated Interpretation Depth Bound]
+\label{thm:activated-depth}
+\[
+  \operatorname{maxInterpDepth}(\operatorname{activatedInterpretations}(\Rep, s, \sigma))
+  \leq \operatorname{maxInterpDepth}(\Rep) + \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $|\Rep|$.  Filtering can only select elements whose
+depth is bounded by $\operatorname{maxInterpDepth}(\Rep)$; composition
+adds at most $\depth(s)$.
+See \texttt{activated\_depth\_bound}.
+\end{proof}
+
+\begin{remark}
+Selective attention does not change the depth bound.  Relevance-filtering
+is a horizontal cut, not a vertical one.
+\end{remark}
+
+\begin{theorem}[Activation-Filtered Count Bound]
+\label{thm:activated-count}
+\[
+  |\operatorname{activatedInterpretations}(\Rep, s, \sigma)|
+  \leq |\Rep|.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the length bound on filtered lists.
+See \texttt{activated\_count\_bound}.
+\end{proof}
+
+\begin{remark}
+You cannot hallucinate more schemas than you actually have, no matter how
+stimulating the signal.
+\end{remark}
+
+% ── §5. Resonance Chains ─────────────────────────────────────────────
+\section{Resonance Chains and Activation Propagation}
+\label{sec:ch4:chains}
+
+\begin{theorem}[Resonant Backgrounds Produce Resonant Activations]
+\label{thm:resonant-activations}
+If $r_1 \res r_2$, then
+$r_1 \compose s \;\res\; r_2 \compose s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By resonance-compose-right.
+See \texttt{resonant\_backgrounds\_resonant\_activations}.
+\end{proof}
+
+\begin{remark}
+Culturally similar people who are primed by the same stimulus produce
+resonant responses.  This is Durkheim's collective effervescence: a
+crowd sharing cultural schemas, exposed to the same ritual stimulus,
+produces a harmonious collective response~\cite{durkheim1912}.
+\end{remark}
+
+\begin{theorem}[Activation Under Composition]
+\label{thm:activation-composition}
+If $\operatorname{activated}(r, s_1)$ and
+$\operatorname{activated}(s_1, s_2)$, then
+$\operatorname{activated}(r \compose s_1,\; s_1 \compose s_2)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the full resonance-compose lemma.
+See \texttt{activation\_composition\_chain}.
+\end{proof}
+
+\begin{remark}
+Resonance ``propagates'' through compositional chains.  Multi-layered
+rituals create cascading activations through the audience's schemas.
+\end{remark}
+
+\begin{theorem}[Void Is Universally Self-Activatable]
+\label{thm:void-self-activatable}
+$\operatorname{activated}(\void, \void)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By reflexivity of resonance.
+See \texttt{void\_universally\_self\_activatable}.
+\end{proof}
+
+\begin{theorem}[Double Signal Depth Bound]
+\label{thm:double-signal-depth}
+\[
+  \depth(r_2 \compose (r_1 \compose s))
+  \leq \depth(r_2) + \depth(r_1) + \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Apply depth-compose-le twice.  See \texttt{double\_signal\_depth\_bound}.
+\end{proof}
+
+\begin{remark}
+Cultural complexity does not compound super-linearly through chains of
+interpretation.  A three-layer cultural transmission has bounded total
+complexity.
+\end{remark}
+
+% ── Summary ──────────────────────────────────────────────────────────
+\section*{Chapter Summary}
+
+This chapter formalised the theory of \emph{resonance activation}:
+signals selectively activate repertoire elements through resonance,
+producing filtered interpretations.  Self-activation
+(Theorem~\ref{thm:self-activation}) and activation symmetry
+(Theorem~\ref{thm:activation-symm}) establish the basic structure.
+Universal activation recovers full interpretation
+(Theorem~\ref{thm:universal-activation}), while null activation produces
+cognitive shutdown (Theorem~\ref{thm:null-activation}).  Sequential
+signals compose associatively
+(Theorem~\ref{thm:sequential-activation}), and void priming is the
+identity (Theorem~\ref{thm:void-priming}).  The activated depth bound
+(Theorem~\ref{thm:activated-depth}) shows that selective attention does
+not change the depth ceiling.  Resonance propagates through activation
+chains (Theorem~\ref{thm:activation-composition}), providing the formal
+basis for understanding how multi-layered rituals create cascading
+effects through culturally constituted minds.
+
+All eighteen theorems are verified in
+\texttt{FormalAnthropology/IDT\_Signal\_Ch04.lean}.

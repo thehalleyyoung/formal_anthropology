@@ -1,0 +1,426 @@
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 2: The Signalling Problem
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{The Signalling Problem}
+\label{ch:signalling}
+
+\epigraph{``Words are also actions, and actions are a kind of words.''}{Ralph Waldo Emerson}
+
+% ── Introduction ──────────────────────────────────────────────────────
+
+In every human society, actors choose signals strategically: a politician
+picks rhetoric, a suitor offers gifts, a priest designs liturgy.  The
+sender's fundamental problem is that they cannot control how receivers
+will \emph{interpret} the signal---each receiver composes the signal with
+their own repertoire.
+
+This chapter formalises the core game-theoretic structure that governs
+strategic communication.  Following Spence~\cite{spence1973} and
+Crawford \& Sobel~\cite{crawford1982}, we model the signalling problem
+as a game in which a sender chooses a signal, a receiver interprets it
+through their repertoire, and both receive payoffs from the resulting
+interpretations.  The crucial departure from classical game theory is
+that payoffs depend not on the signal itself but on what receivers
+\emph{make of it}---how it composes with their existing repertoire of
+ideas.
+
+\medskip
+\noindent\textbf{Chapter overview.}  We define the \emph{signalling game}
+(\S\ref{sec:ch2:game}), establish the \emph{babbling equilibrium}
+(\S\ref{sec:ch2:babbling}), analyse \emph{audience structure}
+(\S\ref{sec:ch2:audience}), prove \emph{depth bounds} on outcomes
+(\S\ref{sec:ch2:depth}), study \emph{resonance in game outcomes}
+(\S\ref{sec:ch2:resonance}), and explore \emph{strategic properties}
+(\S\ref{sec:ch2:strategic}).  All eighteen theorems are machine-verified.
+
+% ── §1. The Signalling Game ──────────────────────────────────────────
+\section{The Signalling Game}
+\label{sec:ch2:game}
+
+\begin{definition}[Signalling Game]
+\label{def:signalling-game}
+A \emph{signalling game} $G = (\Rep, \Pay_S, \Pay_R)$ consists of:
+\begin{itemize}
+  \item A receiver repertoire $\Rep \in \IS^*$;
+  \item A sender payoff function $\Pay_S : \IS^* \to \mathbb{N}$;
+  \item A receiver payoff function $\Pay_R : \IS^* \to \mathbb{N}$.
+\end{itemize}
+The payoff depends on the \emph{interpretation} (the list of composed
+ideas), not the signal directly.
+\end{definition}
+
+\begin{lstlisting}[caption={SignallingGame in Lean~4},label=lst:signalling-game]
+structure SignallingGame (I : Type*) [IdeaticSpace I] where
+  repertoire : Repertoire I
+  sender_payoff : List I -> Nat
+  receiver_payoff : List I -> Nat
+\end{lstlisting}
+
+\begin{definition}[Outcome]
+\label{def:outcome}
+The \emph{outcome} of sending signal~$s$ in game~$G$ is
+\[
+  \operatorname{outcome}(G, s) = \operatorname{interpret}(G.\Rep, s).
+\]
+\end{definition}
+
+\begin{definition}[Optimal Signal]
+\label{def:optimal-signal}
+A signal~$s$ is \emph{optimal} for the sender if no alternative yields
+strictly higher payoff:
+\[
+  \forall s'.\; \Pay_S(\operatorname{outcome}(G, s'))
+  \leq \Pay_S(\operatorname{outcome}(G, s)).
+\]
+\end{definition}
+
+\begin{definition}[Constant Sender Payoff]
+\label{def:constant-payoff}
+A game has \emph{constant sender payoff} if
+$\Pay_S(\mathbf{x}) = \Pay_S(\mathbf{y})$ for all interpretation
+lists~$\mathbf{x}, \mathbf{y}$.
+\end{definition}
+
+% ── §2. Babbling Equilibrium ─────────────────────────────────────────
+\section{Babbling Equilibrium}
+\label{sec:ch2:babbling}
+
+\begin{theorem}[Babbling Outcome]
+\label{thm:babbling-outcome}
+Sending void produces the original repertoire unchanged:
+\[
+  \operatorname{outcome}(G, \void) = G.\Rep.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Unfold the definitions and apply Theorem~\ref{thm:silence-transparent}
+from Chapter~1.  See \texttt{babbling\_outcome}.
+\end{proof}
+
+\begin{remark}
+The ``babbling equilibrium'' of Crawford \& Sobel~\cite{crawford1982}
+exists in every signalling game because silence is transparent---the
+receiver's mind is left exactly as it was.
+\end{remark}
+
+\begin{theorem}[Constant Payoff Babbling Optimality]
+\label{thm:constant-payoff}
+If sender payoff is constant, every signal is optimal---including void.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+If $\Pay_S$ is constant, $\Pay_S(\operatorname{outcome}(G,s'))
+= \Pay_S(\operatorname{outcome}(G,s))$ for all $s,s'$, so the
+optimality condition holds trivially.  See \texttt{constant\_payoff\_optimal}.
+\end{proof}
+
+\begin{remark}
+When the sender genuinely does not care what the receiver thinks,
+information transmission collapses entirely.  This is the cheapest of
+cheap talk.
+\end{remark}
+
+\begin{theorem}[Outcome Length Invariance]
+\label{thm:outcome-length}
+Every signal produces the same number of interpretations:
+\[
+  |\operatorname{outcome}(G, s)| = |G.\Rep|.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By Theorem~\ref{thm:conserves-count}.  See \texttt{outcome\_length}.
+\end{proof}
+
+\begin{remark}
+You cannot make someone think \emph{more} thoughts by choosing a
+cleverer signal.  The number of schemas activated is a fixed property of
+the receiver, not the sender.
+\end{remark}
+
+\begin{theorem}[Singleton Repertoire Outcome]
+\label{thm:singleton-outcome}
+A receiver with a single idea~$r$ produces $[r \compose s]$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Direct computation.  See \texttt{singleton\_outcome}.
+\end{proof}
+
+\begin{remark}
+The fanatic (single-idea mind) has a perfectly predictable interpretation
+of any signal.  Totalitarian receivers are, paradoxically, the easiest
+to communicate with.
+\end{remark}
+
+% ── §3. Audience Structure ───────────────────────────────────────────
+\section{Audience Structure}
+\label{sec:ch2:audience}
+
+\begin{theorem}[Merged Audience]
+\label{thm:merged-audience}
+Signalling to a combined audience equals the concatenation of separate
+outcomes:
+\[
+  \operatorname{outcome}(\Rep_1 \mathbin{+\!+} \Rep_2, s)
+  = \operatorname{outcome}(\Rep_1, s) \mathbin{+\!+}
+    \operatorname{outcome}(\Rep_2, s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By \texttt{List.map\_append}.  See \texttt{merged\_audience\_outcome}.
+\end{proof}
+
+\begin{remark}
+A political speech to a diverse audience (workers $\cup$ elites) produces
+interpretations that are the disjoint union of what each subgroup would
+have produced separately.  There is no ``synergistic'' interpretation
+effect from mere co-presence.
+\end{remark}
+
+\begin{theorem}[Empty Audience]
+\label{thm:empty-audience}
+Signalling to no one produces nothing:
+$\operatorname{outcome}([], s) = []$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By definition.  See \texttt{empty\_audience}.
+\end{proof}
+
+\begin{remark}
+If nobody is there to interpret, there are no interpretations.  A signal
+without a receiver is not a communicative act---formalising Wittgenstein's
+point that meaning requires use~\cite{wittgenstein1953}.
+\end{remark}
+
+\begin{theorem}[Blank Audience Transparency]
+\label{thm:blank-audience}
+A receiver whose repertoire is all void interprets any signal as
+$n$~copies of the signal itself:
+\[
+  \operatorname{outcome}(\operatorname{replicate}(n, \void), s)
+  = \operatorname{replicate}(n, s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on~$n$, using $\void \compose s = s$ at each step.
+See \texttt{blank\_audience}.
+\end{proof}
+
+% ── §4. Depth Bounds on Outcomes ─────────────────────────────────────
+\section{Depth Bounds on Outcomes}
+\label{sec:ch2:depth}
+
+\begin{theorem}[Outcome Depth Bound]
+\label{thm:outcome-depth-bound}
+\[
+  \operatorname{depthSum}(\operatorname{outcome}(G, s))
+  \leq \operatorname{depthSum}(G.\Rep) + |G.\Rep| \cdot \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Direct application of the Total Hermeneutic Bound
+(Theorem~\ref{thm:total-hermeneutic-bound}).
+See \texttt{outcome\_depth\_bound}.
+\end{proof}
+
+\begin{remark}
+The sender's capacity to inject complexity into the receiver's mind is
+linearly bounded.  This is why propaganda targets breadth (many receivers)
+rather than depth (one deep signal).
+\end{remark}
+
+\begin{theorem}[Void Signal Zero Cost]
+\label{thm:void-zero-cost}
+The void signal adds zero total depth to the outcome:
+\[
+  \operatorname{depthSum}(\operatorname{outcome}(G, \void))
+  = \operatorname{depthSum}(G.\Rep).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By Theorem~\ref{thm:silence-depthsum}.  See \texttt{void\_signal\_zero\_cost}.
+\end{proof}
+
+% ── §5. Resonance in Game Outcomes ───────────────────────────────────
+\section{Resonance in Game Outcomes}
+\label{sec:ch2:resonance}
+
+\begin{theorem}[Resonant Repertoire Consensus]
+\label{thm:resonant-repertoire}
+If all elements in the repertoire resonate with a fixed idea~$a$, then
+all interpretations of any signal also resonate with $a \compose s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+For each $r \in \Rep$ with $r \res a$, by Theorem~\ref{thm:durkheimian-consensus}
+we get $r \compose s \res a \compose s$.
+See \texttt{resonant\_repertoire\_consensus}.
+\end{proof}
+
+\begin{remark}
+A culturally homogeneous audience (everyone resonates with the same
+archetype) produces interpretations that all resonate with that
+archetype's interpretation.  Cultural consensus is self-reinforcing.
+\end{remark}
+
+\begin{theorem}[Resonant Signals Produce Resonant Outcomes]
+\label{thm:resonant-signals-outcomes}
+If $s_1 \res s_2$, then for each position~$i$, the interpretations
+$r_i \compose s_1$ and $r_i \compose s_2$ resonate.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on the repertoire, applying resonance-compose-left at each
+step.  See \texttt{resonant\_signals\_resonant\_outcomes}.
+\end{proof}
+
+% ── §6. Strategic Properties ─────────────────────────────────────────
+\section{Strategic Properties}
+\label{sec:ch2:strategic}
+
+\begin{theorem}[Self-Signalling]
+\label{thm:self-signalling}
+If $\mathit{sender\_idea} \in \Rep$, then
+$\mathit{sender\_idea} \compose s \in \operatorname{outcome}(G, s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The sender's idea is mapped to its composition with~$s$ by the
+interpretation function.  See \texttt{self\_signalling}.
+\end{proof}
+
+\begin{remark}
+An insider---someone whose perspective is represented in the audience---
+can always produce resonant interpretations by sending signals resonant
+with their own position.
+\end{remark}
+
+\begin{theorem}[Composition Signal]
+\label{thm:composition-signal}
+\[
+  \operatorname{outcome}(\Rep, s_1 \compose s_2)
+  = \operatorname{outcome}(\operatorname{interpret}(\Rep, s_1), s_2).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By associativity of composition: for each~$r$,
+$r \compose (s_1 \compose s_2) = (r \compose s_1) \compose s_2$.
+See \texttt{composition\_signal}.
+\end{proof}
+
+\begin{remark}
+A complex ritual (compound signal) has the same effect as first
+``priming'' the audience with~$s_1$ and then delivering~$s_2$.  Ritual
+structure exploits associativity.
+\end{remark}
+
+\begin{theorem}[Void Prepend]
+\label{thm:void-prepend}
+$\operatorname{outcome}(\Rep, \void \compose s)
+ = \operatorname{outcome}(\Rep, s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By void-right: $r \compose (\void \compose s) = r \compose s$ after
+applying associativity and the void-right identity.
+See \texttt{void\_prepend\_signal}.
+\end{proof}
+
+\begin{theorem}[Sequential Signal]
+\label{thm:sequential-signal}
+\[
+  \operatorname{interpret}(\operatorname{interpret}(\Rep, s_1), s_2)
+  = \operatorname{interpret}(\Rep, s_1 \compose s_2).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By functoriality of map and associativity.
+See \texttt{sequential\_signal}.
+\end{proof}
+
+\begin{remark}
+Multi-stage rituals (initiation sequences, liturgical calendars) produce
+the same interpretive effect as a single complex ritual.  Ceremonial
+structure is algebraically decomposable.
+\end{remark}
+
+\begin{theorem}[Void Captures Signal]
+\label{thm:void-captures}
+If $\void \in G.\Rep$, then $s \in \operatorname{outcome}(G, s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By Theorem~\ref{thm:negative-capability}.
+See \texttt{void\_captures\_signal}.
+\end{proof}
+
+\begin{remark}
+An ``open-minded'' receiver (one who retains $\void$ = pure receptivity)
+always captures the sender's intended signal.
+\end{remark}
+
+\begin{theorem}[MaxDepth Outcome Bound]
+\label{thm:max-outcome-depth}
+\[
+  \operatorname{maxInterpDepth}(\operatorname{outcome}(G, s))
+  \leq \operatorname{maxInterpDepth}(G.\Rep) + \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By Theorem~\ref{thm:max-interp-depth}.
+See \texttt{max\_outcome\_depth}.
+\end{proof}
+
+\begin{remark}
+No matter how profound a signal, the deepest interpretation anyone can
+produce is bounded by their existing depth plus the signal's depth.  The
+receiver's capacity limits understanding, not the sender's intent---a
+formalisation of ``you can't teach beyond the student's readiness.''
+\end{remark}
+
+\begin{theorem}[Babbling Payoff]
+\label{thm:babbling-payoff}
+\[
+  \Pay_S(\operatorname{outcome}(G, \void))
+  = \Pay_S(G.\Rep).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By Theorem~\ref{thm:babbling-outcome}.
+See \texttt{babbling\_payoff}.
+\end{proof}
+
+\begin{remark}
+The babbling payoff equals the ``status quo'' payoff.  A signal is worth
+sending only if it yields strictly more than silence.
+\end{remark}
+
+% ── Summary ──────────────────────────────────────────────────────────
+\section*{Chapter Summary}
+
+This chapter formalised the signalling problem within IDT\@.  The central
+game-theoretic structure---a signalling game with repertoire-dependent
+payoffs---was introduced, and the \emph{babbling equilibrium}
+(Theorem~\ref{thm:babbling-outcome}) was established: silence always
+leaves the receiver's mind unchanged.  We showed that outcomes have
+invariant length (Theorem~\ref{thm:outcome-length}), bounded depth
+(Theorem~\ref{thm:outcome-depth-bound}), and that resonant signals
+produce resonant outcomes (Theorem~\ref{thm:resonant-signals-outcomes}).
+The composition signal theorem (Theorem~\ref{thm:composition-signal})
+reveals that compound signals decompose via associativity, providing the
+algebraic foundation for analysing multi-stage rituals.
+
+All eighteen theorems are verified in
+\texttt{FormalAnthropology/IDT\_Signal\_Ch02.lean}.

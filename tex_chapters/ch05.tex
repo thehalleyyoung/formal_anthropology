@@ -1,0 +1,420 @@
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 5: Misinterpretation and Cultural Distance
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{Misinterpretation and Cultural Distance}
+\label{ch:misinterp}
+
+\epigraph{``Understanding is always more than merely re-creating someone
+else's meaning.''}{Hans-Georg Gadamer, \textit{Truth and Method}}
+
+% ── Introduction ──────────────────────────────────────────────────────
+
+The sender intends the receiver to compose signal~$s$ with
+background~$r^*$ (the ``shared understanding'').  But the receiver
+actually composes with~$r_{\mathrm{actual}}$---their real, possibly
+different, cultural background.  The gap between
+$r^* \compose s$ and $r_{\mathrm{actual}} \compose s$ is the formal
+measure of \emph{misinterpretation}.
+
+This chapter develops the formal theory of interpretive divergence.
+Connecting to the Sapir--Whorf hypothesis~\cite{vygotsky1978}, which
+holds that linguistic background shapes interpretation, and to Gadamer's
+hermeneutic circle~\cite{gadamer1960}, which insists that understanding
+requires pre-understanding, we show that cultural distance between
+backgrounds governs interpretive distance between outcomes.
+
+\medskip
+\noindent\textbf{Chapter overview.}  We define the interpretation gap
+(\S\ref{sec:ch5:gap}), analyse void backgrounds
+(\S\ref{sec:ch5:void-bg}), develop iterated re-interpretation
+(\S\ref{sec:ch5:iteration}), study resonance under iteration
+(\S\ref{sec:ch5:resonance-iter}), and formalise cultural distance
+(\S\ref{sec:ch5:distance}).
+
+% ── §1. The Interpretation Gap ───────────────────────────────────────
+\section{The Interpretation Gap}
+\label{sec:ch5:gap}
+
+\begin{definition}[Intended Interpretation]
+\label{def:intended-interp}
+The sender's \emph{intended interpretation} is
+$\operatorname{intendedInterp}(r_{\mathrm{intended}}, s)
+ = r_{\mathrm{intended}} \compose s$.
+\end{definition}
+
+\begin{definition}[Actual Interpretation]
+\label{def:actual-interp}
+The receiver's \emph{actual interpretation} is
+$\operatorname{actualInterp}(r_{\mathrm{actual}}, s)
+ = r_{\mathrm{actual}} \compose s$.
+\end{definition}
+
+\begin{definition}[Well-Interpreted]
+\label{def:well-interpreted}
+An interpretation is \emph{well-interpreted} if the actual and intended
+interpretations resonate:
+\[
+  \operatorname{wellInterpreted}(r_{\mathrm{int}}, r_{\mathrm{act}}, s)
+  \;\iff\;
+  r_{\mathrm{int}} \compose s \;\res\; r_{\mathrm{act}} \compose s.
+\]
+This is weaker than equality but stronger than ``no relation.''
+\end{definition}
+
+\begin{theorem}[Resonant Backgrounds Guarantee Well-Interpretation]
+\label{thm:resonant-well-interpreted}
+If $r_{\mathrm{int}} \res r_{\mathrm{act}}$, then the signal~$s$ is
+well-interpreted.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By resonance-compose-right applied to the resonant backgrounds.
+See \texttt{resonant\_backgrounds\_well\_interpreted}.
+\end{proof}
+
+\begin{remark}
+Members of the same culture (resonant backgrounds) always produce
+well-interpreted outcomes for any signal.  Gadamer's ``fusion of
+horizons'' is guaranteed when horizons resonate~\cite{gadamer1960}.
+\end{remark}
+
+\begin{theorem}[Self-Interpretation Always Succeeds]
+\label{thm:self-interpretation}
+$\operatorname{wellInterpreted}(r, r, s)$ for all $r, s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By reflexivity of resonance on the backgrounds.
+See \texttt{self\_interpretation}.
+\end{proof}
+
+\begin{remark}
+You always understand yourself.  Soliloquy is the degenerate case of
+communication.
+\end{remark}
+
+\begin{theorem}[Well-Interpretation is Symmetric]
+\label{thm:well-interp-symm}
+If $\operatorname{wellInterpreted}(r_1, r_2, s)$, then
+$\operatorname{wellInterpreted}(r_2, r_1, s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By symmetry of resonance.  See \texttt{well\_interpretation\_symm}.
+\end{proof}
+
+\begin{remark}
+Mutual intelligibility is symmetric.  If I can understand your ritual,
+you can understand mine.  Cultural exchange is inherently
+bidirectional---a formalisation of the anthropological observation that
+first contact is always reciprocal.
+\end{remark}
+
+% ── §2. The Void Background ─────────────────────────────────────────
+\section{The Void Background}
+\label{sec:ch5:void-bg}
+
+\begin{theorem}[Void Intended Transparency]
+\label{thm:void-intended}
+$\operatorname{intendedInterp}(\void, s) = s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By $\void \compose s = s$.  See \texttt{void\_intended\_transparency}.
+\end{proof}
+
+\begin{remark}
+A sender who assumes zero shared context intends the signal to be
+received ``as is.''  Any deviation from the raw signal is the receiver's
+cultural contribution.  This is the formal model of the ``objective
+journalist'' fantasy.
+\end{remark}
+
+\begin{theorem}[Void Actual Transparency]
+\label{thm:void-actual}
+$\operatorname{actualInterp}(\void, s) = s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By $\void \compose s = s$.  See \texttt{void\_actual\_transparency}.
+\end{proof}
+
+\begin{theorem}[Void-Void Perfect Interpretation]
+\label{thm:void-void-perfect}
+$\operatorname{wellInterpreted}(\void, \void, s)$ for all $s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Both interpret $s$ as $s$ itself, so the interpretations are identical
+(and hence resonant).
+See \texttt{void\_void\_perfect}.
+\end{proof}
+
+\begin{remark}
+In the (impossible) limit of zero culture, there is zero
+misinterpretation.  Misunderstanding is entirely a product of cultural
+difference.
+\end{remark}
+
+\begin{theorem}[The Hermeneutic Circle]
+\label{thm:hermeneutic-circle}
+For any $r, s$:
+$\operatorname{actualInterp}(r, s) \res \operatorname{actualInterp}(r, s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By reflexivity of resonance.  See \texttt{hermeneutic\_circle}.
+\end{proof}
+
+\begin{remark}
+Understanding always loops back to self-resonance.  You cannot escape
+your own interpretive framework---even when you try to ``step outside,''
+the result still resonates with your starting point.  This is the formal
+content of Gadamer's hermeneutic circle~\cite{gadamer1960}.
+\end{remark}
+
+% ── §3. Iterated Re-Interpretation ───────────────────────────────────
+\section{Iterated Re-Interpretation}
+\label{sec:ch5:iteration}
+
+\begin{definition}[Iterated Interpretation]
+\label{def:iterate-interp}
+The $n$-fold re-interpretation of signal~$s$ through background~$r$ is:
+\[
+  \operatorname{iterateInterp}(r, s, n) =
+  \begin{cases}
+    s & \text{if } n = 0, \\
+    r \compose \operatorname{iterateInterp}(r, s, n-1) & \text{if } n > 0.
+  \end{cases}
+\]
+This models rumination, echo chambers, and iterative cultural processing.
+\end{definition}
+
+\begin{lstlisting}[caption={Iterated interpretation in Lean~4},label=lst:iterate]
+def iterateInterp (r s : I) : Nat -> I
+  | 0 => s
+  | n + 1 => IdeaticSpace.compose r (iterateInterp r s n)
+\end{lstlisting}
+
+\begin{theorem}[Zero Iteration = Raw Signal]
+\label{thm:iterate-zero}
+$\operatorname{iterateInterp}(r, s, 0) = s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By definition.  See \texttt{iterate\_zero}.
+\end{proof}
+
+\begin{theorem}[Single Iteration = Basic Interpretation]
+\label{thm:iterate-one}
+$\operatorname{iterateInterp}(r, s, 1) = r \compose s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By definition.  See \texttt{iterate\_one}.
+\end{proof}
+
+\begin{theorem}[Void Iteration Identity]
+\label{thm:void-iterate}
+$\operatorname{iterateInterp}(\void, s, n) = s$ for all $n$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $n$, using $\void \compose x = x$ at the inductive step.
+See \texttt{void\_iterate}.
+\end{proof}
+
+\begin{remark}
+An ``empty mind'' processing a signal repeatedly never changes it.
+Without cultural content, there is no interpretive drift.  Echo chambers
+require content to echo.
+\end{remark}
+
+\begin{theorem}[Iterated Interpretation Depth Bound]
+\label{thm:iterate-depth}
+\[
+  \depth(\operatorname{iterateInterp}(r, s, n))
+  \leq n \cdot \depth(r) + \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $n$.  At step $n+1$, the depth-compose bound gives
+$\depth(r \compose x) \leq \depth(r) + \depth(x)$; applying the
+inductive hypothesis yields the result.
+See \texttt{iterate\_depth\_bound}.
+\end{proof}
+
+\begin{remark}
+Echo chambers have linearly bounded complexity.  Even infinite
+rumination through a fixed cultural lens can only add linear depth.
+Obsessive rumination is unproductive: each pass adds at most $\depth(r)$
+more complexity.
+\end{remark}
+
+\begin{theorem}[Void Signal Single Iteration]
+\label{thm:void-signal-iterate}
+$\operatorname{iterateInterp}(r, \void, 1) = r$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$r \compose \void = r$ by void-right.
+See \texttt{void\_signal\_iterate\_one}.
+\end{proof}
+
+\begin{remark}
+Processing ``nothing'' through a cultural lens yields the lens itself.
+An empty news feed processed through conspiracy-theory schemas yields
+the conspiracy schema unchanged.
+\end{remark}
+
+% ── §4. Resonance Under Iteration ────────────────────────────────────
+\section{Resonance Under Iteration}
+\label{sec:ch5:resonance-iter}
+
+\begin{theorem}[Resonant Iteration Step]
+\label{thm:resonant-step}
+If $r_1 \res r_2$ and $x_1 \res x_2$, then
+$r_1 \compose x_1 \;\res\; r_2 \compose x_2$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the full resonance-compose lemma.
+See \texttt{resonant\_iteration\_step}.
+\end{proof}
+
+\begin{theorem}[Full Resonant Iteration]
+\label{thm:full-resonant-iteration}
+If $r_1 \res r_2$, then for all $n$:
+\[
+  \operatorname{iterateInterp}(r_1, s, n)
+  \;\res\;
+  \operatorname{iterateInterp}(r_2, s, n).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $n$.  Base case: $s \res s$ by reflexivity.  Inductive
+step: apply Theorem~\ref{thm:resonant-step} with the inductive
+hypothesis.
+See \texttt{resonant\_iteration}.
+\end{proof}
+
+\begin{remark}
+Cultural similarity guarantees interpretive similarity at every stage
+of processing.  This is why ``deep'' cultural understanding between
+allied groups is possible---resonance propagates through all layers of
+interpretation.
+\end{remark}
+
+\begin{theorem}[Self-Iteration Self-Resonance]
+\label{thm:self-iter-resonance}
+$\operatorname{iterateInterp}(r, s, n) \res
+ \operatorname{iterateInterp}(r, s, n)$ for all $r, s, n$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By reflexivity.  See \texttt{self\_iteration\_resonance}.
+\end{proof}
+
+\begin{remark}
+The echo chamber's output is always ``consistent'' in the sense of
+self-resonance---it just may not resonate with \emph{anything else}.
+This is the formal trap of intellectual isolation.
+\end{remark}
+
+% ── §5. Cultural Distance ────────────────────────────────────────────
+\section{Cultural Distance and Interpretation}
+\label{sec:ch5:distance}
+
+\begin{theorem}[Composition Preserves Well-Interpretation]
+\label{thm:compound-well-interpreted}
+If $s_1$ and $s_2$ are both well-interpreted under the same background
+pair $(r_1, r_2)$, then
+\[
+  (r_1 \compose s_1) \compose (r_1 \compose s_2)
+  \;\res\;
+  (r_2 \compose s_1) \compose (r_2 \compose s_2).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the full resonance-compose lemma applied to the two well-interpretation
+hypotheses.
+See \texttt{compound\_well\_interpreted}.
+\end{proof}
+
+\begin{remark}
+If two cultures understand each other's simple signals, they understand
+compound signals too.  Mutual intelligibility at the atomic level
+guarantees mutual intelligibility at the molecular level.  This is why
+pidgins can bootstrap into creoles.
+\end{remark}
+
+\begin{theorem}[Interpretation Depth Gap]
+\label{thm:interp-depth-gap}
+\[
+  \depth(\operatorname{actualInterp}(r_{\mathrm{actual}}, s))
+  \leq \depth(r_{\mathrm{actual}}) + \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By depth-compose-le.  See \texttt{interpretation\_depth\_gap}.
+\end{proof}
+
+\begin{remark}
+Misinterpretation does not create unbounded complexity.  Even the most
+``wrong'' interpretation is bounded by the receiver's actual depth plus
+the signal's depth.
+\end{remark}
+
+\begin{theorem}[Iteration Composition / Ritual Accretion]
+\label{thm:iteration-composition}
+\[
+  \operatorname{iterateInterp}(r, s, n + m)
+  = \operatorname{iterateInterp}(r,\;
+    \operatorname{iterateInterp}(r, s, m),\; n).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $n$.  See \texttt{iteration\_composition}.
+\end{proof}
+
+\begin{remark}
+A lifetime of cultural processing ($n + m$ iterations) decomposes into
+childhood processing ($m$~iterations) followed by adult processing
+($n$~iterations).  Cultural development is \emph{sequentially
+decomposable}: we can study ``what did early formation contribute?'' and
+``what did later experience add?'' as separable phases.  This is the
+formal basis of Bourdieu's distinction between primary and secondary
+habitus formation~\cite{bourdieu1984}.
+\end{remark}
+
+% ── Summary ──────────────────────────────────────────────────────────
+\section*{Chapter Summary}
+
+This chapter developed the formal theory of misinterpretation within
+IDT\@.  The \emph{interpretation gap} between intended and actual
+interpretation is governed by the resonance between sender and receiver
+backgrounds (Theorem~\ref{thm:resonant-well-interpreted}).
+Well-interpretation is symmetric
+(Theorem~\ref{thm:well-interp-symm}) and guaranteed for identical
+backgrounds (Theorem~\ref{thm:self-interpretation}).  \emph{Iterated
+re-interpretation} has linearly bounded depth
+(Theorem~\ref{thm:iterate-depth}), and \emph{resonant iteration}
+(Theorem~\ref{thm:full-resonant-iteration}) shows that culturally
+similar backgrounds produce resonant interpretations at every stage.
+The \emph{iteration composition} theorem
+(Theorem~\ref{thm:iteration-composition}) provides the formal basis for
+decomposing cultural development into sequential phases.
+
+This concludes Part~I\@.  We have established the interpretive
+framework: repertoires, signalling games, costly signals, resonance
+activation, and misinterpretation.  Part~II develops the equilibrium
+theory.
+
+All eighteen theorems are verified in
+\texttt{FormalAnthropology/IDT\_Signal\_Ch05.lean}.

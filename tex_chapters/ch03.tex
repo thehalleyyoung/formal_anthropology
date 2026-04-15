@@ -1,0 +1,396 @@
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 3: Costly Depth and Ritual Sacrifice
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{Costly Depth and Ritual Sacrifice}
+\label{ch:costly}
+
+\epigraph{``A signal that is cheap to produce is a signal that is easy
+to fake.''}{Amotz Zahavi, \textit{The Handicap Principle}}
+
+% ── Introduction ──────────────────────────────────────────────────────
+
+Zahavi's (1975) handicap principle~\cite{zahavi1975} and Sosis's (2003)
+costly signalling theory of ritual~\cite{sosis2003} propose that honest
+communication requires \emph{costly} signals.  The depth of an idea---its
+structural complexity---is a natural cost metric: deeper signals require
+more cognitive resources to produce and maintain.
+
+In classical signalling theory (Spence~\cite{spence1973}), the cost of
+education serves as a separating device between high-ability and
+low-ability workers.  In our framework, the cost of a signal is its
+\emph{depth}: the structural complexity that must be generated and
+maintained.  A simple slogan has low cost; a multi-layered ritual
+performance has high cost.
+
+The key anthropological insight is that rituals involving genuine
+sacrifice---scarification, potlatch, fasting---are \emph{honest depth
+signals}: they cannot be cheaply faked because the depth (complexity) is
+intrinsic to the act itself.
+
+\medskip
+\noindent\textbf{Chapter overview.}  We identify depth with signal cost
+(\S\ref{sec:ch3:cost}), study iterated signals and ritual repetition
+(\S\ref{sec:ch3:iteration}), formalise the single-crossing property
+(\S\ref{sec:ch3:crossing}), bound interpretation cost
+(\S\ref{sec:ch3:interp-cost}), and analyse the interaction between
+resonance and cost (\S\ref{sec:ch3:resonance-cost}).
+
+% ── §1. Depth as Signal Cost ─────────────────────────────────────────
+\section{Depth as Signal Cost}
+\label{sec:ch3:cost}
+
+\begin{definition}[Signal Cost]
+\label{def:signal-cost}
+The \emph{cost} of signal~$s$ is its depth:
+$\operatorname{signalCost}(s) = \depth(s)$.
+In Zahavi's handicap principle, this is the metabolic, social, or
+cognitive cost of producing the signal.
+\end{definition}
+
+\begin{theorem}[Void is Costless]
+\label{thm:void-costless}
+$\operatorname{signalCost}(\void) = 0$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By $\depth(\void) = 0$.  See \texttt{void\_costless}.
+\end{proof}
+
+\begin{remark}
+Silence is always free.  Every signalling system must contend with the
+zero-cost outside option of saying nothing.
+\end{remark}
+
+\begin{theorem}[Cost Subadditivity]
+\label{thm:cost-subadditive}
+\[
+  \operatorname{signalCost}(s_1 \compose s_2)
+  \leq \operatorname{signalCost}(s_1) + \operatorname{signalCost}(s_2).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the depth-compose bound.  See \texttt{cost\_subadditive}.
+\end{proof}
+
+\begin{remark}
+A two-part ritual (fasting + scarification) costs at most as much as the
+parts separately.  Compound signals can be \emph{cheaper} than their
+parts (subadditivity), but never more expensive.  This formalises the
+``economies of ritual combination'' observed in initiation ceremonies
+that bundle multiple ordeals.
+\end{remark}
+
+\begin{theorem}[Void Right-Compose Cost]
+\label{thm:void-right-compose-cost}
+$\operatorname{signalCost}(s \compose \void) = \operatorname{signalCost}(s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By $\depth(s \compose \void) = \depth(s)$.
+See \texttt{void\_compose\_cost}.
+\end{proof}
+
+\begin{theorem}[Void Left-Compose Cost]
+\label{thm:void-left-compose-cost}
+$\operatorname{signalCost}(\void \compose s) = \operatorname{signalCost}(s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By $\depth(\void \compose s) = \depth(s)$.
+See \texttt{void\_left\_compose\_cost}.
+\end{proof}
+
+\begin{remark}
+You cannot fake costly signals by ``adding silence.''  Prefixing or
+appending a dramatic pause to a sacrifice does not change its cost.
+\end{remark}
+
+\begin{theorem}[Trivial Composition is Costless]
+\label{thm:trivial-compose-costless}
+If $\operatorname{signalCost}(s_1) = 0$ and
+$\operatorname{signalCost}(s_2) = 0$, then
+$\operatorname{signalCost}(s_1 \compose s_2) = 0$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the depth-zero-closed property of ideatic spaces.
+See \texttt{trivial\_compose\_costless}.
+\end{proof}
+
+\begin{remark}
+Banality composed with banality remains banal.  You cannot bootstrap
+costly signalling from costless components---depth must come from
+somewhere.
+\end{remark}
+
+% ── §2. Iterated Signals ─────────────────────────────────────────────
+\section{Iterated Signals and Ritual Repetition}
+\label{sec:ch3:iteration}
+
+\begin{theorem}[Iteration Cost Bound]
+\label{thm:iteration-cost}
+For $n$-fold repetition of signal~$s$:
+\[
+  \operatorname{signalCost}(\operatorname{composeN}(s, n))
+  \leq n \cdot \operatorname{signalCost}(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on~$n$, using subadditivity at each step.
+See \texttt{iteration\_cost\_bound}.
+\end{proof}
+
+\begin{remark}
+Ritual repetition (daily prayer, weekly sabbath, annual pilgrimage) has
+linearly bounded cumulative cost.  A devotee who prays 5 times daily
+pays at most $5 \times$ the cost of a single prayer.  This linear
+scaling is why religious systems can demand iterative commitment without
+unbounded cost.
+\end{remark}
+
+\begin{theorem}[Zero-Cost Iteration]
+\label{thm:zero-cost-iteration}
+$\operatorname{signalCost}(\operatorname{composeN}(\void, n)) = 0$
+for all~$n$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\operatorname{composeN}(\void, n) = \void$ by the void-composeN
+identity, so $\depth = 0$.  See \texttt{zero\_cost\_iteration}.
+\end{proof}
+
+\begin{remark}
+Empty ritual (void composed with void, repeated endlessly) never
+generates genuine cost.  ``Going through the motions'' with no internal
+depth is formally costless.
+\end{remark}
+
+\begin{theorem}[Single Repetition Cost]
+\label{thm:single-rep-cost}
+$\operatorname{signalCost}(\operatorname{composeN}(s, 1))
+ \leq \operatorname{signalCost}(s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Specialise Theorem~\ref{thm:iteration-cost} with $n = 1$.
+See \texttt{single\_rep\_cost}.
+\end{proof}
+
+% ── §3. The Single-Crossing Property ─────────────────────────────────
+\section{The Single-Crossing Property}
+\label{sec:ch3:crossing}
+
+\begin{definition}[Costly Signal Model]
+\label{def:costly-signal-model}
+A \emph{costly signal model} consists of two cost functions:
+\begin{itemize}
+  \item $c_H : \IS \to \mathbb{N}$ (high-quality type), with
+    $c_H(s) \leq \depth(s)$;
+  \item $c_L : \IS \to \mathbb{N}$ (low-quality type), with
+    $\depth(s) \leq c_L(s)$.
+\end{itemize}
+The high type can produce depth efficiently; the low type cannot.
+\end{definition}
+
+\begin{lstlisting}[caption={CostlySignalModel in Lean~4},label=lst:costly-signal]
+structure CostlySignalModel (I : Type*) [IdeaticSpace I] where
+  highTypeCost : I -> Nat
+  lowTypeCost : I -> Nat
+  high_efficient : forall s, highTypeCost s <= depth s
+  low_costly : forall s, depth s <= lowTypeCost s
+\end{lstlisting}
+
+\begin{theorem}[High Type Cost Advantage]
+\label{thm:high-type-advantage}
+For any costly signal model and any signal~$s$:
+$c_H(s) \leq c_L(s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Chain the two constraints: $c_H(s) \leq \depth(s) \leq c_L(s)$.
+See \texttt{high\_type\_advantage}.
+\end{proof}
+
+\begin{remark}
+In Sosis's theory, genuine believers find costly rituals less onerous
+than hypocrites.  The devout faster suffers less than the faker because
+their internal ``type'' (depth of belief) makes the signal cheaper to
+produce.  This is the formal foundation of ritual honesty.
+\end{remark}
+
+\begin{theorem}[Void is Free for All Types]
+\label{thm:void-free-all}
+$c_H(\void) \leq 0$ (and hence $c_H(\void) = 0$).
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$c_H(\void) \leq \depth(\void) = 0$.
+See \texttt{void\_free\_all\_types}.
+\end{proof}
+
+\begin{remark}
+The babbling option is costless for all types.  Separation in costly
+signalling must come from \emph{non-void} signals---only signals with
+genuine depth can separate types.
+\end{remark}
+
+% ── §4. Interpretation Cost ──────────────────────────────────────────
+\section{Interpretation Cost and Audience Effects}
+\label{sec:ch3:interp-cost}
+
+\begin{theorem}[Total Interpretation Cost Bound]
+\label{thm:total-interp-cost}
+\[
+  \operatorname{depthSum}(\operatorname{interpret}(\Rep, s))
+  \leq \operatorname{depthSum}(\Rep) + |\Rep| \cdot \operatorname{signalCost}(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the Total Hermeneutic Bound (Theorem~\ref{thm:total-hermeneutic-bound}),
+noting that $\operatorname{signalCost}(s) = \depth(s)$.
+See \texttt{total\_interpretation\_cost}.
+\end{proof}
+
+\begin{remark}
+The ``impact'' of a costly signal on an audience is bounded by the
+signal's cost times the audience size plus the audience's existing
+complexity.  A potlatch (costly gift-giving) impresses proportionally to
+its cost $\times$ audience.
+\end{remark}
+
+\begin{theorem}[Costless Signal Preserves Total Depth]
+\label{thm:costless-preserves}
+If $\operatorname{signalCost}(s) = 0$, then
+$\operatorname{depthSum}(\operatorname{interpret}(\Rep, s))
+ \leq \operatorname{depthSum}(\Rep)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Set $\depth(s) = 0$ in the hermeneutic bound to eliminate the linear
+term.  See \texttt{costless\_preserves\_depth}.
+\end{proof}
+
+\begin{theorem}[Atomic Signal Bounded Cost]
+\label{thm:atomic-cost}
+If $s$ is atomic, then $\operatorname{signalCost}(s) \leq 1$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By $\depth(s) \leq 1$ for atomic ideas.
+See \texttt{atomic\_signal\_cost}.
+\end{proof}
+
+\begin{theorem}[Compound Atomic Cost]
+\label{thm:compound-atomic-cost}
+If $s_1, s_2$ are both atomic, then
+$\operatorname{signalCost}(s_1 \compose s_2) \leq 2$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By $\depth(s_1 \compose s_2) \leq \depth(s_1) + \depth(s_2) \leq 2$.
+See \texttt{compound\_atomic\_cost}.
+\end{proof}
+
+\begin{remark}
+The simplest possible compound ritual (two atomic acts) has strictly
+bounded cost---complex enough to potentially separate types but simple
+enough to be tractable.
+\end{remark}
+
+% ── §5. Resonance and Cost ───────────────────────────────────────────
+\section{Resonance and Cost Interaction}
+\label{sec:ch3:resonance-cost}
+
+\begin{theorem}[Resonant Signals Have Comparable Outcomes]
+\label{thm:resonant-comparable}
+If $s_1 \res s_2$, then for each $r \in \Rep$,
+$r \compose s_1 \res r \compose s_2$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By resonance-compose-left applied to each repertoire element.
+See \texttt{resonant\_signals\_comparable}.
+\end{proof}
+
+\begin{remark}
+Two rituals that ``resonate'' produce similar effects on any audience,
+even if one costs more than the other.  This is why cheap imitations of
+costly rituals can sometimes ``work''---if they resonate with the
+original, the audience's interpretations resonate.
+\end{remark}
+
+\begin{theorem}[Self-Resonant Interpretation]
+\label{thm:self-resonant-interp}
+For any repertoire~$\Rep$ and signal~$s$,
+$\operatorname{interpret}(\Rep, s)$ is pairwise self-resonant.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Apply Theorem~\ref{thm:resonant-comparable} with $s_1 = s_2 = s$,
+using reflexivity of resonance.
+See \texttt{self\_resonant\_interpretation}.
+\end{proof}
+
+\begin{theorem}[Bounded Repertoire, Bounded Outcome]
+\label{thm:bounded-repertoire}
+If $\depth(r) \leq d$ for all $r \in \Rep$, then each interpretation
+$x \in \operatorname{interpret}(\Rep, s)$ satisfies
+$\depth(x) \leq d + \operatorname{signalCost}(s)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+For each $r \in \Rep$,
+$\depth(r \compose s) \leq \depth(r) + \depth(s) \leq d + \depth(s)$.
+See \texttt{bounded\_repertoire\_bounded\_outcome}.
+\end{proof}
+
+\begin{remark}
+Receivers with bounded sophistication cannot produce arbitrarily deep
+interpretations.  Even the most costly signal only adds its own cost to
+each receiver's maximum capacity.
+\end{remark}
+
+\begin{theorem}[Interpretation Filtration]
+\label{thm:interp-filtration}
+If $\Rep \subseteq \mathcal{F}_n$ (the depth-$n$ filtration), then
+$\operatorname{interpret}(\Rep, s) \subseteq
+ \mathcal{F}_{n + \operatorname{signalCost}(s)}$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Each $r \in \Rep$ has $\depth(r) \leq n$, so
+$\depth(r \compose s) \leq n + \depth(s)$.
+See \texttt{interpretation\_filtration}.
+\end{proof}
+
+\begin{remark}
+Costly signals push interpretations up the depth hierarchy by at most
+their cost.  A depth-3 ritual received by depth-5 minds produces at most
+depth-8 interpretations.  This is the formal ``budget'' of cultural
+transformation through signalling.
+\end{remark}
+
+% ── Summary ──────────────────────────────────────────────────────────
+\section*{Chapter Summary}
+
+This chapter connected IDT depth to signal cost theory.  The
+identification $\operatorname{signalCost}(s) = \depth(s)$ allowed us to
+prove that void is costless (Theorem~\ref{thm:void-costless}), cost is
+subadditive (Theorem~\ref{thm:cost-subadditive}), and ritual repetition
+has linearly bounded cumulative cost
+(Theorem~\ref{thm:iteration-cost}).  The \emph{single-crossing property}
+(Theorem~\ref{thm:high-type-advantage}) establishes that high-quality
+types pay less for depth, providing the formal foundation of Zahavi's
+handicap principle and Sosis's costly signalling theory of ritual.
+Resonant signals produce comparable outcomes regardless of cost
+difference (Theorem~\ref{thm:resonant-comparable}), and the
+\emph{interpretation filtration} theorem
+(Theorem~\ref{thm:interp-filtration}) shows that costly signals push
+interpretations up the depth hierarchy by exactly their cost.
+
+All eighteen theorems are verified in
+\texttt{FormalAnthropology/IDT\_Signal\_Ch03.lean}.
