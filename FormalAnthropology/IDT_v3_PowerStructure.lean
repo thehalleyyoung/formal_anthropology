@@ -1178,6 +1178,1447 @@ theorem ideology_shifts_spectrum (i a l r : I) :
   have h1 := rs_compose_eq i a l
   have h2 := rs_compose_eq i a r; linarith
 
+/-! ## §38. Arendt's Power vs Violence Distinction
+
+Hannah Arendt argued that power and violence are opposites: power arises from
+collective action (composition enriches), while violence is the destruction of
+power (annihilation of resonance). Power grows through composition; violence
+destroys through isolation. -/
+
+/-- Arendt's power: the weight gained through collective composition.
+    Power is inherently relational — it arises from acting together. -/
+noncomputable def arendtPower (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs a a - rs b b
+
+/-- Arendt's violence: the negation of power — it destroys rather than creates.
+    Violence is measured by how much an interaction REDUCES total weight
+    below what would be expected from summation. -/
+noncomputable def arendtViolence (a b : I) : ℝ :=
+  rs a a + rs b b - rs (compose a b) (compose a b)
+
+/-- Power and violence are exact negations of each other. -/
+theorem arendt_power_violence_dual (a b : I) :
+    arendtPower a b = -arendtViolence a b := by
+  unfold arendtPower arendtViolence; ring
+
+/-- Violence is bounded above: composition always enriches the left,
+    so violence cannot exceed b's weight. -/
+theorem arendt_violence_bounded (a b : I) :
+    arendtViolence a b ≤ rs b b := by
+  unfold arendtViolence; linarith [compose_enriches' a b]
+
+/-- Violence against void is zero — you can't destroy nothing. -/
+theorem arendt_violence_void_right (a : I) :
+    arendtViolence a (void : I) = 0 := by
+  unfold arendtViolence; simp [rs_void_void]
+
+/-- Violence of void is zero — void can't be violent. -/
+theorem arendt_violence_void_left (b : I) :
+    arendtViolence (void : I) b = 0 := by
+  unfold arendtViolence; simp [rs_void_void]
+
+/-- Power with void is zero from the right. -/
+theorem arendt_power_void_right (a : I) :
+    arendtPower a (void : I) = 0 := by
+  unfold arendtPower; simp [rs_void_void]
+
+/-- Power from void yields the partner's full weight minus nothing. -/
+theorem arendt_power_void_left (b : I) :
+    arendtPower (void : I) b = 0 := by
+  unfold arendtPower; simp [rs_void_void]
+
+/-- Arendt's key insight: power (as collective capacity) always exists
+    at least at the level of enrichment. The composition can never
+    have LESS weight than the first component alone. -/
+theorem arendt_power_enrichment (a b : I) :
+    arendtPower a b ≥ -rs b b := by
+  unfold arendtPower; linarith [compose_enriches' a b]
+
+/-- Self-power: composing with yourself always enriches. -/
+theorem arendt_self_power_nonneg_iff (a : I) :
+    arendtPower a a ≥ -rs a a := by
+  unfold arendtPower; linarith [compose_enriches' a a]
+
+/-! ## §39. Lukes's Three Dimensions of Power
+
+Steven Lukes distinguished three dimensions:
+1. Decision-making power (direct resonance advantage)
+2. Non-decision-making power (agenda control via composition)
+3. Ideological power (shaping preferences via emergence) -/
+
+/-- First dimension: direct power — a has more weight than b. -/
+def lukesDim1 (a b : I) : Prop := rs a a > rs b b
+
+/-- Second dimension: agenda-setting — a controls what gets composed.
+    a's composition with any idea c dominates b's composition with c. -/
+def lukesDim2 (a b : I) : Prop :=
+  ∀ c : I, rs (compose a c) (compose a c) ≥ rs (compose b c) (compose b c)
+
+/-- Third dimension: ideological power — a shapes how composition is
+    interpreted. a creates more emergence than b when composed. -/
+noncomputable def lukesDim3Strength (a b c : I) : ℝ :=
+  emergence a c b - emergence b c a
+
+/-- First dimension implies dominates. -/
+theorem lukes_dim1_iff_dominates (a b : I) :
+    lukesDim1 a b ↔ dominates a b := by
+  unfold lukesDim1 dominates; exact Iff.rfl
+
+/-- Second dimension is reflexive. -/
+theorem lukes_dim2_refl (a : I) : lukesDim2 a a := fun _ => le_refl _
+
+/-- Second dimension is transitive. -/
+theorem lukes_dim2_trans (a b c : I) (h1 : lukesDim2 a b) (h2 : lukesDim2 b c) :
+    lukesDim2 a c :=
+  fun d => le_trans (h2 d) (h1 d)
+
+/-- Third-dimension strength is antisymmetric in the two agents. -/
+theorem lukes_dim3_antisymm (a b c : I) :
+    lukesDim3Strength a b c = -lukesDim3Strength b a c := by
+  unfold lukesDim3Strength; ring
+
+/-- Void has zero third-dimension power. -/
+theorem lukes_dim3_void (b c : I) :
+    lukesDim3Strength (void : I) b c = -emergence b c (void : I) := by
+  unfold lukesDim3Strength; simp [emergence_void_left]
+
+/-! ## §40. Mann's Sources of Social Power (IEMP Model)
+
+Michael Mann identified four sources of social power:
+Ideological, Economic, Military, Political.
+We model each as a component of resonance structure. -/
+
+/-- Ideological power: ability to shape meaning through emergence. -/
+noncomputable def ideologicalPower (a b c : I) : ℝ := emergence a b c
+
+/-- Economic power: the accumulated weight (capital). -/
+noncomputable def economicPower (a : I) : ℝ := rs a a
+
+/-- Military power: the capacity to destroy (reduce resonance). -/
+noncomputable def militaryPower (a b : I) : ℝ :=
+  rs a a - rs (compose a b) b
+
+/-- Political power: the capacity to coordinate (cross-resonance). -/
+noncomputable def politicalPower (a b : I) : ℝ := rs a b + rs b a
+
+/-- Economic power is non-negative. -/
+theorem economicPower_nonneg (a : I) : economicPower a ≥ 0 := by
+  unfold economicPower; exact rs_self_nonneg' a
+
+/-- Void has zero economic power. -/
+theorem economicPower_void : economicPower (void : I) = 0 := by
+  unfold economicPower; exact rs_void_void
+
+/-- Political power with void is zero. -/
+theorem politicalPower_void (a : I) : politicalPower a (void : I) = 0 := by
+  unfold politicalPower; simp [rs_void_right', rs_void_left']
+
+/-- Political power is symmetric. -/
+theorem politicalPower_symm (a b : I) :
+    politicalPower a b = politicalPower b a := by
+  unfold politicalPower; ring
+
+/-- Political power with self is double self-resonance. -/
+theorem politicalPower_self (a : I) :
+    politicalPower a a = 2 * rs a a := by
+  unfold politicalPower; ring
+
+/-- Military power against void. -/
+theorem militaryPower_void_target (a : I) :
+    militaryPower a (void : I) = rs a a := by
+  unfold militaryPower; simp [rs_void_right']
+
+/-- IEMP total: all four sources combined. -/
+noncomputable def mannTotalPower (a b c : I) : ℝ :=
+  ideologicalPower a b c + economicPower a + militaryPower a b + politicalPower a b
+
+/-- IEMP total with void is just economic power. -/
+theorem mann_total_void (a : I) :
+    mannTotalPower a (void : I) (void : I) = 2 * rs a a := by
+  unfold mannTotalPower ideologicalPower economicPower militaryPower politicalPower
+  simp [emergence_void_right, rs_void_right', rs_void_left']; ring
+
+/-! ## §41. Weber's Types of Authority
+
+Max Weber distinguished three ideal types of legitimate authority:
+Traditional (based on custom), Charismatic (based on personal qualities),
+Rational-Legal (based on rules). -/
+
+/-- Traditional authority: power derived from iterated self-composition
+    (the weight of tradition — repetition creates legitimacy). -/
+noncomputable def traditionalAuthority (tradition : I) (n : ℕ) : ℝ :=
+  rs (composeN tradition n) (composeN tradition n)
+
+/-- Traditional authority grows monotonically with repetition. -/
+theorem traditional_authority_mono (t : I) (n : ℕ) :
+    traditionalAuthority t (n + 1) ≥ traditionalAuthority t n := by
+  unfold traditionalAuthority; exact rs_composeN_mono t n
+
+/-- Traditional authority is always non-negative. -/
+theorem traditional_authority_nonneg (t : I) (n : ℕ) :
+    traditionalAuthority t n ≥ 0 := by
+  unfold traditionalAuthority; exact rs_self_nonneg' _
+
+/-- Zero-length tradition has zero authority. -/
+theorem traditional_authority_zero (t : I) :
+    traditionalAuthority t 0 = 0 := by
+  unfold traditionalAuthority; simp [rs_void_void]
+
+/-- Charismatic authority: the cross-resonance a leader creates.
+    A charismatic leader makes others resonate with them. -/
+noncomputable def charismaticAuthority (leader follower : I) : ℝ :=
+  rs follower leader
+
+/-- Charismatic authority of void leader is zero. -/
+theorem charismatic_void_leader (f : I) :
+    charismaticAuthority (void : I) f = 0 := by
+  unfold charismaticAuthority; exact rs_void_right' f
+
+/-- Charismatic authority from void follower is zero. -/
+theorem charismatic_void_follower (l : I) :
+    charismaticAuthority l (void : I) = 0 := by
+  unfold charismaticAuthority; exact rs_void_left' l
+
+/-- Rational-legal authority: authority derived from the institutional
+    framework (composition structure) rather than personal qualities.
+    Measured by how much the institution enriches beyond raw charisma. -/
+noncomputable def rationalLegalAuthority (institution official : I) : ℝ :=
+  rs (compose institution official) (compose institution official) -
+  rs institution institution
+
+/-- Rational-legal authority is non-negative (institutions always enrich). -/
+theorem rationalLegal_nonneg (inst off : I) :
+    rationalLegalAuthority inst off ≥ 0 := by
+  unfold rationalLegalAuthority; linarith [compose_enriches' inst off]
+
+/-- Rational-legal authority with void institution yields the official's weight. -/
+theorem rationalLegal_void_inst (off : I) :
+    rationalLegalAuthority (void : I) off = rs off off := by
+  unfold rationalLegalAuthority; simp [rs_void_void]
+
+/-- Rational-legal authority with void official is zero. -/
+theorem rationalLegal_void_official (inst : I) :
+    rationalLegalAuthority inst (void : I) = 0 := by
+  unfold rationalLegalAuthority; simp
+
+/-- Weber's legitimacy gap: how much traditional authority exceeds
+    charismatic for the same idea. -/
+noncomputable def weberLegitimacyGap (a : I) (n : ℕ) : ℝ :=
+  traditionalAuthority a (n + 1) - traditionalAuthority a n
+
+/-- The legitimacy gap is non-negative (tradition only grows). -/
+theorem weber_legitimacy_gap_nonneg (a : I) (n : ℕ) :
+    weberLegitimacyGap a n ≥ 0 := by
+  unfold weberLegitimacyGap traditionalAuthority
+  linarith [rs_composeN_mono a n]
+
+/-! ## §42. Agamben's State of Exception
+
+Giorgio Agamben theorized the state of exception: sovereign power operates
+by suspending the normal order. In IDT, this is modeled as the sovereign's
+ability to "reset" composition — reducing others to void-like status. -/
+
+/-- The state of exception: how much sovereign s reduces subject a's
+    effective weight through composition. When high, the sovereign
+    "suspends the normal order" for the subject. -/
+noncomputable def stateOfException (sovereign subject : I) : ℝ :=
+  rs subject subject - rs subject (compose sovereign subject)
+
+/-- State of exception under void sovereign is zero (no sovereign = normal). -/
+theorem exception_void_sovereign (a : I) :
+    stateOfException (void : I) a = 0 := by
+  unfold stateOfException; simp
+
+/-- State of exception for void subject is zero (nothing to except). -/
+theorem exception_void_subject (s : I) :
+    stateOfException s (void : I) = 0 := by
+  unfold stateOfException; simp [rs_void_void, rs_void_left']
+
+/-- Bare life: the subject under total exception — their weight is
+    entirely subsumed by the sovereign's composition. -/
+noncomputable def bareLife (sovereign subject : I) : ℝ :=
+  rs (compose sovereign subject) (compose sovereign subject) - rs sovereign sovereign
+
+/-- Bare life weight is always non-negative (composition enriches). -/
+theorem bareLife_nonneg (sov sub : I) : bareLife sov sub ≥ 0 := by
+  unfold bareLife; linarith [compose_enriches' sov sub]
+
+/-- Bare life under void sovereign yields subject's weight. -/
+theorem bareLife_void_sovereign (sub : I) : bareLife (void : I) sub = rs sub sub := by
+  unfold bareLife; simp [rs_void_void]
+
+/-- Homo sacer: the gap between sovereign power and subject autonomy. -/
+noncomputable def homoSacer (sovereign subject : I) : ℝ :=
+  rs sovereign sovereign - rs subject subject
+
+/-- Homo sacer is just the power differential. -/
+theorem homoSacer_eq_power (sov sub : I) :
+    homoSacer sov sub = power sov sub := by
+  unfold homoSacer power; ring
+
+/-- Homo sacer against void: sovereign's full weight. -/
+theorem homoSacer_void_subject (sov : I) :
+    homoSacer sov (void : I) = rs sov sov := by
+  unfold homoSacer; simp [rs_void_void]
+
+/-- Homo sacer with void sovereign: negative of subject's weight. -/
+theorem homoSacer_void_sovereign (sub : I) :
+    homoSacer (void : I) sub = -rs sub sub := by
+  unfold homoSacer; simp [rs_void_void]
+
+/-! ## §43. Butler's Performativity and Subject Formation
+
+Judith Butler theorized that subjects are constituted through repeated
+performative acts. Identity is not prior to action but emerges through
+iterated composition. -/
+
+/-- Performative constitution: the subject is formed by n iterations
+    of a performative act. Identity is an effect, not a cause. -/
+noncomputable def performativeIdentity (act : I) (n : ℕ) : I :=
+  composeN act n
+
+/-- Performative identity at zero iterations is void (no subject yet). -/
+theorem performative_zero (act : I) :
+    performativeIdentity act 0 = (void : I) := by
+  unfold performativeIdentity; simp
+
+/-- Performative identity at one iteration is just the act. -/
+theorem performative_one (act : I) :
+    performativeIdentity act 1 = act := by
+  unfold performativeIdentity; exact composeN_one act
+
+/-- Subject weight grows with each performative iteration. -/
+theorem performative_weight_mono (act : I) (n : ℕ) :
+    rs (performativeIdentity act (n + 1)) (performativeIdentity act (n + 1)) ≥
+    rs (performativeIdentity act n) (performativeIdentity act n) := by
+  unfold performativeIdentity; exact rs_composeN_mono act n
+
+/-- Non-void acts produce non-void subjects after any positive iteration. -/
+theorem performative_nonvoid (act : I) (h : act ≠ void) (n : ℕ) :
+    performativeIdentity act (n + 1) ≠ void := by
+  unfold performativeIdentity; exact hegemonic_reproduction_nonvoid act h n
+
+/-- Subjectivation: the process of becoming a subject through ideology.
+    Butler: the subject is produced by the very power that subordinates. -/
+noncomputable def subjectivation (power_ subject : I) : I :=
+  compose power_ subject
+
+/-- Subjectivation by void leaves subject unchanged. -/
+theorem subjectivation_void_power (s : I) :
+    subjectivation (void : I) s = s := by
+  unfold subjectivation; simp
+
+/-- Subjectivation of void yields pure power. -/
+theorem subjectivation_void_subject (p : I) :
+    subjectivation p (void : I) = p := by
+  unfold subjectivation; simp
+
+/-- The subjection paradox: the power that forms the subject always
+    has at least as much weight as the subject alone. -/
+theorem subjection_paradox (p s : I) :
+    rs (subjectivation p s) (subjectivation p s) ≥ rs p p := by
+  unfold subjectivation; exact compose_enriches' p s
+
+/-- Gender performativity: iterated performance creates gender identity.
+    The weight of gender increases with each citation. -/
+theorem gender_performativity_accumulates (act : I) (n : ℕ) :
+    rs (performativeIdentity act (n + 1)) (performativeIdentity act (n + 1)) ≥
+    rs act act := by
+  unfold performativeIdentity; exact ideological_reproduction act n
+
+/-- Subversive repetition: performing differently creates emergence
+    (the gap between expected and actual performance). -/
+noncomputable def subversiveRepetition (norm subversion observer : I) : ℝ :=
+  emergence norm subversion observer
+
+/-- Subversive repetition with void norm is zero. -/
+theorem subversive_void_norm (s o : I) :
+    subversiveRepetition (void : I) s o = 0 := by
+  unfold subversiveRepetition; exact emergence_void_left s o
+
+/-- Subversive repetition against void observer is zero. -/
+theorem subversive_void_observer (n s : I) :
+    subversiveRepetition n s (void : I) = 0 := by
+  unfold subversiveRepetition; exact emergence_against_void n s
+
+/-! ## §44. Habermas's Colonization of the Lifeworld
+
+Jürgen Habermas argued that "system" (bureaucratic/market logic) colonizes
+the "lifeworld" (communicative, meaning-making context). In IDT, this is
+the system's composition overwhelming lifeworld emergence. -/
+
+/-- System colonization: how much the system's composition with the
+    lifeworld exceeds what the lifeworld would produce alone. -/
+noncomputable def systemColonization (system lifeworld : I) : ℝ :=
+  rs (compose system lifeworld) (compose system lifeworld) -
+  rs system system
+
+/-- System colonization is non-negative (systems always enrich composition). -/
+theorem colonization_nonneg (sys lw : I) :
+    systemColonization sys lw ≥ 0 := by
+  unfold systemColonization; linarith [compose_enriches' sys lw]
+
+/-- Void system colonization yields lifeworld's weight. -/
+theorem colonization_void_system (lw : I) :
+    systemColonization (void : I) lw = rs lw lw := by
+  unfold systemColonization; simp [rs_void_void]
+
+/-- Colonization of void lifeworld is zero. -/
+theorem colonization_void_lifeworld (sys : I) :
+    systemColonization sys (void : I) = 0 := by
+  unfold systemColonization; simp
+
+/-- Communicative rationality: the emergence created through genuine
+    dialogue, not strategic system action. -/
+noncomputable def communicativeRationality (speaker hearer topic : I) : ℝ :=
+  emergence speaker hearer topic + emergence hearer speaker topic
+
+/-- Communicative rationality with void speaker vanishes. -/
+theorem communicative_void_speaker (h t : I) :
+    communicativeRationality (void : I) h t = emergence h (void : I) t := by
+  unfold communicativeRationality
+  simp [emergence_void_left]
+
+/-- Communicative rationality against void topic vanishes entirely. -/
+theorem communicative_void_topic (s h : I) :
+    communicativeRationality s h (void : I) = 0 := by
+  unfold communicativeRationality
+  simp [emergence_against_void]
+
+/-- The colonization ratio: system weight relative to communicative surplus. -/
+noncomputable def colonizationIntensity (sys lw : I) : ℝ :=
+  rs sys sys - rs lw lw
+
+/-- Colonization intensity is antisymmetric (system vs lifeworld is relative). -/
+theorem colonization_intensity_antisymm (a b : I) :
+    colonizationIntensity a b = -colonizationIntensity b a := by
+  unfold colonizationIntensity; ring
+
+/-- Colonization intensity with void system is negative of lifeworld weight. -/
+theorem colonization_intensity_void_sys (lw : I) :
+    colonizationIntensity (void : I) lw = -rs lw lw := by
+  unfold colonizationIntensity; simp [rs_void_void]
+
+/-! ## §45. Mouffe's Agonistic Pluralism
+
+Chantal Mouffe argues for agonistic pluralism: political conflict between
+adversaries (not enemies) is constitutive of democracy. Consensus is
+impossible and undesirable — the goal is to channel antagonism productively. -/
+
+/-- Agonistic encounter: two ideas compose but maintain distinct identities.
+    The weight of their composition exceeds both individually. -/
+def agonistic (a b : I) : Prop :=
+  rs (compose a b) (compose a b) > rs a a ∧
+  rs (compose a b) (compose a b) > rs b b
+
+/-- Agonistic encounter is possible when neither is void. -/
+theorem agonistic_nonvoid_left (a b : I) (h : agonistic a b) : a ≠ void := by
+  intro heq; unfold agonistic at h
+  rw [heq] at h; simp [rs_void_void] at h
+
+/-- The agonistic surplus: how much the encounter creates beyond
+    the sum of individual weights. -/
+noncomputable def agonisticSurplus (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs a a - rs b b
+
+/-- Agonistic surplus with void is zero. -/
+theorem agonistic_surplus_void_right (a : I) :
+    agonisticSurplus a (void : I) = 0 := by
+  unfold agonisticSurplus; simp [rs_void_void]
+
+/-- Agonistic surplus with void on the left. -/
+theorem agonistic_surplus_void_left (b : I) :
+    agonisticSurplus (void : I) b = 0 := by
+  unfold agonisticSurplus; simp [rs_void_void]
+
+/-- The agonistic surplus is bounded below by -rs b b (enrichment guarantees
+    the composition is at least as heavy as a). -/
+theorem agonistic_surplus_lower_bound (a b : I) :
+    agonisticSurplus a b ≥ -rs b b := by
+  unfold agonisticSurplus; linarith [compose_enriches' a b]
+
+/-- Antagonism: ideas in outright opposition (negative cross-resonance). -/
+def antagonistic (a b : I) : Prop :=
+  rs a b < 0 ∧ rs b a < 0
+
+/-- Void is never antagonistic. -/
+theorem void_not_antagonistic (a : I) : ¬antagonistic (void : I) a := by
+  unfold antagonistic; intro ⟨h, _⟩; simp [rs_void_left'] at h
+
+/-- Mouffe's thesis: even antagonistic ideas produce enrichment through
+    composition. Conflict is productive. -/
+theorem mouffe_productive_conflict (a b : I) :
+    rs (compose a b) (compose a b) ≥ rs a a :=
+  compose_enriches' a b
+
+/-- Democratic paradox: the more you compose (democratize), the more
+    weight accumulates. Democracy cannot avoid power concentration. -/
+theorem democratic_paradox (a : I) (n : ℕ) :
+    rs (composeN a (n + 1)) (composeN a (n + 1)) ≥
+    rs (composeN a n) (composeN a n) :=
+  rs_composeN_mono a n
+
+/-! ## §46. Scott's Weapons of the Weak (Hidden Transcripts)
+
+James C. Scott: subordinate groups resist through "hidden transcripts" —
+discourse that takes place offstage, away from the eyes of power.
+The public transcript vs hidden transcript distinction maps to
+different resonance contexts. -/
+
+/-- Public transcript: how the subordinate resonates in the presence
+    of the dominant power. -/
+noncomputable def publicTranscript (subordinate dominant observer : I) : ℝ :=
+  rs (compose dominant subordinate) observer
+
+/-- Hidden transcript: how the subordinate resonates without the
+    dominant power present. -/
+noncomputable def hiddenTranscript (subordinate observer : I) : ℝ :=
+  rs subordinate observer
+
+/-- The transcript gap: the difference between hidden and public
+    expression. Positive gap means the subordinate is more expressive
+    in private (typical hidden transcript). -/
+noncomputable def transcriptGap (sub dom obs : I) : ℝ :=
+  hiddenTranscript sub obs - publicTranscript sub dom obs
+
+/-- Transcript gap decomposes into dominance effects. -/
+theorem transcript_gap_eq (sub dom obs : I) :
+    transcriptGap sub dom obs = -(rs dom obs + emergence dom sub obs) := by
+  unfold transcriptGap hiddenTranscript publicTranscript
+  have := rs_compose_eq dom sub obs; linarith
+
+/-- Under void domination, the transcript gap is zero (no hidden transcript). -/
+theorem transcript_gap_void_dom (sub obs : I) :
+    transcriptGap sub (void : I) obs = 0 := by
+  unfold transcriptGap hiddenTranscript publicTranscript
+  simp [rs_void_left']
+
+/-- Void subordinate has transcript gap equal to negative of dominant's resonance. -/
+theorem transcript_gap_void_sub (dom obs : I) :
+    transcriptGap (void : I) dom obs = -rs dom obs := by
+  unfold transcriptGap hiddenTranscript publicTranscript
+  simp [rs_void_left']
+
+/-- Infrapolitics: the everyday forms of resistance that occur below
+    the threshold of organized political action. Scott's "weapons of
+    the weak" — foot-dragging, false compliance, gossip, sabotage. -/
+noncomputable def infrapolitics (weak strong : I) : ℝ :=
+  rs weak weak - rs weak (compose strong weak)
+
+/-- Infrapolitics of void subordinate is zero. -/
+theorem infrapolitics_void_weak (s : I) :
+    infrapolitics (void : I) s = 0 := by
+  unfold infrapolitics; simp [rs_void_void, rs_void_left']
+
+/-- Infrapolitics under void domination is zero. -/
+theorem infrapolitics_void_strong (w : I) :
+    infrapolitics w (void : I) = 0 := by
+  unfold infrapolitics; simp
+
+/-- Everyday resistance: small acts of defiance accumulate.
+    Scott: resistance doesn't require grand gestures. -/
+noncomputable def everydayResistance (sub dom : I) : ℝ :=
+  rs sub sub - rs (compose dom sub) sub
+
+/-- Everyday resistance under void domination is zero. -/
+theorem everyday_resistance_void_dom (sub : I) :
+    everydayResistance sub (void : I) = 0 := by
+  unfold everydayResistance; simp
+
+/-! ## §47. Fanon's Decolonization (Violence as Counter-Emergence)
+
+Frantz Fanon argued that colonial violence must be met with
+counter-violence. The colonized must compose themselves anew,
+creating new subjectivities that escape colonial determination. -/
+
+/-- Colonial imposition: the weight the colonizer adds to the colonized
+    through forced composition. -/
+noncomputable def colonialImposition (colonizer colonized : I) : ℝ :=
+  rs (compose colonizer colonized) (compose colonizer colonized) -
+  rs colonizer colonizer
+
+/-- Colonial imposition is non-negative (colonizer always adds weight). -/
+theorem colonial_imposition_nonneg (cr cd : I) :
+    colonialImposition cr cd ≥ 0 := by
+  unfold colonialImposition; linarith [compose_enriches' cr cd]
+
+/-- Void colonizer's imposition yields the colonized's weight. -/
+theorem colonial_imposition_void (cd : I) :
+    colonialImposition (void : I) cd = rs cd cd := by
+  unfold colonialImposition; simp [rs_void_void]
+
+/-- Decolonization: the counter-composition that restores the colonized's
+    own resonance patterns. Measured by how much self-composition
+    adds beyond colonial imposition. -/
+noncomputable def decolonization (colonized liberator : I) : ℝ :=
+  rs (compose colonized liberator) (compose colonized liberator) -
+  rs colonized colonized
+
+/-- Decolonization is non-negative (self-composition enriches). -/
+theorem decolonization_nonneg (cd lib : I) :
+    decolonization cd lib ≥ 0 := by
+  unfold decolonization; linarith [compose_enriches' cd lib]
+
+/-- Decolonization from void adds nothing. -/
+theorem decolonization_void_liberator (cd : I) :
+    decolonization cd (void : I) = 0 := by
+  unfold decolonization; simp
+
+/-- Fanon's new humanism: the decolonized subject, through self-composition,
+    creates weight at least equal to the colonizer's imposition.
+    Both sides gain from composition — but the colonized gains autonomy. -/
+theorem fanon_new_humanism (colonizer colonized : I) :
+    rs (compose colonized colonizer) (compose colonized colonizer) ≥
+    rs colonized colonized := by
+  exact compose_enriches' colonized colonizer
+
+/-- Counter-emergence: the emergence created by the colonized's own
+    composition, as measured against the colonial framework. -/
+noncomputable def counterEmergence (colonized self_comp colonial_frame : I) : ℝ :=
+  emergence colonized self_comp colonial_frame
+
+/-- Counter-emergence against void frame is zero. -/
+theorem counter_emergence_void_frame (cd sc : I) :
+    counterEmergence cd sc (void : I) = 0 := by
+  unfold counterEmergence; exact emergence_against_void cd sc
+
+/-- Wretched of the earth: those with minimal weight (close to void)
+    gain the most from liberation composition. -/
+theorem wretched_liberation (liberator : I) :
+    decolonization (void : I) liberator = rs liberator liberator := by
+  unfold decolonization; simp [rs_void_void]
+
+/-! ## §48. Stability and Revolution: Deep Mathematical Results -/
+
+/-- A power structure is stable if composition preserves the ordering:
+    whoever dominates continues to dominate after composition. -/
+def powerStable (h a c : I) : Prop :=
+  dominates h a → dominates (compose h c) (compose a c)
+
+/-- Stability theorem: composition with the same element preserves
+    domination — power structures are stable under shared composition. -/
+theorem stability_shared_composition (h a c : I) (_hd : dominates h a) :
+    rs (compose h c) (compose h c) ≥ rs h h := by
+  exact compose_enriches' h c
+
+/-- Revolution requires breaking stability: there must exist some
+    composition that reverses the power order. -/
+def revolutionPossible (h a : I) : Prop :=
+  dominates h a ∧ ∃ r : I, ¬dominates (compose h r) (compose a r)
+
+/-- The composition monotonicity principle: the left-dominant always
+    retains at least their original weight after any composition. -/
+theorem composition_monotonicity (a b : I) :
+    rs (compose a b) (compose a b) ≥ rs a a :=
+  compose_enriches' a b
+
+/-- Iterated stability: n-fold composition preserves non-negativity. -/
+theorem iterated_stability (a : I) (n : ℕ) :
+    rs (composeN a n) (composeN a n) ≥ 0 :=
+  rs_self_nonneg' _
+
+/-- Entropy of power: self-composition always creates at least as much
+    weight, so power entropy (weight) never decreases. This is
+    the "second law of power dynamics." -/
+theorem second_law_of_power (a : I) (n : ℕ) :
+    rs (composeN a (n + 1)) (composeN a (n + 1)) ≥
+    rs (composeN a n) (composeN a n) :=
+  rs_composeN_mono a n
+
+/-- Weight conservation under reassociation: total weight is invariant
+    under how we group compositions. A deep structural result. -/
+theorem weight_conservation_associativity (a b c : I) :
+    rs (compose (compose a b) c) (compose (compose a b) c) =
+    rs (compose a (compose b c)) (compose a (compose b c)) := by
+  rw [compose_assoc']
+
+/-! ## §49. Power Concentration and Diffusion -/
+
+/-- Power concentration: how much composing multiple ideas with a single
+    center concentrates weight at the center. -/
+noncomputable def powerConcentration (center periphery : I) : ℝ :=
+  rs (compose center periphery) (compose center periphery) - rs center center
+
+/-- Power concentration is non-negative. -/
+theorem powerConcentration_nonneg (c p : I) :
+    powerConcentration c p ≥ 0 := by
+  unfold powerConcentration; linarith [compose_enriches' c p]
+
+/-- Void center concentrates periphery's weight. -/
+theorem powerConcentration_void_center (p : I) :
+    powerConcentration (void : I) p = rs p p := by
+  unfold powerConcentration; simp [rs_void_void]
+
+/-- Power diffusion: the reverse of concentration — how much the
+    periphery's composition diffuses the center's influence. -/
+noncomputable def powerDiffusion (center periphery : I) : ℝ :=
+  rs center center - rs center (compose center periphery)
+
+/-- Power diffusion under void periphery is zero. -/
+theorem powerDiffusion_void_periphery (c : I) :
+    powerDiffusion c (void : I) = 0 := by
+  unfold powerDiffusion; simp
+
+/-- Power diffusion of void center is zero. -/
+theorem powerDiffusion_void_center (p : I) :
+    powerDiffusion (void : I) p = 0 := by
+  unfold powerDiffusion; simp [rs_void_void, rs_void_left']
+
+/-! ## §50. Domination Lattice Properties -/
+
+/-- Power differential is additive: power(a,b) + power(b,c) = power(a,c). -/
+theorem power_additive (a b c : I) :
+    power a b + power b c = power a c := by
+  unfold power; ring
+
+/-- Domination forms a strict total preorder on weight classes. -/
+theorem domination_trichotomy (a b : I) :
+    dominates a b ∨ dominates b a ∨ sameStratum a b := by
+  unfold dominates sameStratum
+  rcases lt_trichotomy (rs b b) (rs a a) with h | h | h
+  · left; exact h
+  · right; right; exact h.symm
+  · right; left; exact h
+
+/-- Composing two ideas in the same stratum yields something
+    at least as heavy as either. -/
+theorem sameStratum_compose_bound (a b : I) (h : sameStratum a b) :
+    rs (compose a b) (compose a b) ≥ rs b b := by
+  unfold sameStratum at h; linarith [compose_enriches' a b]
+
+/-- The void stratum is a singleton. -/
+theorem void_stratum_singleton (a b : I)
+    (ha : sameStratum a (void : I))
+    (hb : sameStratum b (void : I)) :
+    a = void ∧ b = void := by
+  exact ⟨void_stratum_unique a (sameStratum_symm _ _ ha),
+         void_stratum_unique b (sameStratum_symm _ _ hb)⟩
+
+/-! ## §51. Ideological Interpenetration -/
+
+/-- Ideological interpenetration: how much two ideologies create
+    combined emergence beyond their individual effects. -/
+noncomputable def ideologicalInterpenetration (i₁ i₂ observer : I) : ℝ :=
+  emergence i₁ i₂ observer
+
+/-- Interpenetration with void ideology is zero. -/
+theorem interpenetration_void_left (i₂ o : I) :
+    ideologicalInterpenetration (void : I) i₂ o = 0 := by
+  unfold ideologicalInterpenetration; exact emergence_void_left i₂ o
+
+/-- Interpenetration against void observer is zero. -/
+theorem interpenetration_void_observer (i₁ i₂ : I) :
+    ideologicalInterpenetration i₁ i₂ (void : I) = 0 := by
+  unfold ideologicalInterpenetration; exact emergence_against_void i₁ i₂
+
+/-- The interpenetration cocycle: ideological interactions satisfy
+    global consistency (from the cocycle condition). -/
+theorem interpenetration_cocycle (i₁ i₂ i₃ o : I) :
+    ideologicalInterpenetration i₁ i₂ o +
+    ideologicalInterpenetration (compose i₁ i₂) i₃ o =
+    ideologicalInterpenetration i₂ i₃ o +
+    ideologicalInterpenetration i₁ (compose i₂ i₃) o := by
+  unfold ideologicalInterpenetration; exact cocycle_condition i₁ i₂ i₃ o
+
+/-! ## §52. Resistance Networks and Solidarity -/
+
+/-- Solidarity weight: the combined weight of two ideas in solidarity
+    (composition) minus their individual weights. -/
+noncomputable def solidarityWeight (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs a a
+
+/-- Solidarity weight is non-negative (composition enriches). -/
+theorem solidarity_nonneg (a b : I) : solidarityWeight a b ≥ 0 := by
+  unfold solidarityWeight; linarith [compose_enriches' a b]
+
+/-- Solidarity with void adds nothing. -/
+theorem solidarity_void (a : I) : solidarityWeight a (void : I) = 0 := by
+  unfold solidarityWeight; simp
+
+/-- Void solidarity gains partner's weight. -/
+theorem solidarity_from_void (b : I) :
+    solidarityWeight (void : I) b = rs b b := by
+  unfold solidarityWeight; simp [rs_void_void]
+
+/-- Solidarity compounds: adding a third ally only increases weight. -/
+theorem solidarity_compounds (a b c : I) :
+    rs (compose (compose a b) c) (compose (compose a b) c) ≥
+    rs (compose a b) (compose a b) := by
+  exact compose_enriches' (compose a b) c
+
+/-! ## §53. Hegemonic Cycle Theory -/
+
+/-- A hegemonic cycle: the hegemon composes with itself n times.
+    Each cycle potentially increases the weight of the hegemonic idea. -/
+noncomputable def hegemonicCycle (h : I) (n : ℕ) : ℝ :=
+  rs (composeN h n) (composeN h n)
+
+/-- Hegemonic cycle at step 0 is void weight. -/
+theorem hegemonicCycle_zero (h : I) : hegemonicCycle h 0 = 0 := by
+  unfold hegemonicCycle; simp [rs_void_void]
+
+/-- Hegemonic cycle at step 1 is the hegemon's own weight. -/
+theorem hegemonicCycle_one (h : I) : hegemonicCycle h 1 = rs h h := by
+  unfold hegemonicCycle; simp [composeN_one]
+
+/-- Hegemonic cycles are monotonically non-decreasing. -/
+theorem hegemonicCycle_mono (h : I) (n : ℕ) :
+    hegemonicCycle h (n + 1) ≥ hegemonicCycle h n := by
+  unfold hegemonicCycle; exact rs_composeN_mono h n
+
+/-- Non-void hegemonic cycles are strictly positive after step 1. -/
+theorem hegemonicCycle_pos (h : I) (hne : h ≠ void) (n : ℕ) :
+    hegemonicCycle h (n + 1) > 0 := by
+  unfold hegemonicCycle
+  have := ideological_reproduction h n
+  linarith [rs_self_pos h hne]
+
+/-- The hegemonic cycle increment is non-negative. -/
+noncomputable def hegemonicCycleIncrement (h : I) (n : ℕ) : ℝ :=
+  hegemonicCycle h (n + 1) - hegemonicCycle h n
+
+/-- Hegemonic cycle increment is non-negative. -/
+theorem hegemonicCycleIncrement_nonneg (h : I) (n : ℕ) :
+    hegemonicCycleIncrement h n ≥ 0 := by
+  unfold hegemonicCycleIncrement; linarith [hegemonicCycle_mono h n]
+
+/-! ## §54. Power Projection -/
+
+/-- Power projection: the ability of a to project its influence onto
+    the composition of b and c. -/
+noncomputable def powerProjection (a b c : I) : ℝ :=
+  rs a (compose b c)
+
+/-- Power projection onto void composition. -/
+theorem powerProjection_void_right (a b : I) :
+    powerProjection a b (void : I) = rs a b := by
+  unfold powerProjection; simp
+
+/-- Power projection by void is zero. -/
+theorem powerProjection_void_source (b c : I) :
+    powerProjection (void : I) b c = 0 := by
+  unfold powerProjection; exact rs_void_left' _
+
+/-- Power projection onto void-left composition. -/
+theorem powerProjection_void_left (a c : I) :
+    powerProjection a (void : I) c = rs a c := by
+  unfold powerProjection; simp
+
+/-! ## §55. Institutional Inertia -/
+
+/-- Institutional inertia: the resistance of an institution to change,
+    measured by how much weight it accumulates through self-composition. -/
+noncomputable def institutionalInertia (inst : I) : ℝ :=
+  rs (compose inst inst) (compose inst inst) - rs inst inst
+
+/-- Institutional inertia is non-negative. -/
+theorem institutionalInertia_nonneg (inst : I) :
+    institutionalInertia inst ≥ 0 := by
+  unfold institutionalInertia; linarith [compose_enriches' inst inst]
+
+/-- Void institution has zero inertia. -/
+theorem institutionalInertia_void :
+    institutionalInertia (void : I) = 0 := by
+  unfold institutionalInertia; simp [rs_void_void]
+
+/-- Institutional inertia equals hegemonic stability. -/
+theorem inertia_eq_stability (a : I) :
+    institutionalInertia a = hegemonicStability a := rfl
+/-! ## §56. Recursive Domination -/
+
+/-- Recursive domination: domination that reproduces itself at every level.
+    n+1 fold composition dominates n-fold composition. -/
+theorem recursive_domination (a : I) (_ha : a ≠ void) (n : ℕ) :
+    dominates (composeN a (n + 2)) (composeN a (n + 1)) ∨
+    sameStratum (composeN a (n + 2)) (composeN a (n + 1)) := by
+  unfold dominates sameStratum
+  rcases lt_or_eq_of_le (rs_composeN_mono a (n + 1)) with h | h
+  · left; exact h
+  · right; exact h.symm
+
+/-- Domination gap between iterated compositions. -/
+noncomputable def dominationGap (a : I) (n m : ℕ) : ℝ :=
+  rs (composeN a n) (composeN a n) - rs (composeN a m) (composeN a m)
+
+/-- Domination gap is zero for same index. -/
+theorem dominationGap_self (a : I) (n : ℕ) :
+    dominationGap a n n = 0 := by
+  unfold dominationGap; ring
+
+/-- Domination gap is antisymmetric. -/
+theorem dominationGap_antisymm (a : I) (n m : ℕ) :
+    dominationGap a n m = -dominationGap a m n := by
+  unfold dominationGap; ring
+
+/-! ## §57. Consent Manufacturing (Chomsky/Herman) -/
+
+/-- Manufactured consent: the degree to which composition with media m
+    makes subject s resonate MORE with the dominant ideology d. -/
+noncomputable def manufacturedConsent (media subject dominant : I) : ℝ :=
+  rs (compose media subject) dominant - rs subject dominant
+
+/-- Manufactured consent decomposes into media resonance plus emergence. -/
+theorem manufactured_consent_eq (m s d : I) :
+    manufacturedConsent m s d = rs m d + emergence m s d := by
+  unfold manufacturedConsent; have := rs_compose_eq m s d; linarith
+
+/-- Void media manufactures no consent. -/
+theorem manufactured_consent_void_media (s d : I) :
+    manufacturedConsent (void : I) s d = 0 := by
+  unfold manufacturedConsent; simp [rs_void_left']
+
+/-- Manufacturing consent for void subject. -/
+theorem manufactured_consent_void_subject (m d : I) :
+    manufacturedConsent m (void : I) d = rs m d := by
+  unfold manufacturedConsent; simp [rs_void_left']
+
+/-- Manufacturing consent against void dominant ideology is zero. -/
+theorem manufactured_consent_void_dominant (m s : I) :
+    manufacturedConsent m s (void : I) = 0 := by
+  unfold manufacturedConsent; simp [rs_void_right']
+
+/-! ## §58. Necropolitics (Mbembe) -/
+
+/-- Necropower: the power to dictate who lives and who dies.
+    In IDT, this is the ability to reduce others to void (symbolic death). -/
+noncomputable def necropower (sovereign subject : I) : ℝ :=
+  rs subject subject - rs (compose sovereign subject) subject
+
+/-- Necropower of void sovereign is zero. -/
+theorem necropower_void_sovereign (s : I) :
+    necropower (void : I) s = 0 := by
+  unfold necropower; simp
+
+/-- Necropower over void subject is zero (can't kill void). -/
+theorem necropower_void_subject (sov : I) :
+    necropower sov (void : I) = 0 := by
+  unfold necropower; simp [rs_void_void, rs_void_left', rs_void_right']
+
+/-- Necropower and state of exception share the same mathematical form
+    when resonance is symmetric; in general, they differ by order sensitivity. -/
+theorem necropower_exception_gap (sov sub : I) :
+    necropower sov sub - stateOfException sov sub =
+    rs sub (compose sov sub) - rs (compose sov sub) sub := by
+  unfold necropower stateOfException; ring
+
+/-! ## §59. Counter-Power and Dual Power -/
+
+/-- Dual power: the coexistence of two competing power structures,
+    each with its own weight. The gap measures instability. -/
+noncomputable def dualPowerGap (state movement : I) : ℝ :=
+  rs state state - rs movement movement
+
+/-- Dual power gap is antisymmetric. -/
+theorem dualPower_antisymm (s m : I) :
+    dualPowerGap s m = -dualPowerGap m s := by
+  unfold dualPowerGap; ring
+
+/-- Dual power gap with void state. -/
+theorem dualPower_void_state (m : I) :
+    dualPowerGap (void : I) m = -rs m m := by
+  unfold dualPowerGap; simp [rs_void_void]
+
+/-- Dual power gap with void movement. -/
+theorem dualPower_void_movement (s : I) :
+    dualPowerGap s (void : I) = rs s s := by
+  unfold dualPowerGap; simp [rs_void_void]
+
+/-- Counter-power: the ability to create alternative compositions
+    that rival the dominant structure. -/
+noncomputable def counterPower (alternative dominant : I) : ℝ :=
+  rs (compose alternative alternative) (compose alternative alternative) -
+  rs (compose dominant dominant) (compose dominant dominant)
+
+/-- Counter-power is antisymmetric. -/
+theorem counterPower_antisymm (a d : I) :
+    counterPower a d = -counterPower d a := by
+  unfold counterPower; ring
+
+/-! ## §60. Epistemic Injustice (Fricker) -/
+
+/-- Testimonial injustice: the speaker's credibility is deflated
+    because of their social identity. Measured by how much a
+    prejudice reduces the resonance of testimony. -/
+noncomputable def testimonialInjustice (prejudice testimony observer : I) : ℝ :=
+  rs testimony observer - rs (compose prejudice testimony) observer
+
+/-- Testimonial injustice decomposition. -/
+theorem testimonial_injustice_eq (p t o : I) :
+    testimonialInjustice p t o = -(rs p o + emergence p t o) := by
+  unfold testimonialInjustice
+  have := rs_compose_eq p t o; linarith
+
+/-- No prejudice, no injustice. -/
+theorem no_prejudice_no_injustice (t o : I) :
+    testimonialInjustice (void : I) t o = 0 := by
+  unfold testimonialInjustice; simp [rs_void_left']
+
+/-- Injustice against void observer vanishes. -/
+theorem injustice_void_observer (p t : I) :
+    testimonialInjustice p t (void : I) = 0 := by
+  unfold testimonialInjustice; simp [rs_void_right']
+
+/-- Hermeneutical injustice: the gap in interpretive resources.
+    Some ideas lack the conceptual framework to be understood. -/
+noncomputable def hermeneuticalInjustice (experience framework : I) : ℝ :=
+  rs experience experience - rs experience framework
+
+/-- Hermeneutical injustice with void framework. -/
+theorem hermeneutical_void_framework (e : I) :
+    hermeneuticalInjustice e (void : I) = rs e e := by
+  unfold hermeneuticalInjustice; simp [rs_void_right']
+
+/-- Hermeneutical injustice of void experience is zero. -/
+theorem hermeneutical_void_experience (f : I) :
+    hermeneuticalInjustice (void : I) f = 0 := by
+  unfold hermeneuticalInjustice; simp [rs_void_void, rs_void_left']
+
+/-! ## §61. Symbolic Violence (Bourdieu, Extended) -/
+
+/-- Symbolic violence in the field: how much the dominant habitus
+    devalues a subordinate position. -/
+noncomputable def symbolicViolenceField (dominant subordinate field : I) : ℝ :=
+  rs dominant field - rs subordinate field
+
+/-- Symbolic violence is antisymmetric in dominant/subordinate. -/
+theorem symbolicViolence_antisymm (d s f : I) :
+    symbolicViolenceField d s f = -symbolicViolenceField s d f := by
+  unfold symbolicViolenceField; ring
+
+/-- Void dominant has no symbolic violence. -/
+theorem symbolicViolence_void_dom (s f : I) :
+    symbolicViolenceField (void : I) s f = -rs s f := by
+  unfold symbolicViolenceField; simp [rs_void_left']
+
+/-- Symbolic violence against void field is zero. -/
+theorem symbolicViolence_void_field (d s : I) :
+    symbolicViolenceField d s (void : I) = 0 := by
+  unfold symbolicViolenceField; simp [rs_void_right']
+
+/-- Misrecognition: the subject's inability to perceive symbolic violence.
+    Measured by how much the subject resonates with the very structure
+    that subordinates them. -/
+noncomputable def misrecognition (subject structure_ : I) : ℝ :=
+  rs subject structure_
+
+/-- Misrecognition of void structure is zero. -/
+theorem misrecognition_void_structure (s : I) :
+    misrecognition s (void : I) = 0 := by
+  unfold misrecognition; exact rs_void_right' s
+
+/-- Misrecognition by void subject is zero. -/
+theorem misrecognition_void_subject (st : I) :
+    misrecognition (void : I) st = 0 := by
+  unfold misrecognition; exact rs_void_left' st
+
+/-! ## §62. Governmentality (Foucault, Extended) -/
+
+/-- Governmentality: the art of governing through composition of norms.
+    The conduct of conduct. -/
+noncomputable def governmentality (norm subject : I) : ℝ :=
+  rs (compose norm subject) (compose norm subject) - rs norm norm
+
+/-- Governmentality is non-negative (norms always add weight). -/
+theorem governmentality_nonneg (n s : I) : governmentality n s ≥ 0 := by
+  unfold governmentality; linarith [compose_enriches' n s]
+
+/-- Void norm governmentality yields subject's weight. -/
+theorem governmentality_void_norm (s : I) :
+    governmentality (void : I) s = rs s s := by
+  unfold governmentality; simp [rs_void_void]
+
+/-- Governmentality over void subject is zero. -/
+theorem governmentality_void_subject (n : I) :
+    governmentality n (void : I) = 0 := by
+  unfold governmentality; simp
+
+/-- Governmentality equals rational-legal authority (same formula). -/
+theorem governmentality_eq_rationalLegal (n s : I) :
+    governmentality n s = rationalLegalAuthority n s := rfl
+
+/-! ## §63. Surplus Repression (Marcuse) -/
+
+/-- Surplus repression: repression beyond what is necessary for
+    social order. The excess weight of the repressive apparatus. -/
+noncomputable def surplusRepression (repression necessity : I) : ℝ :=
+  rs repression repression - rs necessity necessity
+
+/-- Surplus repression is antisymmetric. -/
+theorem surplus_repression_antisymm (r n : I) :
+    surplusRepression r n = -surplusRepression n r := by
+  unfold surplusRepression; ring
+
+/-- Zero surplus when repression equals necessity. -/
+theorem surplus_repression_self (a : I) :
+    surplusRepression a a = 0 := by
+  unfold surplusRepression; ring
+
+/-- All repression is surplus when necessity is void. -/
+theorem surplus_repression_void_necessity (r : I) :
+    surplusRepression r (void : I) = rs r r := by
+  unfold surplusRepression; simp [rs_void_void]
+
+/-! ## §64. Spectacle (Debord) -/
+
+/-- The spectacle: social relations mediated by images.
+    The spectacle's power is in making all observation go through it. -/
+noncomputable def spectaclePower (spectacle subject observer : I) : ℝ :=
+  rs (compose spectacle subject) observer - rs subject observer
+
+/-- Spectacle power decomposes. -/
+theorem spectacle_power_eq (sp s o : I) :
+    spectaclePower sp s o = rs sp o + emergence sp s o := by
+  unfold spectaclePower; have := rs_compose_eq sp s o; linarith
+
+/-- Void spectacle has no power. -/
+theorem spectacle_void (s o : I) :
+    spectaclePower (void : I) s o = 0 := by
+  unfold spectaclePower; simp [rs_void_left']
+
+/-- Spectacle against void observer is zero. -/
+theorem spectacle_void_observer (sp s : I) :
+    spectaclePower sp s (void : I) = 0 := by
+  unfold spectaclePower; simp [rs_void_right']
+
+/-! ## §65. Intersectionality (Crenshaw) -/
+
+/-- Intersectional weight: the composition of multiple identity axes.
+    Weight of combined identities exceeds any single axis. -/
+theorem intersectional_enrichment (axis1 axis2 : I) :
+    rs (compose axis1 axis2) (compose axis1 axis2) ≥ rs axis1 axis1 :=
+  compose_enriches' axis1 axis2
+
+/-- Intersectional emergence: the new meaning that arises from
+    the intersection of two identity axes. -/
+noncomputable def intersectionalEmergence (axis1 axis2 observer : I) : ℝ :=
+  emergence axis1 axis2 observer
+
+/-- Intersectional emergence is bounded by composition weight. -/
+theorem intersectional_emergence_bounded (a1 a2 o : I) :
+    (intersectionalEmergence a1 a2 o) ^ 2 ≤
+    rs (compose a1 a2) (compose a1 a2) * rs o o := by
+  unfold intersectionalEmergence; exact emergence_bounded' a1 a2 o
+
+/-- Intersectional emergence with void axis is zero. -/
+theorem intersectional_void_axis (a2 o : I) :
+    intersectionalEmergence (void : I) a2 o = 0 := by
+  unfold intersectionalEmergence; exact emergence_void_left a2 o
+
+/-- Intersectional emergence satisfies the cocycle condition:
+    adding a third axis of identity is constrained. -/
+theorem intersectional_cocycle (a1 a2 a3 o : I) :
+    intersectionalEmergence a1 a2 o +
+    intersectionalEmergence (compose a1 a2) a3 o =
+    intersectionalEmergence a2 a3 o +
+    intersectionalEmergence a1 (compose a2 a3) o := by
+  unfold intersectionalEmergence; exact cocycle_condition a1 a2 a3 o
+
+/-! ## §66. Sovereign Power (Schmitt/Agamben) -/
+
+/-- Sovereignty: the capacity to declare the exception.
+    The sovereign is whoever controls the composition function.
+    Measured by weight advantage over all others. -/
+noncomputable def sovereignWeight (sov : I) : ℝ := rs sov sov
+
+/-- Sovereign weight is non-negative. -/
+theorem sovereignWeight_nonneg (s : I) : sovereignWeight s ≥ 0 := by
+  unfold sovereignWeight; exact rs_self_nonneg' s
+
+/-- Void has no sovereignty. -/
+theorem sovereignWeight_void : sovereignWeight (void : I) = 0 := by
+  unfold sovereignWeight; exact rs_void_void
+
+/-- Sovereignty through composition: the sovereign composes with
+    the polity to produce the state. -/
+theorem sovereign_composition_enriches (sov polity : I) :
+    rs (compose sov polity) (compose sov polity) ≥ rs sov sov :=
+  compose_enriches' sov polity
+
+/-! ## §67. Primitive Accumulation -/
+
+/-- Primitive accumulation: the initial dispossession that creates
+    the power differential. From void, the first composition creates weight. -/
+theorem primitive_accumulation (a : I) (ha : a ≠ void) :
+    rs (composeN a 1) (composeN a 1) > 0 := by
+  simp [composeN_one]; exact rs_self_pos a ha
+
+/-- Dispossession: the weight transferred from one to another through
+    forced composition. -/
+noncomputable def dispossession (expropriator victim : I) : ℝ :=
+  rs (compose expropriator victim) (compose expropriator victim) -
+  rs expropriator expropriator - rs victim victim
+
+/-- Dispossession from void victim is zero. -/
+theorem dispossession_void_victim (e : I) :
+    dispossession e (void : I) = 0 := by
+  unfold dispossession; simp [rs_void_void]
+
+/-- Dispossession by void expropriator is zero. -/
+theorem dispossession_void_expropriator (v : I) :
+    dispossession (void : I) v = 0 := by
+  unfold dispossession; simp [rs_void_void]
+
+/-- Dispossession is bounded below by the enrichment principle. -/
+theorem dispossession_lower_bound (e v : I) :
+    dispossession e v ≥ -rs v v := by
+  unfold dispossession; linarith [compose_enriches' e v]
+
+/-! ## §68. Cultural Capital Dynamics (Bourdieu, Extended) -/
+
+/-- Cultural capital conversion: how one form of capital (weight)
+    converts to another through composition. -/
+noncomputable def capitalConversion (from_capital to_field : I) : ℝ :=
+  rs from_capital to_field
+
+/-- Capital conversion from void is zero. -/
+theorem capitalConversion_void (f : I) :
+    capitalConversion (void : I) f = 0 := by
+  unfold capitalConversion; exact rs_void_left' f
+
+/-- Capital conversion to void field is zero. -/
+theorem capitalConversion_void_field (c : I) :
+    capitalConversion c (void : I) = 0 := by
+  unfold capitalConversion; exact rs_void_right' c
+
+/-- Capital appreciation: composition increases symbolic capital. -/
+theorem capital_appreciation (a b : I) :
+    symbolicCapital (compose a b) ≥ symbolicCapital a := by
+  unfold symbolicCapital; exact compose_enriches' a b
+
+/-- Cultural capital accumulation through repeated practice. -/
+theorem cultural_capital_accumulation (a : I) (n : ℕ) :
+    symbolicCapital (composeN a (n + 1)) ≥ symbolicCapital (composeN a n) := by
+  unfold symbolicCapital; exact rs_composeN_mono a n
+
+/-! ## §69. Panopticism (Foucault, Extended) -/
+
+/-- Panoptic effect: the change in subject behavior under surveillance.
+    Measured by how much the observer's presence (composition) changes
+    the subject's resonance with a norm. -/
+noncomputable def panopticEffect (surveillance subject norm : I) : ℝ :=
+  rs (compose surveillance subject) norm - rs subject norm
+
+/-- Panoptic effect decomposes into surveillance resonance and emergence. -/
+theorem panoptic_decompose (surv sub norm : I) :
+    panopticEffect surv sub norm = rs surv norm + emergence surv sub norm := by
+  unfold panopticEffect; have := rs_compose_eq surv sub norm; linarith
+
+/-- Void surveillance has no panoptic effect. -/
+theorem panoptic_void_surveillance (sub norm : I) :
+    panopticEffect (void : I) sub norm = 0 := by
+  unfold panopticEffect; simp [rs_void_left']
+
+/-- Panoptic effect against void norm is zero. -/
+theorem panoptic_void_norm (surv sub : I) :
+    panopticEffect surv sub (void : I) = 0 := by
+  unfold panopticEffect; simp [rs_void_right']
+
+/-! ## §70. Deterritorialization (Deleuze & Guattari) -/
+
+/-- Deterritorialization: the process by which an idea escapes its
+    original context. Measured by the emergence created when an idea
+    is placed in a new context. -/
+noncomputable def deterritorialization (idea newContext observer : I) : ℝ :=
+  emergence idea newContext observer
+
+/-- Reterritorialization: the recapture of deterritorialized ideas. -/
+noncomputable def reterritorialization (idea oldContext newContext observer : I) : ℝ :=
+  emergence idea oldContext observer - emergence idea newContext observer
+
+/-- Deterritorialization from void context is zero. -/
+theorem deterritorialization_void_context (i o : I) :
+    deterritorialization i (void : I) o = 0 := by
+  unfold deterritorialization; exact emergence_void_right i o
+
+/-- Deterritorialization against void observer is zero. -/
+theorem deterritorialization_void_observer (i c : I) :
+    deterritorialization i c (void : I) = 0 := by
+  unfold deterritorialization; exact emergence_against_void i c
+
+/-- Reterritorialization is zero when contexts are the same. -/
+theorem reterritorialization_same_context (i c o : I) :
+    reterritorialization i c c o = 0 := by
+  unfold reterritorialization; ring
+
+/-- Net deterritorialization: the total emergence change. -/
+theorem reterritorialization_antisymm (i c₁ c₂ o : I) :
+    reterritorialization i c₁ c₂ o = -reterritorialization i c₂ c₁ o := by
+  unfold reterritorialization; ring
+
+/-! ## §71. Ideological State Apparatus Composition -/
+
+/-- Multiple ISAs compound: composing two ISAs creates a more
+    comprehensive ideological apparatus. -/
+theorem isa_compound (isa₁ isa₂ subject : I) :
+    rs (compose (compose isa₁ isa₂) subject) (compose (compose isa₁ isa₂) subject) ≥
+    rs (compose isa₁ isa₂) (compose isa₁ isa₂) := by
+  exact compose_enriches' (compose isa₁ isa₂) subject
+
+/-- ISA composition is associative. -/
+theorem isa_composition_assoc (isa₁ isa₂ isa₃ : I) :
+    compose (compose isa₁ isa₂) isa₃ = compose isa₁ (compose isa₂ isa₃) := by
+  exact compose_assoc' isa₁ isa₂ isa₃
+
+/-- The weight of combined ISAs exceeds any individual ISA. -/
+theorem isa_combined_weight (isa₁ isa₂ : I) :
+    rs (compose isa₁ isa₂) (compose isa₁ isa₂) ≥ rs isa₁ isa₁ :=
+  compose_enriches' isa₁ isa₂
+
+/-! ## §72. Repressive Tolerance (Marcuse) -/
+
+/-- Repressive tolerance: the system absorbs dissent by composing it,
+    thereby increasing the system's own weight. -/
+noncomputable def repressiveTolerance (system dissent : I) : ℝ :=
+  rs (compose system dissent) (compose system dissent) - rs system system
+
+/-- Repressive tolerance is non-negative (absorbing dissent enriches). -/
+theorem repressive_tolerance_nonneg (sys dis : I) :
+    repressiveTolerance sys dis ≥ 0 := by
+  unfold repressiveTolerance; linarith [compose_enriches' sys dis]
+
+/-- Repressive tolerance of void dissent is zero. -/
+theorem repressive_tolerance_void_dissent (sys : I) :
+    repressiveTolerance sys (void : I) = 0 := by
+  unfold repressiveTolerance; simp
+
+/-- Repressive tolerance by void system gains dissent's weight. -/
+theorem repressive_tolerance_void_system (dis : I) :
+    repressiveTolerance (void : I) dis = rs dis dis := by
+  unfold repressiveTolerance; simp [rs_void_void]
+
+/-! ## §73. Power Equilibrium -/
+
+/-- Two ideas are in power equilibrium when neither dominates. -/
+def powerEquilibrium (a b : I) : Prop :=
+  ¬dominates a b ∧ ¬dominates b a
+
+/-- Power equilibrium implies same stratum. -/
+theorem equilibrium_same_stratum (a b : I) (h : powerEquilibrium a b) :
+    sameStratum a b := by
+  unfold powerEquilibrium dominates at h
+  unfold sameStratum
+  push_neg at h
+  linarith [h.1, h.2]
+
+/-- Power equilibrium is symmetric. -/
+theorem equilibrium_symm (a b : I) (h : powerEquilibrium a b) :
+    powerEquilibrium b a := by
+  unfold powerEquilibrium at *; exact ⟨h.2, h.1⟩
+
+/-- Void is in equilibrium only with itself. -/
+theorem equilibrium_void (a : I) (h : powerEquilibrium (void : I) a) :
+    a = void := by
+  have hs := equilibrium_same_stratum _ _ h
+  exact void_stratum_unique a hs
+
+/-! ## §74. Emergence Calculus for Power -/
+
+/-- Emergence is additive in the observer (through composition decomposition). -/
+theorem emergence_observer_decompose (a b c d : I) :
+    rs (compose a b) (compose c d) =
+    rs a (compose c d) + rs b (compose c d) + emergence a b (compose c d) := by
+  exact rs_compose_eq a b (compose c d)
+
+/-- Double emergence: emergence of a composition observed by a composition. -/
+noncomputable def doubleEmergence (a b c d : I) : ℝ :=
+  emergence a b (compose c d)
+
+/-- Double emergence with void observer. -/
+theorem double_emergence_void_observer_right (a b c : I) :
+    doubleEmergence a b c (void : I) = emergence a b c := by
+  unfold doubleEmergence; simp
+
+/-- Double emergence with void first observer. -/
+theorem double_emergence_void_observer_left (a b d : I) :
+    doubleEmergence a b (void : I) d = emergence a b d := by
+  unfold doubleEmergence; simp
+
+/-! ## §75. Power Network Effects -/
+
+/-- Network power: the weight advantage gained by being in a larger
+    composition network. -/
+noncomputable def networkPower (node network : I) : ℝ :=
+  rs (compose node network) (compose node network) - rs node node
+
+/-- Network power is non-negative. -/
+theorem networkPower_nonneg (n net : I) : networkPower n net ≥ 0 := by
+  unfold networkPower; linarith [compose_enriches' n net]
+
+/-- Network power of void node equals network weight. -/
+theorem networkPower_void_node (net : I) :
+    networkPower (void : I) net = rs net net := by
+  unfold networkPower; simp [rs_void_void]
+
+/-- Network power with void network is zero. -/
+theorem networkPower_void_network (n : I) :
+    networkPower n (void : I) = 0 := by
+  unfold networkPower; simp
+
+/-- Network effects compound: joining a larger network gives more power. -/
+theorem network_effects_compound (n a b : I) :
+    rs (compose n (compose a b)) (compose n (compose a b)) ≥
+    rs (compose n a) (compose n a) := by
+  rw [← compose_assoc']
+  exact compose_enriches' (compose n a) b
+
+/-! ## §76. Legitimacy and Authority -/
+
+/-- Legitimacy: the degree to which power is accepted.
+    Measured by cross-resonance from subject to authority. -/
+noncomputable def legitimacy (authority subject : I) : ℝ :=
+  rs subject authority
+
+/-- Legitimacy from void subject is zero. -/
+theorem legitimacy_void_subject (a : I) :
+    legitimacy a (void : I) = 0 := by
+  unfold legitimacy; exact rs_void_left' a
+
+/-- Legitimacy of void authority is zero. -/
+theorem legitimacy_void_authority (s : I) :
+    legitimacy (void : I) s = 0 := by
+  unfold legitimacy; exact rs_void_right' s
+
+/-- Authority deficit: the gap between hard power and legitimacy. -/
+noncomputable def authorityDeficit (auth subject : I) : ℝ :=
+  rs auth auth - rs subject auth
+
+/-- Authority deficit with void subject equals full hard power. -/
+theorem authorityDeficit_void_subject (a : I) :
+    authorityDeficit a (void : I) = rs a a := by
+  unfold authorityDeficit; simp [rs_void_left']
+
+/-! ## §77. Discourse Theory (Laclau/Mouffe) -/
+
+/-- Nodal point: an idea that fixes the meaning of other ideas in a
+    discourse. Its emergence with everything is structured. -/
+noncomputable def nodalPointEffect (nodal idea observer : I) : ℝ :=
+  emergence nodal idea observer
+
+/-- Floating signifier: the gap between two different contexts giving
+    the same idea different meanings. -/
+noncomputable def floatingSignifier (idea context1 context2 observer : I) : ℝ :=
+  emergence idea context1 observer - emergence idea context2 observer
+
+/-- Floating signifier is zero when contexts are the same. -/
+theorem floating_same_context (i c o : I) :
+    floatingSignifier i c c o = 0 := by
+  unfold floatingSignifier; ring
+
+/-- Floating signifier is antisymmetric in contexts. -/
+theorem floating_antisymm (i c1 c2 o : I) :
+    floatingSignifier i c1 c2 o = -floatingSignifier i c2 c1 o := by
+  unfold floatingSignifier; ring
+
+/-- Nodal point with void idea has no effect. -/
+theorem nodal_void_idea (n o : I) :
+    nodalPointEffect n (void : I) o = 0 := by
+  unfold nodalPointEffect; exact emergence_void_right n o
+
+/-- Nodal point with void observer has no effect. -/
+theorem nodal_void_observer (n i : I) :
+    nodalPointEffect n i (void : I) = 0 := by
+  unfold nodalPointEffect; exact emergence_against_void n i
+
 end PowerStructure
 
 end IDT3
