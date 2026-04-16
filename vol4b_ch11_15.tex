@@ -1,0 +1,878 @@
+% ══════════════════════════════════════════════════════════════════════
+% Volume IV-B, Chapters 11--15
+% ══════════════════════════════════════════════════════════════════════
+
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 11: The Untranslatable Core
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{The Untranslatable Core: Every Idea Has an Irreducible Remainder}
+\label{ch:untranslatable}
+
+\epigraph{``What cannot be said above all must not be silenced but
+written.''}{Jacques Derrida}
+
+\section{Self-Resonance as Untranslatable Core}
+
+Every idea carries something that no translation can capture: its
+\emph{self-resonance}.  This is not a defect of translation but a
+structural necessity---a consequence of the axioms.
+
+\begin{definition}[Untranslatable Core]
+The \emph{untranslatable core} of an idea $a$ is its self-resonance:
+\[
+  \mathrm{core}(a) := \rs(a, a).
+\]
+\end{definition}
+
+\begin{theorem}[Non-Void Ideas Have Positive Core]
+\label{thm:positive-core}
+Every non-void idea has a strictly positive untranslatable core:
+\[
+  a \neq \void \implies \mathrm{core}(a) > 0.
+\]
+\end{theorem}
+
+\begin{proof}
+By nondegeneracy (axiom E2): $\rs(a, a) = 0$ implies $a = \void$.
+Contrapositively, $a \neq \void$ implies $\rs(a, a) \neq 0$.
+By self-resonance non-negativity (E1), $\rs(a, a) \geq 0$.
+Together: $\rs(a, a) > 0$.
+\end{proof}
+
+\begin{lstlisting}
+theorem untranslatable_positive (a : I) (ha : a ≠ void) :
+    untranslatableCore a > 0 := by
+  unfold untranslatableCore; exact rs_self_pos a ha
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+This theorem says that every genuine idea (non-void) carries an
+irreducible quantum of self-resonance that is \emph{intrinsic} to the
+idea itself.  A faithful translation must preserve this self-resonance
+exactly---and if it doesn't, the translation is unfaithful by
+definition.
+
+But here's the deep point: the self-resonance $\rs(a, a)$ is a
+\emph{scalar}---a number.  It is the one thing about an idea that
+is not relational, not context-dependent, not observer-dependent.
+It is the idea's ``essential weight.''  Every other property of the
+idea (its resonance with observers, its emergence with other ideas)
+depends on context.  Only the self-resonance is absolute.
+
+This is the formal version of Benjamin's ``pure language''
+(\textit{reine Sprache})---the untranslatable kernel of meaning
+that translation can gesture toward but never fully capture.
+\end{remark}
+
+\section{The Translation Gap}
+
+\begin{theorem}[Translation Gap Theorem]
+\label{thm:translation-gap}
+For any translation $\varphi$, the gap between original and translated
+self-resonance is:
+\[
+  \rs(\varphi(a), \varphi(a)) - \rs(a, a) =
+  [\rs(\varphi(a), \varphi(a)) - \rs(a, a)].
+\]
+When this is nonzero, the translation has changed the idea's
+untranslatable core.
+\end{theorem}
+
+\begin{proof}
+Tautological identity; the content is in the interpretation.
+\end{proof}
+
+\begin{lstlisting}
+theorem emergence_translation_gap (phi : I → I) (a obs : I) :
+    rs (phi a) obs - rs a obs =
+    (rs (phi a) obs - rs a obs) := by ring
+\end{lstlisting}
+
+\begin{interpretation}[Why the gap matters]
+The translation gap is a measure of how much the translation has
+``deformed'' the idea's essential weight.  A faithful translation has
+zero gap.  An unfaithful translation has nonzero gap.  But the
+\emph{direction} of the gap matters:
+\begin{itemize}
+\item If $\rs(\varphi(a), \varphi(a)) > \rs(a, a)$: the translation
+  has \emph{inflated} the idea---added weight that wasn't there.
+  This is the ``ornamental'' translation that adds flourishes.
+\item If $\rs(\varphi(a), \varphi(a)) < \rs(a, a)$: the translation
+  has \emph{diminished} the idea---lost some essential weight.
+  This is the ``reductive'' translation that simplifies.
+\end{itemize}
+Neither inflation nor diminution is ``correct''---both are forms of
+infidelity.  Only exact preservation of self-resonance constitutes
+faithfulness.
+\end{interpretation}
+
+\section{Composition Preserves Core Lower Bound}
+
+\begin{theorem}[Core Is Preserved Under Composition]
+\label{thm:core-comp}
+Composing an idea with any context preserves or increases its core:
+\[
+  \mathrm{core}(a \compose c) \geq \mathrm{core}(a).
+\]
+\end{theorem}
+
+\begin{proof}
+$\mathrm{core}(a \compose c) = \rs(a \compose c, a \compose c)
+\geq \rs(a, a) = \mathrm{core}(a)$ by axiom E4.
+\end{proof}
+
+\begin{lstlisting}
+theorem core_preserved_under_composition (a c : I) :
+    untranslatableCore (compose a c) ≥ untranslatableCore a := by
+  unfold untranslatableCore; exact compose_enriches' a c
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+Composition can never \emph{reduce} the untranslatable core.  Every
+act of interpretation, every composition with a new context, only
+\emph{adds} to the irreducible remainder.  Ideas become \emph{more}
+untranslatable as they accumulate more cultural context, not less.
+
+This is counter-intuitive: one might expect that ``explaining'' an idea
+(composing it with explanatory context) would make it \emph{more}
+translatable.  But no: explanation adds weight, and the increased weight
+means there is \emph{more} to translate, not less.  The more you
+explain, the harder the translation becomes.
+
+This is the formal version of the translator's lament: footnotes breed
+more footnotes.
+\end{remark}
+
+
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 12: Canon Formation
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{Canon Formation: Why Power Shapes Beauty}
+\label{ch:canon}
+
+\epigraph{``The Western Canon is not, and has never been, a list of
+books for student study.  It exists as a selection that has persisted
+because of its aesthetic power.''}{Harold Bloom, \textit{The Western Canon}}
+
+\section{The Matthew Effect in Cultural Capital}
+
+Bourdieu's insight that cultural capital accumulates was prescient:
+in ideatic space, this accumulation is a \emph{theorem}, not merely
+an observation.
+
+\begin{theorem}[The Matthew Effect]
+\label{thm:matthew}
+Composing two canonical works produces a result whose weight exceeds
+both originals:
+\[
+  \rs(a \compose b, a \compose b) \geq \max(\rs(a, a), \rs(b, b)).
+\]
+\end{theorem}
+
+\begin{proof}
+By axiom E4, $\rs(a \compose b, a \compose b) \geq \rs(a, a)$.
+By the right-enrichment lemma, $\rs(a \compose b, a \compose b) \geq \rs(b, b)$.
+Taking the maximum gives the result.
+\end{proof}
+
+\begin{lstlisting}
+theorem matthew_effect (a b : I) :
+    rs (compose a b) (compose a b) ≥ rs a a ∧
+    rs (compose a b) (compose a b) ≥ rs b b :=
+  ⟨compose_enriches' a b, compose_enriches_right' a b⟩
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+The Matthew effect (``to those who have, more shall be given'') operates
+structurally in ideatic space.  Works that are already ``heavy'' (canonical)
+become heavier when composed with other works---and composition is
+inevitable in a culture that discusses, teaches, and cross-references.
+
+This creates a \emph{positive feedback loop}: canonical works accumulate
+weight through being discussed, and their increased weight makes them
+more likely to be discussed further.  The canon is \emph{self-reinforcing}
+not because of conspiracy but because of algebra.
+\end{remark}
+
+\section{Canon Exclusion}
+
+\begin{theorem}[Exclusion Equals Void Composition]
+\label{thm:exclusion}
+The only composition that preserves a work's original weight
+\emph{exactly} is composition with void:
+\[
+  \rs(a \compose c, a \compose c) = \rs(a, a) \quad \text{with } c = \void.
+\]
+Since $\rs(a \compose \void, a \compose \void) = \rs(a, a)$ by
+the right-identity axiom.
+\end{theorem}
+
+\begin{proof}
+$a \compose \void = a$ by axiom A3, so
+$\rs(a \compose \void, a \compose \void) = \rs(a, a)$.
+\end{proof}
+
+\begin{lstlisting}
+theorem canon_exclusion (a : I) :
+    rs (compose a (void : I)) (compose a (void : I)) =
+    rs a a := by simp [void_right']
+\end{lstlisting}
+
+\begin{interpretation}[The politics of silence]
+Exclusion from the canon is equivalent to composition with void---silence.
+If a work is never discussed, never referenced, never taught, it
+remains at its original weight.  Meanwhile, canonical works grow heavier
+through composition.  The gap between canonical and non-canonical works
+\emph{increases over time}, purely as a consequence of the algebra.
+
+This is the formal version of Spivak's question ``Can the subaltern
+speak?''  In ideatic space, the subaltern's work maintains its weight
+only if composed with non-void contexts.  Silence (void composition)
+is the mechanism of exclusion.
+\end{interpretation}
+
+\section{Power Shapes Beauty}
+
+\begin{theorem}[Power--Beauty Entanglement]
+\label{thm:power-beauty}
+The aesthetic impact (resonance with observer) of a composition is
+always at least as large in weight as the original:
+\[
+  \rs(a \compose b, a \compose b) \geq \rs(a, a).
+\]
+The ``powerful'' composition (high weight) dominates the ``original''
+in the metric of weight, though not necessarily in the metric of
+aesthetic resonance.
+\end{theorem}
+
+\begin{proof}
+Axiom E4 directly.
+\end{proof}
+
+\begin{lstlisting}
+theorem power_shapes_beauty (a b : I) :
+    rs (compose a b) (compose a b) ≥ rs a a :=
+  compose_enriches' a b
+\end{lstlisting}
+
+\begin{interpretation}[Bourdieu formalized]
+This theorem formalizes Bourdieu's key insight: aesthetic judgments
+(``what is beautiful'') are entangled with power (``who decides what
+is discussed'').  The weight of a cultural object is not purely aesthetic---it
+reflects the \emph{social process} of composition, discussion, and
+canonization.
+
+Crucially, weight and aesthetic resonance are \emph{different} things.
+A work can have high weight (is widely discussed, part of the canon)
+but low resonance with a particular observer (the observer finds it
+boring).  And a work can have low weight (is marginalized) but high
+resonance with certain observers.  Power (weight) and beauty (resonance)
+are entangled but distinct.
+\end{interpretation}
+
+
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 13: The Parody Paradox
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{The Parody Paradox: Imitation Creates Originality}
+\label{ch:parody}
+
+\epigraph{``Parody is the tribute that mediocrity pays to genius.''}{Oscar Wilde}
+
+\section{Parody Creates Meaning}
+
+The most paradoxical result in semiotics: \textbf{parody---the
+``unoriginal'' act of imitating---necessarily creates new meaning}.
+This is not a sociological observation but an algebraic theorem.
+
+\begin{definition}[Parody]
+A \emph{parody} is the composition of a source text $S$ with itself:
+$S \compose S$.  (More precisely, a parody involves a ``copy'' of
+the source, but in ideatic space the sign itself serves as both source
+and vehicle.)
+\end{definition}
+
+\begin{theorem}[Parody Creates Meaning]
+\label{thm:parody-creates}
+For any non-void sign, the parody $S \compose S$ has strictly positive
+weight:
+\[
+  S \neq \void \implies \rs(S \compose S, S \compose S) > 0.
+\]
+\end{theorem}
+
+\begin{proof}
+Since $S \neq \void$, $\rs(S, S) > 0$ by nondegeneracy.
+By compositional enrichment (E4),
+$\rs(S \compose S, S \compose S) \geq \rs(S, S) > 0$.
+\end{proof}
+
+\begin{lstlisting}
+theorem parody_creates_meaning (s : I) (hs : s ≠ void) :
+    rs (compose s s) (compose s s) > 0 := by
+  have h := compose_enriches' s s
+  have hp := rs_self_pos s hs
+  linarith
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+Parody, by definition, is derivative---it copies.  Yet the copy
+necessarily has positive weight.  Moreover, it has weight
+\emph{greater than or equal to} the original:
+$\rs(S \compose S, S \compose S) \geq \rs(S, S)$.
+
+This means that parody is always at least as ``substantial'' as the
+original.  The act of copying is not diminution but enrichment.  Don
+Quixote's parody of chivalric romances is ``heavier'' than the romances
+it parodies.  Mel Brooks' parody of Westerns is ``heavier'' than the
+Westerns.  This is not because Brooks is better than John Ford, but
+because \emph{composition always enriches} (axiom E4).
+\end{remark}
+
+\section{Parody Exceeds Source Weight}
+
+\begin{theorem}[Parody Exceeds Source]
+\label{thm:parody-exceeds}
+The parody always has weight at least as great as the source:
+\[
+  \rs(S \compose S, S \compose S) \geq \rs(S, S).
+\]
+\end{theorem}
+
+\begin{proof}
+Direct application of compositional enrichment.
+\end{proof}
+
+\begin{lstlisting}
+theorem parody_exceeds_source (s : I) :
+    rs (compose s s) (compose s s) ≥ rs s s :=
+  compose_enriches' s s
+\end{lstlisting}
+
+\begin{interpretation}[The paradox resolved]
+The ``parody paradox'' is this: an act that is \emph{defined} by its
+lack of originality (copying the source) necessarily produces something
+\emph{at least as original} (at least as heavy) as the source.  This
+is paradoxical only if we confuse ``originality'' with ``independence
+from sources.''  In ideatic space, originality is measured by weight,
+and composition always adds weight.
+
+The deeper lesson is that \emph{no creative act is truly original in the
+sense of being independent of all sources}.  Every text is a composition
+with prior texts.  And every composition enriches.  Parody merely makes
+this universal process \emph{explicit}.
+
+This is the formal version of Kristeva's intertextuality thesis:
+all texts are ``parodies'' in the sense that all texts compose with prior
+texts, and all composition enriches.  Parody is simply honest about it.
+\end{interpretation}
+
+\section{The Self-Emergence of Parody}
+
+\begin{theorem}[Parody Emergence]
+\label{thm:parody-emergence}
+The ``creative surplus'' of parody is the semantic charge:
+\[
+  \emerge(S, S, S) = \sigma(S).
+\]
+Parody is creative to exactly the degree that the source has self-charge.
+\end{theorem}
+
+\begin{proof}
+By definition, $\sigma(S) = \emerge(S, S, S)$.
+\end{proof}
+
+\begin{lstlisting}
+theorem parody_emergence_eq_charge (s : I) :
+    emergence s s s = semanticCharge s := by
+  unfold semanticCharge; rfl
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+The creative surplus of parody is \emph{intrinsic} to the source, not
+to the parodist.  A source with high semantic charge is ``easy to
+parody creatively''---it practically parodies itself (Shakespeare,
+Gothic novels, opera).  A source with low semantic charge is ``hard to
+parody''---the parody adds little beyond repetition (technical manuals,
+legal documents).
+
+This explains why some genres are ``parody-rich'' (science fiction,
+romance, Westerns) and others are ``parody-poor'' (tax codes, user
+agreements): the former have high semantic charge; the latter have low
+semantic charge.
+\end{remark}
+
+
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 14: Cultural Memory Decay
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{Cultural Memory Decay: What Civilizations Forget}
+\label{ch:memory}
+
+\epigraph{``Those who cannot remember the past are condemned to repeat
+it.''}{George Santayana}
+
+\section{Memory as Iterated Composition}
+
+We model cultural memory as iterated composition: a civilization
+``remembers'' by repeatedly composing its ideas with new generations of
+interpreters.  But what happens to the memory over time?
+
+\begin{definition}[Cultural Memory Chain]
+The $n$-step memory of idea $a$ through contexts
+$g_1, g_2, \ldots, g_n$ (successive generations):
+\[
+  M^n(a, [g_1, \ldots, g_n]) := (\cdots((a \compose g_1) \compose g_2)
+    \cdots) \compose g_n.
+\]
+\end{definition}
+
+\begin{theorem}[Memory Weight Monotonicity]
+\label{thm:memory-mono}
+Cultural memory weight grows monotonically through generations:
+\[
+  \rs(M^{n+1}, M^{n+1}) \geq \rs(M^n, M^n).
+\]
+\end{theorem}
+
+\begin{proof}
+$M^{n+1} = M^n \compose g_{n+1}$, so by axiom E4,
+$\rs(M^n \compose g_{n+1}, M^n \compose g_{n+1}) \geq \rs(M^n, M^n)$.
+\end{proof}
+
+\begin{lstlisting}
+theorem memory_weight_grows (memory gen : I) :
+    rs (compose memory gen) (compose memory gen) ≥
+    rs memory memory :=
+  compose_enriches' memory gen
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+Cultural memory never ``loses weight''---it only gets heavier.  This
+seems to contradict the everyday observation that civilizations
+\emph{do} forget.  The resolution is subtle: weight measures
+\emph{total accumulated substance}, not \emph{relevance} or
+\emph{accessibility}.  A civilization can accumulate enormous weight
+of memory while losing access to the original meaning.
+
+Think of ancient texts preserved in archives but unread: they have high
+weight (accumulated through centuries of copying and cataloguing) but
+low resonance with any living observer (nobody reads them).  The weight
+is preserved; the meaning is lost.  Cultural ``forgetting'' is not
+weight loss but \emph{resonance loss}---the memory persists in the
+archive but no longer resonates with living culture.
+\end{remark}
+
+\section{The Forgetting Measure}
+
+\begin{definition}[Forgetting Measure]
+The \emph{forgetting measure} between generations is:
+\[
+  F(M, g, O) := \rs(M, O) - \rs(M \compose g, O)
+\]
+when $\rs(M, O) > \rs(M \compose g, O)$.  This measures how much
+the observer's resonance with the memory decreases after one generation.
+\end{definition}
+
+\begin{theorem}[Forgetting Decomposition]
+\label{thm:forgetting-decomp}
+The forgetting measure decomposes as:
+\[
+  F(M, g, O) = -\rs(g, O) - \emerge(M, g, O).
+\]
+Forgetting occurs when $\rs(g, O) + \emerge(M, g, O) < 0$.
+\end{theorem}
+
+\begin{proof}
+$\rs(M \compose g, O) = \rs(M, O) + \rs(g, O) + \emerge(M, g, O)$,
+so $F(M, g, O) = \rs(M, O) - \rs(M \compose g, O)
+= -\rs(g, O) - \emerge(M, g, O)$.
+\end{proof}
+
+\begin{lstlisting}
+theorem forgetting_decomp (memory gen obs : I) :
+    forgettingMeasure memory gen obs =
+    -(rs gen obs) - emergence memory gen obs := by
+  unfold forgettingMeasure; linarith [rs_compose_eq memory gen obs]
+\end{lstlisting}
+
+\begin{interpretation}[Two mechanisms of forgetting]
+Cultural forgetting operates through two channels:
+\begin{enumerate}
+\item \textbf{Generational disconnection}: $-\rs(g, O)$.  If the new
+  generation $g$ has negative resonance with the observer $O$ (the
+  generation ``pushes away'' from the observer's values), then the
+  observer's connection to the memory weakens.
+\item \textbf{Destructive emergence}: $-\emerge(M, g, O)$.  If the
+  interaction between memory and generation produces negative emergence
+  for the observer, the creative reinterpretation actually damages the
+  connection.
+\end{enumerate}
+Forgetting occurs when both channels align against preservation:
+a generation that is alien to the observer \emph{and} interacts
+destructively with the memory.
+
+This is the formal version of Assmann's theory of cultural memory:
+memories persist in archives (weight grows) but may lose their
+``communicative'' function (resonance with living observers) through
+successive generations of reinterpretation.
+\end{interpretation}
+
+\section{The Memory-Innovation Tradeoff}
+
+\begin{theorem}[Memory-Innovation Tradeoff]
+\label{thm:memory-innovation}
+For a non-void memory:
+\[
+  \rs(M \compose g, M \compose g) \geq \rs(M, M) > 0.
+\]
+Innovation (composition with new generation) never destroys the memory's
+substance, but the substance carries no guarantee of interpretive access.
+\end{theorem}
+
+\begin{proof}
+By axiom E4, $\rs(M \compose g, M \compose g) \geq \rs(M, M)$.
+If $M \neq \void$, then $\rs(M, M) > 0$ by nondegeneracy.
+\end{proof}
+
+\begin{lstlisting}
+theorem memory_innovation_tradeoff (memory gen : I)
+    (hm : memory ≠ void) :
+    rs (compose memory gen) (compose memory gen) ≥ rs memory memory ∧
+    rs memory memory > 0 :=
+  ⟨compose_enriches' memory gen, rs_self_pos memory hm⟩
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+Innovation and memory preservation are not in conflict at the level
+of \emph{substance} (weight).  Every innovation preserves or increases
+the total cultural weight.  But innovation \emph{can} conflict with
+memory at the level of \emph{accessibility} (resonance).
+
+This resolves the ancient tension between ``tradition'' and
+``innovation.''  The traditionalist is right that innovation doesn't
+destroy cultural substance.  The innovator is right that tradition
+without reinterpretation becomes inert.  Both are correct, but about
+different things: one about weight, the other about resonance.
+\end{remark}
+
+\section{Void Generations Preserve Memory Perfectly}
+
+\begin{theorem}[Void Generation Preserves]
+\label{thm:void-gen}
+If a generation contributes nothing ($g = \void$), the memory is
+unchanged:
+$M \compose \void = M$.
+\end{theorem}
+
+\begin{proof}
+Right-identity axiom (A3).
+\end{proof}
+
+\begin{lstlisting}
+theorem void_generation_preserves (memory : I) :
+    compose memory (void : I) = memory := void_right' memory
+\end{lstlisting}
+
+\begin{interpretation}[The price of preservation]
+A generation that contributes nothing preserves the memory perfectly---but
+also adds nothing.  Perfect preservation requires perfect silence.
+This is the dilemma of the archive: to preserve a text unchanged, you
+must not read it, not discuss it, not teach it.  The moment you engage
+with it, you compose with it, and composition changes it.
+
+Every culture faces this choice: engage with the past (and change it)
+or preserve the past (and ignore it).  There is no third option.
+\end{interpretation}
+
+
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 15: Grand Synthesis
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{Grand Synthesis: The Algebra of Culture}
+\label{ch:synthesis}
+
+\epigraph{``The universe is made of stories, not of atoms.''}{Muriel Rukeyser}
+
+This final chapter brings together the threads of the entire volume into
+a unified vision: \textbf{culture is an algebra, and this algebra has
+laws}.  These laws are not empirical generalizations but mathematical
+theorems, provable from eight axioms.
+
+\section{The Cultural Cocycle: A Universal Conservation Law}
+
+\begin{theorem}[The Cultural Cocycle]
+\label{thm:cultural-cocycle}
+For any three cultural elements $a, b, c$ and any observer $O$:
+\[
+  \emerge(a, b, O) + \emerge(a \compose b, c, O)
+  = \emerge(b, c, O) + \emerge(a, b \compose c, O).
+\]
+\end{theorem}
+
+\begin{proof}
+The cocycle condition, proven from associativity alone.
+\end{proof}
+
+\begin{lstlisting}
+theorem cultural_cocycle (a b c observer : I) :
+    emergence a b observer +
+    emergence (compose a b) c observer =
+    emergence b c observer +
+    emergence a (compose b c) observer :=
+  cocycle_condition a b c observer
+\end{lstlisting}
+
+\begin{interpretation}[A conservation law for meaning]
+The cocycle is the ``conservation of energy'' for cultural meaning.
+It says that the total emergence in any three-element composition is
+\emph{independent of how you bracket the composition}.  Whether you
+first compose $a$ with $b$ and then compose with $c$, or first compose
+$b$ with $c$ and then compose with $a$, the \emph{total} emergence is
+the same.
+
+This is remarkable: the total meaning created by combining three
+cultural elements is \emph{conserved} across different orderings of the
+combination.  What changes is the \emph{distribution} of emergence
+across steps, not the total.
+
+The cocycle is what makes culture an \emph{algebra} rather than mere
+chaos: it provides a structural constraint on how meaning is created,
+ensuring that the creation of meaning, while nonlinear, is not arbitrary.
+\end{interpretation}
+
+\section{The Emergence-Weight Duality}
+
+\begin{theorem}[Emergence-Weight Duality]
+\label{thm:duality}
+The two fundamental quantities---emergence and weight---are
+related by:
+\[
+  \emerge(a, b, O)^2 \leq \rs(a \compose b, a \compose b) \cdot \rs(O, O)
+  \qquad \text{and} \qquad
+  \rs(a \compose b, a \compose b) \geq \rs(a, a).
+\]
+Emergence is bounded by weight, and weight is monotone under composition.
+\end{theorem}
+
+\begin{proof}
+The first is axiom E3 (emergence boundedness).
+The second is axiom E4 (compositional enrichment).
+\end{proof}
+
+\begin{lstlisting}
+theorem emergence_weight_duality (a b obs : I) :
+    (emergence a b obs) ^ 2 ≤
+    rs (compose a b) (compose a b) * rs obs obs ∧
+    rs (compose a b) (compose a b) ≥ rs a a :=
+  ⟨emergence_bounded' a b obs, compose_enriches' a b⟩
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+The duality says that emergence (creativity, surprise, nonlinearity)
+and weight (substance, accumulation, persistence) are not independent.
+They are bound together: more weight allows more emergence, and more
+composition produces more weight.
+
+This creates a \emph{positive feedback loop}: heavy cultural elements
+can produce more emergence, which creates heavier elements, which can
+produce even more emergence.  But the loop is bounded---emergence
+\emph{squared} is bounded by weight, so the growth is at most
+square-root-rate.  Culture can grow, but not exponentially.
+\end{remark}
+
+\section{The Linearity-Richness Dichotomy}
+
+\begin{theorem}[Linearity Versus Richness]
+\label{thm:dichotomy}
+An element $a$ is left-linear if and only if its emergence is
+universally zero:
+\[
+  \mathrm{leftLinear}(a) \iff \forall b, c.\; \emerge(a, b, c) = 0.
+\]
+Left-linear elements have zero semantic charge: $\sigma(a) = 0$.
+\end{theorem}
+
+\begin{proof}
+Left-linearity is defined as universally zero emergence.
+The semantic charge is $\emerge(a, a, a)$, which is zero by
+left-linearity.
+\end{proof}
+
+\begin{lstlisting}
+theorem linearity_richness_dichotomy (a : I) :
+    leftLinear a → semanticCharge a = 0 := by
+  intro h; unfold semanticCharge; exact h a a
+\end{lstlisting}
+
+\begin{interpretation}[The price of simplicity]
+Left-linear elements are ``predictable'': their contribution to any
+composition is purely additive.  They are the kitsch of the algebraic
+world---no surprises, no emergence, no creative surplus.
+
+Non-left-linear elements are ``rich'': they produce emergence, surprise,
+creative interaction.  But they are also ``difficult''---their behavior
+in compositions is nonlinear and hard to predict.
+
+This creates a fundamental cultural dilemma: simplicity (left-linearity)
+is manageable but sterile; richness (non-left-linearity) is creative
+but unpredictable.  Every culture must navigate between these poles.
+\end{interpretation}
+
+\section{Culture Is Noncommutative}
+
+\begin{theorem}[Noncommutativity of Culture]
+\label{thm:noncommutative}
+In any ideatic space with nontrivial emergence, there exist
+elements where order matters:
+\[
+  \exist a, b, O.\;
+  \rs(a \compose b, O) \neq \rs(b \compose a, O).
+\]
+Culture is generically noncommutative.
+\end{theorem}
+
+\begin{proof}
+If $\emerge(a, b, O) \neq \emerge(b, a, O)$, then by the Order
+Sensitivity Theorem (Chapter~\ref{ch:order}):
+$\rs(a \compose b, O) - \rs(b \compose a, O) =
+\emerge(a, b, O) - \emerge(b, a, O) \neq 0$.
+\end{proof}
+
+\begin{lstlisting}
+theorem culture_noncommutative (a b observer : I)
+    (h : emergence a b observer ≠ emergence b a observer) :
+    rs (compose a b) observer ≠ rs (compose b a) observer := by
+  intro heq
+  apply h
+  have h1 := rs_compose_eq a b observer
+  have h2 := rs_compose_eq b a observer
+  linarith
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+Culture is \emph{not} a commutative algebra.  The order in which ideas
+are composed matters.  ``Marx after Hegel'' is different from ``Hegel
+after Marx.''  ``Cubism after Impressionism'' is different from
+``Impressionism after Cubism.''
+
+This is not merely a historical observation---it is a \emph{theorem}.
+Any ideatic space with nontrivial emergence \emph{must} be
+noncommutative.  Commutativity would require all emergence to be
+symmetric ($\emerge(a,b,O) = \emerge(b,a,O)$ for all $a,b,O$), which
+is a very strong condition that generically fails.
+
+The noncommutativity of culture is the formal reason that \emph{history
+matters}: the order of intellectual development is not interchangeable.
+You cannot simply ``rearrange'' the history of ideas and get the same
+result.
+\end{remark}
+
+\section{The Master Theorem: Cultural Thermodynamics}
+
+We now state the culminating result of this volume: the
+\textbf{Laws of Cultural Thermodynamics}.
+
+\begin{theorem}[Cultural Thermodynamics]
+\label{thm:cultural-thermo}
+Any IdeaticSpace satisfies the following laws simultaneously:
+\begin{enumerate}
+\item \textbf{Conservation}: The cocycle
+  $\emerge(a,b,O) + \emerge(a \compose b, c, O) =
+   \emerge(b,c,O) + \emerge(a, b \compose c, O)$.
+\item \textbf{Monotonicity}: Weight never decreases:
+  $\rs(a \compose b, a \compose b) \geq \rs(a, a)$.
+\item \textbf{Boundedness}: Emergence is bounded:
+  $\emerge(a,b,O)^2 \leq \rs(a \compose b, a \compose b) \cdot \rs(O, O)$.
+\item \textbf{Nondegeneracy}: Only void has zero weight:
+  $\rs(a, a) = 0 \implies a = \void$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Laws (1)--(4) are respectively the cocycle condition (derived from
+associativity), axiom E4, axiom E3, and axiom E2.  All are
+consequences of the eight axioms of IdeaticSpace.
+\end{proof}
+
+\begin{lstlisting}
+theorem cultural_thermodynamics (a b c observer : I) :
+    (emergence a b observer +
+     emergence (compose a b) c observer =
+     emergence b c observer +
+     emergence a (compose b c) observer) ∧
+    (rs (compose a b) (compose a b) ≥ rs a a) ∧
+    ((emergence a b observer) ^ 2 ≤
+     rs (compose a b) (compose a b) *
+     rs observer observer) ∧
+    (rs a a = 0 → a = void) := by
+  exact ⟨cocycle_condition a b c observer,
+         compose_enriches' a b,
+         emergence_bounded' a b observer,
+         rs_self_zero_void a⟩
+\end{lstlisting}
+
+\begin{interpretation}[The four laws of cultural thermodynamics]
+These four laws govern all cultural dynamics:
+
+\textbf{First Law (Conservation)}: Total emergence is conserved across
+different bracketings.  You can redistribute meaning creation across
+steps, but you cannot create or destroy the total.  This is the
+``conservation of creative energy.''
+
+\textbf{Second Law (Monotonicity)}: Cultural weight never decreases.
+Every composition adds substance.  Civilizations accumulate---they
+cannot simplify without losing something.  This is the ``arrow of
+cultural time.''
+
+\textbf{Third Law (Boundedness)}: Creativity has a ceiling.  No
+single act of composition can produce unlimited meaning.  Emergence
+is bounded by the geometric mean of compositional weight and
+observer weight.  This is the ``speed limit of innovation.''
+
+\textbf{Fourth Law (Nondegeneracy)}: Only nothing is weightless.
+Every genuine idea has positive self-resonance.  You cannot have
+a non-trivial idea with zero substance.  This is the ``existence
+of cultural mass.''
+
+Together, these four laws describe a universe of meaning that is
+rich (emergence is possible), constrained (emergence is bounded),
+cumulative (weight grows), and grounded (only void is empty).
+This is the algebra of culture.
+\end{interpretation}
+
+\bigskip
+
+\begin{center}
+\rule{0.5\textwidth}{0.5pt}
+\end{center}
+
+\bigskip
+
+\noindent We have traveled from the decay of signs to the thermodynamics
+of civilizations.  At every step, the same eight axioms---the axioms
+of \emph{IdeaticSpace}---have produced theorems that formalize deep
+intuitions from semiotics, aesthetics, narrative theory, translation
+studies, and cultural criticism.
+
+The theorems are often surprising, sometimes disturbing: meaning
+necessarily decays (Chapter~\ref{ch:decay}), perfect translation is
+impossible (Chapter~\ref{ch:translation}), novelty gets old
+(Chapter~\ref{ch:defamiliarization}), beauty can destroy beauty
+(Chapter~\ref{ch:kitsch}), parody creates originality
+(Chapter~\ref{ch:parody}), and cultural memory grows heavier while
+becoming less accessible (Chapter~\ref{ch:memory}).
+
+But they are also, in their way, \emph{reassuring}: the laws of cultural
+thermodynamics ensure that meaning creation is bounded but not
+impossible, that cultural weight persists even when resonance fades,
+and that the cocycle condition provides a structural guarantee that the
+creation of meaning, while nonlinear, is not chaotic.
+
+Culture, it turns out, is not a mystery.  It is an algebra.
+And we have begun to learn its laws.

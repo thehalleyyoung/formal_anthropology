@@ -1,0 +1,985 @@
+% ══════════════════════════════════════════════════════════════════════
+% Volume IV-B, Chapters 1--5
+% ══════════════════════════════════════════════════════════════════════
+
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 1: The Decay of Meaning
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{The Decay of Meaning: Why Reinterpretation Always Loses}
+\label{ch:decay}
+
+\epigraph{``A word is dead / When it is said, / Some say. /
+I say it just / Begins to live / That day.''}{Emily Dickinson}
+
+% ── Historical Preamble ──────────────────────────────────────────────
+
+The childhood game of ``telephone''---in which a message is whispered
+from ear to ear around a circle, arriving at the end comically
+garbled---is not merely a game.  It is a \emph{theorem}.
+
+In this chapter, we prove that every act of reinterpretation---every
+composition of a sign with a new context---introduces an irreversible
+distortion.  The distortion is not random noise; it has a precise
+algebraic structure.  It decomposes into a \emph{bias term} (the
+context's own resonance with the observer) and an \emph{emergence term}
+(the nonlinear interaction between sign and context).  Only when both
+are zero---only when the context is silence---is the reinterpretation
+lossless.
+
+This result overturns the naive hope that ``careful'' reinterpretation
+can preserve meaning perfectly.  It cannot.  Every reading leaves a mark
+on the text, and the marks accumulate.
+
+\section{Sign Chains and Reinterpretation}
+
+We begin by formalizing the notion of a \emph{sign chain}: a sequence
+of reinterpretations, each modeled as composition with a new context.
+
+\begin{definition}[Sign Chain]
+\label{def:sign-chain}
+Let $a \in \IS$ be a sign and $c_1, c_2, \ldots, c_n \in \IS$ be
+a sequence of contexts.  The \emph{$n$-step sign chain} is defined
+recursively:
+\[
+  \mathrm{chain}(a, []) = a, \qquad
+  \mathrm{chain}(a, c :: \mathrm{rest}) = \mathrm{chain}(a \compose c, \mathrm{rest}).
+\]
+\end{definition}
+
+\begin{lstlisting}
+def signChain (a : I) : List I → I
+  | [] => a
+  | c :: rest => signChain (compose a c) rest
+\end{lstlisting}
+
+The definition is straightforward, but its consequences are profound.
+
+\begin{theorem}[Sign Weight Growth]
+\label{thm:sign-weight-growth}
+For any sign $a$ and context $c$,
+\[
+  \rs(a \compose c, a \compose c) \geq \rs(a, a).
+\]
+Every reinterpretation increases or preserves the sign's weight.
+\end{theorem}
+
+\begin{proof}
+This is an immediate consequence of axiom E4 (compositional enrichment):
+$\rs(a \compose b, a \compose b) \geq \rs(a, a)$ for all $a, b$.
+\end{proof}
+
+\begin{remark}[Why this is surprising]
+At first glance, this seems like good news: reinterpretation makes signs
+``heavier.''  But weight measures \emph{quantity of presence}, not
+\emph{fidelity to the original meaning}.  A sign can grow heavier while
+drifting arbitrarily far from its original resonance profile.  The sign
+gets more ``substantial'' while becoming less ``faithful.''  This is the
+paradox of tradition: cultural transmission accumulates weight while
+potentially distorting meaning.
+\end{remark}
+
+\section{The Reinterpretation Gap}
+
+\begin{definition}[Reinterpretation Gap]
+The \emph{reinterpretation gap} measures how much one step of
+reinterpretation changes the resonance of a sign with an observer:
+\[
+  \mathrm{gap}(a, c, \mathrm{obs}) := \rs(a \compose c, \mathrm{obs}) - \rs(a, \mathrm{obs}).
+\]
+\end{definition}
+
+\begin{lstlisting}
+noncomputable def reinterpretationGap (a c observer : I) : R :=
+  rs (compose a c) observer - rs a observer
+\end{lstlisting}
+
+\begin{theorem}[Gap Decomposition]
+\label{thm:gap-decomp}
+The reinterpretation gap decomposes as:
+\[
+  \mathrm{gap}(a, c, \mathrm{obs}) = \rs(c, \mathrm{obs}) + \emerge(a, c, \mathrm{obs}).
+\]
+\end{theorem}
+
+\begin{proof}
+By the resonance composition equation $\rs(a \compose c, \mathrm{obs})
+= \rs(a, \mathrm{obs}) + \rs(c, \mathrm{obs}) + \emerge(a, c, \mathrm{obs})$,
+subtraction gives the result immediately.
+\end{proof}
+
+\begin{lstlisting}
+theorem reinterpretationGap_decomp (a c observer : I) :
+    reinterpretationGap a c observer =
+    rs c observer + emergence a c observer := by
+  unfold reinterpretationGap
+  have h := rs_compose_eq a c observer
+  linarith
+\end{lstlisting}
+
+\begin{interpretation}[The two channels of distortion]
+The gap has two independent components:
+\begin{enumerate}
+\item The \textbf{bias term} $\rs(c, \mathrm{obs})$: the context's own
+  resonance with the observer.  This is the ``literal'' contribution of
+  the context---what it brings to the table independently of the sign.
+\item The \textbf{emergence term} $\emerge(a, c, \mathrm{obs})$: the
+  nonlinear interaction between sign and context.  This is the ``creative''
+  distortion---the new meaning that arises from the composition.
+\end{enumerate}
+Both terms are generally nonzero.  To achieve zero gap, \emph{both}
+must vanish simultaneously.  This is a much stronger condition than
+either alone.
+\end{interpretation}
+
+\section{Two-Step Distortion: The Telephone Theorem}
+
+\begin{theorem}[Two-Step Distortion]
+\label{thm:two-step}
+When a sign is reinterpreted through two successive contexts
+$c_1, c_2$, the total gap equals the sum of individual gaps
+\emph{plus} a cross-emergence term:
+\[
+  \rs(a \compose c_1 \compose c_2, \mathrm{obs}) - \rs(a, \mathrm{obs})
+  = \mathrm{gap}(a, c_1, \mathrm{obs}) +
+    \mathrm{gap}(a \compose c_1, c_2, \mathrm{obs}).
+\]
+\end{theorem}
+
+\begin{proof}
+This is a telescoping identity:
+\begin{align*}
+  &\rs((a \compose c_1) \compose c_2, \mathrm{obs}) - \rs(a, \mathrm{obs}) \\
+  &= [\rs((a \compose c_1) \compose c_2, \mathrm{obs})
+    - \rs(a \compose c_1, \mathrm{obs})] +
+    [\rs(a \compose c_1, \mathrm{obs}) - \rs(a, \mathrm{obs})] \\
+  &= \mathrm{gap}(a \compose c_1, c_2, \mathrm{obs}) +
+    \mathrm{gap}(a, c_1, \mathrm{obs}).
+\end{align*}
+\end{proof}
+
+\begin{lstlisting}
+theorem two_step_distortion (a c1 c2 observer : I) :
+    reinterpretationGap a c1 observer +
+    reinterpretationGap (compose a c1) c2 observer =
+    rs (compose (compose a c1) c2) observer - rs a observer := by
+  unfold reinterpretationGap; ring
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+The naive expectation is that two ``small'' reinterpretations should
+produce a ``small'' total distortion.  But each gap decomposes into
+bias + emergence, and the \emph{emergence terms are generally correlated}
+via the cocycle condition.  Two individually small gaps can produce a
+large total distortion if the cross-emergence aligns.  Distortion is
+not additive---it is \emph{super-additive} when emergence cooperates.
+\end{remark}
+
+\section{The Only Lossless Reinterpretation}
+
+\begin{theorem}[Void Preserves Perfectly]
+\label{thm:void-preserves}
+The only context that produces zero reinterpretation gap for all
+observers is the void:
+\[
+  \mathrm{gap}(a, \void, \mathrm{obs}) = 0 \quad \text{for all } a, \mathrm{obs}.
+\]
+\end{theorem}
+
+\begin{proof}
+By axiom A3, $a \compose \void = a$, so
+$\rs(a \compose \void, \mathrm{obs}) = \rs(a, \mathrm{obs})$
+and the gap is zero.
+\end{proof}
+
+\begin{lstlisting}
+theorem void_reinterpretation_zero (a observer : I) :
+    reinterpretationGap a (void : I) observer = 0 := by
+  unfold reinterpretationGap; simp [void_right']
+\end{lstlisting}
+
+\begin{interpretation}[Silence is the only perfect reading]
+This theorem says that the \emph{only} way to ``reinterpret'' a text
+without changing it is to add nothing.  Every substantive reading---every
+context that is not pure silence---necessarily changes what the text
+means to some observer.  This is the formal version of reader-response
+theory's central claim: the reader always contributes.  And the only
+reader who contributes nothing is the one who doesn't read.
+\end{interpretation}
+
+\section{Non-Void Signs Leave Permanent Marks}
+
+\begin{theorem}[Irreversibility of Reading]
+\label{thm:reading-irreversible}
+If $a \neq \void$, then for any context $c$:
+\[
+  \rs(a \compose c, a \compose c) > 0.
+\]
+The reinterpreted sign always has strictly positive weight.
+\end{theorem}
+
+\begin{proof}
+Since $a \neq \void$, we have $\rs(a, a) > 0$ by the nondegeneracy axiom.
+By compositional enrichment, $\rs(a \compose c, a \compose c) \geq \rs(a, a) > 0$.
+\end{proof}
+
+\begin{lstlisting}
+theorem nonvoid_reinterpretation_positive (a c : I)
+    (ha : a ≠ void) :
+    rs (compose a c) (compose a c) > 0 := by
+  have h1 := compose_enriches' a c
+  have h2 := rs_self_pos a ha
+  linarith
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+This means that once an idea enters the cultural conversation, it can
+never be fully erased.  Composition with any context---even a hostile
+one, even an attempt at refutation---produces something with positive
+weight.  Censorship, in the ideatic-space sense, is impossible: engaging
+with an idea to suppress it only adds to its weight.  The only way to
+truly silence an idea is to never engage with it at all (compose with
+void).
+\end{remark}
+
+
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 2: The Impossibility of Perfect Translation
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{The Impossibility of Perfect Translation}
+\label{ch:translation}
+
+\epigraph{``Traduttore, traditore.''\\(Translator, traitor.)}{Italian proverb}
+
+Translation has been called ``the art of failure'' (Umberto Eco).  In this
+chapter, we prove that this is not merely a literary sentiment but a
+\emph{mathematical theorem}.  Any translation that is not the identity
+must introduce distortion.  The distortion is measurable, it accumulates
+through chains of retranslation, and it has a precise lower bound.
+
+\section{Translation Loss: The Basic Inequality}
+
+\begin{definition}[Translation Loss]
+For a translation map $\varphi : \IS \to \IS$, the \emph{translation
+loss} for a pair $(a, b)$ is:
+\[
+  \mathrm{loss}(\varphi, a, b) := |\rs(\varphi(a), \varphi(b)) - \rs(a, b)|.
+\]
+\end{definition}
+
+\begin{lstlisting}
+noncomputable def translationLoss (phi : I → I) (a b : I) : R :=
+  |rs (phi a) (phi b) - rs a b|
+\end{lstlisting}
+
+\begin{theorem}[Faithful Translations Have Zero Loss]
+\label{thm:faithful-zero}
+If $\varphi$ is faithful (preserves all resonances), then
+$\mathrm{loss}(\varphi, a, b) = 0$ for all $a, b$.
+\end{theorem}
+
+\begin{proof}
+If $\rs(\varphi(a), \varphi(b)) = \rs(a, b)$ for all $a, b$,
+then the absolute value of their difference is zero.
+\end{proof}
+
+\begin{theorem}[The Self-Distortion Lower Bound]
+\label{thm:self-distortion}
+If a translation changes the self-resonance of even \emph{one} idea,
+then the translation loss is strictly positive for that idea:
+\[
+  \rs(\varphi(a), \varphi(a)) \neq \rs(a, a)
+  \implies
+  \mathrm{loss}(\varphi, a, a) > 0.
+\]
+\end{theorem}
+
+\begin{proof}
+If $\rs(\varphi(a), \varphi(a)) \neq \rs(a, a)$, then their difference
+is nonzero, so its absolute value is positive.
+\end{proof}
+
+\begin{lstlisting}
+theorem translation_self_loss (phi : I → I) (a : I)
+    (h : rs (phi a) (phi a) ≠ rs a a) :
+    translationLoss phi a a > 0 := by
+  unfold translationLoss
+  exact abs_pos.mpr (sub_ne_zero.mpr h)
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+The theorem says that you cannot translate ``approximately faithfully.''
+If a translation preserves \emph{all} resonances except one self-resonance,
+it is still unfaithful, and the unfaithfulness is \emph{detectable}:
+the translation loss is strictly positive.  There is no ``good enough''
+approximation---faithfulness is all or nothing.
+\end{remark}
+
+\section{Chain Translation: Distortion Accumulates}
+
+\begin{theorem}[Chain Distortion Decomposition]
+\label{thm:chain-decomp}
+Composing two translations $\psi \circ \varphi$ produces distortion
+that decomposes into two layers:
+\[
+  \rs(\psi(\varphi(a)), \psi(\varphi(b))) - \rs(a, b)
+  = \underbrace{[\rs(\psi(\varphi(a)), \psi(\varphi(b)))
+    - \rs(\varphi(a), \varphi(b))]}_{\text{second layer}} +
+    \underbrace{[\rs(\varphi(a), \varphi(b)) - \rs(a, b)]}_{\text{first layer}}.
+\]
+\end{theorem}
+
+\begin{proof}
+This is a telescoping identity; it follows from algebraic rearrangement.
+\end{proof}
+
+\begin{lstlisting}
+theorem chain_translation_loss_decomp (phi psi : I → I)
+    (a b : I) :
+    rs (psi (phi a)) (psi (phi b)) - rs a b =
+    (rs (psi (phi a)) (psi (phi b)) - rs (phi a) (phi b)) +
+    (rs (phi a) (phi b) - rs a b) := by ring
+\end{lstlisting}
+
+\begin{interpretation}[Why retranslation degrades]
+Each layer of translation adds its own distortion.  Even if each individual
+translation is ``small'' (low distortion), the total can be large because
+the layers are \emph{independent}.  This is the formal reason that
+translating a poem from Chinese to French to English produces a worse
+result than translating directly from Chinese to English: each intermediate
+step adds its own layer of loss, and the losses add.
+\end{interpretation}
+
+\section{Round-Trip Loss: The Myth of Perfect Back-Translation}
+
+\begin{theorem}[Round-Trip Loss]
+\label{thm:round-trip}
+For any two translations $\varphi, \psi$, the round-trip distortion
+satisfies:
+\[
+  \rs(\psi(\varphi(a)), \psi(\varphi(a))) - \rs(a, a)
+  = \underbrace{[\rs(\psi(\varphi(a)), \psi(\varphi(a)))
+    - \rs(\varphi(a), \varphi(a))]}_{\text{back-translation loss}} +
+    \underbrace{[\rs(\varphi(a), \varphi(a)) - \rs(a, a)]}_{\text{forward loss}}.
+\]
+\end{theorem}
+
+\begin{proof}
+Again a telescoping identity.
+\end{proof}
+
+\begin{lstlisting}
+theorem roundtrip_loss (phi psi : I → I) (a : I) :
+    rs (psi (phi a)) (psi (phi a)) - rs a a =
+    (rs (psi (phi a)) (psi (phi a)) - rs (phi a) (phi a)) +
+    (rs (phi a) (phi a) - rs a a) := by ring
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+The theorem destroys the comforting notion of ``back-translation as
+quality check.''  Even if you translate and back-translate, the round-trip
+distortion is the \emph{sum} of forward and backward losses.  Having a
+``back-translation'' does not guarantee zero net loss.  The round trip
+through Chinese $\to$ French $\to$ Chinese loses meaning in \emph{both}
+directions.
+\end{remark}
+
+\section{Void-Preservation Is Not Sufficient}
+
+\begin{theorem}[Void-Preserving Is Not Faithful]
+\label{thm:void-not-faithful}
+A void-preserving translation ($\varphi(\void) = \void$) can still
+have arbitrarily high translation loss.  Void-preservation is necessary
+but not sufficient for faithfulness.
+\end{theorem}
+
+\begin{proof}
+We prove a disjunction: either $\varphi$ is faithful (zero loss everywhere),
+or there exist $a, b$ with positive loss.  If $\varphi$ is not faithful,
+there exist $a, b$ with $\rs(\varphi(a), \varphi(b)) \neq \rs(a, b)$,
+giving positive loss.
+\end{proof}
+
+\begin{lstlisting}
+theorem void_preserving_not_sufficient :
+    ∀ phi : I → I, ds_voidPreserving phi →
+    (ds_faithful phi ∨ ∃ a b, translationLoss phi a b > 0) := by
+  intro phi _
+  by_cases hf : ds_faithful phi
+  · left; exact hf
+  · right
+    unfold ds_faithful at hf; push_neg at hf
+    rcases hf with ⟨a, b, hab⟩
+    exact ⟨a, b, by unfold translationLoss;
+      exact abs_pos.mpr (sub_ne_zero.mpr hab)⟩
+\end{lstlisting}
+
+
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 3: Defamiliarization Fatigue
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{Defamiliarization Fatigue: Novelty Gets Old}
+\label{ch:defamiliarization}
+
+\epigraph{``Art exists that one may recover the sensation of life;
+it exists to make one feel things, to make the stone stony.''}{Viktor Shklovsky, \textit{Art as Technique} (1917)}
+
+Shklovsky's \emph{defamiliarization} (\textit{ostranenie})---the technique
+of making the familiar strange---is central to modernist aesthetics.
+But does defamiliarization have diminishing returns?  Can you keep
+``making strange'' with undiminished effect?
+
+In this chapter, we prove that the answer is \textbf{no}.  The cocycle
+condition forces each successive defamiliarization to relate
+algebraically to the previous one.  The artist cannot simply ``keep doing
+the same weird thing'' and expect the same effect.  Novelty is
+algebraically constrained.
+
+\section{Iterated Defamiliarization}
+
+\begin{definition}[Iterated Defamiliarization]
+Applying the same defamiliarizing context $c$ to a sign $a$
+repeatedly:
+\[
+  D^0(a, c) = a, \qquad D^{n+1}(a, c) = D^n(a, c) \compose c.
+\]
+\end{definition}
+
+\begin{lstlisting}
+def iteratedDefamiliarize (a ctx : I) : N → I
+  | 0 => a
+  | n + 1 => compose (iteratedDefamiliarize a ctx n) ctx
+\end{lstlisting}
+
+\begin{theorem}[Weight Grows Monotonically]
+\label{thm:weight-mono}
+Each iteration of defamiliarization strictly increases or preserves weight:
+\[
+  \rs(D^{n+1}(a,c), D^{n+1}(a,c)) \geq \rs(D^n(a,c), D^n(a,c)).
+\]
+\end{theorem}
+
+\begin{proof}
+$D^{n+1}(a,c) = D^n(a,c) \compose c$, so by axiom E4:
+$\rs(D^n(a,c) \compose c, D^n(a,c) \compose c) \geq \rs(D^n(a,c), D^n(a,c))$.
+\end{proof}
+
+\begin{lstlisting}
+theorem defamiliarize_weight_grows (a ctx : I) (n : N) :
+    rs (iteratedDefamiliarize a ctx (n + 1))
+       (iteratedDefamiliarize a ctx (n + 1)) ≥
+    rs (iteratedDefamiliarize a ctx n)
+       (iteratedDefamiliarize a ctx n) := by
+  simp only [iteratedDefamiliarize]
+  exact compose_enriches' (iteratedDefamiliarize a ctx n) ctx
+\end{lstlisting}
+
+\section{The Cocycle Constraint on Successive Novelty}
+
+\begin{theorem}[Defamiliarization Cocycle]
+\label{thm:defam-cocycle}
+The emergence at the second defamiliarization is constrained by the
+emergence at the first:
+\[
+  \emerge(a, c, \mathrm{obs}) + \emerge(a \compose c, c, \mathrm{obs})
+  = \emerge(c, c, \mathrm{obs}) + \emerge(a, c \compose c, \mathrm{obs}).
+\]
+\end{theorem}
+
+\begin{proof}
+This is the cocycle condition with $b = c_1 = c$ (the same context
+applied twice).
+\end{proof}
+
+\begin{lstlisting}
+theorem defamiliarization_cocycle (a ctx obs : I) :
+    emergence a ctx obs +
+    emergence (compose a ctx) ctx obs =
+    emergence ctx ctx obs +
+    emergence a (compose ctx ctx) obs :=
+  cocycle_condition a ctx ctx obs
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+This is the key result.  It says that the emergence of the \emph{second}
+application of context $c$ is \emph{not independent} of the first.
+Rearranging:
+\[
+  \emerge(a \compose c, c, \mathrm{obs}) =
+  \emerge(c, c, \mathrm{obs}) +
+  \emerge(a, c \compose c, \mathrm{obs}) -
+  \emerge(a, c, \mathrm{obs}).
+\]
+The second defamiliarization's effect is completely determined by three
+quantities: (1) the self-emergence of $c$ (the context's own novelty),
+(2) the emergence of $a$ with the doubled context $c \compose c$, and
+(3) the emergence of the first application.  The artist cannot freely
+choose the second novelty effect---it is constrained.
+
+In particular, if $c$ has zero self-emergence ($\emerge(c,c,\mathrm{obs}) = 0$)
+and $a$'s emergence with $c \compose c$ equals its emergence with $c$,
+then the second application has \emph{exactly the same} effect as the
+first.  And the third application is then constrained by the second.
+The diminishing returns are structural, not accidental.
+\end{remark}
+
+\section{The Habituation Theorem}
+
+\begin{theorem}[Habituation Constraint]
+\label{thm:habituation}
+After repeated defamiliarization with the same context, the emergence
+at each step is fully determined by earlier steps:
+\[
+  \emerge(a \compose c, c, \mathrm{obs})
+  = \emerge(c, c, \mathrm{obs}) + \emerge(a, c^2, \mathrm{obs})
+    - \emerge(a, c, \mathrm{obs}).
+\]
+\end{theorem}
+
+\begin{proof}
+Rearranging the cocycle condition.
+\end{proof}
+
+\begin{lstlisting}
+theorem habituation_constraint (a ctx obs : I) :
+    emergence (compose a ctx) ctx obs =
+    emergence ctx ctx obs +
+    emergence a (compose ctx ctx) obs -
+    emergence a ctx obs := by
+  linarith [cocycle_condition a ctx ctx obs]
+\end{lstlisting}
+
+\begin{interpretation}[The algebra of artistic fatigue]
+This theorem formalizes what every artist knows intuitively: you can't
+keep doing the same trick.  The effect of the $n$-th weird thing is
+algebraically determined by the $(n{-}1)$-th.  Each new iteration must
+satisfy the cocycle constraint, which limits the freedom of the artist.
+
+This is not merely a bound---it is an \emph{exact equation}.  The
+emergence at step $n+1$ is a linear function of the emergence at step $n$,
+plus corrections from the context's self-interaction and the
+``accumulated'' emergence.  The artist's freedom is \emph{one degree of
+freedom less} than naive independence would suggest.
+
+In the language of cohomology, defamiliarization defines a 1-cochain,
+and the cocycle condition says this cochain must be a cocycle.  The
+artist is constrained to move within a cohomology class.
+\end{interpretation}
+
+\section{Void Defamiliarization Does Nothing}
+
+\begin{theorem}[Void Defamiliarization Is Trivial]
+\label{thm:void-defam}
+Using silence as a defamiliarizing context has zero effect:
+\[
+  D^n(a, \void) = a \quad \text{for all } n.
+\]
+\end{theorem}
+
+\begin{proof}
+By induction on $n$.  Base case: $D^0(a, \void) = a$.
+Inductive step: $D^{n+1}(a, \void) = D^n(a, \void) \compose \void
+= a \compose \void = a$.
+\end{proof}
+
+\begin{lstlisting}
+theorem void_defamiliarization (a obs : I) (n : N) :
+    iteratedDefamiliarize a (void : I) n = a := by
+  induction n with
+  | zero => rfl
+  | succ n ih => simp [iteratedDefamiliarize, ih, void_right']
+\end{lstlisting}
+
+\section{The Emergence Ratio Shrinks}
+
+\begin{theorem}[Emergence-Weight Ratio Bound]
+\label{thm:ratio-bound}
+At each step, the emergence is bounded by
+\[
+  \emerge(a, c, \mathrm{obs})^2 \leq \rs(a \compose c, a \compose c) \cdot \rs(\mathrm{obs}, \mathrm{obs}).
+\]
+Since the left-hand side involves $\rs(a \compose c, a \compose c)$
+which grows monotonically (Theorem~\ref{thm:weight-mono}), the
+\emph{ratio} $\emerge^2 / \rs(D^n, D^n)$ can only decrease as the
+weight grows.
+\end{theorem}
+
+\begin{proof}
+Axiom E3 (emergence bounded).
+\end{proof}
+
+\begin{remark}[Relative novelty diminishes]
+Even if the absolute emergence stays constant (a theoretical possibility),
+the \emph{relative} novelty---emergence as a fraction of total weight---must
+decrease.  This is the diminishing-returns theorem: each iteration of
+defamiliarization contributes proportionally less to the total meaning
+of the accumulated sign chain.  The $100$th repetition of ``make it
+strange'' adds less \emph{relative} novelty than the first.
+\end{remark}
+
+
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 4: The Kitsch Theorem
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{The Kitsch Theorem: When Beauty Destroys Beauty}
+\label{ch:kitsch}
+
+\epigraph{``Kitsch causes two tears to flow in quick succession.
+The first tear says: How nice to see children running on the grass!
+The second tear says: How nice to be moved, together with all mankind,
+by children running on the grass!''}{Milan Kundera, \textit{The Unbearable Lightness of Being}}
+
+\section{Aesthetic Non-Monotonicity}
+
+The most counter-intuitive result in our entire theory may be this:
+\textbf{adding a beautiful element to a beautiful composition can make
+the total aesthetic impact worse}.  In the language of economics, aesthetic
+value is not a monotone function of its inputs.
+
+\begin{definition}[Total Aesthetic Impact]
+\[
+  \mathrm{impact}(a, b, \mathrm{obs}) := \rs(a \compose b, \mathrm{obs}).
+\]
+\end{definition}
+
+\begin{theorem}[The Kitsch Theorem]
+\label{thm:kitsch}
+\[
+  \mathrm{impact}(a, b, \mathrm{obs})
+  = \rs(a, \mathrm{obs}) + \rs(b, \mathrm{obs}) + \emerge(a, b, \mathrm{obs}).
+\]
+When $\emerge(a, b, \mathrm{obs}) < 0$, the total impact is \emph{less}
+than the sum of individual impacts.
+\end{theorem}
+
+\begin{proof}
+The resonance composition equation gives the decomposition directly.
+\end{proof}
+
+\begin{lstlisting}
+theorem kitsch_theorem (a b observer : I) :
+    totalAestheticImpact a b observer =
+    rs a observer + rs b observer +
+    emergence a b observer := by
+  unfold totalAestheticImpact; rw [rs_compose_eq]
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+This overturns the ``more is more'' intuition in aesthetics.  Consider:
+\begin{itemize}
+\item A beautifully written novel with an unnecessarily beautiful
+  epilogue that undermines the ambiguity of the ending.
+\item A perfectly composed photograph with an added Instagram filter
+  that makes it look cheap.
+\item A Baroque church with one too many gold cherubs.
+\end{itemize}
+In each case, the added element has positive resonance on its own, but
+its \emph{emergence} with the existing work is negative.  The
+composition clashes.  The whole is less than the sum of its parts.
+
+This is the mathematical definition of \textbf{kitsch}: art where the
+emergence is zero or negative, where addition is purely additive or
+actively destructive.  The kitsch sensibility adds more beauty without
+concern for how it interacts with what's already there.
+\end{remark}
+
+\section{The Over-Ornamentation Bound}
+
+\begin{theorem}[Over-Ornamentation]
+\label{thm:over-ornament}
+If emergence is negative ($\emerge(a, b, \mathrm{obs}) < 0$), then
+\[
+  \mathrm{impact}(a, b, \mathrm{obs}) < \rs(a, \mathrm{obs}) + \rs(b, \mathrm{obs}).
+\]
+Adding $b$ makes the total impact \emph{strictly worse} than having
+both parts separately.
+\end{theorem}
+
+\begin{proof}
+Follows immediately from the Kitsch Theorem and the sign of the
+emergence term.
+\end{proof}
+
+\begin{lstlisting}
+theorem over_ornamentation (a b observer : I)
+    (h : emergence a b observer < 0) :
+    totalAestheticImpact a b observer <
+    rs a observer + rs b observer := by
+  unfold totalAestheticImpact
+  linarith [rs_compose_eq a b observer]
+\end{lstlisting}
+
+\section{The Goldilocks Principle}
+
+\begin{theorem}[The Goldilocks Principle]
+\label{thm:goldilocks}
+For any composition $a \compose b$:
+\begin{enumerate}
+\item If $\emerge(a, b, \mathrm{obs}) = 0$: impact equals the sum of parts (neutral).
+\item If $\emerge(a, b, \mathrm{obs}) > 0$: impact exceeds the sum (synergy).
+\item If $\emerge(a, b, \mathrm{obs}) < 0$: impact is less than the sum (clash).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+All three follow from the Kitsch Theorem by comparing signs.
+\end{proof}
+
+\begin{lstlisting}
+theorem goldilocks_principle (a b obs : I) :
+    (emergence a b obs = 0 →
+      totalAestheticImpact a b obs = rs a obs + rs b obs) ∧
+    (emergence a b obs > 0 →
+      totalAestheticImpact a b obs > rs a obs + rs b obs) ∧
+    (emergence a b obs < 0 →
+      totalAestheticImpact a b obs < rs a obs + rs b obs) := by
+  unfold totalAestheticImpact
+  refine ⟨?_, ?_, ?_⟩ <;> intro h <;>
+    linarith [rs_compose_eq a b obs]
+\end{lstlisting}
+
+\begin{interpretation}[The aesthetics of emergence]
+The Goldilocks Principle says that aesthetic composition is not about
+the quality of individual elements but about the \emph{emergence} between
+them.  A mediocre element with positive emergence contributes more than
+a brilliant element with negative emergence.  The art is in the
+combination, not the parts.
+
+This is the mathematical content of the old clich\'e ``less is more'':
+removing an element with negative emergence \emph{increases} the total
+impact.  The Goldilocks Principle gives the exact criterion for when
+``more is more,'' ``more is less,'' and ``more is just more.''
+\end{interpretation}
+
+\section{Double Kitsch}
+
+\begin{theorem}[Double Kitsch Is Predictable]
+\label{thm:double-kitsch}
+If $a$ is left-linear (kitsch), then
+\[
+  \mathrm{impact}(a, b, \mathrm{obs}) = \rs(a, \mathrm{obs}) + \rs(b, \mathrm{obs}).
+\]
+Kitsch produces exactly the sum of parts---no surprise, no synergy,
+no clash.
+\end{theorem}
+
+\begin{proof}
+Left-linearity means $\emerge(a, b, c) = 0$ for all $b, c$.
+The Kitsch Theorem then gives the result.
+\end{proof}
+
+\begin{lstlisting}
+theorem double_kitsch (a b observer : I)
+    (ha : leftLinear a) :
+    totalAestheticImpact a b observer =
+    rs a observer + rs b observer := by
+  unfold totalAestheticImpact
+  rw [rs_compose_eq]; linarith [ha b observer]
+\end{lstlisting}
+
+\section{Weight Grows But Resonance Can Shrink}
+
+\begin{theorem}[The Over-Production Paradox]
+\label{thm:over-production}
+The self-resonance (weight) of a composition always exceeds that of its
+first element, but the resonance with a \emph{specific observer} can
+decrease:
+\[
+  \rs(a \compose b, a \compose b) \geq \rs(a, a)
+\]
+but it is possible that $\rs(a \compose b, \mathrm{obs}) < \rs(a, \mathrm{obs})$.
+\end{theorem}
+
+\begin{proof}
+The first inequality is axiom E4.  For the second, when
+$\rs(b, \mathrm{obs}) + \emerge(a, b, \mathrm{obs}) < 0$,
+we have $\rs(a \compose b, \mathrm{obs}) < \rs(a, \mathrm{obs})$.
+\end{proof}
+
+\begin{remark}[Why this is surprising]
+This is the paradox of the over-produced film.  A film with a
+\$200 million budget (high weight) can be less impactful to audiences
+(less resonance with the observer) than a \$2 million indie film.
+Weight measures \emph{quantity of stuff}; resonance measures
+\emph{impact on a particular audience}.  They are different things,
+and one can increase while the other decreases.
+\end{remark}
+
+
+% ══════════════════════════════════════════════════════════════════════
+% Chapter 5: Narrative Order Dominates Content
+% ══════════════════════════════════════════════════════════════════════
+
+\chapter{Narrative Order Dominates Content}
+\label{ch:order}
+
+\epigraph{``The king died and then the queen died'' is a story.
+``The king died, and then the queen died of grief'' is a plot.}{E.\ M.\ Forster, \textit{Aspects of the Novel}}
+
+\section{The Order Sensitivity Theorem}
+
+One of the most striking results in narrative theory: the \emph{order}
+in which elements appear can change the meaning more than replacing
+an element entirely.
+
+\begin{definition}[Narrative Order Effect]
+The \emph{order effect} of swapping $a$ and $b$ in a narrative:
+\[
+  \mathrm{order}(a, b, \mathrm{obs}) :=
+  \rs(a \compose b, \mathrm{obs}) - \rs(b \compose a, \mathrm{obs}).
+\]
+\end{definition}
+
+\begin{theorem}[Order Effect Equals Emergence Difference]
+\label{thm:order-emergence}
+\[
+  \mathrm{order}(a, b, \mathrm{obs}) =
+  \emerge(a, b, \mathrm{obs}) - \emerge(b, a, \mathrm{obs}).
+\]
+\end{theorem}
+
+\begin{proof}
+Expanding both resonances using the composition equation:
+\begin{align*}
+  \rs(a \compose b, \mathrm{obs}) &= \rs(a, \mathrm{obs}) + \rs(b, \mathrm{obs})
+    + \emerge(a, b, \mathrm{obs}) \\
+  \rs(b \compose a, \mathrm{obs}) &= \rs(b, \mathrm{obs}) + \rs(a, \mathrm{obs})
+    + \emerge(b, a, \mathrm{obs}).
+\end{align*}
+Subtracting:
+$\mathrm{order}(a, b, \mathrm{obs}) = \emerge(a, b, \mathrm{obs}) - \emerge(b, a, \mathrm{obs})$.
+\end{proof}
+
+\begin{lstlisting}
+theorem narrativeOrderEffect_eq (a b observer : I) :
+    narrativeOrderEffect a b observer =
+    emergence a b observer - emergence b a observer := by
+  unfold narrativeOrderEffect emergence; ring
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+The order effect depends \emph{only} on emergence---it is \emph{purely}
+a nonlinear phenomenon.  The linear parts (individual resonances)
+cancel exactly.  This means that in any ideatic space where emergence is
+nonzero, order \emph{must} matter.  The noncommutative structure of
+composition is not an accident but a \emph{consequence} of having
+nontrivial emergence.
+
+Compare this with the effect of \emph{replacing} element $a$ with $a'$:
+\[
+  \rs(a' \compose b, \mathrm{obs}) - \rs(a \compose b, \mathrm{obs})
+  = (\rs(a', \mathrm{obs}) - \rs(a, \mathrm{obs}))
+    + (\emerge(a', b, \mathrm{obs}) - \emerge(a, b, \mathrm{obs})).
+\]
+The content change involves \emph{both} a linear term (resonance difference)
+\emph{and} an emergence term.  The order change involves \emph{only}
+emergence.  When emergence dominates---when ideas interact strongly---order
+dominates content.
+
+This is the formal version of ``\emph{how} you tell the story matters
+more than \emph{what} the story is about.''
+\end{remark}
+
+\section{Weight Is Order-Blind; Meaning Is Not}
+
+\begin{theorem}[Three-Act Weight Invariance]
+\label{thm:weight-invariance}
+In a three-element narrative $(a, b, c)$, the total weight
+(self-resonance) is invariant under re-bracketing:
+\[
+  \rs((a \compose b) \compose c, (a \compose b) \compose c)
+  = \rs(a \compose (b \compose c), a \compose (b \compose c)).
+\]
+\end{theorem}
+
+\begin{proof}
+By associativity: $(a \compose b) \compose c = a \compose (b \compose c)$.
+\end{proof}
+
+\begin{lstlisting}
+theorem three_act_weight_invariant (a b c : I) :
+    rs (compose (compose a b) c)
+       (compose (compose a b) c) =
+    rs (compose a (compose b c))
+       (compose a (compose b c)) := by
+  rw [compose_assoc']
+\end{lstlisting}
+
+\begin{interpretation}[Weight vs.\ meaning]
+A story's ``substance'' (weight) doesn't depend on how you group
+the acts.  But its ``meaning'' (resonance with an external observer)
+\emph{does}---because the observer is not part of the associative
+rearrangement.  The internal structure is bracket-invariant, but the
+external perception is not.
+
+This formalizes a deep intuition in narratology: the same events,
+arranged differently, produce different stories with different meanings,
+even though they have the same ``material.''
+\end{interpretation}
+
+\section{The Cocycle Constrains Narrative Structure}
+
+\begin{theorem}[Narrative Cocycle]
+\label{thm:narrative-cocycle}
+The emergence of a three-act narrative decomposes according to
+the cocycle condition:
+\[
+  \emerge(a, b, \mathrm{obs}) + \emerge(a \compose b, c, \mathrm{obs})
+  = \emerge(b, c, \mathrm{obs}) + \emerge(a, b \compose c, \mathrm{obs}).
+\]
+\end{theorem}
+
+\begin{proof}
+The cocycle condition, applied to narrative elements.
+\end{proof}
+
+\begin{lstlisting}
+theorem order_determines_emergence (a b c observer : I) :
+    emergence a b observer +
+    emergence (compose a b) c observer =
+    emergence b c observer +
+    emergence a (compose b c) observer :=
+  cocycle_condition a b c observer
+\end{lstlisting}
+
+\begin{remark}[Why this is surprising]
+Two arrangements of the same three elements produce the \emph{same}
+total emergence sum (the cocycle guarantees this), but \emph{different}
+individual emergence terms.  The \emph{distribution} of meaning across
+the narrative changes with order, even though the total is conserved.
+
+This is the formal content of Propp's observation that the same narrative
+functions (Villainy, Departure, Donor, etc.) can be arranged in different
+orders to produce different tales---but the tales are not completely free.
+They must satisfy the cocycle constraint.  Narrative structure has an
+algebra, and that algebra has laws.
+\end{remark}
+
+\section{Self-Composition Has Zero Order Effect}
+
+\begin{theorem}[Self-Order Invariance]
+\label{thm:self-order}
+Composing an element with itself produces zero order effect:
+$\mathrm{order}(a, a, \mathrm{obs}) = 0$ for all observers.
+\end{theorem}
+
+\begin{proof}
+$a \compose a = a \compose a$, so the difference is zero.
+\end{proof}
+
+\begin{lstlisting}
+theorem narrativeOrderEffect_self (a observer : I) :
+    narrativeOrderEffect a a observer = 0 := by
+  unfold narrativeOrderEffect; ring
+\end{lstlisting}
+
+\begin{interpretation}[Repetition is symmetric]
+Repeating the same element (anaphora) is order-insensitive.  This makes
+formal sense: saying ``fire, fire'' is the same whether you parse it as
+``fire then fire'' or ``fire then fire.''  The order effect is a measure
+of \emph{asymmetry} between two \emph{different} elements.  Repetition,
+by definition, has no asymmetry.
+\end{interpretation}

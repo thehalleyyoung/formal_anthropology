@@ -1,0 +1,200 @@
+\documentclass[11pt,oneside]{book}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{epigraph}
+\usepackage{tocloft}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{axiom_def}[theorem]{Axiom}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{interpretation}[theorem]{Interpretation}
+
+\lstdefinelanguage{Lean4}{
+  morekeywords={theorem,lemma,def,noncomputable,class,instance,where,
+    variable,open,namespace,section,end,import,structure,inductive,
+    match,with,fun,let,in,if,then,else,do,return,have,show,by,
+    exact,rfl,simp,linarith,nlinarith,ring,intro,apply,rw,unfold,
+    calc,sorry,Prop,Type,Sort,axiom,extends,deriving},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[s]{/-}{-/},
+  morestring=[b]",
+}
+
+\lstset{
+  language=Lean4,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red},
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  xleftmargin=1em,
+  xrightmargin=1em,
+  literate={→}{{$\to$}}1 {←}{{$\leftarrow$}}1 {↦}{{$\mapsto$}}1
+           {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {λ}{{$\lambda$}}1
+           {≤}{{$\leq$}}1 {≥}{{$\geq$}}1 {≠}{{$\neq$}}1
+           {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1 {¬}{{$\neg$}}1
+           {∈}{{$\in$}}1 {∉}{{$\notin$}}1 {⊆}{{$\subseteq$}}1
+           {ℕ}{{$\mathbb{N}$}}1 {ℤ}{{$\mathbb{Z}$}}1 {ℝ}{{$\mathbb{R}$}}1
+           {∘}{{$\circ$}}1 {×}{{$\times$}}1 {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1
+           {↔}{{$\leftrightarrow$}}1 {·}{{$\cdot$}}1 {ε}{{$\varepsilon$}}1
+           {∩}{{$\cap$}}1 {₀}{{$_0$}}1,
+}
+
+\newcommand{\rs}{\mathrm{rs}}
+\newcommand{\emerge}{\kappa}
+\newcommand{\compose}{\circ}
+\newcommand{\void}{\varepsilon}
+\newcommand{\IS}{\mathcal{I}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+
+\title{\Huge\bfseries The Math of Ideas\\[0.3em]
+\LARGE Volume IV-B: Paradoxes of Signs and Culture\\[0.5em]
+\Large Counter-Intuitive Theorems in Semiotics, Narrative, and Aesthetics}
+\author{A Formal Treatment with Machine-Verified Proofs\\[0.3em]
+\normalsize\textit{Sequel to Volume~IV: Signs and Culture}}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ================================================================
+% PREFACE
+% ================================================================
+\frontmatter
+
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+\epigraph{Everything we hear is an opinion, not a fact.
+Everything we see is a perspective, not the truth.}{Marcus Aurelius, \textit{Meditations}}
+
+This volume is the sequel to \textit{Volume~IV: Signs and Culture} and
+the most philosophically provocative in the series.  Where Volume~IV
+established the \emph{positive} theory---how signs work, how narratives
+compose, how translation maps meaning---this volume develops the
+\emph{negative} theory: the \textbf{paradoxes, impossibilities, and
+counter-intuitive constraints} that the axioms of \textsc{IdeaticSpace}
+impose on signs and culture.
+
+The results here are \emph{surprising}.  They are not what a naive
+reader would expect.  Some are outright paradoxical:
+
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Adding beauty can destroy beauty} (the Kitsch Theorem,
+  Chapter~4): the total aesthetic impact of a combination can be
+  \emph{less} than either part alone, because emergence can be negative.
+
+\item \textbf{Every metaphor necessarily distorts} (Chapter~6): there
+  is no such thing as a ``perfect'' metaphor.  Every non-void vehicle
+  introduces distortion for some observer.
+
+\item \textbf{Translation loss is inevitable} (Chapter~2): any
+  non-identity translation that changes self-resonance must introduce
+  distortion.  You cannot translate ``approximately'' without
+  ``approximately'' losing meaning.
+
+\item \textbf{Novelty gets old} (Chapter~3): defamiliarization has
+  diminishing returns.  The $n$-th weird thing you do is constrained by
+  the cocycle condition to relate algebraically to the $(n{-}1)$-th.
+
+\item \textbf{Order dominates content} (Chapter~5): reordering the
+  elements of a narrative can change its meaning more than replacing
+  an element entirely, because order sensitivity is \emph{purely}
+  an emergence effect.
+
+\item \textbf{Signs must drift} (Chapter~7): every non-linear sign
+  necessarily changes meaning under recontextualization.  Stability
+  requires triviality.
+
+\item \textbf{Imitation creates originality} (Chapter~13): parody
+  is always at least as ``substantial'' as its source, and the
+  emergence at the point of parody is genuinely new meaning.
+\end{itemize}
+
+Every theorem in this volume is \textbf{machine-verified} in Lean~4,
+building on the \texttt{IdeaticSpace3} axioms from
+\texttt{IDT\_v3\_Foundations.lean}.  The proofs use \textbf{zero
+sorries}---every step is checked by the Lean kernel.  The relevant
+Lean file is \texttt{IDT\_v3\_DeepSemiotics.lean}.
+
+\vspace{1em}
+
+\noindent\textbf{Note on axioms.}  All results follow from the eight
+axioms of \texttt{IdeaticSpace3}: associative composition with identity
+(A1--A3), resonance annihilation by void (R1--R2), non-negative
+self-resonance (E1), nondegeneracy (E2), bounded emergence (E3), and
+compositional enrichment (E4).  No additional axioms are introduced.
+
+\tableofcontents
+
+% ================================================================
+\mainmatter
+
+\input{vol4b_ch1_5}
+\input{vol4b_ch6_10}
+\input{vol4b_ch11_15}
+
+% ================================================================
+\backmatter
+
+\chapter*{Conclusion: The Laws of Cultural Thermodynamics}
+\addcontentsline{toc}{chapter}{Conclusion}
+
+We have arrived at a remarkable terminus.  From eight minimal axioms
+about utterances, composition, and resonance, we have derived a
+comprehensive theory of the \emph{paradoxes} of signs and culture.
+The results organize into four ``laws of cultural thermodynamics'':
+
+\begin{enumerate}
+\item \textbf{The First Law} (Weight Conservation): Self-resonance never
+  decreases under composition.  Culture accumulates; you cannot un-say
+  something.  Every reading, every reinterpretation, every translation
+  adds weight.
+
+\item \textbf{The Second Law} (Emergence Boundedness): The emergent
+  meaning $\emerge(a,b,c)$ cannot exceed
+  $\sqrt{\rs(a \compose b, a \compose b) \cdot \rs(c,c)}$.  Meaning
+  creation has an upper bound determined by the capacities of the parts.
+
+\item \textbf{The Structural Law} (The Cocycle Condition): All cultural
+  phenomena---sign chains, translation, defamiliarization, narrative,
+  aesthetics---are constrained by the single identity
+  \[
+    \emerge(a,b,d) + \emerge(a \compose b, c, d)
+    = \emerge(b,c,d) + \emerge(a, b \compose c, d).
+  \]
+  This is the ``conservation of emergence'' across levels of composition.
+
+\item \textbf{The Third Law} (Nondegeneracy): Only silence ($\void$) has
+  zero self-resonance.  Every genuine utterance has irreducible content.
+\end{enumerate}
+
+These four laws, all provable from the axioms, unify the 83 theorems of
+this volume into a single coherent framework.  The paradoxes are not
+anomalies---they are \emph{consequences} of the fundamental structure of
+meaning.
+
+Culture is non-commutative, emergence-bounded, cocycle-constrained, and
+weight-monotonic.  These are not metaphors.  They are theorems.
+
+\end{document}
