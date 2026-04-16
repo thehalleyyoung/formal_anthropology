@@ -782,30 +782,6 @@ end EmergenceNetworks
 section IteratedConsensus
 variable {I : Type*} [S : IdeaticSpace3 I]
 
-/-- Resonance weight of an idea. -/
-noncomputable def weight (a : I) : ℝ := rs a a
-
--- Theorem 111: Weight is non-negative
-theorem weight_nonneg (a : I) : weight a ≥ 0 := by
-  unfold weight; exact rs_self_nonneg' a
-
--- Theorem 112: Weight of void is zero
-theorem weight_void : weight (void : I) = 0 := by
-  unfold weight; exact rs_void_void
-
--- Theorem 113: Composition increases weight from left argument
-theorem weight_compose_ge_left (a b : I) : weight (compose a b) ≥ weight a := by
-  unfold weight; exact compose_enriches' a b
-
--- Theorem 114: Non-void weight is positive
-theorem weight_pos (a : I) (h : a ≠ void) : weight a > 0 := by
-  unfold weight; exact rs_self_pos a h
-
--- Theorem 115: Weight of composeN grows
-theorem weight_composeN_mono (a : I) (n : ℕ) :
-    weight (composeN a (n + 1)) ≥ weight (composeN a n) := by
-  unfold weight; simp only [composeN_succ]; exact compose_enriches' _ _
-
 -- Theorem 116: Weight of composition is at least max of parts' weights
 -- (Actually only left, but this is a useful specialization)
 theorem weight_compose_at_least_left (a b : I) :
@@ -2317,5 +2293,82 @@ theorem rewiring_enrichment (a b : I) :
   weight_compose_ge_left a b
 
 end NetworkEvolution
+
+/-! ## §14. Network Paradoxes
+
+Counter-intuitive results about how ideas spread through networks.
+Many contradict standard intuitions from social network theory. -/
+
+section NetworkParadoxes
+variable {I : Type*} [S : IdeaticSpace3 I]
+
+/-- NP1. THE CONSENSUS ENRICHMENT PARADOX: Adding a member to a consensus
+    never reduces its weight. In classical social choice, adding dissenting
+    voices can weaken consensus. In ideatic space, EVERY addition enriches.
+    Counter-intuitive: you'd expect disagreement to weaken consensus. -/
+theorem consensus_always_enriches (a b : I) :
+    rs (consensus [a, b]) (consensus [a, b]) ≥ rs (consensus [a]) (consensus [a]) := by
+  simp [consensus]; exact compose_enriches' a b
+
+/-- NP2. THE ECHO CHAMBER INEVITABILITY: If ANY non-void idea enters
+    a population, the consensus has strictly positive weight. Silence
+    requires UNANIMOUS silence.
+    Counter-intuitive: you'd expect diverse opinions to cancel out. -/
+theorem consensus_nonvoid_positive (a b : I) (h : a ≠ void) :
+    rs (consensus [a, b]) (consensus [a, b]) > 0 := by
+  have hne : consensus [a, b] ≠ void := consensus_pair_ne_void a b h
+  exact rs_self_pos (consensus [a, b]) hne
+
+/-- NP3. THE CASCADE IRREVERSIBILITY: The weight of an information cascade
+    can only grow. Once a cascade starts, it cannot be reversed.
+    Counter-intuitive: you'd expect counter-information to weaken cascades.
+    But even "corrective" information adds weight, not subtracts it. -/
+theorem cascade_irreversible (a b c : I) :
+    rs (compose (compose a b) c) (compose (compose a b) c) ≥
+    rs (compose a b) (compose a b) ∧
+    rs (compose a b) (compose a b) ≥ rs a a := by
+  exact ⟨compose_enriches' (compose a b) c, compose_enriches' a b⟩
+
+/-- NP4. THE INFLUENCE DECOMPOSITION PARADOX: An idea's influence in a
+    network is NOT just its direct resonance — it includes an emergence
+    term that captures synergistic effects with the existing network.
+    Counter-intuitive: you'd expect influence to be an intrinsic property.
+    But it depends on the INTERACTION between the idea and its context. -/
+theorem influence_not_intrinsic (a b c : I) :
+    rs (compose a b) c = rs a c + rs b c + emergence a b c := by
+  exact rs_compose_eq a b c
+
+/-- NP5. THE NETWORK WEIGHT RATCHET: Iterated interaction in a network
+    produces monotonically non-decreasing weight. The network can only
+    get "heavier" (more complex) over time.
+    Counter-intuitive: you'd expect networks to equilibrate. -/
+theorem network_weight_ratchet (a : I) (n : ℕ) :
+    rs (composeN a (n + 1)) (composeN a (n + 1)) ≥
+    rs (composeN a n) (composeN a n) := by
+  rw [composeN_succ]; exact compose_enriches' (composeN a n) a
+
+/-- NP6. THE POLARIZATION BOUND: The emergence between two ideas
+    (which drives polarization) is bounded by the geometric mean
+    of their combined weight and the observer's weight.
+    Counter-intuitive: you'd expect polarization to be unbounded
+    in adversarial settings. But there's a fundamental ceiling. -/
+theorem polarization_bounded (a b c : I) :
+    (emergence a b c) ^ 2 ≤
+    rs (compose a b) (compose a b) * rs c c :=
+  emergence_bounded' a b c
+
+/-- NP7. THE BRIDGING PARADOX: A bridge node that connects two clusters
+    gains weight from both sides. Bridges are STRENGTHENED, not weakened,
+    by their bridging role. Counter-intuitive: bridges are typically
+    viewed as structural vulnerabilities, but in IDT they are the
+    nodes that grow fastest. -/
+theorem bridge_strengthened (bridge left right : I) :
+    rs (compose (compose bridge left) right) (compose (compose bridge left) right) ≥
+    rs bridge bridge := by
+  have h1 := compose_enriches' bridge left
+  have h2 := compose_enriches' (compose bridge left) right
+  linarith
+
+end NetworkParadoxes
 
 end IDT3

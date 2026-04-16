@@ -1,0 +1,475 @@
+% ================================================================
+% Volume II-B, Chapters 11--15
+% The Deep Structure of Strategic Interaction
+% ================================================================
+
+% ================================================================
+\chapter{Trust Cascades: Small Violations, Large Consequences}
+% ================================================================
+
+\epigraph{Trust takes years to build, seconds to break, and forever to repair.}{Anonymous}
+
+\section{The Naive Expectation}
+
+In repeated game theory (Fudenberg and Maskin, 1986), the folk theorem says that almost any individually rational payoff can be sustained as a Nash equilibrium in an infinitely repeated game, provided players are sufficiently patient. Trust is modeled as a discount factor: higher patience sustains more cooperative outcomes.
+
+The naive expectation is that small trust violations should have small consequences --- proportional penalties for proportional defections. In ideatic space, this expectation is both confirmed and subverted.
+
+\section{Trust Level Equals Cooperation Surplus}
+
+\begin{theorem}[Trust Is Surplus]
+\label{thm:trust-surplus}
+The trust level of $a$ toward $b$ equals the cooperation surplus:
+\[
+T(a,b) = \wt(a \compose b) - \wt(a) = S(a,b) \geq 0.
+\]
+\end{theorem}
+
+\begin{proof}
+Both quantities equal $\wt(a \compose b) - \wt(a)$, which is non-negative by enrichment.
+\end{proof}
+
+\begin{interpretation}
+Trust is not an abstract psychological quantity --- it is the \emph{cooperation surplus}. When you trust someone, what you gain is exactly the weight increase from composing with their idea. Trust and cooperation are algebraically identical.
+
+This connects to Axelrod's (1984) ``evolution of cooperation'': in the iterated Prisoner's Dilemma, cooperation emerges through reciprocity. In ideatic space, cooperation (measured by surplus) IS trust (measured by weight gain). The two concepts collapse into one.
+\end{interpretation}
+
+\section{Betrayal Cost Is Exactly Trust}
+
+\begin{theorem}[Betrayal Cost]
+\label{thm:betrayal-cost}
+The cost of betrayal (the loss from the partner defecting to void) equals the trust level:
+\[
+B(a,b) = \wt(a \compose b) - \wt(a \compose \void) = T(a,b).
+\]
+\end{theorem}
+
+\begin{proof}
+$\wt(a \compose \void) = \wt(a)$ by right identity. So $B(a,b) = \wt(a \compose b) - \wt(a) = T(a,b)$.
+\end{proof}
+
+\begin{paradox}[The Vulnerability Paradox]
+Your vulnerability to betrayal is exactly your benefit from cooperation. The more you benefit from a partnership, the more you can be hurt by its dissolution. Trust and vulnerability are \emph{the same quantity}.
+
+This formalizes the folk wisdom that ``the bigger they are, the harder they fall'': coalitions that create the most surplus are the most vulnerable to defection. There is no way to capture the benefits of cooperation without being equally exposed to the costs of betrayal.
+
+This contradicts the popular self-help advice to ``trust but verify'': verification reduces vulnerability, but it \emph{equally} reduces the cooperation surplus. You cannot make yourself less vulnerable without also making yourself less cooperative.
+\end{paradox}
+
+\section{The Trust Asymmetry}
+
+\begin{theorem}[Trust Asymmetry Equals Cooperation Asymmetry]
+\label{thm:trust-asymmetry}
+$T(a,b) - T(b,a) = A(a,b)$ (the cooperation asymmetry).
+\end{theorem}
+
+\begin{proof}
+Direct expansion of definitions:
+\[
+T(a,b) - T(b,a) = [\wt(a \compose b) - \wt(a)] - [\wt(b \compose a) - \wt(b)] = A(a,b).
+\]
+\end{proof}
+
+\begin{interpretation}
+When trust is asymmetric --- one party benefits more from the partnership than the other --- the asymmetry equals the cooperation asymmetry, which equals the difference in coalition values minus the difference in individual values.
+
+This means that ``unequal trust'' in a relationship is detectable: it manifests as different cooperation surpluses. The party who trusts more benefits more from the partnership but is also more vulnerable to betrayal.
+\end{interpretation}
+
+\section{The Cascade Irreversibility}
+
+\begin{theorem}[Cascade Irreversibility]
+An information cascade can only grow heavier:
+\[
+\wt((a \compose b) \compose c) \geq \wt(a \compose b) \geq \wt(a).
+\]
+\end{theorem}
+
+\begin{proof}
+Two applications of enrichment.
+\end{proof}
+
+\begin{interpretation}
+Once a trust cascade starts (a chain of compositions), it cannot be reversed. Each link in the chain adds weight. This explains why trust collapses are so devastating: when a cascade runs in reverse (a series of betrayals), each betrayal doesn't reduce weight --- it adds the weight of the betrayal experience itself. The resulting ``distrust cascade'' is \emph{heavier} than the original trust cascade, not lighter.
+
+This connects to Geanakoplos's (1992) work on common knowledge: trust cascades are a form of common knowledge --- each party knows that each party knows that they cooperate. In ideatic space, common knowledge is compositional weight: each layer of ``I know that you know'' adds weight through composition.
+\end{interpretation}
+
+
+% ================================================================
+\chapter{The Manipulation Bound: How Much Can You Distort?}
+% ================================================================
+
+\epigraph{You can fool all the people some of the time, and some of the people all the time, but you cannot fool all the people all the time.}{Abraham Lincoln (attributed)}
+
+\section{The Naive Expectation}
+
+In mechanism design (Myerson, 1981), the revelation principle says that any equilibrium outcome of any mechanism can be replicated by a truthful mechanism. This suggests that manipulation has no fundamental power: anything achievable through manipulation is achievable through honesty.
+
+But this assumes that the mechanism designer has full control over the information structure. In ideatic space, manipulation is constrained by a fundamental \emph{physical} bound, not just an incentive-compatibility constraint.
+
+\section{The Emergence Bound as Manipulation Limit}
+
+\begin{theorem}[The Fundamental Manipulation Bound]
+\label{thm:manipulation-bound-2}
+For any signal $s$ and receiver $r$:
+\[
+|\emrg(r, s, r)| \leq \sqrt{\wt(r \compose s) \cdot \wt(r)}.
+\]
+The ``surprise'' from any signal is bounded by the geometric mean of the composed weight and the receiver's weight.
+\end{theorem}
+
+\begin{proof}
+The emergence bound axiom gives $\emrg(r,s,r)^2 \leq \wt(r \compose s) \cdot \wt(r)$. Taking square roots gives the result.
+\end{proof}
+
+\begin{paradox}[Lightweight Lies Are Impotent]
+To produce a large surprise (a large emergence), you need HEAVY ideas --- both the composed result and the receiver must be heavy. A lightweight lie interacting with a lightweight receiver produces only a small effect.
+
+This inverts the common intuition that lies are ``easy'' and truth is ``hard.'' In ideatic space, EFFECTIVE lies are expensive: they require heavy ideas. Cheap lies produce only cheap effects.
+
+Specifically:
+\begin{enumerate}
+\item If $\wt(r) \approx 0$ (the receiver has few beliefs), manipulation is nearly impossible. You cannot manipulate someone who believes nothing.
+\item If $\wt(r \compose s)$ is small (the lie is lightweight), the manipulation effect is small. Elaborate lies are necessary for large effects.
+\item The bound is \emph{multiplicative}: both factors must be large. A heavy lie targeting a light receiver (or vice versa) produces bounded effects.
+\end{enumerate}
+\end{paradox}
+
+\section{The Triple Attribution Gap}
+
+\begin{theorem}[Three-Party Attribution Inflates]
+\label{thm:triple-attribution}
+For three ideas $a, b, c$ and observer $d$:
+\begin{align*}
+&M(a, b \compose c, d) + M(b, a \compose c, d) + M(c, a \compose b, d) \\
+&= \operatorname{rs}(a,d) + \operatorname{rs}(b,d) + \operatorname{rs}(c,d) \\
+&\quad + \emrg(a, b \compose c, d) + \emrg(b, a \compose c, d) + \emrg(c, a \compose b, d).
+\end{align*}
+The sum of marginal contributions equals individual resonances PLUS all pairwise emergences.
+\end{theorem}
+
+\begin{proof}
+Expand each marginal contribution using $M(x, y, d) = \operatorname{rs}(x,d) + \emrg(x,y,d)$:
+\begin{align*}
+&M(a, b \compose c, d) + M(b, a \compose c, d) + M(c, a \compose b, d) \\
+&= [\operatorname{rs}(a,d) + \emrg(a, b \compose c, d)] \\
+&\quad + [\operatorname{rs}(b,d) + \emrg(b, a \compose c, d)] \\
+&\quad + [\operatorname{rs}(c,d) + \emrg(c, a \compose b, d)].
+\end{align*}
+Collecting terms gives the result.
+\end{proof}
+
+\begin{lstlisting}
+/-- DP8. THE TRIPLE ATTRIBUTION GAP -/
+theorem triple_attribution_gap (a b c d : I) :
+    marginalContrib a (compose b c) d +
+    marginalContrib b (compose a c) d +
+    marginalContrib c (compose a b) d =
+    rs a d + rs b d + rs c d +
+    emergence a (compose b c) d +
+    emergence b (compose a c) d +
+    emergence c (compose a b) d := by
+  unfold marginalContrib emergence; ring
+\end{lstlisting}
+
+\begin{interpretation}
+With three parties, the attribution inflation is even worse than with two. The sum of marginal contributions includes not just the individual resonances but ALL the emergence terms with different coalition partners. As the number of parties grows, the attribution inflation grows combinatorially.
+
+This is why fair division in large organizations is so difficult: the total ``credit'' claimed by all members (their marginal contributions) always exceeds the total value created. The excess equals the sum of all pairwise emergence terms, which grows quadratically in the number of members.
+\end{interpretation}
+
+
+% ================================================================
+\chapter{Composition Order and Strategic Advantage}
+% ================================================================
+
+\epigraph{The first move is theirs; the last move is mine.}{Bobby Fischer}
+
+\section{The Naive Expectation}
+
+In sequential games, the first mover often has an advantage (the ``first-mover advantage'' in industrial organization: Lieberman and Montgomery, 1988) or a disadvantage (the ``second-mover advantage'' when flexibility is valuable). The direction depends on the specific game.
+
+In ideatic space, the first-mover advantage has a precise algebraic characterization that is independent of the specific ``game'' being played.
+
+\section{The First-Mover Premium Decomposition}
+
+\begin{theorem}[The First-Mover Premium]
+The first-mover premium $P(a,b) = [\wt(a \compose b) - \wt(a)] - [\wt(b \compose a) - \wt(b)]$ decomposes as:
+\[
+P(a,b) = N(a,b) + (\wt(b) - \wt(a)),
+\]
+where $N(a,b) = \wt(a \compose b) - \wt(b \compose a)$ is the negotiation asymmetry.
+\end{theorem}
+
+\begin{proof}
+\begin{align*}
+P(a,b) &= \wt(a \compose b) - \wt(a) - \wt(b \compose a) + \wt(b) \\
+&= [\wt(a \compose b) - \wt(b \compose a)] + [\wt(b) - \wt(a)] \\
+&= N(a,b) + (\wt(b) - \wt(a)).
+\end{align*}
+\end{proof}
+
+\begin{paradox}[The Paradox of the Weak First Mover]
+The first-mover premium has two independent components:
+\begin{enumerate}
+\item The \textbf{negotiation asymmetry} $N(a,b)$: how much more weight $a \compose b$ has compared to $b \compose a$.
+\item The \textbf{weight differential} $\wt(b) - \wt(a)$: how much heavier $b$ is compared to $a$.
+\end{enumerate}
+
+When negotiation is ``fair'' ($N(a,b) = 0$, e.g., when composition commutes), the first-mover premium is ENTIRELY determined by the weight differential: $P(a,b) = \wt(b) - \wt(a)$.
+
+This means the LIGHTER party benefits more from going first! In a ``fair'' negotiation, the weak benefit more from the first-mover advantage than the strong do.
+
+This inverts the standard first-mover advantage: in most models, the stronger party benefits from moving first because they can commit to a favorable outcome. In ideatic space, when the structural asymmetry is zero, it is the weaker party who benefits from the compositional first-mover advantage.
+\end{paradox}
+
+\section{The Order Determines Resonance}
+
+\begin{theorem}[Order Determines Resonance Profile]
+The difference in resonance between $a \compose b$ and $b \compose a$, as observed by any $c$, equals the order asymmetry:
+\[
+\operatorname{rs}(a \compose b, c) - \operatorname{rs}(b \compose a, c) = \emrg(a,b,c) - \emrg(b,a,c).
+\]
+\end{theorem}
+
+\begin{proof}
+Expand using the decomposition:
+\begin{align*}
+\operatorname{rs}(a \compose b, c) &= \operatorname{rs}(a,c) + \operatorname{rs}(b,c) + \emrg(a,b,c), \\
+\operatorname{rs}(b \compose a, c) &= \operatorname{rs}(b,c) + \operatorname{rs}(a,c) + \emrg(b,a,c).
+\end{align*}
+Subtracting: $\operatorname{rs}(a \compose b, c) - \operatorname{rs}(b \compose a, c) = \emrg(a,b,c) - \emrg(b,a,c)$.
+\end{proof}
+
+\begin{interpretation}
+The entire difference between two orderings of the same ideas is captured by the emergence asymmetry. The individual resonances $\operatorname{rs}(a,c)$ and $\operatorname{rs}(b,c)$ cancel out. Only the \emph{emergent} contribution differs.
+
+This means that composition order matters ONLY because of emergence. In a world without emergence (all ideas are linear), composition order would not matter at all. The non-commutativity of meaning is ENTIRELY an emergent phenomenon.
+
+This connects to Wittgenstein's insight that ``meaning is use'': the order in which ideas are composed (used) determines their meaning, and this determination operates entirely through emergence. The ``intrinsic'' content of ideas ($\operatorname{rs}(a,c)$ and $\operatorname{rs}(b,c)$) is order-independent; only the emergent content depends on order.
+\end{interpretation}
+
+\section{The Zero Asymmetry Theorem}
+
+\begin{theorem}[Zero Asymmetry Implies Same Profile]
+If $\emrg(a,b,c) = \emrg(b,a,c)$ for all $c$, then $a \compose b$ and $b \compose a$ have identical resonance profiles: $\operatorname{rs}(a \compose b, c) = \operatorname{rs}(b \compose a, c)$ for all $c$.
+\end{theorem}
+
+\begin{proof}
+By the previous theorem, the difference is $\emrg(a,b,c) - \emrg(b,a,c)$, which is zero by hypothesis.
+\end{proof}
+
+\begin{corollary}
+Two ideas have the same composition in both orders (they are ``order-indistinguishable'') if and only if their emergence is symmetric. Order sensitivity is measured entirely by emergence asymmetry.
+\end{corollary}
+
+
+% ================================================================
+\chapter{The Emergence Ratchet: Why Complexity Grows}
+% ================================================================
+
+\epigraph{Complexity is a sign of sophistication, not of failure.}{Herbert A.\ Simon}
+
+\section{The Naive Expectation}
+
+In many domains, complexity is viewed as a cost: complex systems are harder to maintain, more fragile, and more expensive. Occam's razor counsels simplicity. Information-theoretic minimum description length principles penalize complexity.
+
+The naive expectation: in strategic interaction, complexity should be an optional choice --- agents should be able to stay simple if they prefer.
+
+In ideatic space, complexity growth is not a choice. It is a theorem.
+
+\section{The Cumulative Cultural Evolution Theorem}
+
+\begin{theorem}[Cultural Evolution Is Monotone]
+\label{thm:cultural-evolution}
+The cumulative gain from $n$ generations of drift is non-negative and non-decreasing:
+\begin{enumerate}
+\item $\wt(\text{drift}(a,b,n)) - \wt(a) \geq 0$ for all $n$.
+\item $\wt(\text{drift}(a,b,n+1)) - \wt(a) \geq \wt(\text{drift}(a,b,n)) - \wt(a)$ for all $n$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) By induction on $n$. The base case ($n=0$) gives $\wt(a) - \wt(a) = 0$. For the inductive step, $\wt(\text{drift}(a,b,n+1)) \geq \wt(\text{drift}(a,b,n))$ by enrichment, and by the inductive hypothesis $\wt(\text{drift}(a,b,n)) \geq \wt(a)$, so $\wt(\text{drift}(a,b,n+1)) \geq \wt(a)$.
+
+(2) follows from enrichment: $\wt(\text{drift}(a,b,n+1)) \geq \wt(\text{drift}(a,b,n))$, so the cumulative gain at step $n+1$ is at least as large as at step $n$.
+\end{proof}
+
+\begin{lstlisting}
+/-- EP3. THE DRIFT ACCELERATION THEOREM -/
+theorem drift_cumulative_lower_bound (a b : I) (n : N) :
+    rs (drift a b n) (drift a b n) >= rs a a := by
+  induction n with
+  | zero => simp [drift]
+  | succ k ih =>
+    have hk := drift_enriches a b k
+    linarith
+\end{lstlisting}
+
+\begin{paradox}[The Impossibility of Cultural Simplification]
+Complexity only grows. Every generation adds weight through composition, and no generation can remove it. Cultural artifacts --- languages, laws, technologies, religions --- grow more complex over time because the enrichment axiom guarantees it.
+
+This explains several empirical observations:
+\begin{enumerate}
+\item \textbf{Legal codes grow}: laws accrete but are rarely simplified.
+\item \textbf{Software bloats}: codebases grow but refactoring rarely reduces total complexity.
+\item \textbf{Bureaucracies expand}: organizations add rules and procedures but rarely remove them.
+\item \textbf{Languages evolve}: languages gain vocabulary and grammatical complexity but rarely simplify.
+\end{enumerate}
+
+In each case, the enrichment axiom --- not human psychology or institutional inertia --- provides the fundamental explanation. Complexity growth is a mathematical necessity of compositional systems.
+\end{paradox}
+
+\section{The Adaptation Rate Is Always Non-Negative}
+
+\begin{theorem}[Adaptation Is Always Positive]
+\label{thm:adaptation-positive}
+The adaptation rate $\wt(a \compose b) - \wt(a)$ is always non-negative.
+\end{theorem}
+
+\begin{proof}
+Direct application of enrichment.
+\end{proof}
+
+\begin{interpretation}
+Every act of transmission enriches. There is no ``maladaptation'' in the weight sense --- every idea that passes through a cultural context emerges at least as heavy as it entered.
+
+This does not mean that all cultural changes are ``improvements'' in any normative sense. Weight is not quality. A more complex legal code is not necessarily a better one. But it IS heavier, and it CANNOT become lighter through the natural process of cultural transmission.
+\end{interpretation}
+
+\section{Connection to Tomasello's Ratchet Effect}
+
+Tomasello (1999) proposed that human cultural evolution exhibits a ``ratchet effect'': innovations are preserved and accumulated across generations, unlike other species where innovations are frequently lost.
+
+In ideatic space, Tomasello's ratchet is a theorem. The enrichment axiom guarantees that cultural innovations (compositions) always increase weight, and the non-degeneracy axiom guarantees that non-void innovations can never be lost (the Extinction Impossibility theorem). Together, these imply that cultural complexity ratchets upward monotonically.
+
+What Tomasello described as a uniquely human cultural capacity is, in ideatic theory, a consequence of the algebraic structure of composition. Any system that composes ideas with enrichment will exhibit the ratchet effect. The ``uniquely human'' part is not the ratchet but the richness of the ideatic space --- the diversity of ideas and emergence that human culture generates.
+
+
+% ================================================================
+\chapter{Grand Synthesis: The Fundamental Theorem of Strategic Interaction}
+% ================================================================
+
+\epigraph{Everything should be made as simple as possible, but not simpler.}{Albert Einstein (attributed)}
+
+\section{The Architecture of the Paradoxes}
+
+The preceding fourteen chapters have presented a gallery of counter-intuitive results. Let us now step back and see the architecture that unifies them.
+
+Every paradox in this volume flows from the interaction of two axioms:
+\begin{enumerate}
+\item \textbf{Enrichment}: $\wt(a \compose b) \geq \wt(a)$.
+\item \textbf{Emergence bound}: $\emrg(a,b,c)^2 \leq \wt(a \compose b) \cdot \wt(c)$.
+\end{enumerate}
+
+Enrichment gives us the ``positive'' paradoxes: information is irreversible, coalitions always grow, complexity ratchets upward, ideas cannot go extinct.
+
+The emergence bound gives us the ``constraining'' paradoxes: manipulation is expensive, polarization is bounded, attribution is inflationary.
+
+Together, they create the central tension of strategic interaction in ideatic space: \emph{everything grows, but everything is bounded}.
+
+\section{The Grand Synthesis}
+
+\begin{theorem}[The Fundamental Theorem of Strategic Interaction]
+\label{thm:fundamental}
+For any ideas $a, b$ in an ideatic space:
+\begin{enumerate}
+\item \textbf{Value creation is guaranteed}: $\wt(a \compose b) \geq \wt(a)$ and $\wt(b \compose a) \geq \wt(b)$.
+\item \textbf{Total value exceeds parts}: $\wt(a \compose b) + \wt(b \compose a) \geq \wt(a) + \wt(b)$.
+\item \textbf{Surprise is bounded}: $\emrg(a,b,c)^2 \leq \wt(a \compose b) \cdot \wt(c)$.
+\item \textbf{Order matters}: $\wt(a \compose b) - \wt(b \compose a) = -[\wt(b \compose a) - \wt(a \compose b)]$.
+\item \textbf{Fairness from commutativity}: If $a \compose b = b \compose a$, then $N(a,b) = 0$.
+\item \textbf{Attribution inflates}: $M(a,b,c) + M(b,a,c) = \operatorname{rs}(a \compose b, c) + \emrg(b,a,c) \geq \operatorname{rs}(a \compose b, c)$.
+\item \textbf{Ideas are immortal}: If $a \neq \void$, then $a \compose b \neq \void$.
+\item \textbf{Complexity ratchets}: $\wt(\compN{a}{n+1}) \geq \wt(\compN{a}{n})$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Each claim has been proven in the preceding chapters:
+\begin{enumerate}
+\item The enrichment axiom.
+\item Sum of the two enrichment inequalities.
+\item The emergence bound axiom.
+\item Antisymmetry of subtraction.
+\item If $a \compose b = b \compose a$, then $\wt(a \compose b) = \wt(b \compose a)$.
+\item The attribution conservation law (Chapter~5) and the fact that emergence can be positive.
+\item Non-degeneracy of composition: if the left factor is non-void, the composition is non-void.
+\item Enrichment applied to $\compN{a}{n}$ and $a$.
+\end{enumerate}
+\end{proof}
+
+\section{What the Fundamental Theorem Means}
+
+The Fundamental Theorem says that strategic interaction in ideatic space is simultaneously:
+\begin{itemize}
+\item \textbf{Productive}: interaction always creates value (properties 1--2).
+\item \textbf{Bounded}: the creative surplus is constrained (property 3).
+\item \textbf{Asymmetric}: the distribution of value depends on order (properties 4--5).
+\item \textbf{Inflationary}: credit always exceeds value (property 6).
+\item \textbf{Persistent}: ideas survive and grow (properties 7--8).
+\end{itemize}
+
+This combination of properties is unique to ideatic space. In classical game theory, interaction can destroy value (negative-sum games exist), surplus is unbounded (there is no emergence bound), and strategies can die (species go extinct, firms go bankrupt).
+
+The ideatic framework reveals a world where interaction is fundamentally constructive, bounded, and irreversible. This is not a utopian vision --- the asymmetry (property 4) ensures that interaction is often unfair, and the inflationary attribution (property 6) ensures that conflict over credit is inevitable. But it is a world where nihilism is impossible: every interaction creates something, and nothing is ever truly lost.
+
+\section{Connections to the Great Game Theorists}
+
+\subsection*{John Nash}
+Nash showed that every finite game has an equilibrium. In ideatic space, the void equilibrium always exists, and every Nash equilibrium has non-negative surplus. Nash's existence theorem is strengthened: not only do equilibria exist, but they are always weakly beneficial.
+
+\subsection*{John von Neumann}
+Von Neumann proved the minimax theorem for zero-sum games. In ideatic space, even ``zero-sum'' interactions (orthogonal ideas) create positive weight through enrichment. Von Neumann's zero-sum framework is too restrictive: ideatic games are always positive-sum in weight.
+
+\subsection*{Reinhard Selten}
+Selten refined Nash equilibrium to subgame perfection. In ideatic space, the composition order determines the ``subgame structure,'' and the framing effect theorem shows that order matters through emergence chains. Selten's refinement is vindicated: order matters, and it matters for algebraic reasons.
+
+\subsection*{John Harsanyi}
+Harsanyi introduced incomplete information into game theory. In ideatic space, ``information'' is compositional: hearing a signal changes your cognitive state irreversibly. Harsanyi's type spaces correspond to ideatic ideas, but with the crucial addition of enrichment: learning always increases weight.
+
+\subsection*{Robert Aumann}
+Aumann proved that rational agents with common priors cannot agree to disagree. In ideatic space, ``agreement'' is measured by resonance, and the polarization bound constrains how much agents can disagree. Aumann's result is extended: disagreement is not just unlikely under common priors --- it is \emph{bounded} by the emergence constraint.
+
+\subsection*{Roger Myerson}
+Myerson developed the revelation principle and optimal mechanism design. In ideatic space, the manipulation bound provides a \emph{physical} constraint on mechanism design that goes beyond incentive compatibility: even a mechanism designer with full power cannot create emergence beyond the bound. Myerson's revelation principle still holds, but the achievable outcomes are further constrained by the algebraic structure of composition.
+
+\section{Open Questions}
+
+We conclude with several questions that this volume raises but does not resolve:
+
+\begin{enumerate}
+\item \textbf{Tight bounds}: The emergence bound is $\emrg(a,b,c)^2 \leq \wt(a \compose b) \cdot \wt(c)$. Is this bound tight? Are there ideatic spaces where it is achieved with equality?
+
+\item \textbf{Convergence}: The weight ratchet shows that $\wt(\compN{a}{n})$ is non-decreasing. Does it converge? If so, to what? This would be a ``fixed point'' of the ratchet.
+
+\item \textbf{Non-commutative dynamics}: The framing effect theorem shows that order matters. Can we characterize which orderings are ``optimal'' (maximize total weight) for a given set of ideas?
+
+\item \textbf{Large coalitions}: The enrichment chain shows that adding members always enriches. But does the marginal enrichment decay? Is there a ``law of diminishing marginal enrichment'' for large coalitions?
+
+\item \textbf{Information-theoretic capacity}: Is there an ideatic analog of Shannon capacity --- a maximum rate at which ideas can be composed while maintaining some measure of ``fidelity''?
+
+\item \textbf{Evolutionary dynamics}: The complexity ratchet shows that cultural evolution is monotone in weight. But weight is not the only measure of ``fitness.'' Can we characterize evolutionary dynamics in ideatic space using richer fitness measures?
+\end{enumerate}
+
+These questions suggest that the theory of strategic interaction in ideatic space is far from complete. The paradoxes of this volume are the first glimpses of a rich mathematical landscape that remains to be explored.
+
+\bigskip
+
+\begin{center}
+\rule{0.5\textwidth}{0.5pt}
+\end{center}
+
+\bigskip
+
+\noindent\textit{Every theorem in this volume has been verified in Lean~4 with zero sorry axioms. The source files are:}
+\begin{itemize}
+\item \texttt{IDT\_v3\_Foundations.lean} --- core axioms and definitions.
+\item \texttt{IDT\_v3\_SignalGames.lean} --- signal games and communication paradoxes.
+\item \texttt{IDT\_v3\_DeepGames.lean} --- deep game-theoretic results and attribution.
+\item \texttt{IDT\_v3\_Cooperation.lean} --- cooperative game theory and coalition paradoxes.
+\item \texttt{IDT\_v3\_Networks.lean} --- network dynamics and cascade theorems.
+\item \texttt{IDT\_v3\_Evolution.lean} --- evolutionary paradoxes and complexity ratchet.
+\end{itemize}

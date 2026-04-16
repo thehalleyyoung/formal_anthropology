@@ -1,0 +1,207 @@
+% ================================================================
+% THE MATH OF IDEAS, Volume II-B:
+% Paradoxes of Strategic Interaction
+% ================================================================
+\documentclass[11pt,openany]{book}
+
+% --- Geometry ---
+\usepackage[margin=1in]{geometry}
+
+% --- Fonts and encoding ---
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% --- Math ---
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+
+% --- Graphics and colors ---
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+
+% --- Cross-referencing ---
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=OliveGreen,urlcolor=BrickRed]{hyperref}
+\usepackage{cleveref}
+
+% --- Code listings for Lean ---
+\usepackage{listings}
+\lstdefinelanguage{Lean4}{
+  morekeywords={theorem,lemma,def,class,structure,instance,where,
+    variable,import,open,namespace,end,section,
+    by,exact,intro,induction,cases,rfl,simp,omega,calc,have,show,
+    apply,rw,push_neg,with,generalizing,let,match,if,then,else,
+    return,do,for,in,private,noncomputable,set_option},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[n]{/-}{-/},
+  morestring=[b]",
+  literate={→}{{$\to$}}1 {←}{{$\leftarrow$}}1 {↦}{{$\mapsto$}}1
+           {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {λ}{{$\lambda$}}1
+           {≤}{{$\leq$}}1 {≥}{{$\geq$}}1 {≠}{{$\neq$}}1
+           {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1 {¬}{{$\neg$}}1
+           {∈}{{$\in$}}1 {∉}{{$\notin$}}1 {⊆}{{$\subseteq$}}1
+           {ℕ}{{$\mathbb{N}$}}1 {ℤ}{{$\mathbb{Z}$}}1 {ℝ}{{$\mathbb{R}$}}1
+           {∘}{{$\circ$}}1 {×}{{$\times$}}1
+}
+\lstset{
+  language=Lean4,
+  basicstyle=\small\ttfamily,
+  keywordstyle=\color{MidnightBlue}\bfseries,
+  commentstyle=\color{OliveGreen}\itshape,
+  stringstyle=\color{BrickRed},
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  numbers=none,
+  xleftmargin=1em,
+  xrightmargin=1em,
+  aboveskip=1em,
+  belowskip=1em,
+}
+
+% --- Epigraphs ---
+\usepackage{epigraph}
+\setlength{\epigraphwidth}{0.7\textwidth}
+
+% --- Theorem environments ---
+\theoremstyle{definition}
+\newtheorem{axiom}{Axiom}[chapter]
+\newtheorem{definition}[axiom]{Definition}
+
+\theoremstyle{plain}
+\newtheorem{theorem}[axiom]{Theorem}
+\newtheorem{proposition}[axiom]{Proposition}
+\newtheorem{lemma}[axiom]{Lemma}
+\newtheorem{corollary}[axiom]{Corollary}
+
+\theoremstyle{remark}
+\newtheorem{remark}[axiom]{Remark}
+\newtheorem{example}[axiom]{Example}
+\newtheorem{interpretation}[axiom]{Interpretation}
+\newtheorem{paradox}[axiom]{Paradox}
+
+% --- Custom commands ---
+\newcommand{\IS}{\mathcal{I}}
+\newcommand{\compose}{\circ}
+\newcommand{\void}{\mathbf{0}}
+\newcommand{\res}{\sim}
+\newcommand{\depth}{\operatorname{d}}
+\newcommand{\transmit}{\tau}
+\newcommand{\compN}[2]{#1^{\langle #2 \rangle}}
+\newcommand{\Filt}[1]{\mathcal{F}_{#1}}
+\newcommand{\orbit}[2]{#1^{[#2]}}
+\newcommand{\wt}{\operatorname{wt}}
+\newcommand{\emrg}{\kappa}
+
+\newcommand{\lean}[1]{\lstinline[language=Lean4]{#1}}
+
+% --- Title ---
+\title{%
+  \vspace{-2cm}
+  {\LARGE\scshape The Math of Ideas}\\[0.3cm]
+  {\Large Volume II-B}\\[0.5cm]
+  {\huge\bfseries Paradoxes of Strategic Interaction}\\[1cm]
+  {\large Counter-Intuitive Theorems from Ideatic Diffusion Theory,\\
+  with Machine-Verified Proofs in Lean~4}
+}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+% --- Preface ---
+\chapter*{Preface: Why These Results Are Surprising}
+\addcontentsline{toc}{chapter}{Preface}
+
+\epigraph{The most beautiful experience we can have is the mysterious. It is the fundamental emotion that stands at the cradle of true art and true science.}{Albert Einstein}
+
+This book is a collection of paradoxes.
+
+Not verbal paradoxes or logical tricks, but \emph{genuine mathematical surprises}: theorems that are true but that contradict what you would naively expect. Each result has been machine-verified in Lean~4 with zero sorry axioms, so there is no question of their validity. The question is: \emph{why} are they true, and what do they tell us about the nature of strategic interaction?
+
+The predecessor volume, \emph{The Math of Ideas, Volume~II: Strategic Interaction}, developed the basic game-theoretic framework of ideatic spaces: meaning games, Nash equilibria of signaling, cooperative surplus from composition, and the Wittgensteinian thesis that meaning is use. This sequel goes deeper, focusing on results that are genuinely counter-intuitive.
+
+Here is a sampling of what you will find:
+
+\begin{itemize}
+\item \textbf{Lies make you heavier.} Every signal, even a deceptive one, increases the receiver's cognitive weight. You cannot ``un-hear.'' Information is irreversible, like the Second Law of Thermodynamics (Chapter~1).
+
+\item \textbf{Negotiation is always value-creating.} Even adversarial negotiations create net value. The total weight from both orderings always exceeds the sum of individual weights (Chapter~4).
+
+\item \textbf{You can never harm a coalition.} Adding members to a coalition can never reduce its total weight. The tragedy of the commons is impossible in ideatic space (Chapter~3).
+
+\item \textbf{Framing effects are mathematical necessities.} The order in which you hear information matters, and the difference is exactly captured by emergence chain differentials. Rational agents \emph{must} be frame-dependent (Chapter~6).
+
+\item \textbf{Ideas cannot go extinct.} Once an idea enters a population, no amount of cultural drift can reduce it to void. Ideas are immortal (Chapter~9).
+
+\item \textbf{Manipulation is expensive.} The squared ``surprise'' from any signal is bounded by the product of weights. You cannot manipulate cheaply (Chapter~12).
+\end{itemize}
+
+Each of these results follows from the eight axioms of the ideatic space --- no additional assumptions are needed. The proofs are not tricks; they are consequences of the deep algebraic structure of composition and resonance.
+
+\bigskip
+
+\noindent\textbf{How to read this book.} Each chapter presents 3--5 theorems organized around a central paradox. For each theorem, we give:
+\begin{enumerate}
+\item The \textbf{naive expectation} --- what you would guess before seeing the proof.
+\item The \textbf{actual result} --- the formal theorem statement.
+\item The \textbf{proof} --- a detailed natural-language argument.
+\item The \textbf{Lean code} --- the machine-verified formal proof.
+\item The \textbf{real-world interpretation} --- why this matters.
+\end{enumerate}
+
+The chapters can be read in any order, though the Grand Synthesis (Chapter~15) draws on all previous results.
+
+\bigskip
+
+\noindent\textbf{Prerequisites.} We assume familiarity with the ideatic space axioms from Volume~I and the basic signaling framework from Volume~II. The essential definitions are recalled in a prologue.
+
+\bigskip
+
+\noindent\textbf{Notation.} We write $a \compose b$ for composition, $\void$ for the void idea, $\operatorname{rs}(a,b)$ for resonance, $\wt(a) = \operatorname{rs}(a,a)$ for weight, and $\emrg(a,b,c)$ for emergence.
+
+% --- Prologue ---
+\chapter*{Prologue: The Ideatic Space in Brief}
+\addcontentsline{toc}{chapter}{Prologue}
+
+We work in an \emph{ideatic space} $(\IS, \compose, \void, \operatorname{rs})$ satisfying eight axioms:
+
+\begin{enumerate}
+\item \textbf{Associativity}: $(a \compose b) \compose c = a \compose (b \compose c)$.
+\item \textbf{Left identity}: $\void \compose a = a$.
+\item \textbf{Right identity}: $a \compose \void = a$.
+\item \textbf{Void resonance (right)}: $\operatorname{rs}(a, \void) = 0$.
+\item \textbf{Void resonance (left)}: $\operatorname{rs}(\void, a) = 0$.
+\item \textbf{Self-coherence}: $\operatorname{rs}(a, a) \geq 0$, with equality iff $a = \void$.
+\item \textbf{Emergence bound}: $\emrg(a,b,c)^2 \leq \wt(a \compose b) \cdot \wt(c)$.
+\item \textbf{Enrichment}: $\wt(a \compose b) \geq \wt(a)$.
+\end{enumerate}
+
+The \emph{emergence} $\emrg(a,b,c) = \operatorname{rs}(a \compose b, c) - \operatorname{rs}(a,c) - \operatorname{rs}(b,c)$ measures the non-additive ``surprise'' when ideas $a$ and $b$ are composed and observed by $c$.
+
+The \emph{weight} $\wt(a) = \operatorname{rs}(a,a)$ measures cognitive complexity.
+
+The \emph{cocycle condition}: $\emrg(a,b,d) + \emrg(a \compose b, c, d) = \emrg(b,c,d) + \emrg(a, b \compose c, d)$ holds for all $a,b,c,d$.
+
+With these tools, we enter the paradoxes.
+
+% --- Part I ---
+\part{The Paradoxes of Communication}
+
+\input{tex_v2_chapters/vol2b_ch1_5}
+
+% --- Part II ---
+\part{The Paradoxes of Cooperation and Competition}
+
+\input{tex_v2_chapters/vol2b_ch6_10}
+
+% --- Part III ---
+\part{The Deep Structure of Strategic Interaction}
+
+\input{tex_v2_chapters/vol2b_ch11_15}
+
+\end{document}

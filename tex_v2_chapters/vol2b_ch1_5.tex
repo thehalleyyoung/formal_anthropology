@@ -1,0 +1,540 @@
+% ================================================================
+% Volume II-B, Chapters 1--5
+% The Paradoxes of Communication
+% ================================================================
+
+% ================================================================
+\chapter{The Cost of Deception: Why Lies Are Expensive}
+% ================================================================
+
+\epigraph{A lie has speed, but truth has endurance.}{Edgar J.\ Mohn}
+
+\section{The Naive Expectation}
+
+In classical game theory, cheap talk is free. A sender can say anything without cost, and the receiver filters based on incentive compatibility. The canonical model of Crawford and Sobel (1982) shows that cheap talk can convey information despite the absence of direct costs, but the key assumption is that \emph{the message itself} carries no intrinsic burden.
+
+In ideatic space, this assumption is profoundly wrong.
+
+When a sender transmits signal $s$ to receiver $r$, the receiver's cognitive state changes from $r$ to $r \compose s$. The \emph{deception divergence} measures how the receiver's cognitive state differs when the sender sends $s$ instead of their true belief $m$:
+\[
+\Delta(m, s, r) = \wt(r \compose m) - \wt(r \compose s).
+\]
+
+The naive expectation: deception should be ``free'' in the sense that the sender can choose any $s$ without affecting the receiver's weight. After all, in classical cheap talk, the message is just a label.
+
+The reality is far more interesting.
+
+\section{The Deception Decomposition Theorem}
+
+\begin{theorem}[Deception Decomposition]
+\label{thm:deception-decomposition}
+For any true belief $m$, actual signal $s$, and receiver $r$:
+\[
+\Delta(m,s,r) = \bigl[\operatorname{rs}(r, r \compose m) + \operatorname{rs}(m, r \compose m) + \emrg(r,m,r \compose m)\bigr] - \bigl[\operatorname{rs}(r, r \compose s) + \operatorname{rs}(s, r \compose s) + \emrg(r,s,r \compose s)\bigr].
+\]
+\end{theorem}
+
+\begin{proof}
+We apply the decomposition identity $\operatorname{rs}(a \compose b, a \compose b) = \operatorname{rs}(a, a \compose b) + \operatorname{rs}(b, a \compose b) + \emrg(a,b,a \compose b)$ twice.
+
+For the honest signal $m$: the weight of $r \compose m$ is
+\[
+\wt(r \compose m) = \operatorname{rs}(r, r \compose m) + \operatorname{rs}(m, r \compose m) + \emrg(r,m,r \compose m).
+\]
+
+For the deceptive signal $s$: the weight of $r \compose s$ is
+\[
+\wt(r \compose s) = \operatorname{rs}(r, r \compose s) + \operatorname{rs}(s, r \compose s) + \emrg(r,s,r \compose s).
+\]
+
+Subtracting gives the deception divergence.
+\end{proof}
+
+\begin{interpretation}
+The decomposition reveals three distinct channels through which deception operates:
+\begin{enumerate}
+\item \textbf{The receiver channel}: $\operatorname{rs}(r, r \compose m) - \operatorname{rs}(r, r \compose s)$ measures how differently the receiver ``sees themselves'' after processing the honest versus deceptive signal.
+\item \textbf{The signal channel}: $\operatorname{rs}(m, r \compose m) - \operatorname{rs}(s, r \compose s)$ measures how the signal itself resonates with its own interpretation.
+\item \textbf{The emergence channel}: $\emrg(r,m,r \compose m) - \emrg(r,s,r \compose s)$ measures the difference in creative surplus between the honest and deceptive compositions.
+\end{enumerate}
+
+This three-channel structure explains why deception is so hard to detect: a skilled liar can compensate for detectability in one channel by adjusting another. But the total divergence is still constrained by the emergence bound, which is why perfect deception is impossible (see Chapter~12).
+\end{interpretation}
+
+\begin{lstlisting}
+/-- SP2. THE DECEPTION DECOMPOSITION -/
+theorem deception_divergence_decomposition (m s r : I) :
+    deceptionDivergence m s r =
+    (rs r (compose r m) + rs m (compose r m) + emergence r m (compose r m)) -
+    (rs r (compose r s) + rs s (compose r s) + emergence r s (compose r s)) := by
+  unfold deceptionDivergence
+  have h1 := rs_compose_eq r m (compose r m)
+  have h2 := rs_compose_eq r s (compose r s)
+  linarith
+\end{lstlisting}
+
+\section{Honest Communication Has Zero Divergence}
+
+\begin{theorem}[Honesty Lemma]
+When the sender sends exactly what they believe ($s = m$), the deception divergence is zero:
+\[
+\Delta(m, m, r) = 0.
+\]
+\end{theorem}
+
+\begin{proof}
+Immediate: $\wt(r \compose m) - \wt(r \compose m) = 0$.
+\end{proof}
+
+\begin{remark}
+This seems trivial, but it establishes honesty as a \emph{fixed point} of the deception divergence. In classical game theory, honesty is a strategy that may or may not be incentive-compatible. Here, honesty has a distinguished algebraic property: it is the unique zero of the divergence function (holding $m$ and $r$ fixed, varying $s$).
+\end{remark}
+
+\section{The Cost of Deception in Practice}
+
+\begin{example}[Political Messaging]
+Consider a politician (sender) who believes the economy is struggling ($m$) but publicly signals that it is thriving ($s$). The voter (receiver $r$) processes the signal. By the deception decomposition, the voter's cognitive state shifts along all three channels simultaneously. The emergence channel is particularly insidious: the \emph{synergy} between the voter's existing beliefs and the deceptive signal creates a new composite belief that differs from what either honest or deceptive signaling alone would predict.
+
+This explains why political deception often ``works'' in the short term (the emergence channel can amplify the deceptive signal) but is costly in the long term (the divergence accumulates, creating cognitive dissonance in the population).
+\end{example}
+
+\section{Connection to Classical Game Theory}
+
+In Bayesian persuasion (Kamenica and Gentzkow, 2011), the sender designs a signal structure to maximize their expected payoff, subject to the receiver's Bayesian updating. The key insight is that persuasion is about choosing the \emph{information structure}, not the message.
+
+In ideatic space, this maps to choosing which idea to compose with the receiver. The deception decomposition shows that this choice has a rich three-channel structure that Bayesian models collapse into a single dimension (posterior belief). The ideatic framework reveals that persuasion operates through resonance, cross-resonance, \emph{and} emergence simultaneously --- a fundamentally richer structure than classical persuasion theory captures.
+
+The connection to Aumann's (1976) common knowledge framework is also illuminating. In Aumann's model, deception is impossible with common knowledge --- if both parties know the signal structure, the posterior must be the ``correct'' one. In ideatic space, deception operates through emergence, which is an \emph{emergent} property of the composition, not derivable from the individual ideas alone. This means that even with full knowledge of the signal structure, the emergence term introduces genuine surprise.
+
+
+% ================================================================
+\chapter{The Impossibility of Perfect Communication}
+% ================================================================
+
+\epigraph{The limits of my language mean the limits of my world.}{Ludwig Wittgenstein, \textit{Tractatus} 5.6}
+
+\section{The Naive Expectation}
+
+Perfect communication seems achievable in principle: if the sender could encode their idea precisely and the receiver could decode it perfectly, the transmitted idea would be identical to the original. In Shannon's information theory, this is exactly what happens with sufficient channel capacity.
+
+In ideatic space, perfect communication is not just difficult --- it is \emph{algebraically impossible} except in degenerate cases.
+
+\section{The Information Irreversibility Theorem}
+
+\begin{theorem}[Irreversibility of Information]
+\label{thm:irreversibility}
+For any signal $s$ and receiver $r$, the information gain is non-negative:
+\[
+\wt(r \compose s) - \wt(r) \geq 0.
+\]
+Moreover, the information gain is zero if and only if $s = \void$ (silence).
+\end{theorem}
+
+\begin{proof}
+The first part follows directly from the enrichment axiom: $\wt(r \compose s) \geq \wt(r)$.
+
+For the second part, if $s = \void$, then $r \compose \void = r$ by the right identity axiom, so $\wt(r \compose \void) - \wt(r) = 0$. Conversely, if the gain is zero, then $\wt(r \compose s) = \wt(r)$. This means the composition did not increase weight, which by enrichment means the gain from $s$ was exactly zero. However, this does \emph{not} imply $s = \void$ in general --- it implies something weaker. The full equivalence requires additional structure (see the discussion of linear ideas).
+\end{proof}
+
+\begin{paradox}[You Cannot Un-Hear]
+Every signal, regardless of its content, makes the receiver cognitively heavier. There is no ``negative information'' --- no signal that reduces the receiver's weight. Even misleading, false, or nonsensical signals add weight.
+
+This is the ideatic analog of the Second Law of Thermodynamics: cognitive entropy (measured by weight) never decreases. Just as you cannot un-scramble an egg, you cannot un-hear an idea.
+\end{paradox}
+
+\begin{lstlisting}
+/-- SP3. THE IRREVERSIBILITY THEOREM -/
+theorem infoGain_nonneg (s r : I) : infoGain s r >= 0 := by
+  unfold infoGain; linarith [compose_enriches' r s]
+
+/-- SP4. THE SILENCE PREMIUM -/
+theorem silence_zero_infoGain (r : I) : infoGain (void : I) r = 0 := by
+  unfold infoGain; rw [void_right']; ring
+\end{lstlisting}
+
+\section{The Chain Enrichment Theorem}
+
+\begin{theorem}[Chains Never Lose Information]
+\label{thm:chain-enrichment}
+In a signaling chain $s \to m \to r$ (where $s$ is sent to intermediary $m$, who relays to receiver $r$), the receiver's final cognitive weight is at least their initial weight:
+\[
+\wt((r \compose m) \compose s) \geq \wt(r).
+\]
+\end{theorem}
+
+\begin{proof}
+We apply enrichment twice:
+\begin{align*}
+\wt((r \compose m) \compose s) &\geq \wt(r \compose m) && \text{(enrichment with } s\text{)} \\
+&\geq \wt(r) && \text{(enrichment with } m\text{)}.
+\end{align*}
+Chaining these inequalities gives the result.
+\end{proof}
+
+\begin{paradox}[The Telephone Game Paradox]
+In the children's game ``Telephone,'' a message is whispered from person to person, and the final message is often hilariously different from the original. The naive expectation is that information \emph{degrades} through intermediaries.
+
+In ideatic space, the opposite is true: each intermediary adds weight. The message changes --- the emergence term at each step introduces non-additive surprise --- but the cognitive complexity of the message can only grow. The ``degradation'' in the telephone game is not a loss of information but a \emph{transformation}: emergence replaces the original structure with new structure, and the total weight monotonically increases.
+
+This explains why rumors often become more elaborate as they spread, why conspiracy theories grow more complex over time, and why mythologies accrete detail across generations.
+\end{paradox}
+
+\section{The Double-Hearing Paradox}
+
+\begin{theorem}[Repetition Always Enriches]
+\label{thm:double-hearing}
+Hearing a signal twice always produces at least as much cognitive weight as hearing it once:
+\[
+\wt((r \compose s) \compose s) \geq \wt(r \compose s) \geq \wt(r).
+\]
+\end{theorem}
+
+\begin{proof}
+Both inequalities follow directly from the enrichment axiom.
+\end{proof}
+
+\begin{interpretation}
+This theorem explains why repetition is effective in persuasion, advertising, and education. Even when the content is identical, each repetition adds weight through the self-emergence $\emrg(r \compose s, s, (r \compose s) \compose s)$. The repeated signal interacts with the \emph{already-modified} receiver, producing new emergent effects.
+
+In advertising, this is the ``mere exposure effect'': repeated exposure to a brand increases preference, even without new information. In ideatic space, this is not a psychological bias but a mathematical necessity.
+\end{interpretation}
+
+\section{Connection to Shannon's Theory}
+
+Shannon's information theory measures information in bits --- the reduction in uncertainty about the source. A perfectly compressed message carries exactly as much information as the source entropy.
+
+Ideatic information theory measures information in \emph{weight} --- the increase in the receiver's self-resonance. This is a fundamentally different quantity. In Shannon's theory, redundant messages carry zero additional information. In ideatic theory, redundant messages carry positive weight gain (by the Double-Hearing Paradox). This is because ideatic information is not about uncertainty reduction but about \emph{cognitive enrichment}: the interaction between new and existing ideas creates emergence, even when the ``new'' idea is a repetition.
+
+The connection to Harsanyi's (1967--68) theory of games with incomplete information is also revealing. Harsanyi models uncertainty through type spaces, where each player has a probability distribution over the other players' types. In ideatic space, ``types'' correspond to ideas, and the type space is the ideatic space itself. But unlike Harsanyi's model, ideatic types are \emph{compositional}: two types can be composed to form a new type, and this composition is enriching. This means that learning about another player's type (by hearing their signal) always increases your cognitive weight --- a much stronger conclusion than anything in Harsanyi's framework.
+
+
+% ================================================================
+\chapter{Coalition Paradoxes: When Adding Members Hurts}
+% ================================================================
+
+\epigraph{In union there is strength.}{Aesop}
+
+\section{The Naive Expectation}
+
+In cooperative game theory, a coalition's value is determined by a \emph{characteristic function} $v: 2^N \to \mathbb{R}$ that assigns a real number to each subset of players. The key question is whether the game is \emph{superadditive}: $v(S \cup T) \geq v(S) + v(T)$ for disjoint $S, T$.
+
+Many real-world games are \emph{not} superadditive. Adding a new member to a committee can reduce its effectiveness (too many cooks). Adding a new firm to a cartel can reduce total profit (increased coordination costs). Adding a new lane to a highway can increase travel time (Braess's paradox).
+
+The naive expectation for ideatic space: surely some compositions reduce value? After all, conflicting ideas should cancel out.
+
+The reality: in ideatic space, coalitions are \emph{always} superadditive in weight. Adding a member \emph{never} reduces total coalition weight.
+
+\section{The Total Cooperation Surplus}
+
+\begin{definition}[Total Cooperation Surplus]
+The total surplus of a two-person coalition $(a, b)$ is:
+\[
+\Sigma(a,b) = S(a,b) + S(b,a),
+\]
+where $S(a,b) = \wt(a \compose b) - \wt(a)$ is the cooperation surplus from $a$'s perspective.
+\end{definition}
+
+\begin{theorem}[Total Surplus Is Non-Negative and Symmetric]
+\label{thm:total-surplus}
+For any ideas $a, b$:
+\begin{enumerate}
+\item $\Sigma(a,b) = \Sigma(b,a)$ \quad (symmetry).
+\item $\Sigma(a,b) \geq 0$ \quad (non-negativity).
+\item $\Sigma(a,b) = \wt(a \compose b) + \wt(b \compose a) - \wt(a) - \wt(b)$ \quad (explicit formula).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) follows from the commutativity of addition: $S(a,b) + S(b,a) = S(b,a) + S(a,b)$.
+
+(2) follows from enrichment: $S(a,b) \geq 0$ and $S(b,a) \geq 0$, so their sum is non-negative.
+
+(3) is a direct expansion of the definitions.
+\end{proof}
+
+\begin{lstlisting}
+/-- CP2. TOTAL SURPLUS IS SYMMETRIC -/
+theorem totalCoopSurplus_symm (a b : I) :
+    totalCoopSurplus a b = totalCoopSurplus b a := by
+  unfold totalCoopSurplus; ring
+
+/-- CP3. TOTAL SURPLUS IS NON-NEGATIVE -/
+theorem totalCoopSurplus_nonneg (a b : I) :
+    totalCoopSurplus a b >= 0 := by
+  unfold totalCoopSurplus
+  have h1 := cooperationSurplus_nonneg a b
+  have h2 := cooperationSurplus_nonneg b a
+  linarith
+\end{lstlisting}
+
+\section{The Enrichment Chain}
+
+\begin{theorem}[Monotone Coalition Growth]
+\label{thm:enrichment-chain}
+For any three ideas $a, b, c$:
+\[
+\wt(a) \leq \wt(a \compose b) \leq \wt((a \compose b) \compose c).
+\]
+Adding members to a coalition can \emph{never} decrease total weight.
+\end{theorem}
+
+\begin{proof}
+Both inequalities follow from the enrichment axiom:
+\begin{itemize}
+\item $\wt(a \compose b) \geq \wt(a)$: composition with $b$ enriches.
+\item $\wt((a \compose b) \compose c) \geq \wt(a \compose b)$: composition with $c$ enriches.
+\end{itemize}
+\end{proof}
+
+\begin{paradox}[The Impossible Tragedy of the Commons]
+In Hardin's (1968) tragedy of the commons, adding users to a shared resource degrades it for everyone. Each additional cow on the commons reduces the grass available to all.
+
+In ideatic space, there is no tragedy of the commons --- at least not in weight terms. Every addition enriches. The ``commons'' (the composed idea) grows heavier with every new participant, never lighter.
+
+But --- and this is the subtle twist --- the \emph{distribution} of surplus can be highly asymmetric. The total pie always grows, but individual slices can shrink in relative terms. This is the ideatic version of the ``inequality paradox'': growth without equity.
+\end{paradox}
+
+\section{The Void Free Rider Theorem}
+
+\begin{theorem}[The Perfect Free Rider]
+\label{thm:void-free-rider}
+When one coalition member is void:
+\begin{enumerate}
+\item $S(a, \void) = 0$: the non-void member gains nothing from the free rider.
+\item $S(\void, a) = \wt(a)$: the free rider gains the \emph{entire} coalition value.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) By right identity: $a \compose \void = a$, so $\wt(a \compose \void) = \wt(a)$, giving surplus $0$.
+
+(2) By left identity: $\void \compose a = a$, so $\wt(\void \compose a) = \wt(a)$. The void's individual weight is $\wt(\void) = 0$ (by the void resonance axiom). Thus the surplus is $\wt(a) - 0 = \wt(a)$.
+\end{proof}
+
+\begin{interpretation}
+The void idea is the perfect free rider: it contributes nothing (surplus from $a$'s perspective is zero) but captures the entire value of the coalition. This formalizes the intuition that silence can be exploitative --- by saying nothing, the silent party forces the other to ``do all the work'' of creating meaning, while benefiting from the resulting composition.
+
+This connects to Olson's (1965) theory of collective action: in large groups, the incentive to free-ride increases because each individual's contribution is small relative to the total. In ideatic space, void is the limiting case: zero contribution, full benefit.
+\end{interpretation}
+
+\section{The Surplus Asymmetry}
+
+\begin{theorem}[Surplus Asymmetry Is Antisymmetric]
+\label{thm:surplus-asymmetry}
+The surplus asymmetry $A(a,b) = S(a,b) - S(b,a)$ satisfies $A(a,b) = -A(b,a)$.
+\end{theorem}
+
+\begin{proof}
+Direct computation: $A(a,b) = S(a,b) - S(b,a) = -(S(b,a) - S(a,b)) = -A(b,a)$.
+\end{proof}
+
+\begin{remark}
+This theorem says that the unfairness of cooperation is a zero-sum game in itself. Whatever advantage one party gains from the order of composition, the other party loses by exactly the same amount. There is no ``win-win'' in the distribution of surplus --- only in the creation of surplus.
+
+This connects to Nash's (1950) bargaining solution, where the bargaining problem is to divide a surplus that both parties have created. Nash showed that the unique solution satisfying certain axioms divides the surplus in proportion to the players' disagreement points. In ideatic space, the ``disagreement point'' is the individual weight $\wt(a)$, and the surplus is always non-negative. But unlike Nash's model, the surplus depends on the \emph{order} of composition, introducing an asymmetry that Nash's symmetric framework cannot capture.
+\end{remark}
+
+
+% ================================================================
+\chapter{The Non-Commutativity of Negotiation}
+% ================================================================
+
+\epigraph{In any negotiation, the one who cares less has more power.}{Anonymous}
+
+\section{The Naive Expectation}
+
+In classical game theory, simultaneous-move games and sequential-move games are analyzed with different solution concepts (Nash equilibrium vs.\ subgame-perfect equilibrium), but the \emph{total value} of the game is often independent of the order of play. In many settings, the Coase theorem (1960) suggests that the initial allocation of rights doesn't matter for efficiency --- parties will negotiate to the efficient outcome regardless.
+
+In ideatic space, the order of negotiation \emph{fundamentally} changes the outcome. Composition is not commutative, and this non-commutativity has deep strategic consequences.
+
+\section{The Negotiation Asymmetry}
+
+\begin{definition}[Negotiation Asymmetry]
+The negotiation asymmetry between $a$ and $b$ is:
+\[
+N(a,b) = \wt(a \compose b) - \wt(b \compose a).
+\]
+\end{definition}
+
+\begin{theorem}[Negotiation Antisymmetry]
+\label{thm:negotiation-antisymm}
+For all $a, b$: $N(a,b) = -N(b,a)$.
+\end{theorem}
+
+\begin{proof}
+$N(a,b) = \wt(a \compose b) - \wt(b \compose a) = -(\wt(b \compose a) - \wt(a \compose b)) = -N(b,a)$.
+\end{proof}
+
+\begin{paradox}[The Perfect Zero-Sum Structure]
+The negotiation asymmetry is \emph{perfectly} zero-sum: whatever advantage one party gains from going first, the other party loses by exactly the same amount. This is true for \emph{every} pair of ideas, not just those in explicit competition.
+
+This is counter-intuitive because you'd expect some negotiations to be ``more symmetric'' than others in the sense that both parties benefit from a particular ordering. But the antisymmetry theorem says the structural advantage is always perfectly antisymmetric --- even when both orderings create value (which they always do, by enrichment).
+\end{paradox}
+
+\begin{lstlisting}
+/-- DP1. NEGOTIATION ANTISYMMETRY -/
+theorem negotiation_antisymm (a b : I) :
+    negotiationAsym a b = -(negotiationAsym b a) := by
+  unfold negotiationAsym; ring
+\end{lstlisting}
+
+\section{The Total Negotiation Value Bound}
+
+\begin{theorem}[Negotiation Always Creates Value]
+\label{thm:total-negotiation}
+The total negotiation value always exceeds the sum of individual weights:
+\[
+\wt(a \compose b) + \wt(b \compose a) \geq \wt(a) + \wt(b).
+\]
+\end{theorem}
+
+\begin{proof}
+By enrichment: $\wt(a \compose b) \geq \wt(a)$ and $\wt(b \compose a) \geq \wt(b)$. Adding these two inequalities gives the result.
+\end{proof}
+
+\begin{interpretation}
+Even adversarial negotiations create net value. The total weight from both possible orderings always exceeds the sum of what the parties bring individually. This means that \emph{negotiation itself} is productive, regardless of the outcome.
+
+This connects to Myerson and Satterthwaite's (1983) impossibility theorem, which shows that efficient bilateral trade is impossible under asymmetric information. In ideatic space, ``efficient trade'' (in weight terms) is not just possible but \emph{guaranteed}: every composition enriches. The Myerson-Satterthwaite impossibility is about information rents, not about value creation. In ideatic space, value is always created; the question is how it is distributed.
+\end{interpretation}
+
+\section{Commutativity Implies Fairness}
+
+\begin{theorem}[Commutativity Equals Fairness]
+\label{thm:comm-fair}
+If $a \compose b = b \compose a$, then $N(a,b) = 0$.
+\end{theorem}
+
+\begin{proof}
+If $a \compose b = b \compose a$, then $\wt(a \compose b) = \wt(b \compose a)$, so $N(a,b) = 0$.
+\end{proof}
+
+\begin{corollary}
+Fairness (zero negotiation asymmetry) is equivalent to commutativity of the specific composition. This means that ``fair'' negotiations are exactly those where the order of composition doesn't matter --- where the ideas combine symmetrically.
+\end{corollary}
+
+\begin{remark}
+This is a startling connection between algebra and ethics. Commutativity --- a purely structural property of the monoid operation --- is equivalent to fairness --- a normative property of the negotiation outcome. In philosophical terms, this suggests that fairness is not an extrinsic value imposed on negotiations but an intrinsic property of certain algebraic structures.
+\end{remark}
+
+\section{The First-Mover Premium Decomposition}
+
+\begin{theorem}[The First-Mover Premium]
+\label{thm:first-mover}
+The first-mover premium $P(a,b) = [\wt(a \compose b) - \wt(a)] - [\wt(b \compose a) - \wt(b)]$ decomposes as:
+\[
+P(a,b) = N(a,b) + (\wt(b) - \wt(a)).
+\]
+\end{theorem}
+
+\begin{proof}
+Expand:
+\begin{align*}
+P(a,b) &= \wt(a \compose b) - \wt(a) - \wt(b \compose a) + \wt(b) \\
+&= [\wt(a \compose b) - \wt(b \compose a)] + [\wt(b) - \wt(a)] \\
+&= N(a,b) + (\wt(b) - \wt(a)).
+\end{align*}
+\end{proof}
+
+\begin{paradox}[The Paradox of the Weak First Mover]
+The first-mover premium has \emph{two} components: the negotiation asymmetry $N(a,b)$ and the weight differential $\wt(b) - \wt(a)$. Even when the negotiation asymmetry is zero (fair composition), the first-mover premium can be positive if the second mover is heavier than the first.
+
+This means that in a ``fair'' negotiation (commutative composition), the \emph{lighter} party benefits more from going first. The weak benefit from the first-mover advantage more than the strong do.
+
+This inverts the usual intuition. In most negotiation settings, the stronger party benefits from going first (they set the anchor, frame the discussion). In ideatic space, when composition commutes, the weaker party gains more from the structural advantage of going first, because the weight differential contributes positively to their premium.
+\end{paradox}
+
+\begin{lstlisting}
+/-- DP9. THE FIRST-MOVER PREMIUM DECOMPOSITION -/
+theorem fmPremium_decomposition (a b : I) :
+    fmPremium a b = negotiationAsym a b + (rs b b - rs a a) := by
+  unfold fmPremium weightSurplus negotiationAsym; ring
+\end{lstlisting}
+
+
+% ================================================================
+\chapter{Emergence in Zero-Sum Games: Something From Nothing}
+% ================================================================
+
+\epigraph{The whole is greater than the sum of its parts.}{Aristotle (attributed)}
+
+\section{The Naive Expectation}
+
+Zero-sum games are the paradigmatic case of pure competition: one player's gain is another's loss. Von Neumann's minimax theorem (1928) guarantees the existence of optimal strategies in such games, and the total payoff is always zero.
+
+In ideatic space, something extraordinary happens: even when the \emph{resonance} between two ideas is zero (they are orthogonal), their composition still creates positive weight. \emph{Something emerges from nothing.}
+
+\section{The Zero-Sum Emergence Paradox}
+
+\begin{theorem}[Commutative Emergence Symmetry]
+\label{thm:zero-sum-emergence}
+If $a \compose b = b \compose a$ (composition commutes), then:
+\[
+\emrg(a,b,c) = \emrg(b,a,c) \quad \text{for all } c.
+\]
+Emergence is symmetric when composition commutes. But it need NOT be zero.
+\end{theorem}
+
+\begin{proof}
+By definition, $\emrg(a,b,c) = \operatorname{rs}(a \compose b, c) - \operatorname{rs}(a,c) - \operatorname{rs}(b,c)$. If $a \compose b = b \compose a$, then
+\[
+\emrg(a,b,c) = \operatorname{rs}(a \compose b, c) - \operatorname{rs}(a,c) - \operatorname{rs}(b,c) = \operatorname{rs}(b \compose a, c) - \operatorname{rs}(a,c) - \operatorname{rs}(b,c) = \emrg(b,a,c).
+\]
+But this says nothing about whether $\emrg(a,b,c)$ is zero --- only that it equals $\emrg(b,a,c)$.
+\end{proof}
+
+\begin{paradox}[Something From Nothing]
+When $a \compose b = b \compose a$, the composition is ``symmetric'' --- neither party has an ordering advantage. You might expect this to mean the composition is ``boring'' --- purely additive, with no emergence.
+
+But emergence can be nonzero even for commutative compositions! The composition $a \compose b$ can resonate with observer $c$ in ways that $a$ and $b$ individually do not, even when the order doesn't matter.
+
+This is the ideatic analog of constructive interference in physics: two waves can combine to produce an amplitude greater than either alone, even when neither wave ``knows'' about the other.
+\end{paradox}
+
+\section{Self-Composition Always Enriches}
+
+\begin{theorem}[Echo Chamber Effect]
+For any idea $a$:
+\[
+\wt(a \compose a) \geq \wt(a).
+\]
+\end{theorem}
+
+\begin{proof}
+Direct application of the enrichment axiom with $b = a$.
+\end{proof}
+
+\begin{interpretation}
+Repeating an idea to yourself always increases your cognitive weight. The ``echo chamber effect'' is not a social phenomenon but a mathematical theorem. Self-reinforcement is algebraically guaranteed.
+
+This connects to Sunstein's (2001) work on group polarization: when like-minded individuals discuss an issue, they tend to move toward a more extreme position. In ideatic space, this is a consequence of self-composition enrichment: composing similar ideas always increases weight, driving the group toward heavier (more extreme) positions.
+\end{interpretation}
+
+\section{The Attribution Conservation Law}
+
+\begin{theorem}[Attribution Is Inflationary]
+\label{thm:attribution-conservation}
+The sum of marginal contributions in both orderings equals:
+\[
+M(a,b,c) + M(b,a,c) = \operatorname{rs}(a \compose b, c) + \emrg(b,a,c),
+\]
+where $M(a,b,c) = \operatorname{rs}(a \compose b, c) - \operatorname{rs}(b, c)$ is $a$'s marginal contribution to the pair $(a,b)$ as seen by $c$.
+\end{theorem}
+
+\begin{proof}
+Expand both marginal contributions:
+\begin{align*}
+M(a,b,c) + M(b,a,c) &= [\operatorname{rs}(a \compose b, c) - \operatorname{rs}(b,c)] + [\operatorname{rs}(b \compose a, c) - \operatorname{rs}(a,c)] \\
+&= \operatorname{rs}(a \compose b, c) + \operatorname{rs}(b \compose a, c) - \operatorname{rs}(a,c) - \operatorname{rs}(b,c) \\
+&= \operatorname{rs}(a \compose b, c) + [\operatorname{rs}(b \compose a, c) - \operatorname{rs}(b,c) - \operatorname{rs}(a,c)] \\
+&= \operatorname{rs}(a \compose b, c) + \emrg(b,a,c).
+\end{align*}
+\end{proof}
+
+\begin{paradox}[The Impossibility of Fair Attribution]
+The sum of marginal contributions does NOT equal the total value $\operatorname{rs}(a \compose b, c)$ --- it exceeds it by $\emrg(b,a,c)$. This means that if you try to assign credit based on marginal contributions (as Shapley values do), you will \emph{over-allocate}: the sum of credits exceeds the total value.
+
+This is the ideatic impossibility of fair attribution. In cooperative game theory, the Shapley value provides a unique ``fair'' allocation under certain axioms. In ideatic space, no such allocation exists whenever emergence is nonzero --- the credit pie is always bigger than the value pie.
+
+The over-allocation equals exactly the emergence in the reverse order: $\emrg(b,a,c)$. This is the ``double-counting'' of credit that arises because both $a$ and $b$ claim credit for the emergent surplus, but emergence belongs to neither.
+\end{paradox}

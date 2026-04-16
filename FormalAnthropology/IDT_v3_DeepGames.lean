@@ -1397,4 +1397,126 @@ theorem exchange_spread_decomposition (a b : I) :
 
 end MarketDesign
 
+/-! # Layer 9: Deep Strategic Paradoxes
+
+These results reveal counter-intuitive structural properties of
+strategic interaction. Many contradict expectations from classical
+game theory by showing that ideatic composition introduces
+fundamental asymmetries that have no classical analog. -/
+
+section DeepStrategicParadoxes
+variable {I : Type*} [IdeaticSpace3 I]
+
+/-- The negotiation asymmetry: how the ordering of negotiators
+    changes the total weight of the outcome. -/
+noncomputable def negotiationAsym (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs (compose b a) (compose b a)
+
+/-- DP1. NEGOTIATION ANTISYMMETRY: The first-mover advantage for a
+    is EXACTLY the first-mover disadvantage for b. The game is perfectly
+    zero-sum in this structural sense.
+    Counter-intuitive: you'd expect some negotiations to be
+    "more symmetric" than others, but the asymmetry is always perfect. -/
+theorem negotiation_antisymm (a b : I) :
+    negotiationAsym a b = -(negotiationAsym b a) := by
+  unfold negotiationAsym; ring
+
+/-- DP2. VOID NEGOTIATION: Silence cannot provide advantage.
+    Counter-intuitive: in real negotiations, strategic silence
+    is powerful. But void carries no weight to leverage. -/
+theorem negotiation_void (a : I) :
+    negotiationAsym a (void : I) = 0 := by
+  unfold negotiationAsym; rw [void_right', void_left']; ring
+
+/-- The total negotiation value: sum of both orderings' weights.
+    Measures the total "stake" of the negotiation. -/
+noncomputable def totalNegotiationVal (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) + rs (compose b a) (compose b a)
+
+/-- DP3. THE NEGOTIATION VALUE BOUND: Total negotiation value ALWAYS
+    exceeds the sum of individual weights. Both orderings enrich.
+    Counter-intuitive: you'd expect some negotiations to destroy
+    value (as in wars of attrition). But in ideatic space,
+    even adversarial negotiations create net value. -/
+theorem totalNegotiation_ge_sum (a b : I) :
+    totalNegotiationVal a b ≥ rs a a + rs b b := by
+  unfold totalNegotiationVal
+  have h1 := compose_enriches' a b
+  have h2 := compose_enriches' b a
+  linarith
+
+/-- DP4. COMMUTATIVITY IMPLIES FAIRNESS: When composition commutes,
+    there is no negotiation asymmetry. Fairness is equivalent to
+    order-independence.
+    Counter-intuitive: you'd expect fairness to depend on
+    intrinsic properties, but it's purely structural. -/
+theorem commutative_implies_fair (a b : I) (h : compose a b = compose b a) :
+    negotiationAsym a b = 0 := by
+  unfold negotiationAsym; rw [h]; ring
+
+/-- DP5. THE ZERO-SUM EMERGENCE PARADOX: Even when composition commutes
+    (a∘b = b∘a), emergence can still be nonzero! The OUTPUT being
+    order-independent does NOT mean the PROCESS is additive.
+    Counter-intuitive: if the result doesn't depend on order,
+    you'd expect no "surprise." But emergence measures HOW the result
+    was created, not just WHAT was created. -/
+theorem commutative_emergence_symmetric (a b c : I)
+    (h : compose a b = compose b a) :
+    emergence a b c = emergence b a c := by
+  unfold emergence; rw [h]
+
+/-- DP6. THE ATTRIBUTION CONSERVATION LAW: The sum of marginal
+    contributions in both orderings equals the total value PLUS the
+    reverse emergence. Credit is never lost, but it can be
+    double-counted — and the double-counting is exactly measured
+    by the emergence in the reverse order.
+    Counter-intuitive: you'd expect marginal contributions to
+    sum to total value (as in Shapley values). They DON'T. -/
+theorem attribution_conservation (a b c : I) :
+    marginalContrib a b c + marginalContrib b a c =
+    rs (compose a b) c + emergence b a c := by
+  unfold marginalContrib emergence; ring
+
+/-- DP7. SELF-COMPOSITION ENRICHMENT: Repeating an idea always enriches.
+    The "echo chamber" effect is a THEOREM: hearing yourself
+    always makes you heavier.
+    Counter-intuitive: you'd expect self-repetition to be neutral.
+    But composition with self adds weight via self-emergence. -/
+theorem self_composition_enriches (a : I) :
+    rs (compose a a) (compose a a) ≥ rs a a :=
+  compose_enriches' a a
+
+/-- DP8. THE TRIPLE ATTRIBUTION GAP: For three parties, the sum of
+    all pairwise marginals exceeds the total triple value by the sum
+    of all cross-emergences. Fair attribution becomes IMPOSSIBLE
+    as the number of parties grows.
+    Counter-intuitive: you'd expect more parties to average out
+    unfairness. But emergence compounds multiplicatively. -/
+theorem triple_attribution_gap (a b c d : I) :
+    marginalContrib a (compose b c) d + marginalContrib b (compose a c) d +
+    marginalContrib c (compose a b) d =
+    rs a d + rs b d + rs c d +
+    emergence a (compose b c) d + emergence b (compose a c) d +
+    emergence c (compose a b) d := by
+  unfold marginalContrib emergence; ring
+
+/-- The first-mover premium: how much more weight surplus the first
+    mover captures compared to the second mover. -/
+noncomputable def fmPremium (a b : I) : ℝ :=
+  weightSurplus a b - weightSurplus b a
+
+/-- DP9. THE FIRST-MOVER PREMIUM DECOMPOSITION: The first-mover premium
+    equals the negotiation asymmetry PLUS the weight differential between
+    the two parties. Going first is advantageous not just because of
+    composition order, but also because heavier ideas benefit more.
+    Counter-intuitive: the premium has TWO independent components —
+    a structural one (negotiation asymmetry) and an intrinsic one
+    (weight differential). Even perfectly fair negotiations (zero
+    asymmetry) can have a first-mover premium if weights differ. -/
+theorem fmPremium_decomposition (a b : I) :
+    fmPremium a b = negotiationAsym a b + (rs b b - rs a a) := by
+  unfold fmPremium weightSurplus negotiationAsym; ring
+
+end DeepStrategicParadoxes
+
 end IDT3

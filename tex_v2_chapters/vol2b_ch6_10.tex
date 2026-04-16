@@ -1,0 +1,470 @@
+% ================================================================
+% Volume II-B, Chapters 6--10
+% The Paradoxes of Cooperation and Competition
+% ================================================================
+
+% ================================================================
+\chapter{The Braess Paradox of Ideas: When More Knowledge Hurts}
+% ================================================================
+
+\epigraph{Knowledge is power. Knowledge shared is power multiplied.}{Robert Noyce}
+
+\section{The Naive Expectation}
+
+Braess's paradox (1968) is the classic result that adding a road to a traffic network can increase total travel time. It arises because selfish routing leads to a worse equilibrium when more options are available.
+
+For ideas, the naive expectation is similar: surely, giving someone \emph{more} information should always help, or at worst be neutral? After all, a rational agent can always ignore new information.
+
+In ideatic space, you \emph{cannot} ignore new information. Composition is irreversible. And this leads to a striking analog of Braess's paradox.
+
+\section{The Order Information Asymmetry}
+
+\begin{theorem}[The Framing Effect Theorem]
+\label{thm:framing-effect}
+The difference between hearing $s_1$ then $s_2$ versus $s_2$ then $s_1$ is:
+\begin{align*}
+\operatorname{rs}((r \compose s_1) &\compose s_2, c) - \operatorname{rs}((r \compose s_2) \compose s_1, c) \\
+&= [\emrg(r, s_1, c) + \emrg(r \compose s_1, s_2, c)] \\
+&\quad - [\emrg(r, s_2, c) + \emrg(r \compose s_2, s_1, c)].
+\end{align*}
+\end{theorem}
+
+\begin{proof}
+Apply the decomposition identity $\operatorname{rs}(a \compose b, c) = \operatorname{rs}(a,c) + \operatorname{rs}(b,c) + \emrg(a,b,c)$ four times:
+
+For $\operatorname{rs}((r \compose s_1) \compose s_2, c)$:
+\begin{align*}
+&= \operatorname{rs}(r \compose s_1, c) + \operatorname{rs}(s_2, c) + \emrg(r \compose s_1, s_2, c) \\
+&= [\operatorname{rs}(r, c) + \operatorname{rs}(s_1, c) + \emrg(r, s_1, c)] + \operatorname{rs}(s_2, c) + \emrg(r \compose s_1, s_2, c).
+\end{align*}
+
+Similarly for $\operatorname{rs}((r \compose s_2) \compose s_1, c)$:
+\begin{align*}
+&= \operatorname{rs}(r, c) + \operatorname{rs}(s_2, c) + \emrg(r, s_2, c) + \operatorname{rs}(s_1, c) + \emrg(r \compose s_2, s_1, c).
+\end{align*}
+
+Subtracting, the $\operatorname{rs}(r,c)$, $\operatorname{rs}(s_1,c)$, and $\operatorname{rs}(s_2,c)$ terms cancel, leaving the emergence chain differential.
+\end{proof}
+
+\begin{lstlisting}
+/-- SP9. THE FRAMING EFFECT THEOREM -/
+theorem framing_effect_theorem (s1 s2 r c : I) :
+    rs (compose (compose r s1) s2) c -
+    rs (compose (compose r s2) s1) c =
+    (emergence r s1 c + emergence (compose r s1) s2 c) -
+    (emergence r s2 c + emergence (compose r s2) s1 c) := by
+  have h1 := rs_compose_eq r s1 c
+  have h2 := rs_compose_eq (compose r s1) s2 c
+  have h3 := rs_compose_eq r s2 c
+  have h4 := rs_compose_eq (compose r s2) s1 c
+  linarith
+\end{lstlisting}
+
+\begin{paradox}[The Braess Paradox of Ideas]
+While both orderings of two signals \emph{both} enrich the receiver (by the Dual Order Enrichment theorem), they may enrich to \emph{different} levels. One ordering might produce significantly more weight than the other.
+
+This means that the \emph{order} in which you learn things matters as much as \emph{what} you learn. In educational settings, presenting concepts in the ``wrong'' order can produce a less enriched cognitive state than the optimal order, even though both orders present the same material.
+
+This is Braess's paradox for ideas: the ``route'' through information space (which idea you encounter first) affects the final destination, and some routes are strictly worse than others --- even though all routes increase total weight.
+\end{paradox}
+
+\section{The Dual Order Enrichment}
+
+\begin{theorem}[Both Orders Enrich]
+\label{thm:dual-enrichment}
+For any signals $s_1, s_2$ and receiver $r$:
+\begin{enumerate}
+\item $\wt((r \compose s_1) \compose s_2) \geq \wt(r)$.
+\item $\wt((r \compose s_2) \compose s_1) \geq \wt(r)$.
+\end{enumerate}
+Both orderings enrich the receiver, even though they may enrich to different levels.
+\end{theorem}
+
+\begin{proof}
+For (1): $\wt((r \compose s_1) \compose s_2) \geq \wt(r \compose s_1) \geq \wt(r)$ by two applications of enrichment.
+
+(2) is symmetric: $\wt((r \compose s_2) \compose s_1) \geq \wt(r \compose s_2) \geq \wt(r)$.
+\end{proof}
+
+\begin{interpretation}
+This is the ``silver lining'' of the Braess paradox: while some orderings are better than others, NO ordering is worse than not hearing the information at all. Every path through information space leads to enrichment. You can choose suboptimally, but you cannot choose destructively.
+
+This connects to the ``no regret'' framework in online learning (Hannan, 1957; Blackwell, 1956): an algorithm that ensures bounded regret can learn from any sequence of information without being ``hurt'' by adversarial ordering. In ideatic space, regret is bounded by construction --- the enrichment axiom guarantees it.
+\end{interpretation}
+
+\section{Connection to Selten's Subgame Perfection}
+
+Selten's (1965) concept of subgame-perfect equilibrium refines Nash equilibrium for sequential games by requiring that strategies be optimal at every point in the game tree, not just at the beginning. The key insight is that sequential structure matters: a player who moves later has different information than one who moves earlier.
+
+In ideatic space, the sequential structure is captured by the composition order. The Framing Effect Theorem shows that the emergence chain --- the sequence of creative surpluses at each step --- determines the final outcome. Selten's subgame perfection corresponds to choosing the composition order that maximizes one's emergence at each step. But unlike classical subgame perfection, both orderings are always enriching --- there is no ``threat'' that is not credible, because every composition enriches.
+
+
+% ================================================================
+\chapter{Fixed Points of Strategic Composition}
+% ================================================================
+
+\epigraph{Give me a place to stand, and I shall move the Earth.}{Archimedes}
+
+\section{The Naive Expectation}
+
+Fixed-point theorems are among the most powerful tools in game theory. Brouwer's fixed-point theorem guarantees the existence of Nash equilibria in finite games. Kakutani's fixed-point theorem extends this to mixed strategies. Tarski's fixed-point theorem applies to lattices.
+
+The naive expectation: ideatic spaces should have fixed points of composition, and these should correspond to equilibria. But the actual fixed-point structure is richer and stranger than expected.
+
+\section{Void as the Universal Fixed Point}
+
+\begin{theorem}[Void Is a Fixed Point]
+\label{thm:void-fixed-point}
+The void idea is a fixed point of composition with anything:
+\[
+\void \compose a = a = a \compose \void \quad \text{for all } a.
+\]
+\end{theorem}
+
+\begin{proof}
+This is the left and right identity axioms.
+\end{proof}
+
+\begin{interpretation}
+Void is not just ``silence'' --- it is the \emph{identity element} of the compositional monoid. In game-theoretic terms, ``doing nothing'' is always a fixed point. This connects to the result from Volume~II that void is always a Nash equilibrium: $(void, void)$ is an equilibrium because silence is always a best response to silence.
+
+But void is a degenerate fixed point --- it represents the absence of interaction. The interesting question is whether there are \emph{non-trivial} fixed points.
+\end{interpretation}
+
+\section{The Weight Ratchet and Convergence}
+
+\begin{theorem}[The Weight Ratchet]
+\label{thm:weight-ratchet}
+For any idea $a$, the sequence $\wt(a), \wt(a \compose a), \wt((a \compose a) \compose a), \ldots$ is non-decreasing:
+\[
+\wt(\compN{a}{n+1}) \geq \wt(\compN{a}{n}) \quad \text{for all } n.
+\]
+\end{theorem}
+
+\begin{proof}
+$\compN{a}{n+1} = \compN{a}{n} \compose a$, so $\wt(\compN{a}{n+1}) \geq \wt(\compN{a}{n})$ by enrichment.
+\end{proof}
+
+\begin{paradox}[The Ratchet Cannot Be Reversed]
+Once you compose with an idea, your weight can never return to its previous level through further composition. There is no ``inverse'' of an idea in the weight sense. The ratchet only goes one way.
+
+This means that in any strategic interaction modeled as iterated composition, \emph{commitment is irreversible}. A player who has composed with $a$ cannot ``undo'' this composition --- they can only compose further. This formalizes the game-theoretic concept of sunk costs: investments in ideas are permanent.
+\end{paradox}
+
+\section{Step Emergence and Telescoping}
+
+\begin{theorem}[Weight Telescoping]
+\label{thm:telescoping}
+The weight of $\compN{a}{n+1}$ equals the sum of step emergences:
+\[
+\wt(\compN{a}{n+1}) = \sum_{i=0}^{n} \left[\wt(\compN{a}{i+1}) - \wt(\compN{a}{i})\right],
+\]
+where each step emergence $\Delta_i = \wt(\compN{a}{i+1}) - \wt(\compN{a}{i}) \geq 0$.
+\end{theorem}
+
+\begin{proof}
+This is a telescoping sum: the intermediate terms cancel, and we use $\wt(\compN{a}{0}) = \wt(\void) = 0$.
+\end{proof}
+
+\begin{interpretation}
+Weight is \emph{cumulative}: it is the sum of all the ``surprises'' (step emergences) from each iteration. This means that the total cognitive weight of an idea after $n$ repetitions is exactly the accumulated creativity from each step.
+
+In economic terms, this is like compound interest, except the ``interest rate'' (step emergence) can vary from step to step and is always non-negative. The weight grows, but the growth rate is not constant.
+\end{interpretation}
+
+
+% ================================================================
+\chapter{The Information Bound: Fundamental Limits on Signaling}
+% ================================================================
+
+\epigraph{Information is the resolution of uncertainty.}{Claude Shannon}
+
+\section{The Naive Expectation}
+
+Shannon's channel capacity theorem says that every communication channel has a maximum rate at which information can be reliably transmitted. Beyond this rate, errors become inevitable.
+
+In ideatic space, there is an analogous fundamental bound: the emergence bound, which limits how much ``surprise'' a signal can produce.
+
+\section{The Fundamental Manipulation Bound}
+
+\begin{theorem}[The Manipulation Bound]
+\label{thm:manipulation-bound}
+For any signal $s$ and receiver $r$:
+\[
+\emrg(r, s, r)^2 \leq \wt(r \compose s) \cdot \wt(r).
+\]
+The squared ``surprise'' that the receiver experiences (measured by emergence with themselves as observer) is bounded by the product of the composed weight and the receiver's own weight.
+\end{theorem}
+
+\begin{proof}
+This is a direct application of the emergence bound axiom with $a = r$, $b = s$, $c = r$.
+\end{proof}
+
+\begin{lstlisting}
+/-- SP10. THE FUNDAMENTAL MANIPULATION BOUND -/
+theorem manipulation_cost_bound (s r : I) :
+    (emergence r s r)^2 <=
+    rs (compose r s) (compose r s) * rs r r :=
+  emergence_bounded' r s r
+\end{lstlisting}
+
+\begin{paradox}[Manipulation Is Expensive]
+The manipulation bound says that to produce a large emergence (a big ``surprise'' in the receiver), you need \emph{heavy} ideas. Specifically:
+\begin{itemize}
+\item If the signal is weak ($\wt(r \compose s)$ is small), the surprise must be small.
+\item If the receiver is weak ($\wt(r)$ is small), the surprise must be small.
+\item Large surprises require BOTH a heavy composed result AND a heavy receiver.
+\end{itemize}
+
+This explains why propaganda targets the cognitively ``heavy'' (those with strong existing beliefs): lightweight minds produce only small emergence, so the manipulation effect is small. The irony is that the most manipulable people are those with the strongest existing beliefs --- they have the most weight to ``resonate with.''
+\end{paradox}
+
+\section{The Polarization Bound}
+
+\begin{theorem}[Emergence Is Bounded By Weights]
+\label{thm:polarization-bound}
+For any ideas $a$, $b$ and observer $c$:
+\[
+\emrg(a,b,c)^2 \leq \wt(a \compose b) \cdot \wt(c).
+\]
+\end{theorem}
+
+\begin{proof}
+This is the emergence bound axiom.
+\end{proof}
+
+\begin{interpretation}
+This theorem places a fundamental ceiling on polarization. The emergence between two ideas, as observed by a third party, cannot exceed the geometric mean of the composed weight and the observer's weight. This means:
+
+\begin{enumerate}
+\item \textbf{Light observers see small effects}: If $\wt(c)$ is small (the observer has few existing beliefs), emergence is bounded to be small. Newcomers to a debate see less polarization than veterans.
+
+\item \textbf{Light compositions produce small effects}: If $\wt(a \compose b)$ is small (the combined idea is lightweight), emergence is bounded. Trivial debates produce little emergence.
+
+\item \textbf{The ceiling is multiplicative}: The bound is the \emph{product} $\wt(a \compose b) \cdot \wt(c)$, not the sum. This means that both the composition and the observer must be heavy for large emergence. A heavy composition observed by a lightweight observer (or vice versa) produces bounded emergence.
+\end{enumerate}
+
+This connects to Aumann's (1976) ``agreeing to disagree'' theorem: rational agents with common priors cannot agree to disagree. In ideatic space, ``disagreement'' (negative emergence) is bounded by the polarization bound. The maximum possible disagreement is limited by the agents' weights.
+\end{interpretation}
+
+\section{The No-Diminishing-Returns Theorem}
+
+\begin{theorem}[Every Signal Adds Value]
+\label{thm:no-diminishing-returns}
+The second-order information gain is always non-negative:
+\[
+\wt((r \compose s_1) \compose s_2) - \wt(r \compose s_1) \geq 0.
+\]
+\end{theorem}
+
+\begin{proof}
+Direct application of enrichment to the pair $((r \compose s_1), s_2)$.
+\end{proof}
+
+\begin{paradox}[No Diminishing Returns to Information]
+In economics, diminishing marginal returns is one of the most fundamental principles: the tenth unit of a good provides less utility than the first. You'd expect the same for information: the tenth fact about a topic should be less valuable than the first.
+
+In ideatic space, there are NO diminishing returns to information (in weight terms). The $n$th signal always provides non-negative weight gain, regardless of how many signals preceded it. This is because each new signal interacts with the \emph{already-enriched} receiver, producing new emergence that is independent of previous emergences.
+
+This explains information addiction: each new piece of information is independently rewarding (in cognitive weight terms), creating a positive feedback loop with no natural satiation point.
+\end{paradox}
+
+
+% ================================================================
+\chapter{Evolutionary Paradoxes: Why the Best Strategy Loses}
+% ================================================================
+
+\epigraph{It is not the strongest of the species that survives, nor the most intelligent that survives. It is the one that is most adaptable to change.}{Charles Darwin (attributed)}
+
+\section{The Naive Expectation}
+
+In evolutionary game theory (Maynard Smith and Price, 1973), the fittest strategy --- the one with the highest payoff --- tends to dominate the population. The replicator dynamics ensures that strategies with above-average fitness increase in frequency.
+
+In ideatic space, evolution works through \emph{composition} rather than replication. Ideas don't copy themselves; they compose with their context, producing offspring that differ from the parent via emergence. This leads to several counter-intuitive results.
+
+\section{The Complexity Ratchet}
+
+\begin{theorem}[Cultural Complexity Never Decreases]
+\label{thm:complexity-ratchet}
+For any idea $a$ and context $b$, the weight of the drifted idea after $n$ generations is non-decreasing:
+\[
+\wt(\text{drift}(a,b,n+1)) \geq \wt(\text{drift}(a,b,n)),
+\]
+where $\text{drift}(a,b,0) = a$ and $\text{drift}(a,b,n+1) = \text{drift}(a,b,n) \compose b$.
+\end{theorem}
+
+\begin{proof}
+$\text{drift}(a,b,n+1) = \text{drift}(a,b,n) \compose b$, so by enrichment:
+\[
+\wt(\text{drift}(a,b,n+1)) = \wt(\text{drift}(a,b,n) \compose b) \geq \wt(\text{drift}(a,b,n)).
+\]
+\end{proof}
+
+\begin{lstlisting}
+/-- EP1. THE COMPLEXITY RATCHET -/
+theorem complexity_ratchet (a b : I) (n m : N) (h : n <= m) :
+    rs (drift a b m) (drift a b m) >=
+    rs (drift a b n) (drift a b n) :=
+  drift_nondecreasing a b n m h
+\end{lstlisting}
+
+\begin{paradox}[The Impossibility of Simplification]
+In biological evolution, organisms can become simpler: parasites lose organs, cave fish lose eyes, endosymbionts lose genes. Simplification is a real evolutionary strategy.
+
+In ideatic evolution, simplification is \emph{mathematically impossible}. Every generation of cultural drift adds weight; no generation can remove it. Cultural complexity can only grow.
+
+This explains the observation that cultural artifacts (languages, legal systems, bureaucracies, software) tend to grow more complex over time but rarely simplify. It's not just organizational inertia or path dependence --- it's a mathematical theorem. The enrichment axiom guarantees that cultural complexity is a one-way ratchet.
+\end{paradox}
+
+\section{The Extinction Impossibility}
+
+\begin{theorem}[Ideas Cannot Go Extinct]
+\label{thm:no-extinction}
+If $a \neq \void$, then $\text{drift}(a, b, n) \neq \void$ for all $n$ and $b$.
+\end{theorem}
+
+\begin{proof}
+By induction on $n$.
+
+\emph{Base case}: $\text{drift}(a,b,0) = a \neq \void$ by hypothesis.
+
+\emph{Inductive step}: Assume $\text{drift}(a,b,k) \neq \void$. Then $\text{drift}(a,b,k+1) = \text{drift}(a,b,k) \compose b$. Since $\text{drift}(a,b,k) \neq \void$, we have $\text{drift}(a,b,k) \compose b \neq \void$ by the non-degeneracy of composition: if the left factor is non-void, the composition is non-void.
+\end{proof}
+
+\begin{lstlisting}
+/-- EP5. THE EXTINCTION IMPOSSIBILITY -/
+theorem no_extinction (a b : I) (h : a != void) (n : N) :
+    drift a b n != void := by
+  induction n with
+  | zero => simp [drift]; exact h
+  | succ k ih =>
+    simp [drift]
+    exact compose_ne_void_of_left (drift a b k) b ih
+\end{lstlisting}
+
+\begin{paradox}[Immortal Ideas]
+In biology, species go extinct. Most species that have ever lived are now extinct. Extinction is the norm, survival the exception.
+
+In ideatic space, extinction is \emph{impossible}. Once an idea is instantiated (is non-void), no amount of cultural drift can reduce it to void. The idea may change beyond recognition through emergence, but it can never become ``nothing.''
+
+This has profound implications for cultural evolution: ideas are immortal in a way that organisms are not. A cultural meme, once created, persists indefinitely in some form. It may be transformed, reinterpreted, or buried under layers of composition, but it can never be truly extinguished.
+
+This connects to Dawkins's (1976) concept of the ``meme'' but goes further: while Dawkins proposed memes as cultural replicators analogous to genes, ideatic theory shows that memes are \emph{stronger} than genes --- they cannot go extinct through any natural process of cultural transmission.
+\end{paradox}
+
+\section{Mutation Always Enriches}
+
+\begin{theorem}[All Mutations Are Beneficial]
+\label{thm:beneficial-mutations}
+The offspring of idea $a$ in context $b$ always has at least as much weight as the parent:
+\[
+\wt(a \compose b) \geq \wt(a).
+\]
+\end{theorem}
+
+\begin{proof}
+Direct application of the enrichment axiom.
+\end{proof}
+
+\begin{paradox}[No Harmful Mutations]
+In biology, most mutations are neutral or harmful; beneficial mutations are rare. This is a cornerstone of population genetics.
+
+In ideatic evolution, ALL ``mutations'' (offspring that differ from parent via emergence) are weakly beneficial. Every offspring is at least as heavy as its parent.
+
+This inverts the central assumption of evolutionary biology. The reason is that ideatic ``mutation'' is not random perturbation of a genome --- it is structured composition with context. The emergence term introduces non-random variation that is constrained by the enrichment axiom to be non-negative.
+\end{paradox}
+
+\section{Connection to Evolutionary Game Theory}
+
+Maynard Smith's (1982) concept of the Evolutionarily Stable Strategy (ESS) requires that the incumbent strategy be able to resist invasion by any mutant. In ideatic space, ``invasion'' corresponds to composition with a new idea, and ``resistance'' corresponds to weight maintenance.
+
+Since composition always enriches, the incumbent idea's weight can only grow when ``invaded'' by a new idea. This means that in ideatic space, \emph{every} idea is ``resistant to invasion'' in the weight sense --- its weight can never decrease. But the relative position can change: a lighter idea composed with a heavier context can grow faster than a heavier idea composed with a lighter context.
+
+This connects to the ``Red Queen'' hypothesis of Van Valen (1973): organisms must constantly evolve just to maintain their relative position. In ideatic space, the Red Queen is not a metaphor but a theorem: even though your absolute weight can never decrease, your relative fitness changes as other ideas compose and grow.
+
+
+% ================================================================
+\chapter{The Price of Stability vs.\ the Price of Anarchy}
+% ================================================================
+
+\epigraph{The price of liberty is eternal vigilance.}{Thomas Jefferson (attributed)}
+
+\section{The Naive Expectation}
+
+In mechanism design, the ``price of anarchy'' (Koutsoupias and Papadimitriou, 1999) measures how much worse the worst Nash equilibrium is compared to the social optimum. The ``price of stability'' (Anshelevich et al., 2008) measures how much worse the \emph{best} Nash equilibrium is.
+
+In classical games, these can be arbitrarily large. In ideatic space, the situation is remarkably different.
+
+\section{The Void Equilibrium and Its Value}
+
+From Volume~II, we know that $(\void, \void)$ is always a Nash equilibrium. This equilibrium has zero social welfare: both players contribute nothing and receive nothing.
+
+Any non-void equilibrium $(s, r)$ has communication surplus $\operatorname{cs}(s,r) \geq 0$ (by the Nash surplus theorem from Volume~II). This means that the ``price of stability'' is zero: the best equilibrium is always at least as good as the void equilibrium.
+
+\begin{theorem}[Zero Price of Stability]
+In any meaning game, the best Nash equilibrium has non-negative surplus.
+\end{theorem}
+
+\begin{proof}
+The void equilibrium has surplus zero. Any other equilibrium has non-negative surplus by the Nash surplus theorem. Therefore the best equilibrium has surplus $\geq 0$.
+\end{proof}
+
+\section{The Network Weight Ratchet}
+
+\begin{theorem}[Network Weight Never Decreases]
+For any network node $a$ and iteration count $n$:
+\[
+\wt(\compN{a}{n+1}) \geq \wt(\compN{a}{n}).
+\]
+Network weight is monotonically non-decreasing through interaction.
+\end{theorem}
+
+\begin{proof}
+$\compN{a}{n+1} = \compN{a}{n} \compose a$, and enrichment gives $\wt(\compN{a}{n} \compose a) \geq \wt(\compN{a}{n})$.
+\end{proof}
+
+\begin{interpretation}
+This means that in a network of interacting ideas, the total weight can only grow. There is no ``degradation'' through interaction --- each round of interaction enriches every participating node.
+
+This connects to the ``price of anarchy'' in a novel way: if we define the social optimum as the maximum total weight achievable through composition, and the ``anarchic'' outcome as the weight resulting from uncoordinated interaction, then the price of anarchy is bounded above by 1 --- because uncoordinated interaction always enriches. The ``worst'' outcome of anarchy is still better than the initial state.
+\end{interpretation}
+
+\section{The Consensus Enrichment Paradox}
+
+\begin{theorem}[Adding Members Always Enriches Consensus]
+For any idea $a$ and any existing consensus list:
+\[
+\wt(\text{consensus}[a, b]) \geq \wt(\text{consensus}[a]) = \wt(a).
+\]
+\end{theorem}
+
+\begin{proof}
+$\text{consensus}[a, b] = a \compose b$, and enrichment gives $\wt(a \compose b) \geq \wt(a)$.
+\end{proof}
+
+\begin{paradox}[Dissent Cannot Weaken Consensus]
+In social choice theory, adding a dissenting voter can change the outcome of an election (Condorcet's paradox). In organizational theory, adding a member to a committee can reduce its effectiveness.
+
+In ideatic space, adding a member to a consensus \emph{always} enriches it. Even a member who ``opposes'' the existing consensus (has negative resonance with it) adds weight through the enrichment axiom.
+
+This seems to contradict everyday experience. The resolution is that ``weight'' and ``agreement'' are different things. The consensus grows heavier (more complex, more informationally rich) even when it becomes less coherent. The ``weight'' includes the cognitive burden of managing disagreement, which is itself a form of enrichment.
+\end{paradox}
+
+\section{Bridge Nodes Are Strengthened}
+
+\begin{theorem}[The Bridge Strengthening Theorem]
+A bridge node connecting two clusters gains weight from both:
+\[
+\wt((\text{bridge} \compose \text{left}) \compose \text{right}) \geq \wt(\text{bridge}).
+\]
+\end{theorem}
+
+\begin{proof}
+Two applications of enrichment: first composing with ``left'' enriches, then composing with ``right'' enriches further.
+\end{proof}
+
+\begin{interpretation}
+In network theory, bridges are typically viewed as structural vulnerabilities --- if a bridge fails, the network fragments. In ideatic space, bridges are the \emph{strongest} nodes: they gain weight from both clusters they connect.
+
+This explains why interdisciplinary researchers (bridges between academic fields) often develop the richest cognitive frameworks. Their ideas gain weight from multiple communities, making them heavier (more complex and nuanced) than specialists who interact with only one community.
+\end{interpretation}
