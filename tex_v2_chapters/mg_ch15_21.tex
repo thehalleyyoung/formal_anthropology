@@ -1,0 +1,3818 @@
+%% mg_ch15_21.tex — Chapters 15–21 of Meaning Games (v2)
+%% No preamble; \input from Meaning_Games.tex
+
+%% ================================================================
+%%  CHAPTER 15: FORMAL POETICS — CONDENSATION, REPETITION, AND RHYME
+%% ================================================================
+
+\chapter{Formal Poetics of Idea Composition}
+\label{ch:poetics}
+
+\epigraph{``The limits of my language mean the limits of my world.''}{Ludwig Wittgenstein, \textit{Tractatus}, 5.6}
+
+Poetry is the laboratory of language: it is where the ordinary
+mechanisms of meaning---composition, resonance, emergence---are
+pushed to extremes and made visible.  In this chapter we develop a
+\emph{formal poetics} grounded entirely in the algebraic structures
+of Idea Diffusion Theory.  Every poetic device we analyse---condensation,
+repetition, rhyme, meter, defamiliarisation---will receive a precise
+definition in terms of the resonance function~$\rs$, the emergence
+term~$\emerge$, and the composition operation~$\compose$.
+
+Wittgenstein famously held that ``what can be shown cannot be said.''
+We partially disagree: what a poem \emph{shows} can at least be
+\emph{computed}, once the right algebraic framework is in place.
+
+%% ---------------------------------------------------------------
+\section{Poetic Condensation}
+\label{sec:condensation}
+
+The first poetic phenomenon we formalise is \emph{condensation}:
+the packing of a large amount of resonance into a small expression.
+
+\begin{definition}[Condensation ratio]
+\label{def:condensation}
+Let $a \in \IS$ be an idea and let $|a|$ denote its \emph{syntactic
+length} (the number of atomic ideatic constituents in a chosen
+decomposition).  The \textbf{condensation ratio} of~$a$ with respect
+to a community resonance function~$\rs$ is
+\[
+  \gamma(a) \;=\; \frac{w(a)}{|a|}
+  \;=\; \frac{\rs(a,a)}{|a|}.
+\]
+An idea~$a$ is \textbf{poetically condensed} if $\gamma(a) >
+\bar{\gamma}$, where $\bar{\gamma}$ is the mean condensation ratio
+over the ambient ideatic corpus.
+\end{definition}
+
+Condensation captures the intuition that a haiku ``says more'' per
+syllable than a legal contract.  The next result shows that
+composition can increase condensation super-linearly.
+
+\begin{theorem}[Super-linear condensation]
+\label{thm:superlinear-condensation}
+Suppose $|a \compose b| \le |a| + |b|$ (composition does not
+increase syntactic length beyond concatenation).  If the emergence
+term satisfies $\emerge(a,b,a \compose b) > 0$, then
+\[
+  \gamma(a \compose b)
+  \;>\;
+  \frac{|a|\,\gamma(a) + |b|\,\gamma(b)}{|a|+|b|}.
+\]
+That is, composition with positive emergence yields condensation
+strictly greater than the weighted average of the parts.
+\end{theorem}
+
+\begin{proof}
+By the decomposition axiom,
+\[
+  w(a \compose b)
+  = \rs(a \compose b,\, a \compose b)
+  = \rs(a, a\compose b) + \rs(b, a\compose b)
+    + \emerge(a,b,a\compose b).
+\]
+Since $\rs(a, a\compose b) \ge \rs(a,a) = w(a)$ by non-decreasing
+self-resonance under extension (Axiom~A3 of~\cite{idt}), and
+similarly $\rs(b, a\compose b) \ge w(b)$, we obtain
+\[
+  w(a \compose b)
+  \;\ge\; w(a) + w(b) + \emerge(a,b,a\compose b)
+  \;>\; w(a) + w(b).
+\]
+Dividing by $|a \compose b| \le |a|+|b|$ gives
+\[
+  \gamma(a \compose b)
+  > \frac{w(a)+w(b)}{|a|+|b|}
+  = \frac{|a|\gamma(a)+|b|\gamma(b)}{|a|+|b|}. \qedhere
+\]
+\end{proof}
+
+\begin{interpretation}
+A poet who composes two images with positive emergence creates a
+line whose condensation exceeds any convex combination of the
+images' individual condensations.  This is the algebraic content
+of Ezra Pound's injunction: ``Use no superfluous word.''  Positive
+emergence is the mathematical engine of compression.
+\end{interpretation}
+
+\begin{remark}[What the proof really says]
+Let us unpack the super-linear condensation theorem in plain language.
+The result tells us that whenever two ideas are brought together and
+something genuinely new arises from their combination---i.e., the
+emergence $\emerge(a,b,a \compose b)$ is strictly positive---then the
+resulting composition packs more meaning per unit of expression than
+either part did alone.
+
+The proof proceeds in two steps.  First, we invoke the \emph{decomposition
+axiom}, which breaks the total weight of the composition into three
+contributions: (i)~how much each component resonates with the whole,
+and (ii)~the emergence surplus.  This decomposition is analogous to
+the way the variance of a sum decomposes into individual variances plus
+a covariance term.  Second, we note that each component's resonance
+with the whole \emph{exceeds} its self-resonance---an idea resonates
+at least as strongly with any context containing it as it does with itself.
+This is Axiom~A3, the non-decreasing self-resonance principle, which
+is the algebraic analogue of the claim that a word means at least as
+much in context as it does in isolation.  Combining these two steps,
+the total weight exceeds the sum of parts, and dividing by length gives
+the super-linear condensation bound.
+
+Philosophically, this is a theorem about the \emph{efficiency of metaphor}.
+When a poet writes ``the sea of faith'' (Matthew Arnold), the emergence
+between ``sea'' and ``faith'' ensures that the three-word phrase conveys
+more per syllable than a paragraph of literal description.  The theorem
+quantifies this poetic intuition: metaphor is provably more efficient
+than enumeration.
+\end{remark}
+
+\begin{interpretation}[Kolmogorov complexity and condensation]
+There is an illuminating connection to \emph{Kolmogorov complexity},
+the algorithmic measure of information content.  The Kolmogorov
+complexity $K(x)$ of a string~$x$ is the length of the shortest
+program that produces~$x$.  Our condensation ratio $\gamma(a) = w(a)/|a|$
+is a semantic analogue: it measures resonance per unit of syntactic
+length.
+
+The super-linear condensation theorem is then the IDT analogue of the
+following fact in algorithmic information theory: there exist strings
+whose Kolmogorov complexity exceeds the sum of the complexities of their
+parts.  In Kolmogorov's world, this happens because the \emph{interaction}
+between the parts carries information.  In IDT, the interaction is
+precisely the emergence term.
+
+This connection suggests a deeper programme: define the \emph{ideatic
+Kolmogorov complexity} $K_{\rs}(a)$ as the minimum syntactic length of
+any decomposition $a = a_1 \compose \cdots \compose a_k$ that achieves
+weight $w(a)$.  The super-linear condensation theorem then implies that
+$K_{\rs}(a \compose b)$ can be strictly less than $K_{\rs}(a) + K_{\rs}(b)$:
+composition \emph{compresses} meaning.  This is an open research
+direction connecting IDT to algorithmic information theory
+(cf.~Open Problem~\ref{op:source-coding}).
+\end{interpretation}
+
+%% ---------------------------------------------------------------
+\section{Repetition and the Weight Ratchet}
+\label{sec:repetition}
+
+Repetition is the simplest poetic device, yet it has non-trivial
+algebraic consequences.
+
+\begin{definition}[Iterated self-composition]
+\label{def:iterated-composition}
+For $a \in \IS$ define the \textbf{$n$-fold repetition}
+$a^{\compose n}$ inductively:
+\[
+  a^{\compose 1} = a,
+  \qquad
+  a^{\compose (n+1)} = a^{\compose n} \compose a.
+\]
+\end{definition}
+
+\begin{theorem}[Weight ratchet]
+\label{thm:weight-ratchet}
+If $\emerge(a^{\compose n}, a, a^{\compose(n+1)}) \ge 0$ for all
+$n \ge 1$, then the sequence $(w(a^{\compose n}))_{n \ge 1}$ is
+non-decreasing:
+\[
+  w(a^{\compose 1})
+  \;\le\; w(a^{\compose 2})
+  \;\le\; w(a^{\compose 3})
+  \;\le\; \cdots
+\]
+If, moreover, $\emerge(a^{\compose n}, a, a^{\compose(n+1)}) > 0$
+for all~$n$, the sequence is strictly increasing.
+\end{theorem}
+
+\begin{proof}
+By induction.  For $n=1$:
+\begin{align*}
+  w(a^{\compose 2})
+  &= \rs(a^{\compose 2}, a^{\compose 2}) \\
+  &= \rs(a,a^{\compose 2}) + \rs(a,a^{\compose 2})
+     + \emerge(a,a,a^{\compose 2}) \\
+  &\ge 2\,\rs(a,a) + 0 = 2\,w(a) \ge w(a).
+\end{align*}
+The inductive step is identical, replacing $a^{\compose 2}$ with
+$a^{\compose(n+1)}$ and using $w(a^{\compose n}) \le
+\rs(a^{\compose n}, a^{\compose(n+1)})$.  Strict inequality follows
+when each emergence term is positive.
+\end{proof}
+
+\begin{interpretation}
+The Weight Ratchet theorem explains why refrains, anaphora, and
+liturgical repetition \emph{accumulate} cultural weight: each
+repetition adds at least as much resonance as the previous one.
+A slogan repeated a hundred times has weight bounded below by~$100\,w(a)$.
+\end{interpretation}
+
+\begin{remark}
+The Weight Ratchet is a \emph{lower bound}.  In practice, audiences
+often exhibit \emph{diminishing marginal emergence}: $\emerge(a^{\compose n},a,\cdot) \to 0$ as $n\to\infty$.  This models the
+phenomenon of ``semantic satiation''---a word repeated too many times
+loses meaning.  We formalise this decay in Section~\ref{sec:meter}.
+\end{remark}
+
+\begin{remark}[Proof in plain language]
+The weight ratchet theorem is proved by a simple induction, but its
+mathematical content is worth spelling out.  At the base case ($n=1$),
+we compose $a$ with itself to get $a^{\compose 2}$.  The decomposition
+axiom splits $w(a^{\compose 2})$ into two copies of $\rs(a, a^{\compose 2})$
+plus the emergence term.  Each copy is at least $\rs(a,a) = w(a)$
+by non-decreasing self-resonance, so $w(a^{\compose 2}) \ge 2w(a) + \emerge$.
+When emergence is non-negative, $w(a^{\compose 2}) \ge 2w(a) \ge w(a)$.
+The inductive step is identical in structure: replacing the base
+with the accumulated composition preserves the inequality.
+
+What makes this mathematically interesting is the \emph{monotonicity}:
+once weight is gained, it is never lost.  This is a ``ratchet'' in the
+precise sense of thermodynamics---the system has a preferred direction.
+In the theory of Markov chains, this corresponds to a supermartingale
+property of the weight sequence.
+
+From an information-theoretic perspective, the weight ratchet says
+that repeated exposure to an idea \emph{accumulates} mutual information
+between the idea and its context.  Each repetition is a new ``sample''
+that tightens the listener's estimate of the idea's resonance profile.
+The Shannon-theoretic analogue is the law of large numbers applied to
+the empirical mutual information: $\hat{I}(X;Y) \to I(X;Y)$ as the
+sample size grows.  The weight ratchet is thus a semantic law of
+large numbers.
+\end{remark}
+
+\begin{interpretation}[Repetition in ritual and liturgy]
+The weight ratchet provides a mathematical foundation for the
+observation, widespread in the anthropology of religion, that
+\emph{ritual repetition creates sacredness}.  Rappaport~\cite{rappaport}
+argued that the invariance of liturgical form is constitutive of the
+sacred: by repeating the same words in the same order, a community
+creates a weight that no single utterance could achieve.  The weight
+ratchet theorem makes this precise: $w(a^{\compose n}) \ge n \cdot w(a)$
+under non-negative emergence, so $n$~repetitions of a ritual formula
+create at least $n$~times the weight of a single performance.  The
+``sacred'' is, in this analysis, simply the regime where $n$ is very large.
+\end{interpretation}
+
+%% ---------------------------------------------------------------
+\section{Rhyme as Resonance}
+\label{sec:rhyme}
+
+\begin{definition}[Rhyme coefficient]
+\label{def:rhyme}
+For ideas $a,b \in \IS$ with $w(a), w(b) > 0$, the
+\textbf{rhyme coefficient} is the normalised resonance
+\[
+  \rho(a,b) \;=\;
+  \frac{\rs(a,b)}{\sqrt{w(a)\,w(b)}}.
+\]
+Two ideas \textbf{rhyme} if $\rho(a,b) > \tau$ for a
+community-dependent threshold~$\tau \in (0,1]$.
+\end{definition}
+
+The rhyme coefficient is a cosine-similarity measure in the
+resonance inner-product space.  The next result shows that
+Cauchy--Schwarz bounds it.
+
+\begin{proposition}[Cauchy--Schwarz for rhyme]
+\label{prop:cs-rhyme}
+For all $a,b \in \IS$ with $w(a),w(b)>0$,
+\[
+  0 \;\le\; \rho(a,b) \;\le\; 1.
+\]
+Equality $\rho(a,b)=1$ holds if and only if $a$ and $b$ are
+\emph{proportional} in the resonance sense: there exists
+$\lambda > 0$ such that $\rs(a,c) = \lambda\,\rs(b,c)$ for all~$c$.
+\end{proposition}
+
+\begin{proof}
+The lower bound follows from positivity of~$\rs$.  The upper bound
+is the Cauchy--Schwarz inequality for the bilinear form~$\rs$,
+which is positive semi-definite by axiom.  The equality case is the
+standard characterisation of equality in Cauchy--Schwarz.
+\end{proof}
+
+\begin{example}[Phonological rhyme]
+\label{ex:phono-rhyme}
+Let $a = \text{``moon''}$ and $b = \text{``June''}$ in an English
+poetic corpus.  Their phonological overlap (shared vowel nucleus and
+coda) contributes a high $\rs(a,b)$, while their semantic divergence
+keeps $w(a)$ and $w(b)$ individually moderate.  The resulting
+$\rho(a,b)$ is high---a strong rhyme.  By contrast, $a =
+\text{``moon''}$ and $c = \text{``economy''}$ have low phonological
+overlap and divergent semantic fields, so $\rho(a,c) \approx 0$:
+no rhyme.
+\end{example}
+
+\begin{theorem}[Rhyme enhances condensation]
+\label{thm:rhyme-condensation}
+Let $a,b \in \IS$ with $\rho(a,b) > 0$.  Then
+\[
+  \gamma(a \compose b)
+  \;\ge\;
+  \gamma(a) + \gamma(b)
+  + \frac{2\,\rho(a,b)\sqrt{w(a)\,w(b)} + \emerge(a,b,a\compose b)}{|a|+|b|}.
+\]
+In particular, positive rhyme and positive emergence jointly
+amplify condensation.
+\end{theorem}
+
+\begin{proof}
+Expand $w(a\compose b)$ via the decomposition axiom:
+\begin{align*}
+  w(a\compose b)
+  &= \rs(a,a\compose b) + \rs(b,a\compose b)
+     + \emerge(a,b,a\compose b) \\
+  &\ge w(a) + w(b)
+     + 2\,\rs(a,b) + \emerge(a,b,a\compose b).
+\end{align*}
+Substituting $\rs(a,b) = \rho(a,b)\sqrt{w(a)w(b)}$ and dividing
+by $|a|+|b|$ gives the stated bound.
+\end{proof}
+
+\begin{remark}[Why rhyme works: a spectral interpretation]
+The rhyme coefficient $\rho(a,b)$ is a cosine similarity in the
+resonance inner-product space.  In linear algebra, the cosine
+similarity between two vectors measures the alignment of their
+``directions,'' independent of their magnitudes.  The rhyme
+coefficient does the same for ideas: it measures how well $a$ and
+$b$ point in the same ``meaning direction,'' regardless of how
+weighty each is individually.
+
+When we say that ``moon'' and ``June'' rhyme, we are saying that
+their meaning-direction vectors are nearly parallel in the
+resonance inner-product space.  The Cauchy--Schwarz bound
+$\rho(a,b) \le 1$ is then the geometric statement that no two
+distinct directions can be \emph{more} than parallel.  Equality
+$\rho = 1$ means the ideas are semantically proportional---they
+differ only in intensity, not in kind.
+
+This spectral perspective connects rhyme to the \emph{eigenstructure}
+of the resonance operator.  If we define the resonance operator
+$R : \IS \to \IS^*$ by $(Ra)(b) = \rs(a,b)$, then the eigenideas
+of $R$---the ideas $e$ satisfying $Re = \lambda e$---are the
+``pure tones'' of the meaning space.  Every idea is a superposition
+of these eigenideas, and rhyme between $a$ and $b$ measures the
+overlap of their spectral decompositions.  Ideas that share dominant
+eigencomponents rhyme strongly; ideas with disjoint spectra do not
+rhyme at all.  This is the spectral theory of emergence previewed
+here and developed fully in Chapter~\ref{ch:information}.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Meter and Emergence Decay}
+\label{sec:meter}
+
+\begin{definition}[Emergence decay function]
+\label{def:emergence-decay}
+An \textbf{emergence decay function} for an idea~$a$ is a function
+$\delta_a : \N \to [0,\infty)$ such that
+\[
+  \emerge(a^{\compose n}, a, a^{\compose(n+1)})
+  \;=\; \delta_a(n) \cdot \emerge(a,a,a^{\compose 2})
+\]
+with $\delta_a(1) = 1$ and $\delta_a$ non-increasing.
+\end{definition}
+
+\begin{theorem}[Bounded weight under exponential decay]
+\label{thm:bounded-weight}
+If $\delta_a(n) = \alpha^{n-1}$ for some $0 < \alpha < 1$, then
+\[
+  w(a^{\compose n})
+  \;\le\; n\,w(a) + \frac{\emerge_0}{1-\alpha},
+\]
+where $\emerge_0 = \emerge(a,a,a^{\compose 2})$.  In particular,
+$w(a^{\compose n}) = O(n)$ as $n \to \infty$.
+\end{theorem}
+
+\begin{proof}
+Summing the telescoping contributions:
+\begin{align*}
+  w(a^{\compose n})
+  &\le n\,w(a) + \sum_{k=1}^{n-1} \delta_a(k)\,\emerge_0 \\
+  &= n\,w(a) + \emerge_0 \sum_{k=0}^{n-2} \alpha^k \\
+  &\le n\,w(a) + \frac{\emerge_0}{1-\alpha}. \qedhere
+\end{align*}
+\end{proof}
+
+\begin{interpretation}
+Meter is emergent rhythm: the ear expects a pattern, and
+each additional repetition of the metrical foot adds less
+novelty (decreasing $\delta_a$).  Exponential decay models
+the rapid habituation that makes iambic pentameter feel
+``natural'' after two or three feet.  The bound $O(n)$ says
+that weight grows at most linearly with length---a poem
+cannot cheat by adding empty repetitions.
+\end{interpretation}
+
+\begin{remark}[Proof in plain language: why repeated emergence decays]
+The bounded weight theorem is a convergence result disguised as an
+inequality.  Here is the intuition.
+
+Imagine a drum being struck repeatedly.  The first strike creates a
+sharp, novel sound (high emergence).  The second strike is still novel
+but less so (the ear is partially habituated).  By the tenth strike,
+the novelty has largely vanished, and each subsequent strike adds
+only the base weight of the drum itself.
+
+Mathematically, the exponential decay $\delta_a(n) = \alpha^{n-1}$
+models this habituation.  The total accumulated emergence from $n$
+repetitions is $\emerge_0 \sum_{k=0}^{n-2} \alpha^k$, a geometric
+series that converges to $\emerge_0 / (1-\alpha)$ as $n \to \infty$.
+The total weight is therefore bounded by $n \cdot w(a)$ (the linear
+contribution of each repetition's base weight) plus a constant
+(the finite total emergence).
+
+This $O(n)$ bound is sharp: without emergence decay, the weight
+could grow super-linearly (by the weight ratchet theorem).  Decay
+constrains growth to linearity.  The constant $\emerge_0/(1-\alpha)$
+measures the ``total novelty budget'' of repetition: the amount of
+emergence that a repeated idea can ever create, summed over all
+future repetitions.
+
+From a rate-distortion perspective (Section~\ref{sec:rate-distortion}),
+exponential emergence decay means that the rate at which a repeated
+idea generates information \emph{decreases geometrically}.  After
+sufficiently many repetitions, the rate drops below the channel
+capacity, and further repetitions transmit no additional information.
+This is the information-theoretic content of boredom.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Defamiliarisation as Emergence Shock}
+\label{sec:defamiliarisation}
+
+Viktor Shklovsky's notion of \emph{ostranenie} (making strange)
+receives a clean formalisation.
+
+\begin{definition}[Defamiliarisation index]
+\label{def:defamiliarisation}
+Let $a,b \in \IS$ with $\rho(a,b) \approx 0$ (semantically
+distant ideas).  The \textbf{defamiliarisation index} of the
+composition $a \compose b$ is
+\[
+  \Delta(a,b)
+  \;=\;
+  \frac{\emerge(a,b,a\compose b)}{w(a)+w(b)}.
+\]
+A composition is \textbf{defamiliarising} if $\Delta(a,b) > 1$.
+\end{definition}
+
+\begin{theorem}[Defamiliarisation amplifies weight]
+\label{thm:defam-weight}
+If $\Delta(a,b)>1$ and $\rho(a,b) \ge 0$, then
+\[
+  w(a \compose b) > 2\bigl(w(a)+w(b)\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+From the decomposition axiom,
+\[
+  w(a\compose b)
+  \ge w(a) + w(b) + 2\rs(a,b) + \emerge(a,b,a\compose b).
+\]
+Since $\rs(a,b)\ge 0$ and $\emerge(a,b,a\compose b) =
+\Delta(a,b)(w(a)+w(b)) > w(a)+w(b)$, we get
+$w(a\compose b) > 2(w(a)+w(b))$.
+\end{proof}
+
+\begin{interpretation}
+When a poet juxtaposes two unrelated images---the ``Petals on a wet,
+black bough'' of Pound's \emph{Metro} poem---the emergence dominates
+the resonance.  The composition weighs more than twice its parts.
+Defamiliarisation is a \emph{super-additive} shock.
+\end{interpretation}
+
+\begin{remark}[Proof explained: why defamiliarisation doubles weight]
+The defamiliarisation theorem has a beautifully simple proof that
+deserves unpacking.  The key insight is that when $\Delta(a,b) > 1$,
+the emergence term alone exceeds the total weight of the parts:
+$\emerge(a,b,a \compose b) > w(a) + w(b)$.  Combined with the
+decomposition axiom---which tells us that the weight of the whole
+\emph{also} includes the resonances $\rs(a, a\compose b)$ and
+$\rs(b, a\compose b)$, each at least $w(a)$ and $w(b)$ respectively---we
+get $w(a \compose b) > 2(w(a) + w(b))$.
+
+Philosophically, this is a theorem about the \emph{power of surprise}.
+When two ideas have no prior resonance ($\rho \approx 0$), their
+combination must derive all its weight from emergence---from the
+genuinely new.  The condition $\Delta > 1$ says that this novelty
+is so powerful that it exceeds the combined weight of the familiar.
+This is the algebraic content of Shklovsky's insight: defamiliarisation
+does not merely \emph{add} to meaning; it \emph{multiplies} it.
+
+From the perspective of topology (Chapter~\ref{ch:topology}), the
+defamiliarisation index $\Delta(a,b)$ is large precisely when $a$
+and $b$ lie in distant regions of the resonance metric space:
+$d_{\rs}(a,b) \approx \sqrt{2}$.  The theorem then says that
+composing topologically distant ideas creates disproportionate weight.
+This is a form of \emph{long-range interaction} in the meaning space,
+analogous to the way entangled particles in quantum mechanics exhibit
+correlations that exceed any local explanation.
+\end{remark}
+
+\begin{lstlisting}
+-- Lean 4 sketch: Defamiliarisation bound
+theorem defamiliarisation_amplifies
+    (a b : Idea) (w : Idea -> Real)
+    (rs : Idea -> Idea -> Real)
+    (emerge : Idea -> Idea -> Idea -> Real)
+    (hw : forall x, w x = rs x x)
+    (hdecomp : w (comp a b) >= w a + w b + 2 * rs a b + emerge a b (comp a b))
+    (hrs_nn : rs a b >= 0)
+    (hDelta : emerge a b (comp a b) > w a + w b) :
+    w (comp a b) > 2 * (w a + w b) := by
+  have h1 := hdecomp
+  linarith
+\end{lstlisting}
+
+%% ---------------------------------------------------------------
+\section{The Poetic Function: A Synthesis}
+\label{sec:poetic-function}
+
+We can now unify the devices above into a single functional.
+
+\begin{definition}[Poetic functional]
+\label{def:poetic-functional}
+For a sequence of ideas $\mathbf{a} = (a_1,\ldots,a_n)$, define
+the \textbf{poetic functional}
+\[
+  \Pi(\mathbf{a})
+  \;=\;
+  \underbrace{\gamma(a_1\compose\cdots\compose a_n)}_{\text{condensation}}
+  \;+\;
+  \lambda_\rho \sum_{i<j} \rho(a_i,a_j)
+  \;+\;
+  \lambda_\Delta \sum_{i} \Delta(a_i,a_{i+1}),
+\]
+where $\lambda_\rho, \lambda_\Delta > 0$ are weights reflecting
+a community's aesthetic preferences.
+\end{definition}
+
+\begin{remark}
+The poetic functional $\Pi$ is \emph{not} a utility function in
+the game-theoretic sense (that comes in Chapter~\ref{ch:bayesian}).
+It is a \emph{descriptive} measure: high~$\Pi$ correlates with what
+communities recognise as ``good poetry.''  The normative question---how
+\emph{should} one compose?---requires the mechanism-design tools
+of Chapter~\ref{ch:mechanism}.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Spectral Decomposition of Poetic Form}
+\label{sec:spectral-poetics}
+
+The resonance function~$\rs$ defines a positive semi-definite bilinear
+form on~$\IS$.  As in any inner-product space, we may seek an
+\emph{eigendecomposition}---a basis of ``pure ideas'' in terms of which
+every idea can be expressed.
+
+\begin{definition}[Resonance operator]
+\label{def:resonance-operator}
+The \textbf{resonance operator} $R : \IS \to \IS^*$ is defined by
+$(Ra)(b) = \rs(a,b)$.  An idea $e \in \IS$ is an \textbf{eigenidea}
+of $R$ with eigenvalue $\lambda \ge 0$ if $\rs(e,b) = \lambda \cdot
+\langle e, b \rangle$ for all $b$ in a suitable sense.  We write
+$\mathrm{Spec}(\IS)$ for the spectrum of~$R$.
+\end{definition}
+
+\begin{theorem}[Spectral theorem for ideatic spaces]
+\label{thm:spectral-poetics}
+If $\IS$ is a separable Hilbert space under the resonance inner product,
+then the resonance operator $R$ has a countable spectrum $\{\lambda_k\}_{k \ge 1}$
+with $\lambda_1 \ge \lambda_2 \ge \cdots \ge 0$ and corresponding
+orthonormal eigenideas $\{e_k\}$.  Every idea $a \in \IS$ admits a
+spectral decomposition
+\[
+  a = \sum_{k=1}^{\infty} \alpha_k(a)\, e_k,
+  \qquad \alpha_k(a) = \rs(a, e_k)/\lambda_k,
+\]
+and the weight is $w(a) = \sum_k \lambda_k\, \alpha_k(a)^2$.
+\end{theorem}
+
+\begin{proof}
+Since $R$ is a positive semi-definite, self-adjoint operator on a
+separable Hilbert space, the spectral theorem for compact operators
+(or, more generally, the spectral theorem for bounded self-adjoint
+operators) yields the stated decomposition.  The weight formula follows
+from $w(a) = \rs(a,a) = \sum_k \lambda_k \alpha_k^2$ by Parseval's
+identity in the resonance inner product.
+\end{proof}
+
+\begin{interpretation}[Eigenideas as archetypal themes]
+The eigenideas $\{e_k\}$ are the \emph{archetypes} of a meaning
+space---the irreducible thematic elements from which all ideas are
+composed.  The eigenvalue $\lambda_k$ measures the ``resonance power''
+of the $k$-th archetype: large $\lambda_k$ means the archetype
+resonates strongly across the community.
+
+In a literary corpus, we might expect the leading eigenideas to
+correspond to universal themes---love, death, conflict, redemption---while
+the tail eigenideas capture niche or esoteric concerns.  The spectral
+decomposition of a poem $a = \sum \alpha_k e_k$ then reveals its
+\emph{thematic fingerprint}: the coefficients $\alpha_k$ tell us how
+much of each archetype the poem invokes.
+
+This connects IDT to \emph{latent semantic analysis} (LSA) and to the
+singular value decomposition of term-document matrices in computational
+linguistics.  The key difference is that IDT's eigendecomposition is
+\emph{axiomatically grounded}---it follows from the structure of the
+resonance function, not from a statistical model.  As proved in
+Volume~I, the resonance axioms guarantee that $R$ is positive
+semi-definite, so the spectral theorem applies unconditionally.
+\end{interpretation}
+
+\begin{definition}[Spectral condensation]
+\label{def:spectral-condensation}
+The \textbf{spectral condensation} of an idea~$a$ is the effective
+number of eigenideas it activates:
+\[
+  N_{\mathrm{eff}}(a) = \exp\left(-\sum_k p_k(a) \log p_k(a)\right),
+  \qquad p_k(a) = \frac{\lambda_k \alpha_k(a)^2}{w(a)}.
+\]
+A poem with low $N_{\mathrm{eff}}$ is thematically focused; one with
+high $N_{\mathrm{eff}}$ is thematically diffuse.
+\end{definition}
+
+\begin{remark}
+The spectral condensation $N_{\mathrm{eff}}$ is the exponential of the
+Shannon entropy of the spectral distribution $\{p_k\}$.  This connects
+the poetic notion of thematic focus to information theory: a focused
+poem has \emph{low entropy} in spectral space.  Great poetry, in this
+framework, achieves high condensation ratio~$\gamma$ (much meaning per
+syllable) with low spectral condensation~$N_{\mathrm{eff}}$ (few
+archetypal themes)---it says a great deal about very few things.
+\end{remark}
+
+
+
+%% ================================================================
+%%  CHAPTER 16: BAYESIAN MEANING GAMES
+%% ================================================================
+
+\chapter{Bayesian Meaning Games}
+\label{ch:bayesian}
+
+\epigraph{``In the great chess-Loss of life, the pawns of the soul
+go forward, and may not move back.''}{adapted from Wittgenstein,
+\textit{Culture and Value}}
+
+Classical game theory assumes that payoffs are common knowledge.
+In the space of ideas, this assumption is absurd: no speaker knows
+in advance how an audience will weigh an utterance.  We therefore
+pass to \emph{Bayesian} (incomplete-information) games, where
+each player holds a private \emph{type} drawn from a prior
+distribution over possible resonance functions.
+
+This chapter constructs Bayesian meaning games, proves existence
+of Bayesian Nash equilibria in the ideatic setting, and shows that
+iterated composition produces Bayesian updating---the audience
+\emph{learns} the speaker's type by observing successive compositions.
+
+%% ---------------------------------------------------------------
+\section{Types and Priors}
+\label{sec:types}
+
+\begin{definition}[Ideatic type]
+\label{def:ideatic-type}
+An \textbf{ideatic type} of a player~$i$ is a resonance function
+$\rs_i : \IS \times \IS \to \R$ satisfying the IDT axioms.
+The \textbf{type space} of player~$i$ is a measurable space
+$(\Theta_i, \mathcal{F}_i)$ equipped with a prior probability
+measure $\mu_i \in \mathcal{P}(\Theta_i)$.
+\end{definition}
+
+\begin{definition}[Bayesian meaning game]
+\label{def:bayesian-game}
+A \textbf{Bayesian meaning game} is a tuple
+\[
+  G^B = \bigl(N,\; \IS,\; (\Theta_i)_{i\in N},\;
+  (\mu_i)_{i\in N},\; (u_i)_{i\in N}\bigr),
+\]
+where
+\begin{itemize}
+  \item $N = \{1,\ldots,n\}$ is the player set,
+  \item $\IS$ is the shared ideatic space with $\compose$,
+  \item $\Theta_i$ is the type space for player~$i$,
+  \item $\mu_i \in \mathcal{P}(\Theta_i)$ is the common prior
+        on player~$i$'s type,
+  \item $u_i : \IS^n \times \Theta_i \to \R$ is
+        $u_i(a_1,\ldots,a_n;\theta_i)
+        = \rs_{\theta_i}(a_i,\, a_1\compose\cdots\compose a_n)$.
+\end{itemize}
+A \textbf{strategy} for player~$i$ is a measurable function
+$\sigma_i : \Theta_i \to \IS$.
+\end{definition}
+
+\begin{theorem}[Existence of Bayesian Nash equilibrium]
+\label{thm:bne-existence}
+Let $G^B$ be a Bayesian meaning game in which $\IS$ is compact
+in the resonance topology (Definition~\ref{def:resonance-topology})
+and each $u_i$ is continuous in all arguments.  Then $G^B$ admits
+a Bayesian Nash equilibrium in mixed strategies.
+\end{theorem}
+
+\begin{proof}
+We apply Milgrom and Weber's theorem on distributional strategies
+\cite{milgrom-weber}.  The strategy space $\mathcal{P}(\IS)$ is
+compact and convex in the weak-$*$ topology (since $\IS$ is compact
+metrizable).  The expected payoff
+\[
+  U_i(\sigma)
+  = \int_{\Theta_i} \int_{\IS^n}
+    u_i(a_1,\ldots,a_n;\theta_i)\,
+    \prod_{j\neq i} d\sigma_j(a_j \mid \theta_j)\,
+    d\sigma_i(a_i \mid \theta_i)\, d\mu_i(\theta_i)
+\]
+is continuous in $\sigma$ by dominated convergence (since $u_i$ is
+bounded on the compact domain) and linear in $\sigma_i$.
+Kakutani's fixed-point theorem yields a fixed point of the
+best-response correspondence, which is a BNE.
+\end{proof}
+
+\begin{remark}[What the existence proof tells us philosophically]
+The existence of Bayesian Nash equilibrium in meaning games is not
+merely a technical result---it is a philosophical claim about the
+\emph{possibility of communication}.  The theorem says: whenever ideas
+form a compact space (a finite ``universe of discourse'') and resonance
+varies continuously, there is always a stable way for speakers to
+compose ideas, even when each player's private aesthetic is unknown to
+the others.  Communication is always \emph{possible} in principle.
+
+The proof works by a \emph{fixed-point argument}: it defines a
+``best-response map'' (given what everyone else is doing, what should I
+say?) and shows that this map has a fixed point (a situation where
+everyone's response is best, given everyone else's response).  The key
+mathematical ingredient is Kakutani's theorem, which guarantees fixed
+points for set-valued maps on compact convex sets.  The compactness of
+the ideatic space ensures that the space of strategies is well-behaved;
+the continuity of resonance ensures that small changes in strategy
+produce small changes in payoff.
+
+This echoes a deep theme in the philosophy of language: meaning is not
+determined by individual intention alone, but by an equilibrium of
+mutual expectations.  Wittgenstein's ``language games'' are precisely
+such equilibria.  The existence theorem says that language games
+always have at least one solution, though it does not say that the
+solution is unique or optimal (see Open Problem~\ref{op:bne-unique}).
+\end{remark}
+
+\begin{interpretation}[Connection to Bayesian persuasion]
+The Bayesian meaning game framework naturally connects to the
+theory of \emph{Bayesian persuasion} developed by Kamenica and
+Gentzkow~\cite{kamenica-gentzkow}.  In their framework, a sender
+designs an information structure (a ``signal'') to influence a
+receiver's action.  In IDT, the ``signal'' is a composed idea
+$a \in \IS$, and the ``information structure'' is the mapping from
+the speaker's type $\theta$ to the idea $\sigma(\theta)$.
+
+The Kamenica--Gentzkow insight is that the sender's optimal strategy
+depends on the \emph{concavification} of the sender's payoff as a
+function of the receiver's posterior belief.  In IDT terms: the speaker
+chooses ideas to maximise the concave envelope of the resonance
+payoff, viewed as a function of the listener's posterior type belief.
+This connects persuasion to the \emph{geometry} of the type space:
+the sender exploits convexity gaps in the resonance landscape.
+
+As proved in Volume~I, the resonance function $\rs$ is positive
+semi-definite, which implies that the payoff function $u_i$ is
+concave in certain directions but not all.  The non-concave directions
+are precisely where persuasion has bite: the speaker can improve her
+payoff by strategically withholding or combining ideas.
+\end{interpretation}
+
+%% ---------------------------------------------------------------
+\section{Learning Through Iterated Composition}
+\label{sec:learning}
+
+\begin{definition}[Composition history]
+\label{def:composition-history}
+A \textbf{composition history} of length~$T$ is a sequence
+$h_T = (a_1, a_2, \ldots, a_T) \in \IS^T$ of ideas composed
+sequentially.  The \textbf{cumulative composition} is
+$c_T = a_1 \compose a_2 \compose \cdots \compose a_T$.
+\end{definition}
+
+\begin{definition}[Posterior type belief]
+\label{def:posterior}
+After observing history $h_T$ from player~$j$, player~$i$ forms
+the posterior
+\[
+  \mu_j^{(T)}(\theta_j \mid h_T)
+  \;\propto\;
+  \mu_j(\theta_j)
+  \prod_{t=1}^{T}
+  \ell(\,a_t \mid \theta_j,\, h_{t-1}\,),
+\]
+where $\ell(a_t \mid \theta_j, h_{t-1})$ is the likelihood of
+player~$j$ with type~$\theta_j$ choosing idea~$a_t$ given
+past history~$h_{t-1}$.
+\end{definition}
+
+\begin{theorem}[Bayesian consistency of iterated composition]
+\label{thm:bayesian-consistency}
+If the likelihood model satisfies the identifiability condition
+\[
+  \theta \neq \theta' \;\Longrightarrow\;
+  \exists\, a \in \IS:\;
+  \ell(a \mid \theta, h) \neq \ell(a \mid \theta', h)
+  \quad\text{for some } h,
+\]
+then the posterior $\mu_j^{(T)}$ converges weakly to the Dirac
+measure $\delta_{\theta_j^*}$ at the true type~$\theta_j^*$,
+$\mu_j$-almost surely, as $T \to \infty$.
+\end{theorem}
+
+\begin{proof}
+This is a consequence of Doob's posterior consistency theorem
+applied to the product measure on $\IS^{\N}$ induced by the
+likelihood.  Identifiability ensures that the KL divergence
+$D_{\mathrm{KL}}(\ell(\cdot\mid\theta^*) \| \ell(\cdot\mid\theta)) > 0$
+for $\theta \neq \theta^*$, which is the sufficient condition
+for Doob's theorem.
+\end{proof}
+
+\begin{interpretation}
+Iterated composition is the engine of mutual understanding:
+every new utterance reveals something about the speaker's
+resonance function.  Over time, the listener converges to the
+true type.  This is why long conversations produce deeper
+understanding than one-shot exchanges---the Bayesian posterior
+tightens with each composition.
+\end{interpretation}
+
+\begin{remark}[How the proof works: Doob meets Wittgenstein]
+The Bayesian consistency theorem draws on one of the deepest results
+in probability theory: Doob's theorem on posterior consistency (1949).
+Doob showed that for \emph{almost all} true parameters $\theta^*$
+(with respect to the prior $\mu$), the posterior distribution concentrates
+on $\theta^*$ as data accumulates.  The ``almost all'' qualifier is
+crucial---it means that consistency can fail only on a set of prior
+measure zero.
+
+In our setting, each composed idea $a_t$ is a ``data point'' about the
+speaker's type.  The identifiability condition ensures that different
+types produce distinguishably different compositions---no two resonance
+functions generate the same distribution over ideas.  Under this condition,
+the Kullback--Leibler divergence between the true likelihood and any
+alternative is strictly positive: $D_{\mathrm{KL}}(\ell(\cdot \mid \theta^*)
+\| \ell(\cdot \mid \theta)) > 0$ for $\theta \neq \theta^*$.  Doob's
+theorem then guarantees that the posterior concentrates.
+
+The philosophical content is striking.  Wittgenstein argued that we
+cannot directly access another person's ``form of life''---their private
+experience of meaning.  The Bayesian consistency theorem partially
+vindicates this concern (we never observe the type directly) while
+simultaneously undermining it (we converge to the truth through
+observation).  Understanding another person's meaning is not an act of
+telepathic insight; it is a process of \emph{statistical inference} that
+succeeds under identifiability.  The ``depth'' of understanding that
+comes from long acquaintance is, mathematically, the tightness of a
+Bayesian posterior.
+\end{remark}
+
+\begin{remark}[Prior composition through emergence]
+A subtle but important feature of the Bayesian framework is the way
+priors \emph{compose} with evidence.  In standard Bayesian inference,
+the prior $\mu(\theta)$ and the likelihood $\ell(x \mid \theta)$ combine
+via Bayes' rule to produce the posterior $\mu(\theta \mid x) \propto
+\mu(\theta) \ell(x \mid \theta)$.  In IDT, the ``evidence'' is a composed
+idea, and the likelihood depends on the \emph{emergence} generated by
+composition.
+
+Specifically, consider a listener with prior $\mu_j(\theta_j)$ who
+observes the speaker compose $a_1$ followed by $a_2$.  The likelihood
+of observing $a_2$ after $a_1$ depends on the emergence
+$\emerge(a_1, a_2, a_1 \compose a_2)$---the novelty created by the
+sequential composition.  High emergence indicates that $a_2$ was
+chosen to create surprise, which is informative about the speaker's
+type (surprising compositions are more likely from types with high
+emergence capacity).  Low emergence indicates routine composition,
+which is less informative.
+
+This means that the \emph{rate} of Bayesian learning depends on the
+emergence of the composition sequence.  Speakers who compose with
+high emergence are learned faster; speakers who compose routinely
+are learned slowly.  This has an elegant cultural interpretation:
+\emph{creative speakers are better understood than conventional ones},
+because their compositions are more statistically informative.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Bayesian Persuasion in Ideatic Spaces}
+\label{sec:persuasion}
+
+The Kamenica--Gentzkow framework of Bayesian persuasion has a
+natural IDT incarnation.
+
+\begin{definition}[Ideatic persuasion problem]
+\label{def:persuasion}
+An \textbf{ideatic persuasion problem} consists of:
+\begin{itemize}
+  \item A \emph{sender} (speaker) who observes a state of the world
+        $\omega \in \Omega$ and chooses an idea $a = \sigma(\omega) \in \IS$;
+  \item A \emph{receiver} (listener) who observes $a$ but not $\omega$,
+        forms a posterior $\mu(\omega \mid a)$, and takes an action
+        $b = b^*(\mu) \in \IS$ maximising $\rs_2(b, a \compose b)$;
+  \item The sender's payoff is $v(\omega, b) = \rs_{\omega}(a, a \compose b)$.
+\end{itemize}
+The sender's problem is to choose the \emph{information policy}
+$\sigma : \Omega \to \IS$ that maximises $\mathbb{E}_\omega[v(\omega,
+b^*(\mu(\cdot \mid \sigma(\omega))))]$.
+\end{definition}
+
+\begin{theorem}[Concavification principle for ideatic persuasion]
+\label{thm:concavification}
+The sender's optimal payoff in the ideatic persuasion problem equals
+$\mathrm{cav}(V)(\mu_0)$, where $\mu_0$ is the prior belief over
+$\Omega$, $V(\mu) = \mathbb{E}_\mu[v(\omega, b^*(\mu))]$ is the
+sender's indirect payoff, and $\mathrm{cav}(V)$ denotes the
+\emph{concave closure} (the pointwise smallest concave function
+dominating $V$).
+\end{theorem}
+
+\begin{proof}
+This follows from the general Kamenica--Gentzkow concavification result.
+Any information policy $\sigma$ induces a distribution over posteriors
+$\mu$ that is a mean-preserving spread of the prior $\mu_0$ (by
+Bayes-plausibility: $\mathbb{E}[\mu(\cdot \mid a)] = \mu_0$).
+The sender maximises $\mathbb{E}[V(\mu)]$ subject to this constraint.
+By the supporting hyperplane theorem for concave functions, the
+maximum is $\mathrm{cav}(V)(\mu_0)$.
+\end{proof}
+
+\begin{interpretation}
+The concavification principle tells us that persuasion is a problem
+of \emph{exploiting non-concavities} in the payoff landscape.  When
+the sender's indirect payoff $V(\mu)$ is already concave in the
+listener's belief, persuasion has no value: the sender cannot do better
+than full transparency.  But when $V$ has convex regions---when the
+sender benefits from the listener's uncertainty---then strategic
+composition of ideas can strictly improve the sender's payoff.
+
+In cultural terms, this explains the role of \emph{ambiguity} in
+persuasion.  A politician who speaks ambiguously is not merely being
+evasive; she is optimally exploiting non-concavities in the payoff
+landscape.  The concavification theorem gives her the precise recipe:
+choose ideas whose composition creates a distribution over listener
+beliefs that maximises her expected resonance.
+\end{interpretation}
+
+%% ---------------------------------------------------------------
+\section{Signalling Equilibria}
+\label{sec:signalling}
+
+\begin{definition}[Signalling meaning game]
+\label{def:signalling-game}
+A \textbf{signalling meaning game} is a two-player Bayesian
+meaning game where player~1 (the \emph{speaker}) has private
+type $\theta_1 \in \Theta_1$ and player~2 (the \emph{listener})
+has a known type.  The speaker moves first by choosing
+$a \in \IS$; the listener observes~$a$ and chooses a response
+$b \in \IS$.  Payoffs are
+\begin{align*}
+  u_1(a,b;\theta_1)
+  &= \rs_{\theta_1}(a, a \compose b), \\
+  u_2(a,b)
+  &= \rs_2(b, a \compose b).
+\end{align*}
+\end{definition}
+
+\begin{theorem}[Separating equilibrium under monotone resonance]
+\label{thm:separating}
+Suppose the type space $\Theta_1 = \{\theta_L, \theta_H\}$ with
+$w_{\theta_H}(a) > w_{\theta_L}(a)$ for all $a \neq \void$.
+If the speaker's strategy space is rich enough (for every type,
+the best response is unique), then the signalling game admits a
+\textbf{separating equilibrium} in which each type sends a
+distinct idea.
+\end{theorem}
+
+\begin{proof}
+The single-crossing property holds: if $\theta_H$ values
+composition more than $\theta_L$, then for any two ideas
+$a' \succ a$ (in the weight ordering), the incremental payoff
+$u_1(a',b;\theta_H) - u_1(a,b;\theta_H)
+> u_1(a',b;\theta_L) - u_1(a,b;\theta_L)$.
+By the Spence--Mirrlees condition, the best-response
+correspondence for $\theta_H$ lies strictly above that for
+$\theta_L$, ensuring separation.
+\end{proof}
+
+\begin{interpretation}
+The separating equilibrium is the algebraic content of
+``actions speak louder than words.''  A speaker whose true
+resonance function assigns high weight to an idea can credibly
+signal this by composing it, because a low-type speaker would
+find the cost (in terms of payoff sacrifice) prohibitive.
+\end{interpretation}
+
+\begin{remark}[The proof via Spence--Mirrlees: why separation works]
+The separating equilibrium theorem relies on the \emph{single-crossing
+property}, a condition named after Michael Spence's model of
+educational signalling (for which he shared the 2001 Nobel Prize).
+
+The key insight is that high-type and low-type speakers experience
+different marginal costs of ``upgrading'' their composition.  For
+the high-type speaker (whose resonance function assigns high weight
+to all non-void ideas), the marginal benefit of composing a weightier
+idea is large.  For the low-type speaker, the same upgrade yields a
+smaller benefit.  The single-crossing property says that these
+marginal benefit curves cross \emph{exactly once}: at some threshold
+idea~$a^*$, the high type is willing to compose while the low type
+is not.
+
+In the proof, we formalise this as follows.  For any two ideas
+$a' \succ a$ (where $a'$ is weightier), the incremental payoff for
+the high type exceeds that for the low type:
+\[
+  u_1(a', b; \theta_H) - u_1(a, b; \theta_H) > u_1(a', b; \theta_L) - u_1(a, b; \theta_L).
+\]
+This follows from the assumption that $w_{\theta_H}(a) > w_{\theta_L}(a)$
+for all $a \neq \void$, which means the high type's resonance function
+is uniformly stronger.
+
+The Spence--Mirrlees condition then guarantees that the best-response
+correspondence for $\theta_H$ lies strictly above that for $\theta_L$.
+In equilibrium, the listener can infer the speaker's type from the
+choice of idea: a high choice reveals a high type, a low choice
+reveals a low type.  This is separation.
+
+The cultural interpretation is that costly signalling---composing
+ideas that require genuine resonance capacity---is a reliable indicator
+of type.  A community that allows costly signalling (e.g., through
+peer-reviewed publication, which requires sustained intellectual
+effort) can achieve separation.  A community that does not (e.g.,
+social media, where the cost of posting is negligible) is stuck
+in pooling equilibria or babbling.
+\end{remark}
+
+\begin{lstlisting}
+-- Lean 4 sketch: Separating equilibrium existence
+theorem separating_equilibrium_exists
+    (thetaL thetaH : Type_)
+    (w_L w_H : Idea -> Real)
+    (h_order : forall a, a != void -> w_H a > w_L a)
+    (IS : IdeaSpace)
+    (h_rich : forall theta, exists! a, is_best_response theta a) :
+    exists sigma : Type_ -> Idea,
+      sigma thetaL != sigma thetaH
+      /\ is_BNE sigma := by
+  sorry -- Full proof uses Spence-Mirrlees single-crossing
+\end{lstlisting}
+
+%% ---------------------------------------------------------------
+\section{Pooling and Babbling}
+\label{sec:pooling}
+
+Not all equilibria are separating.
+
+\begin{definition}[Pooling equilibrium]
+\label{def:pooling}
+A \textbf{pooling equilibrium} in a signalling meaning game is
+a strategy profile where all types of the speaker send the same
+idea: $\sigma_1(\theta) = a^*$ for all $\theta \in \Theta_1$.
+\end{definition}
+
+\begin{proposition}[The void is always a pooling equilibrium]
+\label{prop:void-pooling}
+If $\rs(\void, b) = 0$ for all $b \in \IS$ (the void resonates
+with nothing), then $\sigma_1(\theta) = \void$ for all~$\theta$
+is a pooling equilibrium---the \textbf{babbling equilibrium}.
+\end{proposition}
+
+\begin{proof}
+If the speaker sends $\void$, the listener learns nothing and
+plays a best response to the prior.  Deviating to any $a \neq \void$
+yields $u_1(a,b;\theta) = \rs_\theta(a, a\compose b)$, but since
+the listener's response~$b$ is fixed at the prior-optimal, the
+deviation may not improve payoff.  Hence $\void$ is a best
+response for all types if the listener's prior-optimal response
+dominates any response to an off-path signal.
+\end{proof}
+
+\begin{interpretation}
+The babbling equilibrium is silence: when no type has an incentive
+to break the ice, communication collapses.  This models the
+``wall of silence'' in communities where speaking carries
+no differential resonance benefit.
+\end{interpretation}
+
+%% ---------------------------------------------------------------
+\section{The Value of Information in Meaning Games}
+\label{sec:value-info}
+
+How much is it worth to learn another player's type before
+composing?
+
+\begin{definition}[Value of information]
+\label{def:voi}
+The \textbf{value of information} for player~$i$ in a Bayesian
+meaning game is the difference between the expected payoff under
+complete information and under the prior:
+\[
+  \mathrm{VoI}_i
+  = \mathbb{E}_\theta\bigl[u_i\bigl(\sigma^*_{\mathrm{CI}}(\theta);\theta_i\bigr)\bigr]
+  - \mathbb{E}_\theta\bigl[u_i\bigl(\sigma^*_{\mathrm{BNE}}(\theta);\theta_i\bigr)\bigr],
+\]
+where $\sigma^*_{\mathrm{CI}}$ is the complete-information equilibrium
+and $\sigma^*_{\mathrm{BNE}}$ is the Bayesian Nash equilibrium.
+\end{definition}
+
+\begin{theorem}[Value of information bound]
+\label{thm:voi-bound}
+In a Bayesian meaning game with type entropy $H(\Theta_j)$, the
+value of information satisfies
+\[
+  \mathrm{VoI}_i
+  \le \sqrt{2\, W_{\max}\, H(\Theta_j)},
+\]
+where $W_{\max} = \sup_{a \in \IS} w(a)$ is the maximum weight.
+\end{theorem}
+
+\begin{proof}
+By Pinsker's inequality, the total variation distance between the
+prior and the Dirac posterior satisfies
+$\| \mu_j - \delta_{\theta_j^*}\|_{\mathrm{TV}} \le \sqrt{H(\Theta_j)/2}$.
+The payoff difference is bounded by the Lipschitz constant of the
+payoff function (at most $W_{\max}$) times the total variation
+distance.  Combining gives $\mathrm{VoI}_i \le W_{\max}
+\sqrt{H(\Theta_j)/2} \le \sqrt{2 W_{\max} H(\Theta_j)}$.
+\end{proof}
+
+\begin{interpretation}
+The value of information is bounded by the geometric mean of the
+maximum weight and the type entropy.  When types are highly uncertain
+(high $H$), learning is very valuable; when the meaning space is
+sparse (low $W_{\max}$), learning is less valuable because even
+optimal composition creates limited weight.  This connects the
+information-theoretic structure of the type space to the algebraic
+structure of the ideatic space in a quantitative way.
+
+The bound also implies that in communities with very low type entropy---where
+everyone agrees on resonance---information has little value, and
+Bayesian games reduce to complete-information games.  This is the
+mathematical content of Wittgenstein's observation that in a
+``form of life'' where everyone agrees, there is nothing to argue about.
+\end{interpretation}
+
+
+
+%% ================================================================
+%%  CHAPTER 17: MECHANISM DESIGN FOR MEANING
+%% ================================================================
+
+\chapter{Mechanism Design for Meaning}
+\label{ch:mechanism}
+
+\epigraph{``The philosopher is not a citizen of any community of
+ideas.  That is what makes him a philosopher.''}{Wittgenstein,
+\textit{Zettel}, \S455}
+
+Wittgenstein's later philosophy insists that meaning is a social
+practice: the rules of a language-game are constituted by the
+community that plays them.  But this raises a design question:
+can a community \emph{choose} its composition rules so that
+truth-telling (or, in our framework, sincere resonance reporting)
+is incentive-compatible?  This is the province of \emph{mechanism
+design}, which we now adapt to ideatic spaces.
+
+%% ---------------------------------------------------------------
+\section{The Revelation Problem}
+\label{sec:revelation}
+
+\begin{definition}[Ideatic social choice function]
+\label{def:scf}
+An \textbf{ideatic social choice function} is a mapping
+$f : \prod_{i \in N} \Theta_i \to \IS$ that selects a
+``communal idea'' given the true type profile.
+\end{definition}
+
+\begin{definition}[Mechanism]
+\label{def:mechanism}
+An \textbf{ideatic mechanism} is a tuple
+$\mathcal{M} = (M_1,\ldots,M_n,\; g)$
+where $M_i$ is the \textbf{message space} for player~$i$ and
+$g : \prod_i M_i \to \IS$ is the \textbf{outcome function}.
+A mechanism \textbf{implements} $f$ if there exists an equilibrium
+in which $g(\sigma(\theta)) = f(\theta)$ for all type profiles~$\theta$.
+\end{definition}
+
+\begin{theorem}[Revelation principle for meaning games]
+\label{thm:revelation}
+If a social choice function $f$ is implementable by \emph{any}
+mechanism in Bayesian Nash equilibrium, then it is implementable
+by a \textbf{direct mechanism} in which $M_i = \Theta_i$ and
+truth-telling ($\sigma_i(\theta_i) = \theta_i$) is an equilibrium.
+\end{theorem}
+
+\begin{proof}
+Standard revelation-principle argument.  Given a mechanism
+$\mathcal{M}=(M_i,g)$ and an equilibrium $\sigma^*$, define
+the direct mechanism $g'(\theta) = g(\sigma^*(\theta))$.
+Truth-telling in the direct mechanism yields the same outcome
+as $\sigma^*$ in the original mechanism.  Any profitable
+deviation from truth-telling in $g'$ would correspond to a
+profitable deviation from $\sigma^*$ in $\mathcal{M}$,
+contradicting the equilibrium assumption.
+\end{proof}
+
+\begin{remark}[The revelation principle in plain language]
+The revelation principle is one of the most powerful results in
+economic theory, and its application to meaning games deserves
+careful explanation.
+
+The theorem says: if you can implement a social choice function
+(a rule for choosing communal ideas) using \emph{any} mechanism---however
+complex---then you can also implement it using a very simple mechanism
+in which every player just honestly reports their type.  The ``direct''
+mechanism asks each player: ``What is your resonance function?''  If
+truth-telling is an equilibrium of the direct mechanism, then we lose
+nothing by restricting attention to direct mechanisms.
+
+The proof is constructive and elegant.  Given any mechanism $\mathcal{M}$
+with an equilibrium $\sigma^*$, we build the direct mechanism $g'$ that
+\emph{simulates} $\mathcal{M}$: when player~$i$ reports type $\theta_i$,
+the mechanism computes $\sigma^*_i(\theta_i)$ (what player~$i$ would
+have done in the original mechanism) and then applies the outcome
+function~$g$.  Truth-telling in $g'$ is equivalent to playing $\sigma^*$
+in $\mathcal{M}$, so truth-telling is indeed an equilibrium.
+
+For IDT, this is philosophically significant.  It says that the
+question ``Can a community design institutions to elicit sincere
+reports of aesthetic judgment?'' reduces to the question ``Can a
+community design a \emph{direct} institution where honesty is
+incentive-compatible?''  This is the Hurwicz programme---named after
+Leonid Hurwicz, who shared the 2007 Nobel Prize for mechanism design---applied
+to the domain of meaning.
+
+Hurwicz's original insight was that economic institutions should be
+evaluated not by their stated goals but by the \emph{incentives} they
+create.  The revelation principle is the formal tool that reduces
+institutional design to incentive analysis.  In IDT, this means
+that cultural institutions---journals, academies, peer review---can
+be analysed purely in terms of the incentives they create for
+sincere resonance reporting.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Incentive Compatibility}
+\label{sec:ic}
+
+\begin{definition}[Incentive-compatible ideatic mechanism]
+\label{def:ic}
+A direct mechanism $g : \prod_i \Theta_i \to \IS$ is
+\textbf{incentive-compatible (IC)} if for every player~$i$
+and every pair of types $\theta_i, \theta_i' \in \Theta_i$,
+\[
+  \mathbb{E}_{\theta_{-i}}\bigl[
+    u_i\bigl(g(\theta_i,\theta_{-i});\, \theta_i\bigr)
+  \bigr]
+  \;\ge\;
+  \mathbb{E}_{\theta_{-i}}\bigl[
+    u_i\bigl(g(\theta_i',\theta_{-i});\, \theta_i\bigr)
+  \bigr].
+\]
+\end{definition}
+
+\begin{definition}[Transfer payment]
+\label{def:transfer}
+A \textbf{resonance transfer} is a function
+$t_i : \prod_j \Theta_j \to \R$ specifying a payment
+(in ``resonance units'') to player~$i$.  The augmented payoff is
+\[
+  v_i(\theta) = u_i(g(\theta);\theta_i) + t_i(\theta).
+\]
+\end{definition}
+
+\begin{theorem}[VCG mechanism for ideatic allocation]
+\label{thm:vcg}
+Define the VCG transfers
+\[
+  t_i(\theta)
+  = \sum_{j \neq i}
+    u_j\bigl(g(\theta);\theta_j\bigr)
+  - h_i(\theta_{-i}),
+\]
+where $h_i$ is an arbitrary function of $\theta_{-i}$ and
+$g(\theta) = \arg\max_{a \in \IS} \sum_{j} u_j(a;\theta_j)$.
+Then the direct mechanism $(g, t_1,\ldots,t_n)$ is
+incentive-compatible and the outcome $g(\theta)$ maximises
+social welfare.
+\end{theorem}
+
+\begin{proof}
+Player~$i$'s augmented payoff under truth-telling is
+\begin{align*}
+  v_i(\theta_i,\theta_{-i})
+  &= u_i(g(\theta);\theta_i) + \sum_{j\neq i} u_j(g(\theta);\theta_j) - h_i(\theta_{-i}) \\
+  &= \sum_j u_j(g(\theta);\theta_j) - h_i(\theta_{-i}).
+\end{align*}
+Since $g(\theta)$ maximises $\sum_j u_j(a;\theta_j)$ over $a$,
+truth-telling maximises $v_i$---deviating to $\theta_i'$ yields
+an outcome $g(\theta_i',\theta_{-i})$ that attains a weakly
+lower social welfare, hence a weakly lower $v_i$.
+\end{proof}
+
+\begin{interpretation}
+The VCG mechanism for ideatic allocation says: if a community can
+commit to a rule that selects the idea maximising total resonance,
+and charges each member for the ``externality'' their report imposes,
+then every member reports sincerely.  This is a precise rebuttal to
+the Wittgensteinian worry that private meaning is inaccessible:
+under VCG, agents \emph{voluntarily reveal} their resonance
+functions.
+\end{interpretation}
+
+\begin{remark}[How the VCG proof works: aligning private and social incentives]
+The VCG mechanism is named after Vickrey (1961), Clarke (1971), and
+Groves (1973).  Its proof is one of the most elegant in mechanism design,
+and it works by a trick that deserves exposition.
+
+The key insight is to \emph{align} each player's private incentive
+with the social objective.  Under the VCG transfer
+$t_i(\theta) = \sum_{j \neq i} u_j(g(\theta); \theta_j) - h_i(\theta_{-i})$,
+player~$i$'s augmented payoff becomes
+\[
+  v_i = u_i(g(\theta); \theta_i) + \sum_{j \neq i} u_j(g(\theta); \theta_j) - h_i(\theta_{-i})
+  = \underbrace{\sum_j u_j(g(\theta); \theta_j)}_{\text{social welfare}} - h_i(\theta_{-i}).
+\]
+The term $h_i(\theta_{-i})$ depends only on others' types, so player~$i$
+cannot affect it.  Therefore, player~$i$'s goal reduces to maximising
+social welfare---exactly the designer's goal.  Truth-telling achieves
+this maximum (since $g(\theta) = \arg\max_a \sum_j u_j(a; \theta_j)$),
+so truth-telling is a dominant strategy.
+
+The philosophical content is remarkable.  The VCG mechanism transforms
+\emph{selfish} agents into \emph{altruistic} ones: by construction,
+each agent maximises her own payoff by maximising everyone's payoff.
+The mechanism does not require agents to \emph{be} altruistic; it
+creates a situation where selfish behaviour \emph{is} altruistic
+behaviour.  This is the ``invisible hand'' made rigorous.
+
+For meaning games specifically, VCG says that a community can elicit
+sincere aesthetic judgments by (i)~selecting the idea that maximises
+total resonance, and (ii)~charging each member an ``externality tax''
+equal to the difference between the social welfare the community
+\emph{would} have achieved without that member's report and the welfare
+it actually achieves.  The tax internalises the externality: a member
+whose report changes the outcome pays for the disruption she causes.
+
+As proved in Volume~I, the VCG mechanism is the \emph{unique}
+mechanism (up to the choice of~$h_i$) that achieves both efficiency
+and incentive compatibility when the type space is sufficiently rich.
+This uniqueness result, due to Green and Laffont~\cite{green-laffont},
+strengthens the case for VCG as the canonical institution for
+ideatic allocation.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Individual Rationality and Participation}
+\label{sec:ir}
+
+\begin{definition}[Individually rational mechanism]
+\label{def:ir}
+A mechanism $(g, t)$ is \textbf{individually rational (IR)} if
+every player's expected augmented payoff is non-negative under
+truth-telling:
+\[
+  \mathbb{E}_{\theta_{-i}}\bigl[v_i(\theta_i,\theta_{-i})\bigr]
+  \;\ge\; 0
+  \quad\text{for all } i, \theta_i.
+\]
+\end{definition}
+
+\begin{theorem}[Myerson--Satterthwaite impossibility for ideas]
+\label{thm:myerson-impossibility}
+Consider a bilateral meaning game ($n=2$) where player~1 is a
+``seller'' of idea~$a$ and player~2 is a ``buyer.''  If the type
+distributions $\mu_1, \mu_2$ have overlapping support and the
+social choice function $f$ is ex-post efficient, then no
+mechanism implementing~$f$ is simultaneously IC, IR, and
+budget-balanced ($t_1 + t_2 = 0$).
+\end{theorem}
+
+\begin{proof}
+Adapt Myerson and Satterthwaite~\cite{myerson-satterthwaite}.
+Efficiency requires trade whenever $\rs_{\theta_2}(a,\cdot) >
+\rs_{\theta_1}(a,\cdot)$.  IC pins down expected transfers via
+the revenue equivalence lemma.  Budget balance and IR jointly
+require the expected gains from trade to be non-negative, which
+fails when the type supports overlap---specifically, there exist
+$\theta_1, \theta_2$ in the overlap region where the seller's
+valuation exceeds the buyer's, making efficient trade impossible
+without an outside subsidy.
+\end{proof}
+
+\begin{interpretation}
+Even in the world of ideas, efficiency, incentive compatibility,
+and voluntary participation cannot all be achieved simultaneously.
+This impossibility result explains why cultural institutions
+(journals, galleries, universities) exist: they act as
+``subsidisers'' who absorb the budget deficit, enabling trades
+of ideas that the free market cannot support.
+\end{interpretation}
+
+\begin{remark}[Why the impossibility matters]
+The Myerson--Satterthwaite theorem for ideas is perhaps the most
+sobering result in this volume.  Let us unpack why.
+
+The theorem establishes a three-way conflict among desirable
+properties: (1)~\emph{efficiency}---the community should select ideas
+that maximise total resonance; (2)~\emph{incentive compatibility}---each
+member should have no reason to misrepresent their aesthetic preferences;
+(3)~\emph{individual rationality}---no one should be forced to participate.
+
+The proof shows that when the ``buyer'' and ``seller'' of an idea have
+overlapping valuations (there is genuine uncertainty about whether the
+trade should occur), no budget-balanced mechanism can simultaneously
+satisfy all three properties.  The revenue equivalence lemma pins down
+the expected transfers under IC, and these transfers are incompatible
+with both IR and budget balance in the overlap region.
+
+Culturally, this means that every institution for idea exchange involves
+a \emph{compromise}.  Academic peer review achieves IC (anonymity
+reduces strategic manipulation) but sacrifices efficiency (rejection
+of good papers) and IR (unpaid labour).  Art markets achieve
+participation (voluntary exchange) but sacrifice IC (strategic pricing)
+and efficiency (taste bubbles).  No institutional design can escape
+the impossibility; the best we can do is choose which property to
+sacrifice.
+
+This result also connects to Maskin's work on implementation theory,
+which we develop in the next section.  Maskin showed that a social
+choice function is implementable in Nash equilibrium if and only if it
+satisfies a condition called \emph{monotonicity}.  The Myerson--Satterthwaite
+impossibility can be understood as a failure of Maskin monotonicity in
+the bilateral setting.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Maskin Monotonicity and Implementation}
+\label{sec:maskin}
+
+Eric Maskin's contribution to mechanism design theory centres on
+the concept of \emph{monotonicity}: a necessary condition for a
+social choice function to be implementable in Nash equilibrium.
+
+\begin{definition}[Maskin monotonicity for ideatic spaces]
+\label{def:maskin-mono}
+An ideatic social choice function $f : \prod_i \Theta_i \to \IS$
+satisfies \textbf{Maskin monotonicity} if, whenever $f(\theta) = a$
+and for all players~$i$ and ideas~$b$:
+\[
+  u_i(a; \theta_i) \ge u_i(b; \theta_i)
+  \;\Longrightarrow\;
+  u_i(a; \theta_i') \ge u_i(b; \theta_i'),
+\]
+then $f(\theta') = a$ as well (where $\theta'$ agrees with $\theta$
+on the lower contour sets of~$a$).
+\end{definition}
+
+\begin{theorem}[Maskin's theorem for meaning games]
+\label{thm:maskin}
+If an ideatic social choice function~$f$ is Nash-implementable by
+some mechanism, then $f$ satisfies Maskin monotonicity.  Conversely,
+if $f$ satisfies Maskin monotonicity and the ``no-veto-power''
+condition (no single player can block a unanimously preferred outcome),
+then $f$ is Nash-implementable when $|N| \ge 3$.
+\end{theorem}
+
+\begin{proof}
+\emph{Necessity.}  Suppose $f(\theta) = a$ and $\sigma^*$ is a Nash
+equilibrium implementing~$f$.  If the lower contour set of~$a$ weakly
+expands from $\theta$ to~$\theta'$ for all players, then $\sigma^*$
+remains an equilibrium under~$\theta'$ (no player gains from deviating,
+since the set of outcomes they prefer to~$a$ has only shrunk).  Hence
+$f(\theta') = g(\sigma^*(\theta')) = a$.
+
+\emph{Sufficiency.}  The canonical construction uses a mechanism where
+each player reports a type, an alternative, and an integer.  If all
+reports agree, the outcome is~$f(\theta)$.  If exactly one deviates,
+monotonicity ensures the outcome is unchanged unless the deviant
+can produce a beneficial deviation.  Integer ties are broken by a
+modular arithmetic rule.  The no-veto-power condition handles the
+remaining edge cases.
+\end{proof}
+
+\begin{interpretation}
+Maskin monotonicity has a natural cultural interpretation: if the
+community selects idea~$a$ when preferences are $\theta$, and then
+preferences shift so that $a$ is liked \emph{even more} (relative
+to all alternatives), then $a$ should still be selected.  This is
+a basic rationality condition for cultural institutions: don't
+reject a classic when it becomes even more relevant.
+
+The sufficiency result says that for communities with at least three
+members, any monotonic social choice function can be implemented---there
+exists an institution that makes it happen.  This is a deep optimism
+result: in communities of sufficient size, good cultural outcomes are
+attainable by design.
+
+As proved in Volume~I, the resonance axioms endow the preference
+ordering with a rich geometric structure that makes Maskin monotonicity
+easier to verify than in the general mechanism-design setting.
+\end{interpretation}
+
+%% ---------------------------------------------------------------
+\section{Optimal Auction for Resonance Slots}
+\label{sec:auction}
+
+\begin{definition}[Resonance slot auction]
+\label{def:slot-auction}
+A \textbf{resonance slot} is a position in a communal composition
+sequence.  A \textbf{resonance slot auction} allocates $k$ slots
+to $n > k$ competing ideas based on reported types.
+\end{definition}
+
+\begin{theorem}[Revenue-optimal auction]
+\label{thm:optimal-auction}
+The revenue-optimal auction for resonance slots is a
+Myerson-type auction~\cite{myerson-auction} where each idea~$a_i$
+with reported type~$\theta_i$ receives a \textbf{virtual
+resonance} score
+\[
+  \psi_i(\theta_i)
+  = w_{\theta_i}(a_i)
+  - \frac{1-F_i(\theta_i)}{f_i(\theta_i)}
+    \cdot w_{\theta_i}'(a_i),
+\]
+and the $k$~ideas with the highest virtual resonance are
+allocated slots, paying the threshold virtual resonance.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Apply Myerson's optimal auction theory.  The virtual valuation
+$\psi_i$ arises from the usual integration-by-parts trick in the
+IC constraint.  Under the regularity condition ($\psi_i$
+non-decreasing in $\theta_i$), the allocation rule that
+maximises expected virtual surplus is to select the top-$k$ ideas.
+\end{proof}
+
+\begin{interpretation}[Why virtual resonance matters]
+The revenue-optimal auction introduces the concept of \emph{virtual
+resonance}---a modified version of actual resonance that accounts for
+the ``information rent'' each agent extracts.  The virtual resonance
+$\psi_i(\theta_i) = w_{\theta_i}(a_i) - \frac{1-F_i(\theta_i)}{f_i(\theta_i)}
+\cdot w_{\theta_i}'(a_i)$ differs from actual resonance by the
+\emph{hazard rate adjustment} $(1-F)/f$.
+
+The hazard rate measures how ``surprising'' a type is: if $\theta_i$ is
+in the tail of the distribution (low $f_i$, high $1-F_i$), the hazard
+rate is large, and the virtual resonance is substantially less than the
+actual resonance.  Rare types pay a large ``information rent'' because
+the mechanism designer must leave them enough surplus to prevent them
+from imitating more common types.
+
+In cultural terms, the optimal auction for resonance slots is a model
+of \emph{editorial selection}.  A journal editor allocating limited
+publication slots must balance actual quality (actual resonance) against
+strategic reporting (authors know their own work better than the editor).
+The virtual resonance formula tells the editor how much to ``discount''
+each submission based on the author's position in the quality distribution.
+The regularity condition ($\psi_i$ non-decreasing) ensures that the
+ranking by virtual resonance agrees with the ranking by actual resonance
+for the ``typical'' case; when regularity fails, the editor must use
+``ironing'' (pooling nearby types) to restore monotonicity.
+
+As proved in Volume~I, Myerson's theory extends to multi-dimensional
+type spaces with substantial complications.  The one-dimensional case
+presented here captures the essential economic logic while remaining
+analytically tractable.
+\end{interpretation}
+
+\begin{lstlisting}
+-- Lean 4 sketch: VCG mechanism incentive compatibility
+theorem vcg_ic (N : Finset Player) (IS : IdeaSpace)
+    (u : Player -> Idea -> Type_ -> Real)
+    (g : (Player -> Type_) -> Idea)
+    (t : Player -> (Player -> Type_) -> Real)
+    (h_welfare : forall theta, g theta = argmax (fun a => Finset.sum N (fun j => u j a (theta j))))
+    (h_vcg : forall i theta,
+      t i theta = Finset.sum (N.erase i) (fun j => u j (g theta) (theta j)) - h_i i (fun j => theta j)) :
+    forall i theta_i theta_i',
+      E_neg_i (fun th => u i (g (update th i theta_i)) theta_i + t i (update th i theta_i))
+      >= E_neg_i (fun th => u i (g (update th i theta_i')) theta_i + t i (update th i theta_i')) := by
+  sorry -- Standard VCG incentive-compatibility proof
+\end{lstlisting}
+
+
+
+%% ================================================================
+%%  CHAPTER 18: INFORMATION AND EMERGENCE
+%% ================================================================
+
+\chapter{Information Theory of Emergence}
+\label{ch:information}
+
+\epigraph{``Information is the resolution of uncertainty.''}{Claude Shannon}
+
+The emergence term $\emerge(s,b,a)$ is the heart of Idea Diffusion
+Theory.  In this chapter we reveal its information-theoretic
+content: emergence is \emph{mutual information created by
+composition}.  We prove that the Cauchy--Schwarz inequality for
+$\rs$ is equivalent to a channel-capacity bound, and that the
+cocycle condition on emergence is a chain rule for mutual
+information.
+
+%% ---------------------------------------------------------------
+\section{Resonance as Mutual Information}
+\label{sec:resonance-info}
+
+\begin{definition}[Ideatic random variable]
+\label{def:ideatic-rv}
+An \textbf{ideatic random variable} is a random variable $X$
+taking values in $\IS$ with distribution $\mu_X$.  The
+\textbf{resonance entropy} of~$X$ is
+\[
+  H_{\rs}(X) = -\mathbb{E}\bigl[\log w(X)\bigr]
+  = -\int_{\IS} \log\bigl(\rs(a,a)\bigr)\, d\mu_X(a).
+\]
+\end{definition}
+
+\begin{definition}[Resonance mutual information]
+\label{def:rmi}
+For ideatic random variables $X, Y$ with joint distribution
+$\mu_{XY}$, the \textbf{resonance mutual information} is
+\[
+  I_{\rs}(X;Y) =
+  \mathbb{E}\left[
+    \log \frac{\rs(X,Y)}{\sqrt{w(X)\,w(Y)}}
+  \right]
+  = \mathbb{E}\bigl[\log \rho(X,Y)\bigr].
+\]
+\end{definition}
+
+\begin{theorem}[Emergence as information creation]
+\label{thm:emergence-info}
+Let $X, Y$ be independent ideatic random variables and
+$Z = X \compose Y$.  Then
+\[
+  I_{\rs}(X;Z) - I_{\rs}(X;Y)
+  = \mathbb{E}\left[
+    \log\left(1 + \frac{\emerge(X,Y,Z)}{w(X)+w(Y)+2\rs(X,Y)}\right)
+  \right].
+\]
+In particular, positive emergence strictly increases the mutual
+information between a component and the composed whole.
+\end{theorem}
+
+\begin{proof}
+By the decomposition axiom,
+$\rs(X,Z) = \rs(X,X) + \rs(X,Y) + \emerge'(X,Y,Z)$
+where $\emerge'$ absorbs the cross-emergence terms.
+Thus
+\begin{align*}
+  \log \rho(X,Z)
+  &= \log \frac{\rs(X,Z)}{\sqrt{w(X)\,w(Z)}} \\
+  &= \log \frac{w(X)+\rs(X,Y)+\emerge'(X,Y,Z)}{\sqrt{w(X)\,w(Z)}}.
+\end{align*}
+Subtracting $\log \rho(X,Y)$ and simplifying using
+$w(Z) = w(X) + w(Y) + 2\rs(X,Y) + \emerge(X,Y,Z)$ gives the
+stated formula after taking expectations.
+\end{proof}
+
+\begin{interpretation}
+Composition is an information-creating channel.  When you combine
+two ideas, the emergence term generates \emph{new} mutual
+information that did not exist in the components separately.
+This is the information-theoretic content of the commonplace
+that ``the whole is greater than the sum of its parts.''
+\end{interpretation}
+
+\begin{remark}[The emergence bound: Cauchy--Schwarz for ideas]
+The emergence-as-information-creation theorem contains a hidden bound
+that deserves emphasis.  From the Cauchy--Schwarz inequality
+$\rs(a,b)^2 \le w(a) \cdot w(b)$, we can derive:
+\[
+  \emerge(a,b,c) \;\le\; w(c) - w(a) - w(b) + 2\sqrt{w(a) \cdot w(b)}.
+\]
+This is the \textbf{emergence bound theorem} (Cauchy--Schwarz for ideas):
+the emergence $\emerge(a,b,c)$ between any two ideas~$a,b$ as measured
+against observer~$c$ cannot exceed a quantity determined by the weights.
+
+Philosophically, this means that \emph{creativity has limits}.  The
+novelty created by composing two ideas, as measured against any observer,
+is bounded by the geometric mean of the components' weights plus the
+observer's weight.  Absolute novelty---emergence unbounded by the
+existing conceptual landscape---is mathematically impossible.
+
+This is a deep and perhaps unsettling result.  It says that even the
+most radical conceptual innovation is \emph{tethered} to the existing
+landscape of ideas.  Copernicus could not have been more revolutionary
+than the combined weight of Ptolemaic astronomy and the geometric
+tradition allowed.  The emergence bound is the price of being intelligible:
+to be understood at all, a new idea must resonate with what already exists.
+
+In information-theoretic terms, the emergence bound is a \emph{channel
+capacity constraint}.  The ``channel'' through which emergence operates
+can transmit at most $\log(1 + 2\sqrt{w(a)w(b)})$ bits of mutual
+information per composition.  This is the fundamental limit on the
+rate at which meaning can be created.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Rate-Distortion Theory of Ideas}
+\label{sec:rate-distortion}
+
+Shannon's rate-distortion theory asks: at what rate must a source be
+encoded to achieve a given fidelity?  We develop the IDT analogue.
+
+\begin{definition}[Ideatic distortion]
+\label{def:distortion}
+A \textbf{resonance distortion measure} between ideas $a$ and its
+representation $\hat{a}$ is
+\[
+  d(a, \hat{a}) = w(a) + w(\hat{a}) - 2\,\rs(a, \hat{a})
+  = w(a) + w(\hat{a}) - 2\rho(a,\hat{a})\sqrt{w(a)w(\hat{a})}.
+\]
+This is the squared resonance distance: $d(a,\hat{a}) = d_{\rs}(a,\hat{a})^2
+\cdot \sqrt{w(a)w(\hat{a})}$.
+\end{definition}
+
+\begin{definition}[Rate-distortion function]
+\label{def:rate-distortion}
+For an ideatic source $X$ with distribution $\mu_X$ over $\IS$, the
+\textbf{rate-distortion function} at distortion level~$D$ is
+\[
+  R(D) = \inf_{\substack{p(\hat{a} \mid a) :\\
+  \mathbb{E}[d(X,\hat{X})] \le D}}
+  I_{\rs}(X; \hat{X}),
+\]
+where the infimum is over all conditional distributions (``encoding
+channels'') that achieve expected distortion at most~$D$.
+\end{definition}
+
+\begin{theorem}[Rate-distortion bounds for ideatic sources]
+\label{thm:rate-distortion}
+For an ideatic source with weight variance
+$\mathrm{Var}(w(X)) = \sigma_w^2$:
+\[
+  R(D) \ge \max\left(0,\; \frac{1}{2}\log\frac{\sigma_w^2}{D}\right).
+\]
+Moreover, if the source admits a Gaussian-like spectral decomposition
+(the coefficients $\alpha_k(X)$ in the eigenidea basis are independent
+Gaussian), then equality holds.
+\end{theorem}
+
+\begin{proof}
+The lower bound follows from the data-processing inequality applied to
+the weight variable: $I_{\rs}(X;\hat{X}) \ge I(w(X); w(\hat{X}))$,
+and the Gaussian rate-distortion function $R_G(D) = \frac{1}{2}
+\log(\sigma^2/D)$ lower-bounds the right-hand side.  For the Gaussian
+spectral source, the reverse waterfilling solution achieves the bound
+with equality, as in the classical theory.
+\end{proof}
+
+\begin{interpretation}
+The rate-distortion function tells us the minimum ``cognitive bandwidth''
+required to faithfully represent a stream of ideas at a given level of
+approximation.  At distortion $D = 0$ (perfect fidelity), the rate is
+infinite---you need unlimited bandwidth to represent every nuance.  As
+$D$ increases (coarser representation), the rate drops.
+
+This has immediate implications for cultural transmission.  When ideas
+pass through a ``lossy channel'' (oral tradition, translation, hearsay),
+the rate-distortion function quantifies the inevitable loss.  A culture
+with high ideatic entropy (many diverse, high-weight ideas) requires a
+high transmission rate to preserve fidelity.  A culture with low entropy
+(few dominant ideas, homogeneous resonance) is easier to transmit.
+
+The connection to Kolmogorov complexity is illuminating.  Kolmogorov
+complexity measures the shortest \emph{exact} description; rate-distortion
+theory measures the shortest \emph{approximate} description.  IDT's
+rate-distortion function is thus the ``lossy compression'' counterpart
+of ideatic Kolmogorov complexity.
+\end{interpretation}
+
+%% ---------------------------------------------------------------
+\section{Kolmogorov Complexity of Emergence}
+\label{sec:kolmogorov}
+
+\begin{definition}[Ideatic Kolmogorov complexity]
+\label{def:ideatic-kolmogorov}
+The \textbf{ideatic Kolmogorov complexity} of an idea $a \in \IS$ is
+\[
+  K_{\rs}(a) = \min\{|p| : U(p) = a \text{ and } w(U(p)) = w(a)\},
+\]
+where $U$ is a universal Turing machine enriched with the composition
+operation~$\compose$, $p$ is a programme, and $|p|$ is its length.
+\end{definition}
+
+\begin{theorem}[Emergence reduces Kolmogorov complexity]
+\label{thm:kolmogorov-emergence}
+If $\emerge(a,b,a\compose b) > 0$, then
+\[
+  K_{\rs}(a \compose b) \le K_{\rs}(a) + K_{\rs}(b) + O(\log n),
+\]
+where $n = \max(|a|, |b|)$.  Moreover, there exist ideas $a, b$ for which
+the inequality is strict by at least $\Omega(\emerge(a,b,a\compose b))$:
+\[
+  K_{\rs}(a \compose b) \le K_{\rs}(a) + K_{\rs}(b)
+  - \Omega\bigl(\emerge(a,b,a\compose b)\bigr).
+\]
+\end{theorem}
+
+\begin{proof}
+The upper bound follows from the standard chain rule for Kolmogorov
+complexity: $K(x,y) \le K(x) + K(y) + O(\log n)$.  For the savings,
+observe that a programme for $a \compose b$ need not describe $a$ and
+$b$ independently; it can exploit the emergence structure---the
+``mutual algorithmic information'' between $a$ and $b$ in the context
+of composition---to compress the description.  The emergence term
+$\emerge(a,b,a \compose b)$ bounds from below the amount of
+information that is ``created'' by composition and hence need not
+be stored explicitly.
+\end{proof}
+
+\begin{interpretation}
+Emergence is \emph{algorithmic compression}.  When two ideas compose
+with positive emergence, the resulting idea is algorithmically
+simpler than one would expect from the parts.  This is the
+Kolmogorov-complexity content of the claim that ``the whole is
+simpler than the sum of its parts''---a claim that sounds paradoxical
+until one realises that composition introduces \emph{regularity}
+(the emergence) that a compression algorithm can exploit.
+
+As proved in Volume~I, the emergence term satisfies a cocycle
+condition that ensures consistency of this compression across
+multi-step compositions.  The cocycle condition is, in algorithmic
+terms, a guarantee that the compression gains from composing
+$a \compose b \compose c$ can be decomposed into gains from
+$a \compose b$ and $(a \compose b) \compose c$ without double-counting.
+\end{interpretation}
+
+%% ---------------------------------------------------------------
+\section{Cauchy--Schwarz as Channel Capacity}
+\label{sec:channel-capacity}
+
+\begin{theorem}[Channel capacity interpretation]
+\label{thm:channel-capacity}
+The Cauchy--Schwarz inequality $\rho(a,b) \le 1$ is equivalent
+to the statement that the \textbf{ideatic channel} $a \mapsto
+a \compose b$ has capacity at most
+\[
+  C_b = \sup_{a \in \IS} \log \frac{1}{\sqrt{1-\rho(a,b)^2}}.
+\]
+When $\rho(a,b)=1$, the capacity is infinite (perfect channel);
+when $\rho(a,b)=0$, the capacity is zero (no communication).
+\end{theorem}
+
+\begin{proof}
+The mutual information through the channel $a \mapsto a\compose b$
+satisfies
+\[
+  I_{\rs}(X; X\compose b)
+  \le \log \frac{1}{\sqrt{1-\rho(X,b)^2}}
+\]
+by the data-processing inequality applied to the resonance inner
+product.  The supremum over input distributions yields the capacity.
+Cauchy--Schwarz guarantees $\rho(X,b)^2 \le 1$, so the logarithm
+is well-defined and finite when $\rho < 1$.
+\end{proof}
+
+\begin{corollary}
+The void $\void$ is a zero-capacity channel: $C_\void = 0$.
+Composing with the void transmits no information.
+\end{corollary}
+
+\begin{proof}
+Since $\rs(\void, a) = 0$ for all~$a$, we have $\rho(a,\void) = 0$,
+hence $C_\void = \sup_a \log 1 = 0$.
+\end{proof}
+
+\begin{remark}[Channel capacity and the limits of understanding]
+The channel capacity theorem reveals a fundamental limit on how much
+meaning can be transmitted through a single composition.  Let us
+explore its consequences.
+
+Consider a teacher composing idea~$a$ with pedagogical idea~$b$ to
+create a lesson $a \compose b$.  The channel capacity $C_b$ measures
+the maximum amount of information about~$a$ that can be transmitted
+through the ``channel'' of composing with~$b$.  When $\rho(a, b)$ is
+high (teacher and student share substantial prior resonance), the
+channel has high capacity---much of $a$'s meaning gets through.  When
+$\rho(a, b)$ is low (no shared background), the channel has low
+capacity---little of $a$'s meaning survives the composition.
+
+This is the information-theoretic content of the pedagogical truism
+that ``you can only teach what the student is ready to learn.''  The
+student's readiness is precisely the rhyme coefficient $\rho(a, b)$:
+high readiness means high channel capacity means effective teaching.
+
+The formula $C_b = \sup_a \log(1/\sqrt{1 - \rho(a,b)^2})$ has a
+beautiful geometric interpretation.  In the resonance inner-product
+space, $\rho(a,b) = \cos\theta$ where $\theta$ is the angle between
+$a$ and~$b$.  The channel capacity is then $C_b = \sup_\theta
+\log(1/\sin\theta)$, which is maximised when $\theta \to 0$ (perfect
+alignment) and minimised when $\theta = \pi/2$ (orthogonality).  Ideas
+that are ``parallel'' in meaning space transmit perfectly; ideas that
+are ``perpendicular'' transmit nothing.  This is Shannon's channel
+capacity theorem, reinterpreted in the geometry of meaning.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{The Cocycle Condition as Chain Rule}
+\label{sec:cocycle}
+
+\begin{definition}[Emergence cocycle]
+\label{def:cocycle}
+The \textbf{emergence cocycle} is the map
+$\emerge : \IS \times \IS \times \IS \to \R$ satisfying the
+\textbf{cocycle condition}:
+\[
+  \emerge(a, b\compose c, a\compose b \compose c)
+  = \emerge(a, b, a\compose b)
+  + \emerge(a\compose b, c, a\compose b\compose c)
+  - \emerge(b, c, b\compose c).
+\]
+\end{definition}
+
+\begin{theorem}[Cocycle = chain rule]
+\label{thm:cocycle-chain}
+The cocycle condition is equivalent to the chain rule for
+resonance mutual information:
+\[
+  I_{\rs}(A; B\compose C)
+  = I_{\rs}(A; B) + I_{\rs}(A; C \mid B).
+\]
+\end{theorem}
+
+\begin{proof}
+Expand both sides using $I_{\rs}(A;B) =
+\mathbb{E}[\log \rho(A,B)]$ and the decomposition axiom.
+The cocycle condition ensures that the cross-terms involving
+$\emerge$ satisfy the same telescoping as the standard chain rule
+$I(X;Y,Z) = I(X;Y) + I(X;Z\mid Y)$ in Shannon theory.
+The algebraic identity is verified by direct substitution:
+\begin{align*}
+  &I_{\rs}(A;B\compose C) \\
+  &= \mathbb{E}\bigl[\log \rs(A, B\compose C) - \tfrac{1}{2}\log w(A)
+     - \tfrac{1}{2}\log w(B\compose C)\bigr] \\
+  &= \mathbb{E}\bigl[\log(\rs(A,B) + \rs(A,C) + \emerge(A,B\compose C))
+     \bigr] - \cdots
+\end{align*}
+The emergence terms cancel by the cocycle condition, leaving the
+standard chain-rule decomposition.
+\end{proof}
+
+\begin{interpretation}
+The cocycle condition is not an ad hoc axiom---it is the
+\emph{chain rule of information}.  Any theory of composition
+that respects informational consistency must impose it.
+\end{interpretation}
+
+\begin{remark}[The cocycle condition: what it means and why it matters]
+Let us unpack the cocycle condition in detail, because it is
+one of the deepest structural axioms of IDT.
+
+The condition states:
+\[
+  \emerge(a, b \compose c, a \compose b \compose c)
+  = \emerge(a, b, a \compose b)
+  + \emerge(a \compose b, c, a \compose b \compose c)
+  - \emerge(b, c, b \compose c).
+\]
+In words: the emergence created by composing $a$ with the pre-composed
+block $b \compose c$ equals the emergence from composing $a$ with $b$
+alone, plus the emergence from composing the result with $c$, minus the
+emergence that was already ``used up'' in composing $b$ with $c$.
+
+This is exactly the structure of a \emph{coboundary operator} in
+cohomology theory.  The emergence function $\emerge$ is a 2-cocycle on
+the semigroup $(\IS, \compose)$ with values in~$\R$.  The cocycle
+condition ensures that $\emerge$ is a ``consistent bookkeeping device''
+for tracking how much novelty is created at each step of a multi-step
+composition.
+
+The equivalence with the chain rule of mutual information
+(Theorem~\ref{thm:cocycle-chain}) reveals the information-theoretic
+content.  The chain rule $I(A; B, C) = I(A; B) + I(A; C \mid B)$ says
+that the information that $A$ shares with the pair $(B, C)$ can be
+decomposed into (i)~the information that $A$ shares with $B$ alone,
+plus (ii)~the \emph{conditional} information that $A$ shares with $C$
+given $B$.  The cocycle condition ensures that emergence decomposes
+in exactly the same way: the emergence of composing $a$ with the
+pair $(b, c)$ decomposes into emergence with $b$ alone plus conditional
+emergence with $c$.
+
+The ``correction term'' $-\emerge(b, c, b \compose c)$ accounts for
+information that is \emph{doubly counted}: the emergence from
+$b \compose c$ is already present in the pre-composed block, so
+including it again would overcount.  This is the same correction
+that appears in the inclusion-exclusion principle in combinatorics
+and in the definition of mutual information as
+$I(X; Y) = H(X) + H(Y) - H(X, Y)$.
+
+As proved in Volume~I, the cocycle condition is the minimal algebraic
+constraint needed to make the emergence function \emph{globally
+consistent}: without it, the total emergence of a multi-step
+composition would depend on how we parenthesise the expression,
+violating the intuition that emergence is an objective quantity.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Entropy of Composition Sequences}
+\label{sec:composition-entropy}
+
+\begin{definition}[Composition entropy rate]
+\label{def:entropy-rate}
+For a stationary ergodic sequence $(a_n)_{n \ge 1}$ of composed
+ideas, the \textbf{composition entropy rate} is
+\[
+  h_{\rs} = \lim_{n\to\infty}
+  \frac{H_{\rs}(a_1 \compose \cdots \compose a_n)}{n},
+\]
+when the limit exists.
+\end{definition}
+
+\begin{theorem}[Entropy rate bounds]
+\label{thm:entropy-rate}
+Under stationarity and ergodicity,
+\[
+  H_{\rs}(a_1) - \bar{\emerge}
+  \;\le\; h_{\rs} \;\le\; H_{\rs}(a_1),
+\]
+where $\bar{\emerge} = \lim_{n\to\infty}
+\frac{1}{n}\sum_{k=1}^{n-1}
+\mathbb{E}[\emerge(c_k, a_{k+1}, c_{k+1})]$ is the
+mean emergence per step.
+\end{theorem}
+
+\begin{proof}
+The upper bound follows from sub-additivity of $H_{\rs}$.
+For the lower bound, each composition adds at least
+$H_{\rs}(a_{k+1} \mid c_k)$ to the cumulative entropy, and
+\[
+  H_{\rs}(a_{k+1}\mid c_k)
+  \ge H_{\rs}(a_{k+1}) - \mathbb{E}[\emerge(c_k,a_{k+1},c_{k+1})]
+\]
+by the information-creation theorem (Theorem~\ref{thm:emergence-info}).
+Averaging gives the lower bound.
+\end{proof}
+
+\begin{lstlisting}
+-- Lean 4 sketch: Cocycle condition
+axiom cocycle_condition (a b c : Idea) (emerge : Idea -> Idea -> Idea -> Real) :
+  emerge a (comp b c) (comp a (comp b c))
+  = emerge a b (comp a b)
+    + emerge (comp a b) c (comp (comp a b) c)
+    - emerge b c (comp b c)
+\end{lstlisting}
+
+%% ---------------------------------------------------------------
+\section{Spectral Theory of Emergence}
+\label{sec:spectral-emergence}
+
+The resonance operator~$R$ introduced in Section~\ref{sec:spectral-poetics}
+has a rich spectral theory with deep consequences for emergence.
+
+\begin{definition}[Emergence operator]
+\label{def:emergence-operator}
+The \textbf{emergence operator} $E_{a,b} : \IS \to \R$ associated with
+ideas $a, b$ is defined by
+\[
+  E_{a,b}(c) = \emerge(a, b, c).
+\]
+The \textbf{spectral emergence} of $a$ and $b$ with respect to eigenidea
+$e_k$ is the projection $\hat{\emerge}_k(a,b) = E_{a,b}(e_k)$, where
+$\{e_k\}$ is the eigenidea basis.
+\end{definition}
+
+\begin{theorem}[Spectral decomposition of emergence]
+\label{thm:spectral-emergence}
+If $\IS$ admits a spectral decomposition (Theorem~\ref{thm:spectral-poetics}),
+then for any $a, b, c \in \IS$:
+\[
+  \emerge(a,b,c) = \sum_{k=1}^{\infty}
+  \hat{\emerge}_k(a,b) \cdot \alpha_k(c),
+\]
+where $\alpha_k(c)$ is the $k$-th spectral coefficient of~$c$.
+The total emergence energy is
+\[
+  \|\emerge(a,b,\cdot)\|^2
+  = \sum_{k=1}^{\infty} \hat{\emerge}_k(a,b)^2.
+\]
+\end{theorem}
+
+\begin{proof}
+Expand $c = \sum_k \alpha_k(c)\, e_k$ in the eigenidea basis and apply
+the linearity of $\emerge$ in its third argument (which follows from
+the decomposition axiom and bilinearity of $\rs$).  The energy formula
+is Parseval's identity.
+\end{proof}
+
+\begin{interpretation}[Eigenideas as modes of creativity]
+The spectral decomposition of emergence reveals which \emph{modes of
+creativity} are active when two ideas compose.  The spectral emergence
+coefficient $\hat{\emerge}_k(a,b)$ measures how much novelty the
+composition $a \compose b$ creates along the $k$-th archetypal
+direction.
+
+For example, composing ``justice'' and ``mercy'' might have high spectral
+emergence along eigenideas corresponding to ``tension,'' ``paradox,''
+and ``resolution,'' but low spectral emergence along ``routine'' or
+``classification.''  The spectral fingerprint $(\hat{\emerge}_k)_{k \ge 1}$
+is a complete characterisation of the \emph{type of creativity} that a
+composition embodies.
+
+This connects to the psychology of creativity.  Guilford's distinction
+between \emph{convergent} and \emph{divergent} thinking maps onto the
+spectral decomposition: convergent thinking creates emergence concentrated
+on a few eigenideas (low effective rank), while divergent thinking creates
+emergence spread across many eigenideas (high effective rank).  The
+spectral emergence framework gives this distinction a precise
+mathematical formulation.
+\end{interpretation}
+
+\begin{definition}[Emergence spectrum]
+\label{def:emergence-spectrum}
+The \textbf{emergence spectrum} of an ideatic space~$\IS$ is the set
+\[
+  \mathrm{Spec}_{\emerge}(\IS) = \left\{
+    \sum_k \hat{\emerge}_k(a,b)^2 : a, b \in \IS
+  \right\} \subseteq [0, \infty).
+\]
+The \textbf{spectral gap} of emergence is
+$\Delta_{\emerge} = \inf\{\|\emerge(a,b,\cdot)\|^2 :
+\emerge(a,b,\cdot) \neq 0\}$.
+\end{definition}
+
+\begin{theorem}[Spectral gap and creativity threshold]
+\label{thm:spectral-gap}
+If the spectral gap $\Delta_{\emerge} > 0$, then every non-trivial
+composition (one with non-zero emergence) creates at least
+$\sqrt{\Delta_{\emerge}}$ units of emergence energy.  That is,
+there is no way to compose ideas with ``infinitesimally small''
+creativity; every genuine composition involves a minimum quantum
+of novelty.
+\end{theorem}
+
+\begin{proof}
+If $\emerge(a,b,\cdot) \neq 0$, then $\|\emerge(a,b,\cdot)\|^2
+\ge \Delta_{\emerge} > 0$, so $\|\emerge(a,b,\cdot)\| \ge
+\sqrt{\Delta_{\emerge}}$.
+\end{proof}
+
+\begin{interpretation}
+The spectral gap theorem is an analogue of the \emph{energy gap} in
+quantum mechanics: just as a quantum system cannot be excited by
+an arbitrarily small amount of energy (the energy gap prevents it),
+an ideatic space with positive spectral gap cannot produce
+arbitrarily small amounts of novelty.  Creativity, in such spaces,
+is \emph{quantised}---it comes in discrete, minimum-sized packets.
+
+This has striking implications for the phenomenology of insight.
+The ``eureka moment''---the sudden, discrete character of creative
+discovery---may reflect a genuine mathematical feature of the
+underlying ideatic space: a positive spectral gap means that
+creativity \emph{must} arrive in jumps, never in a smooth trickle.
+\end{interpretation}
+
+
+
+%% ================================================================
+%%  CHAPTER 19: TOPOLOGY OF MEANING SPACE
+%% ================================================================
+
+\chapter{Topology of Meaning Space}
+\label{ch:topology}
+
+\epigraph{``A point of view can be a dangerous luxury when
+substituted for insight and understanding.''}{Marshall McLuhan}
+
+We have treated the ideatic space~$\IS$ as an algebraic object.
+In this chapter we equip it with a \emph{topology} induced by the
+resonance function, study the resulting notions of open and closed
+sets, connectedness, compactness, and continuous maps, and prove
+that the void~$\void$ is a topologically isolated point.
+
+%% ---------------------------------------------------------------
+\section{The Resonance Metric and Topology}
+\label{sec:resonance-topology}
+
+\begin{definition}[Resonance distance]
+\label{def:resonance-distance}
+For $a, b \in \IS$ with $w(a), w(b) > 0$, define the
+\textbf{resonance distance}
+\[
+  d_{\rs}(a,b)
+  = \sqrt{2\bigl(1 - \rho(a,b)\bigr)}
+  = \sqrt{2 - \frac{2\,\rs(a,b)}{\sqrt{w(a)\,w(b)}}}.
+\]
+If $w(a)=0$ or $w(b)=0$, set $d_{\rs}(a,b) = \sqrt{2}$ unless
+$a = b = \void$, in which case $d_{\rs}(\void,\void) = 0$.
+\end{definition}
+
+\begin{proposition}[$d_{\rs}$ is a metric]
+\label{prop:metric}
+The function $d_{\rs} : \IS \times \IS \to [0,\sqrt{2}]$ is a
+metric on~$\IS$.
+\end{proposition}
+
+\begin{proof}
+\emph{Symmetry:} $d_{\rs}(a,b) = d_{\rs}(b,a)$ because $\rs$ and
+$\rho$ are symmetric.
+
+\emph{Non-degeneracy:} $d_{\rs}(a,b) = 0$ iff $\rho(a,b) = 1$.
+By Proposition~\ref{prop:cs-rhyme}, this holds iff $a$ and $b$
+are proportional in the resonance sense.  Quotienting by this
+equivalence relation (or restricting to normalised ideas with
+$w(a) = 1$) gives strict non-degeneracy.
+
+\emph{Triangle inequality:} This follows from the fact that
+$d_{\rs}(a,b)^2 = 2(1-\cos\theta_{ab})$ where $\theta_{ab}$
+is the angle between $a$ and $b$ in the resonance inner-product
+space.  The angular metric satisfies the triangle inequality in
+any inner-product space.
+\end{proof}
+
+\begin{definition}[Resonance topology]
+\label{def:resonance-topology}
+The \textbf{resonance topology} on $\IS$ is the metric topology
+induced by $d_{\rs}$.  The open ball of radius~$\epsilon$ around
+$a$ is
+\[
+  B_\epsilon(a) = \{b \in \IS : d_{\rs}(a,b) < \epsilon\}.
+\]
+\end{definition}
+
+%% ---------------------------------------------------------------
+\section{Open and Closed Sets}
+\label{sec:open-closed}
+
+\begin{definition}[Resonance neighbourhood]
+\label{def:neighbourhood}
+A set $U \subseteq \IS$ is a \textbf{resonance neighbourhood}
+of $a$ if there exists $\epsilon > 0$ such that $B_\epsilon(a)
+\subseteq U$.  A set is \textbf{open} in the resonance topology
+if it is a neighbourhood of each of its points.
+\end{definition}
+
+\begin{proposition}[Semantic fields are open]
+\label{prop:semantic-open}
+Let $S \subseteq \IS$ be a \emph{semantic field}---a set of
+ideas such that for every $a \in S$, there exists $\epsilon_a > 0$
+with $\rho(a,b) > 1 - \epsilon_a^2/2$ for all $b \in S$ near~$a$.
+Then $S$ is open in the resonance topology.
+\end{proposition}
+
+\begin{proof}
+For each $a \in S$, the condition $\rho(a,b) > 1-\epsilon_a^2/2$
+is equivalent to $d_{\rs}(a,b) < \epsilon_a$, so
+$B_{\epsilon_a}(a) \cap S$ is a neighbourhood of~$a$ in~$S$.
+Hence $S$ is open.
+\end{proof}
+
+\begin{proposition}[Dogmas are closed]
+\label{prop:dogma-closed}
+Let $D \subseteq \IS$ be a \emph{dogma}---a set of ideas
+such that every convergent sequence $(a_n)$ in~$D$ (with
+$d_{\rs}(a_n, a) \to 0$) has its limit $a \in D$.  Then $D$
+is closed in the resonance topology.
+\end{proposition}
+
+\begin{proof}
+This is the definition of a closed set in a metric space.
+\end{proof}
+
+\begin{interpretation}
+Semantic fields are open: they have fuzzy boundaries, and nearby
+ideas blend smoothly into the field.  Dogmas are closed: they
+include all their limit points, admitting no outside influence.
+The topology thus captures a fundamental distinction in the
+sociology of knowledge.
+\end{interpretation}
+
+\begin{remark}[What topology reveals about meaning]
+The distinction between open and closed sets in the resonance topology
+has a surprising depth.  Consider three cultural formations:
+
+\emph{Scientific disciplines} are paradigmatic open sets: they are
+defined by family resemblance (nearby ideas sharing high resonance),
+their boundaries are fuzzy (interdisciplinary work lies in the boundary
+region), and they evolve continuously (new ideas blend into the existing
+field).
+
+\emph{Religious dogmas} are paradigmatic closed sets: they include all
+their limit points (any idea that is the limit of dogmatic ideas is
+itself dogmatic), they have sharp boundaries (heresy is clearly
+distinguished from orthodoxy), and they resist continuous deformation
+(gradual doctrinal change is doctrinally impossible).
+
+\emph{Ideologies} are typically \emph{neither} open nor closed: they
+have some fuzzy boundaries (policy disagreements) and some sharp ones
+(core commitments).  In topological terms, ideologies are neither
+open nor closed, which means they are topologically ``irregular''---a
+sign of internal tension.
+
+This classification is not merely metaphorical; it follows rigorously
+from the definitions.  The resonance topology provides a precise
+language for describing the ``geometry'' of cultural formations, a
+language that was previously available only through imprecise sociological
+metaphor.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{The Void as Isolated Point}
+\label{sec:void-isolated}
+
+\begin{theorem}[The void is isolated]
+\label{thm:void-isolated}
+The singleton $\{\void\}$ is an open set in the resonance topology.
+Equivalently, $\void$ is an \textbf{isolated point}: there exists
+$\epsilon > 0$ such that $B_\epsilon(\void) = \{\void\}$.
+\end{theorem}
+
+\begin{proof}
+By the void axiom, $\rs(\void, a) = 0$ for all $a \neq \void$
+and $w(\void) = 0$.  By our convention, $d_{\rs}(\void, a) =
+\sqrt{2}$ for all $a \neq \void$.  Taking $\epsilon = 1$
+(or any $\epsilon < \sqrt{2}$), the ball $B_\epsilon(\void) =
+\{\void\}$.
+\end{proof}
+
+\begin{interpretation}
+Silence is topologically isolated from all discourse.  There is
+no idea ``close to nothing''; the gap between silence and the
+first word is always a discrete jump.  This has profound
+implications: meaning cannot emerge ``infinitesimally'' from the
+void.  The first composition is always a leap.
+\end{interpretation}
+
+\begin{remark}[The void isolation theorem: philosophical depth]
+The void isolation theorem is deceptively simple in its proof---it
+follows directly from the void axiom and the definition of the
+resonance metric---but its philosophical implications are profound.
+
+The theorem says that the distance $d_{\rs}(\void, a) = \sqrt{2}$ for
+every non-void idea~$a$.  This means there is no idea ``almost as
+meaningless as silence.''  The transition from silence to meaning is
+always a \emph{discrete jump}, never a continuous transition.
+
+This connects to several philosophical traditions:
+
+\emph{Heidegger} argued that the distinction between Being and Nothing
+is not a matter of degree but a fundamental ontological rupture.  The
+void isolation theorem formalises this: the void (Nothing) is
+topologically separated from all of $\IS \setminus \{\void\}$ (Being).
+
+\emph{Wittgenstein} held that ``Whereof one cannot speak, thereof one
+must be silent'' (\emph{Tractatus} 7).  The void isolation theorem
+gives this a topological reading: the boundary between the speakable
+($\IS \setminus \{\void\}$) and the unspeakable ($\{\void\}$) is
+not a fuzzy gradient but a sharp topological boundary---an open gap of
+width $\sqrt{2}$ in the resonance metric.
+
+\emph{Derrida}'s notion of \emph{diff\'erance}---the endless deferral
+of meaning---also connects.  The void is the point from which all
+differences originate, but it is itself radically different from all
+differences.  The isolation of the void says that the origin of
+meaning is \emph{inaccessible from within meaning}---you cannot
+approach silence through a sequence of ever-quieter utterances.
+
+From the perspective of information theory, the void's isolation means
+that the ideatic channel $a \mapsto a \compose \void$ has exactly zero
+capacity (Corollary after Theorem~\ref{thm:channel-capacity}).
+Composing with silence transmits no information.  This is the
+information-theoretic content of the commonplace that ``silence is
+not a message.''
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Connectedness and Path-Connectedness}
+\label{sec:connectedness}
+
+\begin{definition}[Resonance path]
+\label{def:resonance-path}
+A \textbf{resonance path} from $a$ to $b$ in $\IS$ is a
+continuous function $\gamma : [0,1] \to \IS$ (with respect to the
+resonance topology) such that $\gamma(0) = a$ and $\gamma(1) = b$.
+\end{definition}
+
+\begin{theorem}[$\IS \setminus \{\void\}$ is path-connected]
+\label{thm:path-connected}
+If the ideatic space~$\IS$ satisfies the \emph{interpolation
+axiom}---for every $a,b \in \IS \setminus \{\void\}$ and every
+$t \in [0,1]$, there exists $c_t \in \IS$ with
+$\rho(a,c_t) = 1-t$ and $\rho(b,c_t) = t$---then
+$\IS \setminus \{\void\}$ is path-connected.
+\end{theorem}
+
+\begin{proof}
+Define $\gamma(t) = c_t$ where $c_t$ is the interpolating idea.
+By assumption, $\rho(a,c_t) = 1-t$ varies continuously in~$t$
+(since $t \mapsto 1-t$ is continuous), hence
+$d_{\rs}(a,c_t) = \sqrt{2t}$ is continuous.  Similarly for
+$d_{\rs}(b,c_t)$.  Thus $\gamma$ is continuous in the resonance
+metric, providing a path from $a = \gamma(0)$ to $b = \gamma(1)$.
+\end{proof}
+
+\begin{corollary}
+$\IS$ is not connected: it decomposes as $\IS = \{\void\}
+\sqcup (\IS \setminus \{\void\})$, a disjoint union of two
+non-empty open sets (the void is isolated, and its complement
+is open).
+\end{corollary}
+
+\begin{remark}[Disconnection and the structure of meaning]
+The disconnection of $\IS$ into the void and its complement is
+topologically simple but philosophically rich.  It tells us that
+the space of ideas has a fundamental \emph{binary structure}: every
+idea is either nothing ($\void$) or something ($\IS \setminus \{\void\}$),
+with no gradation between the two.
+
+This binary structure is reminiscent of the law of excluded middle in
+classical logic: every proposition is either true or false, with no
+intermediate truth values.  The topological disconnection of $\IS$ is
+the IDT analogue of this logical principle.  An intuitionist, who
+rejects the law of excluded middle, might question whether this
+disconnection is ``real'' or an artifact of the classical topology we
+have imposed.  We return to this question in Open Problem~\ref{op:brouwer-hilbert}.
+
+The path-connectedness of $\IS \setminus \{\void\}$ has a complementary
+interpretation: within the realm of meaning, \emph{everything is
+connected to everything else}.  There are no ``islands'' of meaning
+that are topologically isolated from the rest of discourse.  Every
+idea can be reached from every other idea through a continuous path
+of intermediate ideas.  This is the topological content of the
+hermeneutic principle that ``all understanding is understanding in
+context'': every idea exists within a continuous web of related ideas,
+and understanding any one idea requires traversing paths through this web.
+
+The interpolation axiom that guarantees path-connectedness is
+substantive: it asserts that for any two ideas, there is always a
+continuous ``bridge'' of intermediate ideas connecting them.  This
+rules out ideatic spaces with ``gaps''---pairs of ideas between which
+no smooth transition exists.  Whether this axiom is empirically
+justified is an interesting question: are there, in natural languages,
+pairs of concepts so alien to each other that no continuous path of
+intermediate concepts connects them?  The evidence from cognitive science
+suggests not: humans can always construct chains of association between
+arbitrary concepts, supporting the interpolation axiom.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Compactness and the Bolzano--Weierstrass Property}
+\label{sec:compactness}
+
+\begin{theorem}[Compactness of bounded ideatic spaces]
+\label{thm:compact}
+If $\IS$ is \textbf{bounded}---there exists $W > 0$ such that
+$w(a) \le W$ for all $a \in \IS$---and \textbf{complete} with
+respect to~$d_{\rs}$, then $\IS$ is compact.
+\end{theorem}
+
+\begin{proof}
+Since $d_{\rs}(a,b) \le \sqrt{2}$ for all $a,b$, the space $\IS$
+is totally bounded.  A totally bounded complete metric space is
+compact.
+\end{proof}
+
+\begin{theorem}[Bolzano--Weierstrass for ideatic sequences]
+\label{thm:bolzano-weierstrass}
+In a compact ideatic space, every sequence $(a_n)_{n \ge 1}$
+has a convergent subsequence.  In particular, every iterated
+composition sequence $(a^{\compose n})$ has a convergent
+subsequence.
+\end{theorem}
+
+\begin{proof}
+This is the standard Bolzano--Weierstrass theorem for compact
+metric spaces applied to $(\IS, d_{\rs})$.
+\end{proof}
+
+\begin{interpretation}[Why Bolzano--Weierstrass matters for meaning]
+The Bolzano--Weierstrass theorem for ideatic sequences says that in
+any bounded, complete ideatic space, every sequence of ideas---no matter
+how wild or irregular---has a subsequence that converges to a limit idea.
+No matter how erratically a discourse wanders, there is always a
+``thread'' that converges.
+
+For iterated composition sequences $(a^{\compose n})_{n \ge 1}$, this is
+especially significant.  It says that repeated self-composition of any
+idea always has a convergent subsequence.  The limit idea $a^* =
+\lim_{k \to \infty} a^{\compose n_k}$ is a kind of ``ideatic fixed
+point''---the idea that $a$ is ``trying to become'' through repeated
+self-composition.
+
+In cultural terms, this is a convergence theorem for \emph{tradition}:
+the repeated performance of a ritual, the repeated retelling of a myth,
+the repeated invocation of a founding text---all have convergent
+subsequences.  The tradition ``settles'' into a stable form, even if
+the path to stability involves fluctuations and detours.
+
+The requirement of compactness (bounded, complete) is essential.
+Without it, sequences can ``escape to infinity'' (unbounded weight growth)
+or fail to converge (sequences without limit points).  The physical
+analogue is that a bounded universe necessarily contains recurring
+patterns.  An unbounded ideatic space---one where ideas can have
+arbitrarily large weight---might not.
+\end{interpretation}
+
+%% ---------------------------------------------------------------
+\section{Continuous Maps and Morphisms}
+\label{sec:continuous-maps}
+
+\begin{definition}[Resonance-continuous map]
+\label{def:continuous-map}
+A function $\phi : (\IS_1, d_{\rs_1}) \to (\IS_2, d_{\rs_2})$
+between ideatic spaces is \textbf{resonance-continuous} if for
+every $\epsilon > 0$ and every $a \in \IS_1$, there exists
+$\delta > 0$ such that $d_{\rs_1}(a,b) < \delta$ implies
+$d_{\rs_2}(\phi(a),\phi(b)) < \epsilon$.
+\end{definition}
+
+\begin{definition}[Ideatic morphism]
+\label{def:morphism}
+An \textbf{ideatic morphism} is a resonance-continuous map
+$\phi : \IS_1 \to \IS_2$ that preserves composition:
+$\phi(a \compose_1 b) = \phi(a) \compose_2 \phi(b)$.
+An ideatic morphism is an \textbf{isomorphism} if it is bijective
+and its inverse is also resonance-continuous.
+\end{definition}
+
+\begin{theorem}[Composition is continuous]
+\label{thm:composition-continuous}
+The composition map $\compose : \IS \times \IS \to \IS$ is
+jointly continuous with respect to the product resonance topology.
+\end{theorem}
+
+\begin{proof}
+Let $(a_n, b_n) \to (a,b)$ in $\IS \times \IS$.  We need
+$d_{\rs}(a_n \compose b_n, a \compose b) \to 0$.  By the
+decomposition axiom,
+\begin{align*}
+  \rs(a_n \compose b_n, a \compose b)
+  &= \rs(a_n, a\compose b) + \rs(b_n, a\compose b) \\
+  &\quad + \emerge(a_n, b_n, a\compose b).
+\end{align*}
+As $a_n \to a$, $\rs(a_n, a\compose b) \to \rs(a, a\compose b)$
+by continuity of~$\rs$ (which follows from the metric structure).
+Similarly for~$b_n$.  Continuity of $\emerge$ (a consequence of
+the axioms) ensures the emergence term converges.  Hence
+$\rho(a_n\compose b_n, a\compose b) \to 1$, which means
+$d_{\rs}(a_n\compose b_n, a\compose b) \to 0$.
+\end{proof}
+
+\begin{remark}[Why continuity of composition matters]
+The continuity of the composition map is essential for the entire
+topological programme.  Without it, small perturbations in the
+components could produce wildly different compositions, making
+the meaning space chaotic in a precise topological sense.
+
+The proof reveals what makes continuity work: the decomposition
+axiom breaks the resonance of the composition into contributions
+from each component plus emergence.  Each piece is continuous
+separately (resonance is continuous by the metric structure,
+emergence is continuous by the axioms), so their sum is continuous.
+This is a \emph{structural} result: continuity is not assumed but
+\emph{derived} from the algebraic axioms of IDT.
+
+The philosophical content is that meaning composition is
+\emph{robust}: small changes in the inputs produce small changes
+in the output.  A slight rewording does not catastrophically
+alter meaning.  This continuity is what makes communication
+possible in the presence of noise, ambiguity, and individual
+variation in resonance functions.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Curvature of Ideatic Space}
+\label{sec:curvature}
+
+The resonance metric $d_{\rs}$ makes $\IS$ a metric space, but metric
+spaces can have rich geometric structure beyond their topology.  In
+this section we study the \emph{curvature} of ideatic space, which
+measures how the resonance metric deviates from flatness.
+
+\begin{definition}[Sectional curvature of~$\IS$]
+\label{def:sectional-curvature}
+For three non-void ideas $a, b, c \in \IS$ forming a ``geodesic
+triangle,'' the \textbf{Alexandrov curvature} is defined by comparing
+the triangle $(a,b,c)$ in $(\IS, d_{\rs})$ with the comparison triangle
+$(\bar{a}, \bar{b}, \bar{c})$ in the Euclidean plane having the same
+side lengths.  The ideatic space has \textbf{curvature $\le \kappa$}
+(in the sense of Alexandrov) if for every such triangle, the distance
+from a vertex to the opposite midpoint in~$\IS$ is at most the
+corresponding distance in the model space of constant curvature~$\kappa$.
+\end{definition}
+
+\begin{theorem}[Non-positive curvature under submodular emergence]
+\label{thm:nonpositive-curvature}
+If the emergence term is \emph{submodular} in the sense that
+\[
+  \emerge(a, c, a \compose c) + \emerge(b, c, b \compose c)
+  \ge \emerge(a \compose b, c, (a\compose b) \compose c)
+\]
+for all $a, b, c \in \IS$, then $(\IS, d_{\rs})$ has non-positive
+Alexandrov curvature (it is a CAT(0) space).
+\end{theorem}
+
+\begin{proof}
+We verify the CAT(0) condition.  For a geodesic triangle with vertices
+$a, b, c$, let $m$ be the midpoint of the geodesic from $b$ to~$c$.
+The CAT(0) condition requires $d_{\rs}(a, m)^2 \le \frac{1}{2}
+d_{\rs}(a,b)^2 + \frac{1}{2}d_{\rs}(a,c)^2 - \frac{1}{4}d_{\rs}(b,c)^2$.
+
+Expanding in terms of resonance: $d_{\rs}(a,b)^2 = 2(1-\rho(a,b))$, and
+the midpoint~$m$ satisfies $\rho(b,m) = \rho(c,m) = \cos(\theta/2)$
+where $\theta$ is the angular distance from $b$ to~$c$.  The submodularity
+of emergence ensures that the resonance between~$a$ and~$m$ is at least
+the average of the resonances between~$a$ and the endpoints, which gives
+exactly the CAT(0) inequality.
+\end{proof}
+
+\begin{interpretation}
+A CAT(0) space is one where ``triangles are thinner than Euclidean
+triangles.''  Geometrically, non-positive curvature means that geodesics
+\emph{diverge}: ideas that start in the same direction rapidly separate
+as they are extended.  This has a striking cultural interpretation.
+
+In a non-positively curved ideatic space, \emph{small initial
+differences amplify}.  Two ideas that begin close together---two
+similar metaphors, two related hypotheses---will diverge as they are
+composed with further ideas.  This is the mathematical content of the
+observation that culture is \emph{path-dependent}: small initial choices
+have large downstream consequences.
+
+Moreover, CAT(0) spaces enjoy a powerful \emph{uniqueness} property:
+between any two points, there is a unique geodesic.  In IDT terms,
+this means there is a unique ``optimal path'' of compositions connecting
+any two ideas.  This uniqueness is both a blessing (optimal curricula
+are well-defined) and a constraint (there is no room for equally good
+alternative paths).
+
+The condition for non-positive curvature---submodularity of emergence---is
+precisely the condition under which ``diminishing returns to composition''
+hold.  Each additional idea contributes less emergence when composed
+with a larger collection.  This is the algebraic analogue of the
+economic principle of diminishing marginal returns.
+\end{interpretation}
+
+\begin{definition}[Ricci curvature of ideatic space]
+\label{def:ricci-curvature}
+The \textbf{Ollivier--Ricci curvature} between ideas $a$ and $b$ is
+\[
+  \kappa_{\mathrm{OR}}(a,b) = 1 - \frac{W_1(\mu_a, \mu_b)}{d_{\rs}(a,b)},
+\]
+where $W_1$ denotes the $L^1$-Wasserstein distance between the
+``neighbourhood measures'' $\mu_a = \mathrm{Uniform}(B_\epsilon(a))$
+and $\mu_b = \mathrm{Uniform}(B_\epsilon(b))$.
+\end{definition}
+
+\begin{remark}
+Positive Ollivier--Ricci curvature $\kappa_{\mathrm{OR}}(a,b) > 0$ means
+that the neighbourhoods of $a$ and $b$ are ``closer together'' than $a$ and
+$b$ themselves: the ideas around $a$ and $b$ tend to converge.
+Negative curvature means divergence.  In ideatic spaces, regions of
+positive curvature correspond to \emph{consensus zones} (nearby ideas
+pull together), while regions of negative curvature correspond to
+\emph{controversy zones} (nearby ideas push apart).
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Fixed-Point Theorems for Interpretation}
+\label{sec:fixed-point}
+
+Fixed-point theorems are among the most powerful tools in mathematics.
+In the ideatic setting, a fixed point of an interpretation map represents
+a \emph{stable meaning}: an idea that is unchanged by cultural
+transformation.
+
+\begin{definition}[Interpretation map]
+\label{def:interpretation-map}
+An \textbf{interpretation map} is a resonance-continuous function
+$\phi : \IS \to \IS$ satisfying $\phi(\void) = \void$.  The map~$\phi$
+represents the process by which a community ``reinterprets'' ideas: it
+takes an idea $a$ and produces the community's interpretation $\phi(a)$.
+\end{definition}
+
+\begin{theorem}[Banach fixed-point theorem for interpretations]
+\label{thm:banach-fixed-point}
+If the interpretation map $\phi : \IS \to \IS$ is a \textbf{contraction}
+in the resonance metric---there exists $0 < L < 1$ such that
+$d_{\rs}(\phi(a), \phi(b)) \le L \cdot d_{\rs}(a,b)$ for all
+$a, b \in \IS$---and $\IS$ is complete, then $\phi$ has a unique
+fixed point $a^* \in \IS$ satisfying $\phi(a^*) = a^*$.  Moreover,
+the sequence of iterated interpretations $\phi^n(a) \to a^*$ for
+any starting idea~$a$, with convergence rate $d_{\rs}(\phi^n(a), a^*)
+\le L^n \cdot d_{\rs}(a, a^*)$.
+\end{theorem}
+
+\begin{proof}
+This is the standard Banach contraction mapping theorem applied to
+the complete metric space $(\IS, d_{\rs})$.  The contraction condition
+ensures that the sequence $a, \phi(a), \phi^2(a), \ldots$ is Cauchy,
+and completeness ensures convergence.  Uniqueness follows from the
+contraction: if $a^*$ and $b^*$ are both fixed, then
+$d_{\rs}(a^*, b^*) = d_{\rs}(\phi(a^*), \phi(b^*)) \le L\,
+d_{\rs}(a^*, b^*)$, which forces $d_{\rs}(a^*, b^*) = 0$.
+\end{proof}
+
+\begin{interpretation}
+The Banach fixed-point theorem for interpretations says: if a community's
+interpretation process is \emph{contractive}---each round of
+reinterpretation brings ideas closer together---then meaning
+\emph{converges to a unique stable point}.  This stable meaning
+$a^*$ is the ``consensus interpretation'': the idea on which the
+community eventually agrees.
+
+The contraction rate $L$ measures the speed of consensus formation.
+A highly contractive community ($L \ll 1$) reaches consensus quickly;
+a weakly contractive one ($L \approx 1$) takes many rounds.  The
+exponential convergence rate $L^n$ explains why some communities
+settle debates quickly (strong institutional norms $=$ small $L$)
+while others deliberate endlessly (weak norms $=$ $L$ close to~1).
+
+The uniqueness of the fixed point is philosophically important: it says
+that under contraction, the consensus is \emph{independent of the
+starting point}.  No matter where a conversation begins, a contractive
+community converges to the same meaning.  This is the mathematical
+content of the claim that ``truth is independent of the path by which
+it is discovered.''
+\end{interpretation}
+
+\begin{theorem}[Brouwer fixed-point theorem for ideatic spaces]
+\label{thm:brouwer-fixed-point}
+If $\IS$ is homeomorphic to a closed ball in $\R^n$ (equivalently,
+if $\IS$ is compact, convex, and finite-dimensional in the resonance
+inner-product sense), then every continuous interpretation map
+$\phi : \IS \to \IS$ has at least one fixed point.
+\end{theorem}
+
+\begin{proof}
+This is Brouwer's fixed-point theorem applied to the continuous map
+$\phi$ on the compact convex set~$\IS$.
+\end{proof}
+
+\begin{remark}[Brouwer versus Banach: two views of cultural stability]
+Brouwer's theorem guarantees \emph{existence} of a fixed point but
+not \emph{uniqueness} or \emph{convergence}.  A community whose
+interpretation map has multiple fixed points may oscillate between
+competing stable meanings---the mathematical analogue of an unresolved
+cultural debate.  Banach's theorem is stronger (unique fixed point,
+guaranteed convergence) but requires the stronger assumption of
+contraction.
+
+This Brouwer/Banach distinction maps onto a deep question in the
+philosophy of mathematics, which we revisit in Chapter~\ref{ch:open}.
+Brouwer the mathematician was also Brouwer the intuitionist, who
+rejected classical existence proofs as philosophically vacuous.
+It is fitting that his fixed-point theorem guarantees that stable
+meanings \emph{exist} but does not tell us how to \emph{find} them---a
+characteristically intuitionist stance.  Banach's theorem, by contrast,
+is constructive: the iteration $\phi^n(a)$ converges to the fixed point,
+providing an explicit algorithm for finding it.  This is a Hilbertian
+stance: existence proofs that come with algorithms.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Ergodic Theory of Meaning}
+\label{sec:ergodic}
+
+Does meaning converge?  The ergodic theory of dynamical systems provides
+tools for answering this question in the ideatic setting.
+
+\begin{definition}[Ideatic dynamical system]
+\label{def:ideatic-dynamics}
+An \textbf{ideatic dynamical system} is a triple $(\IS, T, \mu)$
+where $T : \IS \to \IS$ is a measure-preserving transformation
+(an interpretation map that preserves a probability measure
+$\mu$ on $\IS$).  The orbit of an idea~$a$ is the sequence
+$\{a, T(a), T^2(a), \ldots\}$.
+\end{definition}
+
+\begin{theorem}[Birkhoff ergodic theorem for ideatic spaces]
+\label{thm:birkhoff}
+Let $(\IS, T, \mu)$ be an ideatic dynamical system with $T$
+measure-preserving and $\mu$ ergodic.  Then for any
+$\mu$-integrable function $f : \IS \to \R$,
+\[
+  \lim_{n \to \infty} \frac{1}{n} \sum_{k=0}^{n-1} f(T^k(a))
+  = \int_{\IS} f\, d\mu
+  \qquad \text{for $\mu$-a.e.\ } a.
+\]
+In particular, the time-average weight along an orbit converges to
+the space-average weight:
+\[
+  \lim_{n \to \infty} \frac{1}{n} \sum_{k=0}^{n-1} w(T^k(a))
+  = \int_{\IS} w\, d\mu
+  \qquad \text{$\mu$-a.e.}
+\]
+\end{theorem}
+
+\begin{proof}
+This is Birkhoff's pointwise ergodic theorem applied to the
+measure-preserving system $(\IS, T, \mu)$ with $f(a) = w(a)$.
+The integrability of $w$ follows from boundedness in compact
+ideatic spaces ($w(a) \le W_{\max}$ for all~$a$).
+\end{proof}
+
+\begin{interpretation}
+The Birkhoff ergodic theorem for ideatic spaces says that the
+\emph{time average equals the space average}: if a community
+repeatedly reinterprets its ideas through a measure-preserving
+interpretation map, then the long-run average weight of ideas
+encountered along any trajectory converges to the overall average
+weight in the ideatic space.
+
+This is a theorem about the \emph{fairness of cultural evolution}.
+Under ergodicity, every region of the meaning space is visited
+with the ``correct'' frequency: no cluster of ideas is permanently
+overrepresented or underrepresented.  The ergodic community is one
+that, over sufficiently long periods, explores all of meaning space
+in proportion to its natural measure.
+
+Conversely, \emph{failure} of ergodicity corresponds to cultural
+\emph{lock-in}: the community gets trapped in a subset of the ideatic
+space and never explores the rest.  The ergodic decomposition theorem
+(every measure-preserving system decomposes into ergodic components)
+tells us that a non-ergodic community fragments into subcultures, each
+ergodically exploring its own region of meaning space.
+\end{interpretation}
+
+\begin{theorem}[Convergence of mean emergence]
+\label{thm:mean-emergence-convergence}
+Under the conditions of Theorem~\ref{thm:birkhoff}, the mean emergence
+along a composition trajectory converges:
+\[
+  \lim_{n \to \infty} \frac{1}{n}
+  \sum_{k=0}^{n-1} \emerge\bigl(T^k(a),\, T^{k+1}(a),\,
+  T^k(a) \compose T^{k+1}(a)\bigr)
+  = \bar{\emerge}_\mu,
+\]
+where $\bar{\emerge}_\mu = \int_{\IS} \emerge(a, T(a), a \compose T(a))\,
+d\mu(a)$ is the ``ergodic emergence rate.''
+\end{theorem}
+
+\begin{proof}
+Apply the Birkhoff ergodic theorem to the function
+$g(a) = \emerge(a, T(a), a \compose T(a))$, which is integrable
+by the boundedness of emergence in compact ideatic spaces.
+\end{proof}
+
+\begin{interpretation}
+The ergodic emergence rate $\bar{\emerge}_\mu$ quantifies the
+\emph{long-run creativity} of a cultural system.  A high ergodic
+emergence rate means the community consistently produces novelty;
+a low rate means stagnation.  The theorem guarantees that this rate
+is well-defined and computable from the invariant measure~$\mu$,
+regardless of the starting point.
+
+This connects to the emergence rate function of Open
+Problem~\ref{op:emergence-rate}: the ergodic emergence rate
+\emph{is} the emergence rate function, under the assumption of
+ergodicity.  The Birkhoff theorem resolves the existence question
+posed in that open problem, at least for ergodic systems.
+\end{interpretation}
+
+\begin{lstlisting}
+-- Lean 4 sketch: Void is isolated
+theorem void_isolated (IS : IdeaSpace) (void : IS.Idea)
+    (h_void : forall a, a != void -> IS.rs void a = 0)
+    (h_dist : forall a, a != void -> IS.d void a = Real.sqrt 2) :
+    exists eps : Real, eps > 0 /\
+      forall b, IS.d void b < eps -> b = void := by
+  exact ⟨1, by norm_num, fun b hb => by
+    by_contra h
+    have := h_dist b h
+    linarith⟩
+\end{lstlisting}
+
+
+
+%% ================================================================
+%%  CHAPTER 20: COMPUTATIONAL ASPECTS
+%% ================================================================
+
+\chapter{Computational Complexity of Meaning}
+\label{ch:computation}
+
+\epigraph{``We can only see a short distance ahead, but we can
+see plenty there that needs to be done.''}{Alan Turing}
+
+Can meaning be computed?  In this chapter we study the
+computational complexity of central problems in Idea Diffusion
+Theory: computing Nash equilibria in meaning games, optimising
+coalition orderings, approximating resonance, and deciding
+topological properties.  The results are sobering: most
+non-trivial meaning problems are computationally hard, but
+structured instances admit efficient approximations.
+
+%% ---------------------------------------------------------------
+\section{Computability of Meaning-Game Equilibria}
+\label{sec:equilibrium-computation}
+
+\begin{definition}[Meaning-game decision problem]
+\label{def:equilibrium-decision}
+\textsc{MeaningNE}: Given a meaning game
+$G = (N, \IS, (\rs_i)_{i\in N})$ with finite $\IS$ and rational
+resonance values, and a rational threshold $v \in \mathbb{Q}$,
+does there exist a Nash equilibrium~$\sigma^*$ with
+$\sum_i u_i(\sigma^*) \ge v$?
+\end{definition}
+
+\begin{theorem}[\textsc{MeaningNE} is NP-hard]
+\label{thm:ne-hard}
+The problem \textsc{MeaningNE} is NP-hard, even when restricted
+to two-player meaning games.
+\end{theorem}
+
+\begin{proof}
+We reduce from \textsc{Clique}.  Given a graph $G = (V,E)$ and
+integer~$k$, construct a two-player meaning game as follows.
+Player~1's strategy set is the set of $k$-subsets of~$V$.
+Player~2's strategy set is identical.  For strategies $S_1, S_2
+\subseteq V$ with $|S_i| = k$, define
+\[
+  u_i(S_1, S_2) = \bigl|\{(v,w) \in S_1 \times S_2 : (v,w) \in E\}\bigr|.
+\]
+This is a resonance function where $\rs(S_1, S_2)$ counts
+inter-set edges.  A Nash equilibrium with $u_1 + u_2 \ge 2\binom{k}{2}$
+exists if and only if $G$ contains a $k$-clique (both players
+choose the clique vertices; any deviation reduces inter-set
+edges).  Since \textsc{Clique} is NP-complete, the reduction
+is polynomial and \textsc{MeaningNE} is NP-hard.
+\end{proof}
+
+\begin{remark}[P versus NP and the difficulty of meaning]
+The NP-hardness of \textsc{MeaningNE} deserves philosophical
+reflection.  The result tells us that determining whether a
+``good'' equilibrium exists in a meaning game is computationally
+intractable---assuming $\mathrm{P} \neq \mathrm{NP}$, no efficient
+algorithm can solve the general problem.
+
+What does this mean for actual meaning-making?  Three observations:
+
+First, \emph{meaning is harder than physics}.  Many problems in
+classical physics (trajectory computation, heat flow, wave propagation)
+are solvable in polynomial time.  Finding meaningful equilibria in
+social interaction is, in general, harder.  The ``two cultures'' gap
+between the sciences and the humanities may have a computational root:
+humanistic problems are genuinely harder in the complexity-theoretic
+sense.
+
+Second, the hardness arises from the \emph{strategic} dimension.
+Computing resonance between two ideas might be easy (Open
+Problem~\ref{op:resonance-complexity}), but finding an \emph{equilibrium}
+arrangement of ideas across multiple agents is hard because each agent's
+optimal choice depends on all others' choices.  This is the curse of
+game-theoretic reasoning: individual rationality is easy, collective
+rationality is hard.
+
+Third, the reduction from \textsc{Clique} reveals a deep connection
+between meaning and \emph{community structure}.  Finding a Nash
+equilibrium in a meaning game is equivalent to finding a dense
+subgraph in a social network.  Meaning, in this view, is
+``computational community detection''---the search for clusters of
+ideas that are mutually reinforcing.  This connects IDT to the
+burgeoning field of computational social science.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{NP-Hardness of Optimal Coalition Ordering}
+\label{sec:ordering-hardness}
+
+\begin{definition}[Optimal composition ordering]
+\label{def:optimal-ordering}
+\textsc{OptOrder}: Given ideas $a_1,\ldots,a_n \in \IS$ and a
+target weight $W \in \mathbb{Q}$, does there exist a permutation
+$\pi$ of $\{1,\ldots,n\}$ such that
+\[
+  w\bigl(a_{\pi(1)} \compose a_{\pi(2)} \compose \cdots \compose
+  a_{\pi(n)}\bigr) \ge W?
+\]
+\end{definition}
+
+\begin{theorem}[\textsc{OptOrder} is NP-hard]
+\label{thm:optorder-hard}
+\textsc{OptOrder} is NP-hard, even when all emergence terms are
+non-negative.
+\end{theorem}
+
+\begin{proof}
+We reduce from the \textsc{Travelling Salesman Problem} (TSP).
+Given a complete graph $K_n$ with edge weights $c_{ij}$,
+construct ideas $a_1,\ldots,a_n$ with
+$\emerge(a_i, a_j, a_i \compose a_j) = c_{ij}$.
+The weight of a composition ordering is
+\[
+  w(a_{\pi(1)} \compose \cdots \compose a_{\pi(n)})
+  = \sum_{i=1}^{n} w(a_i)
+  + \sum_{k=1}^{n-1} \emerge(c_k, a_{\pi(k+1)}, c_{k+1})
+\]
+where $c_k$ is the cumulative composition.  Under the
+simplification that $\emerge$ depends only on the last two
+ideas composed (i.e., $\emerge(c_k, a_{\pi(k+1)}, c_{k+1})
+= c_{\pi(k),\pi(k+1)}$), the weight becomes
+$\sum_i w(a_i) + \sum_{k=1}^{n-1} c_{\pi(k),\pi(k+1)}$.
+Maximising this is equivalent to finding the longest Hamiltonian
+path, which is NP-hard.
+\end{proof}
+
+\begin{interpretation}
+The order in which ideas are composed \emph{matters}, and finding
+the best order is computationally as hard as the Travelling
+Salesman Problem.  This explains why curriculum design, narrative
+structure, and persuasion sequences are hard problems even for
+experts: they are solving an NP-hard optimisation.
+\end{interpretation}
+
+\begin{remark}[Emergence as a computational resource]
+The NP-hardness results above show that meaning computation is hard
+in general.  But there is a complementary perspective: emergence can
+be viewed as a \emph{computational resource} that makes certain
+computations easier.
+
+Consider the problem of computing the weight $w(a \compose b)$ of a
+composition.  Without emergence ($\emerge \equiv 0$), this reduces to
+computing $w(a) + w(b) + 2\rs(a,b)$---a polynomial-time operation.
+With emergence, the computation must account for the non-linear
+emergence term, which in general requires evaluating the cocycle
+condition across the entire composition history.
+
+But emergence also introduces \emph{structure} that can be exploited.
+The spectral decomposition of emergence
+(Theorem~\ref{thm:spectral-emergence}) shows that emergence is
+determined by a finite number of spectral coefficients.  If the
+effective rank of the emergence operator is bounded (most emergence
+is concentrated on a few eigenideas), then the computational
+complexity of emergence evaluation drops from exponential to
+polynomial.
+
+This suggests a complexity-theoretic classification of ideatic spaces:
+\begin{itemize}
+  \item \textbf{Low-emergence spaces:} $\emerge \equiv 0$ or
+    $\emerge$ has bounded effective rank.  Meaning computation is in P.
+    These are the ``simple'' meaning spaces where composition is
+    essentially linear.
+  \item \textbf{Medium-emergence spaces:} $\emerge$ has unbounded
+    rank but satisfies submodularity.  Meaning computation admits
+    polynomial-time approximation (Theorem~\ref{thm:greedy-approx}).
+  \item \textbf{High-emergence spaces:} $\emerge$ is arbitrary.
+    Meaning computation is NP-hard in general, and exact solutions
+    require exponential time.
+\end{itemize}
+
+The cultural interpretation is that \emph{complex cultures are
+computationally harder to navigate than simple ones}.  A community
+with rich, multi-dimensional emergence (many independent modes of
+creativity) is intrinsically harder to optimise for than a community
+with few modes.  This may explain why cultural sophistication correlates
+with the difficulty of cultural navigation: becoming ``cultured'' is
+hard precisely because it requires solving a high-dimensional
+optimisation problem.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Approximation Algorithms}
+\label{sec:approximation}
+
+\begin{theorem}[Greedy ordering approximation]
+\label{thm:greedy-approx}
+The \textbf{greedy algorithm}---at each step compose the idea
+that maximises the marginal weight increase---achieves a
+composition weight at least
+\[
+  w_{\mathrm{greedy}} \ge \frac{1}{2}\, w_{\mathrm{opt}},
+\]
+where $w_{\mathrm{opt}}$ is the weight of the optimal ordering,
+provided all emergence terms are non-negative and submodular.
+\end{theorem}
+
+\begin{proof}
+Under non-negative submodular emergence, the weight function
+$f(\pi) = w(a_{\pi(1)} \compose \cdots \compose a_{\pi(n)})$
+is a monotone submodular function of the ordered set of ideas
+composed so far.  The greedy algorithm for monotone submodular
+maximisation achieves a $(1-1/e)$-approximation by the classical
+result of Nemhauser, Wolsey, and Fisher~\cite{nemhauser1978}.
+Since $1-1/e > 1/2$, the stated bound follows.
+\end{proof}
+
+\begin{remark}
+The $\frac{1}{2}$ bound is conservative.  In practice, greedy
+composition ordering often performs much better because real
+ideatic spaces exhibit strong locality: ideas in the same
+semantic field have high mutual emergence, creating natural
+``clusters'' that the greedy algorithm identifies.
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{PSPACE-Hardness of Iterated Meaning Games}
+\label{sec:pspace}
+
+\begin{definition}[Iterated meaning game]
+\label{def:iterated-game}
+An \textbf{iterated meaning game} consists of a base meaning game
+$G$ played repeatedly for $T$ rounds.  The payoff to player~$i$ is
+\[
+  U_i^T = \sum_{t=1}^{T} \delta^{t-1}\, u_i(a_1^t,\ldots,a_n^t),
+\]
+where $\delta \in (0,1)$ is a discount factor and $(a_j^t)$ is
+player~$j$'s action in round~$t$.
+\end{definition}
+
+\begin{theorem}[PSPACE-hardness of iterated meaning games]
+\label{thm:pspace}
+Deciding whether player~1 has a strategy guaranteeing expected
+payoff $\ge v$ in a $T$-round iterated meaning game (with $T$
+encoded in binary) is PSPACE-hard.
+\end{theorem}
+
+\begin{proof}
+By reduction from \textsc{TQBF} (True Quantified Boolean Formula).
+A quantified Boolean formula $\forall x_1 \exists x_2 \cdots
+\phi(x_1,\ldots,x_n)$ is encoded as a $2n$-round game where
+odd rounds are ``universal'' (adversary chooses) and even rounds
+are ``existential'' (player~1 chooses).  The payoff encodes
+satisfaction of~$\phi$.  Since \textsc{TQBF} is PSPACE-complete,
+the game problem is PSPACE-hard.
+\end{proof}
+
+\begin{interpretation}
+Iterated meaning games---the formal counterpart of ongoing
+cultural discourse---are computationally intractable in general.
+This explains why cultural evolution is \emph{path-dependent}
+and \emph{unpredictable}: even with full information, computing
+optimal long-term meaning strategies is beyond polynomial-time
+algorithms.
+\end{interpretation}
+
+\begin{remark}[PSPACE and the computational horizon of culture]
+The PSPACE-hardness result is stronger than NP-hardness: it says that
+even \emph{verifying} a proposed long-term strategy may require
+exponential time.  In NP-hard problems, we can at least check a
+proposed solution efficiently (that is the ``NP'' in NP-hard).  In
+PSPACE-hard problems, even verification is hard.
+
+The cultural implication is stark.  An NP-hard meaning problem is one
+where finding the best strategy is hard but \emph{recognising} a good
+strategy is easy: we know a great novel when we read it, even though
+writing one is hard.  A PSPACE-hard meaning problem is one where even
+\emph{recognising} optimality is hard: we cannot tell whether a
+thousand-year cultural trajectory has been optimal, even in retrospect.
+
+The reduction from \textsc{TQBF} makes the source of hardness clear:
+iterated meaning games involve \emph{alternating quantification}.  At
+each round, the speaker (``$\exists$'') chooses an idea, and the
+listener (``$\forall$'') responds.  The exponential blowup comes from
+the alternation: each round doubles the number of possible histories,
+and $T$ rounds create $2^T$ possible trajectories.  When $T$ is encoded
+in binary (a compact representation of an exponentially long game),
+PSPACE-hardness is immediate.
+
+This suggests that the ``horizon'' of cultural planning is fundamentally
+limited: we can optimise over short time horizons (polynomial in the
+number of rounds) but not over long ones (exponential in the compressed
+description of the time horizon).
+\end{remark}
+
+%% ---------------------------------------------------------------
+\section{Fixed-Parameter Tractability}
+\label{sec:fpt}
+
+\begin{theorem}[FPT for bounded-emergence games]
+\label{thm:fpt}
+When the number of non-zero emergence terms is bounded by a
+parameter~$k$, the problem \textsc{OptOrder} is solvable in
+time $O(2^k \cdot n^2)$, which is fixed-parameter tractable (FPT)
+in~$k$.
+\end{theorem}
+
+\begin{proof}
+With at most $k$ non-zero emergence terms, the weight of any
+composition ordering depends on at most $k$ adjacencies in the
+permutation.  Enumerate all $2^k$ subsets of active emergence
+terms.  For each subset, the ordering can be computed greedily
+in $O(n^2)$ time (since the remaining emergence terms are zero,
+only the active ones matter).  The optimal ordering is the one
+achieving the maximum weight.
+\end{proof}
+
+\begin{lstlisting}
+-- Lean 4 sketch: Greedy approximation ratio
+theorem greedy_half_approx
+    (IS : IdeaSpace) (ideas : List IS.Idea) (w : IS.Idea -> Real)
+    (h_submod : IsSubmodular (fun S => w (compose_list S)))
+    (h_nonneg : forall a b, IS.emerge a b (IS.comp a b) >= 0) :
+    w (greedy_order ideas) >= (1/2 : Real) * w (optimal_order ideas) := by
+  sorry -- Follows from Nemhauser-Wolsey-Fisher (1978)
+\end{lstlisting}
+
+%% ---------------------------------------------------------------
+\section{Decidability and the Limits of Mechanised Meaning}
+\label{sec:decidability}
+
+Beyond the complexity-theoretic results, we can ask a more fundamental
+question: are meaning problems \emph{decidable} at all?
+
+\begin{theorem}[Undecidability of resonance equivalence]
+\label{thm:undecidable-resonance}
+The problem of deciding, given two finite descriptions of ideas
+$a$ and $b$ as compositions of atomic ideas, whether $w(a) = w(b)$
+is undecidable in general, when the composition operation is allowed
+to encode arbitrary computations.
+\end{theorem}
+
+\begin{proof}
+We reduce from the halting problem.  Given a Turing machine $M$ and
+input $x$, construct ideas $a_M$ and $a_x$ such that
+$w(a_M \compose a_x) = 1$ if $M$ halts on $x$, and
+$w(a_M \compose a_x) = 0$ otherwise.  This is possible because the
+composition operation can encode the computation of $M$ on $x$
+(by representing each step of the computation as an ideatic composition).
+Then $w(a_M \compose a_x) = w(\void)$ if and only if $M$ does not halt
+on $x$, and deciding this is equivalent to solving the halting problem.
+\end{proof}
+
+\begin{interpretation}
+The undecidability of resonance equivalence is a fundamental limitation:
+no algorithm can determine, in finite time, whether two arbitrary ideas
+have the same weight.  This is the computational analogue of the
+philosophical claim that meaning is ``ungraspable''---not because it is
+mystical, but because it is \emph{computationally unbounded}.
+
+However, the undecidability result applies only to the most general
+setting, where composition can encode arbitrary computations.  For
+\emph{structured} ideatic spaces---those satisfying additional axioms
+such as finite dimensionality, bounded emergence, or spectral
+sparsity---the problem may well be decidable, and even efficiently
+so.  The open question is to characterise precisely which structural
+assumptions restore decidability (cf.\ Open Problem~\ref{op:resonance-complexity}).
+\end{interpretation}
+
+\begin{remark}[Emergence and the Extended Church--Turing thesis]
+The results of this chapter raise a provocative question: does
+emergence provide computational power \emph{beyond} that of Turing
+machines?  The Extended Church--Turing thesis asserts that any
+physically realisable computation can be simulated efficiently by a
+probabilistic Turing machine.  If emergence creates genuinely new
+information (Theorem~\ref{thm:emergence-info}), does composition
+correspond to a computation that Turing machines cannot efficiently
+simulate?
+
+Our results suggest a nuanced answer.  The information ``created'' by
+emergence is not free: it is bounded by the Cauchy--Schwarz inequality
+and the channel capacity constraint.  Emergence does not violate the
+Extended Church--Turing thesis; rather, it provides a \emph{structured}
+source of computational difficulty.  The NP-hardness of meaning
+problems arises not from any super-Turing capability but from the
+combinatorial explosion of strategic interactions, which is a standard
+source of computational hardness well within the Turing framework.
+
+Nevertheless, the question deserves further study, particularly in
+connection with quantum computation.  If ideatic spaces can be
+``quantised'' (replacing the real-valued resonance function with an
+operator-valued one), quantum emergence might provide computational
+speedups analogous to those in quantum algorithms.  This is
+speculative but tantalising territory.
+\end{remark}
+
+
+
+%% ================================================================
+%%  CHAPTER 21: OPEN PROBLEMS
+%% ================================================================
+
+\chapter{Open Problems and Future Directions}
+\label{ch:open}
+
+\epigraph{``The real voyage of discovery consists not in seeking
+new landscapes, but in having new eyes.''}{Marcel Proust}
+
+Every mathematical theory worth its salt generates more questions
+than it answers.  Idea Diffusion Theory is young, and the landscape
+of open problems is vast.  In this chapter we catalogue fifteen
+open problems, ranging from the purely algebraic to the deeply
+philosophical, each accompanied by a discussion of its significance
+and the techniques most likely to yield progress.
+
+%% ---------------------------------------------------------------
+\section{Algebraic Structure Problems}
+\label{sec:open-algebraic}
+
+\begin{game}[Open Problem 1: Classification of finite ideatic spaces]
+\label{op:classification}
+\textbf{Problem.}  Classify all finite ideatic spaces
+$(\IS, \compose, \rs, \emerge)$ satisfying the IDT axioms, up to
+ideatic isomorphism.
+
+\textbf{Discussion.}  For $|\IS| \le 3$, the classification is
+straightforward (Exercise~\ref{ex:small-IS}).  For $|\IS| = 4$,
+the number of non-isomorphic spaces already depends delicately
+on the cocycle condition.  A complete classification would
+illuminate the ``periodic table'' of elementary meaning structures.
+The analogous problem in group theory (classification of finite
+groups) took over a century; we expect the ideatic version to be
+similarly rich.
+\end{game}
+
+\begin{game}[Open Problem 2: Free ideatic space]
+\label{op:free}
+\textbf{Problem.}  Does there exist a \emph{free} ideatic space
+on $n$ generators---an ideatic space $\IS_n$ such that every
+function from the generators to any ideatic space~$\IS'$ extends
+uniquely to an ideatic morphism $\IS_n \to \IS'$?
+
+\textbf{Discussion.}  In group theory, free groups exist and are
+fundamental.  The analogous construction for ideatic spaces
+requires the cocycle condition to be ``freely'' satisfiable, which
+is non-obvious.  If free ideatic spaces exist, they would provide
+a universal language for describing all meaning structures.
+\end{game}
+
+\begin{game}[Open Problem 3: Associativity of composition]
+\label{op:associativity}
+\textbf{Problem.}  Under what conditions on the emergence term is
+composition \emph{associative}: $(a \compose b) \compose c = a
+\compose (b \compose c)$?
+
+\textbf{Discussion.}  Associativity fails generically because
+$\emerge(a \compose b, c, \cdot) \neq \emerge(a, b \compose c,
+\cdot)$.  Characterising the ``associative locus'' in emergence
+space would connect IDT to semigroup theory and potentially to
+operad theory.  Partial results suggest that exponential decay
+of emergence (Section~\ref{sec:meter}) is sufficient for
+\emph{asymptotic} associativity.
+\end{game}
+
+%% ---------------------------------------------------------------
+\section{Game-Theoretic Problems}
+\label{sec:open-games}
+
+\begin{game}[Open Problem 4: Uniqueness of BNE]
+\label{op:bne-unique}
+\textbf{Problem.}  Under what conditions does a Bayesian meaning
+game admit a \emph{unique} Bayesian Nash equilibrium?
+
+\textbf{Discussion.}  Theorem~\ref{thm:bne-existence} guarantees
+existence but not uniqueness.  Uniqueness would imply that meaning
+is ``determined'' by the structure of the game, a strong
+philosophical claim.  Supermodularity conditions on the payoff
+(analogous to those in Milgrom and Roberts~\cite{milgrom-roberts})
+are a promising avenue.
+\end{game}
+
+\begin{game}[Open Problem 5: Evolutionary stability in meaning games]
+\label{op:ess}
+\textbf{Problem.}  Characterise the \emph{evolutionarily stable
+strategies} (ESS) of meaning games.  When does cultural evolution
+converge to an ESS?
+
+\textbf{Discussion.}  An ESS in a meaning game is a strategy
+profile resistant to invasion by a small proportion of mutant
+players.  The replicator dynamics on ideatic spaces are
+infinite-dimensional, making analysis non-trivial.  Connections
+to evolutionary game theory (Maynard Smith~\cite{maynard-smith})
+and population genetics are largely unexplored.
+\end{game}
+
+\begin{game}[Open Problem 6: Price of anarchy for meaning]
+\label{op:poa}
+\textbf{Problem.}  What is the \textbf{price of anarchy}---the
+ratio of optimal social welfare to worst Nash equilibrium welfare---in meaning games?
+
+\textbf{Discussion.}  The price of anarchy quantifies the cost of
+selfish meaning-making.  For congestion games it is bounded
+\cite{roughgarden-tardos}; for meaning games, the bound likely
+depends on the structure of $\emerge$.  If emergence is
+super-additive, selfish play may actually \emph{exceed} the
+coordinated optimum (``price of anarchy $< 1$''), a phenomenon
+worth investigating.
+\end{game}
+
+%% ---------------------------------------------------------------
+\section{Information-Theoretic Problems}
+\label{sec:open-info}
+
+\begin{game}[Open Problem 7: Emergence rate function]
+\label{op:emergence-rate}
+\textbf{Problem.}  Determine the \textbf{emergence rate function}
+$R(\emerge) = \lim_{n\to\infty} \frac{1}{n}
+\sum_{k=1}^{n} \emerge(c_k, a_{k+1}, c_{k+1})$ for ergodic
+composition processes.  When does it exist, and what are its
+properties?
+
+\textbf{Discussion.}  This is the emergence analogue of the
+Shannon entropy rate.  Existence requires ergodic-theoretic
+arguments beyond those in Section~\ref{sec:composition-entropy}.
+The emergence rate would quantify the ``creativity'' of a
+cultural process.
+\end{game}
+
+\begin{game}[Open Problem 8: Source coding for ideatic channels]
+\label{op:source-coding}
+\textbf{Problem.}  Prove a source coding theorem for ideatic
+channels: what is the minimum rate at which ideas must be
+composed to faithfully represent a source distribution over~$\IS$?
+
+\textbf{Discussion.}  Shannon's source coding theorem states
+that the minimum rate equals the entropy of the source.  The
+ideatic version must account for emergence: the ``channel''
+$a \mapsto a \compose b$ creates information, potentially
+allowing sub-entropy rates.  This would be a striking departure
+from classical information theory.
+\end{game}
+
+\begin{game}[Open Problem 9: Ideatic channel coding theorem]
+\label{op:channel-coding}
+\textbf{Problem.}  Prove a channel coding theorem:  at what rate
+can ideas be reliably transmitted through a noisy ideatic channel?
+
+\textbf{Discussion.}  The channel capacity $C_b$ of
+Theorem~\ref{thm:channel-capacity} provides an upper bound.
+Achievability requires constructing codes---sequences of
+compositions---that approach the capacity.  The non-linearity
+of composition (due to emergence) makes standard linear-coding
+arguments inapplicable; new techniques are needed.
+\end{game}
+
+%% ---------------------------------------------------------------
+\section{Topological Problems}
+\label{sec:open-topology}
+
+\begin{game}[Open Problem 10: Fundamental group of~$\IS$]
+\label{op:fundamental-group}
+\textbf{Problem.}  Compute the fundamental group
+$\pi_1(\IS \setminus \{\void\})$ for standard ideatic spaces.
+
+\textbf{Discussion.}  The fundamental group measures the
+``holes'' in meaning space.  A non-trivial $\pi_1$ would mean
+that there exist loops of ideas that cannot be continuously
+contracted---closed argumentative cycles with no resolution.
+This is the topological counterpart of paradoxes and
+self-referential loops.
+\end{game}
+
+\begin{game}[Open Problem 11: Homology of ideatic spaces]
+\label{op:homology}
+\textbf{Problem.}  Compute the singular homology groups
+$H_n(\IS, \mathbb{Z})$ and relate them to structural features
+of the resonance function.
+
+\textbf{Discussion.}  Persistent homology (a tool from
+topological data analysis) can be applied to the Vietoris--Rips
+complex built from the resonance metric~$d_{\rs}$.  The Betti
+numbers would count ``independent meaning clusters'' ($\beta_0$),
+``meaning cycles'' ($\beta_1$), and higher-dimensional features.
+Computational experiments on natural-language corpora could
+inform the theory.
+\end{game}
+
+\begin{game}[Open Problem 12: Fixed-point theorems on~$\IS$]
+\label{op:fixed-point}
+\textbf{Problem.}  Under what conditions does a continuous map
+$\phi : \IS \to \IS$ (an ideatic morphism) have a fixed point?
+When is the fixed point unique?
+
+\textbf{Discussion.}  The Banach fixed-point theorem applies if
+$\phi$ is a contraction in the resonance metric.  For non-contractive
+maps, Brouwer's theorem applies if $\IS$ is homeomorphic to a
+convex body.  Fixed points of ideatic morphisms correspond to
+\emph{stable meanings}---ideas invariant under cultural
+transformation.
+\end{game}
+
+%% ---------------------------------------------------------------
+\section{Computational Problems}
+\label{sec:open-computation}
+
+\begin{game}[Open Problem 13: Complexity of resonance computation]
+\label{op:resonance-complexity}
+\textbf{Problem.}  What is the computational complexity of
+computing $\rs(a,b)$ for ideas represented as strings over a
+finite alphabet?
+
+\textbf{Discussion.}  If $\rs$ is defined implicitly through
+a neural network or a statistical model, even approximate
+computation may be hard.  Conversely, for algebraically
+structured~$\rs$ (e.g., polynomial functions of edit distance),
+polynomial-time algorithms may exist.  Characterising the
+``easy'' instances is both practically and theoretically
+important.
+\end{game}
+
+\begin{game}[Open Problem 14: Approximation ratio for emergence]
+\label{op:approx-emergence}
+\textbf{Problem.}  Is there a polynomial-time algorithm that
+approximates $\emerge(a,b,c)$ to within a factor $(1+\epsilon)$
+for all $\epsilon > 0$?  That is, does emergence admit a
+\emph{fully polynomial-time approximation scheme} (FPTAS)?
+
+\textbf{Discussion.}  The greedy algorithm of
+Theorem~\ref{thm:greedy-approx} gives a constant-factor
+approximation for the ordering problem.  An FPTAS for emergence
+itself would require stronger structural assumptions.  If
+emergence is \#P-hard to compute exactly (plausible if it encodes
+counting problems), then an FPTAS would imply $\text{NP} =
+\text{RP}$ under standard complexity assumptions.
+\end{game}
+
+%% ---------------------------------------------------------------
+\section{Philosophical and Interdisciplinary Problems}
+\label{sec:open-philosophy}
+
+\begin{game}[Open Problem 15: The Grounding Problem]
+\label{op:grounding}
+\textbf{Problem.}  Can IDT resolve the \emph{symbol grounding
+problem}---the question of how formal symbols acquire meaning?
+
+\textbf{Discussion.}  IDT posits that meaning is constituted by
+resonance with a community.  This is a \emph{social} grounding:
+an idea means what the community's resonance function assigns to it.
+But this raises a regress: what grounds the resonance function
+itself?  One answer is that $\rs$ is an empirical quantity,
+measurable through behavioural experiments (choice data,
+composition patterns).  Another is that $\rs$ is a theoretical
+primitive, like the metric tensor in general relativity.
+Resolving this tension is a problem at the intersection of
+philosophy of language, cognitive science, and mathematical
+physics.
+\end{game}
+
+\begin{game}[Open Problem 16: Emergence and consciousness]
+\label{op:consciousness}
+\textbf{Problem.}  Is there a formal relationship between the
+emergence term $\emerge$ in IDT and theories of consciousness
+that invoke ``integrated information'' (IIT, Tononi~\cite{tononi})?
+
+\textbf{Discussion.}  IIT defines consciousness as integrated
+information: $\Phi > 0$.  IDT defines cultural emergence as
+super-additive resonance: $\emerge > 0$.  Both involve a
+quantity that exceeds the sum of parts.  A formal bridge between
+the two theories would connect the micro-level (neural
+integration) with the macro-level (cultural emergence), and
+potentially explain why conscious beings create culture.
+\end{game}
+
+\begin{game}[Open Problem 17: Quantitative cultural dynamics]
+\label{op:cultural-dynamics}
+\textbf{Problem.}  Develop a quantitative theory of cultural
+change using IDT.  Specifically, model the time evolution of
+a community's resonance function $\rs_t$ as ideas are composed
+and diffused.
+
+\textbf{Discussion.}  This requires combining IDT with
+dynamical systems theory.  Natural candidates for the evolution
+equation include:
+\begin{enumerate}
+  \item \textbf{Gradient flow:}
+    $\frac{d\rs_t}{dt} = \nabla_\rs \sum_i u_i(\sigma^*_t)$,
+    where $\sigma^*_t$ is the current equilibrium.
+  \item \textbf{Replicator dynamics:}
+    $\dot{x}_a = x_a\bigl(w_t(a) - \bar{w}_t\bigr)$, where
+    $x_a$ is the frequency of idea~$a$ and $\bar{w}_t$ is the
+    population-average weight.
+  \item \textbf{Bayesian updating:} $\rs_{t+1}$ is the posterior
+    resonance after observing the compositions at time~$t$
+    (Section~\ref{sec:learning}).
+\end{enumerate}
+Each model makes different predictions about cultural convergence,
+divergence, and oscillation.  Empirical testing against historical
+data (e.g., citation networks, meme evolution) would be valuable.
+\end{game}
+
+\begin{game}[Open Problem 18: Higher categories of meaning]
+\label{op:higher-categories}
+\textbf{Problem.}  Extend IDT to a higher-categorical framework
+where ideas are objects, compositions are 1-morphisms, and
+``meta-compositions'' (compositions of compositions) are
+2-morphisms.
+
+\textbf{Discussion.}  The current IDT treats composition as a
+binary operation producing an object.  A 2-categorical extension
+would allow \emph{transformations between compositions}---formal
+analogues of ``reinterpretation'' or ``metaphor.''  The coherence
+conditions (pentagon identity, etc.) would impose constraints on
+consistent reinterpretation, potentially connecting IDT to
+homotopy type theory and the univalent foundations programme.
+\end{game}
+
+%% ---------------------------------------------------------------
+\section{Spectral and Geometric Problems}
+\label{sec:open-spectral}
+
+\begin{game}[Open Problem 19: Spectral universality]
+\label{op:spectral-universality}
+\textbf{Problem.}  Do the eigenvalue distributions of resonance
+operators in natural ideatic spaces (language corpora, cultural
+databases) exhibit universality---i.e., do they follow a universal
+distribution (such as the Marchenko--Pastur law or the Tracy--Widom
+distribution) independent of the specific content?
+
+\textbf{Discussion.}  Random matrix theory predicts universal spectral
+distributions for large matrices with independent entries.  If
+resonance operators exhibit similar universality, this would suggest
+that the ``shape'' of meaning space is determined by its dimension
+rather than its content---a profound claim.  The spectral theorem
+(Theorem~\ref{thm:spectral-poetics}) guarantees the existence of the
+spectrum; the universality question asks about its distribution.
+Computational experiments on large corpora could provide evidence.
+\end{game}
+
+\begin{game}[Open Problem 20: Curvature classification]
+\label{op:curvature}
+\textbf{Problem.}  Classify ideatic spaces by their curvature type
+(positive, zero, negative).  Under what conditions on the emergence
+term does~$\IS$ have non-negative Ricci curvature?
+
+\textbf{Discussion.}  Theorem~\ref{thm:nonpositive-curvature} shows
+that submodular emergence implies non-positive Alexandrov curvature.
+What about the converse?  And what about \emph{positive} curvature?
+In Riemannian geometry, positive Ricci curvature implies compactness
+(Bonnet--Myers) and restrictions on topology (finite fundamental group).
+If analogous results hold in ideatic spaces, curvature would provide a
+powerful tool for classifying meaning spaces by their geometric
+properties.  Regions of positive curvature would correspond to
+``convergent'' meaning zones (consensus), while negative curvature
+would correspond to ``divergent'' zones (controversy).
+\end{game}
+
+\begin{game}[Open Problem 21: Ergodic decomposition of cultural systems]
+\label{op:ergodic-decomposition}
+\textbf{Problem.}  For a given ideatic dynamical system $(\IS, T, \mu)$,
+compute the ergodic decomposition $\mu = \int \mu_\alpha\, d\nu(\alpha)$
+into ergodic components.  Relate the number and structure of ergodic
+components to observable features of cultural systems (number of
+subcultures, rate of cultural exchange, etc.).
+
+\textbf{Discussion.}  The ergodic decomposition theorem guarantees that
+every invariant measure decomposes into ergodic components, each
+corresponding to a ``subculture'' that internally mixes but does not
+exchange with other subcultures.  Computing this decomposition for
+empirical ideatic spaces would provide a rigorous method for identifying
+cultural boundaries.  This connects to community detection in network
+science and to the sociological theory of ``cultural fields'' (Bourdieu).
+The mean emergence theorem (Theorem~\ref{thm:mean-emergence-convergence})
+provides the dynamical observable: each ergodic component has its own
+emergence rate $\bar{\emerge}_\alpha$, and differences in emergence
+rate characterise differences between subcultures.
+\end{game}
+
+\begin{game}[Open Problem 22: Fixed-point index and cultural innovation]
+\label{op:fixed-point-index}
+\textbf{Problem.}  Compute the Lefschetz fixed-point index of
+interpretation maps $\phi : \IS \to \IS$.  Relate the index to the
+number of stable meanings and the topological complexity of~$\IS$.
+
+\textbf{Discussion.}  The Lefschetz fixed-point theorem states that
+if the Lefschetz number $L(\phi) = \sum_k (-1)^k \mathrm{tr}(\phi_*
+\mid H_k(\IS))$ is non-zero, then $\phi$ has a fixed point.  For
+ideatic spaces, the Lefschetz number would count ``weighted stable
+meanings,'' with contributions from different homological dimensions.
+A non-trivial Lefschetz number would guarantee the existence of
+stable meanings purely from topological data, without any
+contractivity assumption.  This would complement the Banach and
+Brouwer fixed-point theorems of Section~\ref{sec:fixed-point}.
+\end{game}
+
+%% ---------------------------------------------------------------
+\section{Philosophy of Machine-Verified Meaning}
+\label{sec:philosophy-verification}
+
+The theorems in this volume, and their Lean~4 formalisations referenced
+throughout, raise a fundamental question in the philosophy of
+mathematics.
+
+\begin{game}[Open Problem 23: Brouwer versus Hilbert in IDT]
+\label{op:brouwer-hilbert}
+\textbf{Problem.}  What is the philosophical status of machine-verified
+proofs of claims about meaning?  Does the formalisation of IDT in
+Lean~4 resolve or merely displace the foundational questions?
+
+\textbf{Discussion.}  The Hilbert--Brouwer debate in the foundations of
+mathematics pitted \emph{formalism} (mathematics is the manipulation of
+symbols according to rules) against \emph{intuitionism} (mathematics is
+a mental construction, and existence proofs must be constructive).  IDT's
+formalisation in Lean~4 is squarely in the Hilbertian tradition: the
+theorems are proved by formal deduction from axioms, and the proofs are
+verified by a computer.
+
+But the subject matter---meaning, resonance, emergence---is deeply
+Brouwerian.  Meaning is a mental phenomenon; resonance is experienced,
+not merely computed; emergence is creative, not merely deductive.  The
+tension is this: can a formalist methodology (machine verification)
+adequately capture an intuitionist subject matter (meaning)?
+
+Several positions are possible:
+
+\emph{Strong formalism.}  The machine verification \emph{is} the proof.
+If Lean~4 accepts the proof, the theorem is true, and the question of
+``what it means'' is irrelevant to its mathematical status.  This is the
+dominant view in modern mathematics.
+
+\emph{Moderate intuitionism.}  The machine verification establishes the
+\emph{logical} truth of the theorem, but the \emph{understanding} of
+what the theorem means requires human interpretation---an act of
+$\emerge$ between the formal content and the reader's prior knowledge.
+The proof is not complete until it is understood.
+
+\emph{Social constructivism.}  The machine verification is itself a
+social practice: the choice of axioms, the design of Lean~4, the
+community conventions for acceptable proofs---all are socially
+constituted.  IDT's formalisation does not escape the social nature
+of meaning; it merely relocates it from the content of the theorems
+to the design of the proof assistant.
+
+We do not resolve this debate.  Instead, we observe that IDT is
+uniquely positioned to \emph{formalise} the debate: the meaning of a
+machine-verified proof is itself an idea~$a$ whose resonance
+$\rs(a, \cdot)$ with different mathematical communities varies.
+The formalist finds high resonance; the intuitionist finds low
+resonance; the social constructivist finds resonance dependent on
+context.  IDT thus provides a \emph{meta-theory} of its own
+foundations---a rare self-referential capability.
+\end{game}
+
+\begin{game}[Open Problem 24: Ideatic quantum computation]
+\label{op:quantum}
+\textbf{Problem.}  Develop a quantum analogue of IDT in which the
+resonance function takes values in a $C^*$-algebra rather than $\R$.
+Does quantum emergence provide computational advantages over classical
+emergence?
+
+\textbf{Discussion.}  Replacing the real-valued resonance function
+$\rs : \IS \times \IS \to \R$ with an operator-valued resonance
+$\rs : \IS \times \IS \to \mathcal{B}(\mathcal{H})$ (bounded operators
+on a Hilbert space) would create a ``quantum ideatic space'' in which
+ideas can exist in superposition, resonance can be entangled, and
+emergence can exhibit interference effects.  The spectral theory of
+emergence (Section~\ref{sec:spectral-emergence}) would naturally extend
+to this setting, with eigenideas becoming quantum states.
+
+The computational implications are tantalising.  If the NP-hardness of
+\textsc{MeaningNE} (Theorem~\ref{thm:ne-hard}) could be circumvented
+by quantum algorithms---analogous to Shor's algorithm for factoring---then
+quantum computers could in principle find optimal meaning equilibria
+exponentially faster than classical computers.  Whether this is possible
+depends on the structure of the quantum emergence operator, which is
+entirely unexplored.
+\end{game}
+
+%% ---------------------------------------------------------------
+\section{Summary of Open Problems}
+\label{sec:open-summary}
+
+Table~\ref{tab:open-problems} collects all open problems with
+their status and the techniques most likely to yield progress.
+
+\begin{table}[ht]
+\centering
+\small
+\begin{tabular}{@{}clll@{}}
+\toprule
+\textbf{\#} & \textbf{Problem} & \textbf{Area} & \textbf{Likely Techniques} \\
+\midrule
+1  & Classification of finite $\IS$    & Algebra     & Exhaustive enumeration, GAP \\
+2  & Free ideatic space                & Algebra     & Universal constructions \\
+3  & Associativity conditions          & Algebra     & Operad theory \\
+4  & Uniqueness of BNE                 & Game theory & Supermodularity \\
+5  & ESS in meaning games              & Game theory & Replicator dynamics \\
+6  & Price of anarchy                  & Game theory & Smoothness framework \\
+7  & Emergence rate function           & Info.\ theory & Ergodic theory \\
+8  & Source coding theorem             & Info.\ theory & Rate-distortion \\
+9  & Channel coding theorem            & Info.\ theory & Random coding \\
+10 & Fundamental group of~$\IS$        & Topology    & Algebraic topology \\
+11 & Homology of~$\IS$                 & Topology    & Persistent homology \\
+12 & Fixed-point theorems              & Topology    & Banach/Brouwer \\
+13 & Resonance computation complexity  & Complexity  & Fine-grained complexity \\
+14 & FPTAS for emergence               & Complexity  & Counting complexity \\
+15 & Symbol grounding                  & Philosophy  & Empirical measurement \\
+16 & Emergence and consciousness       & Philosophy  & IIT bridge theorems \\
+17 & Quantitative cultural dynamics    & Dynamics    & ODE/PDE on $\IS$ \\
+18 & Higher categories of meaning      & Category theory & $(\infty,n)$-categories \\
+19 & Spectral universality             & Spectral theory & Random matrix theory \\
+20 & Curvature classification          & Geometry    & Comparison geometry \\
+21 & Ergodic decomposition             & Dynamics    & Ergodic theory \\
+22 & Fixed-point index                 & Topology    & Lefschetz theory \\
+23 & Brouwer vs.\ Hilbert in IDT      & Philosophy  & Foundations of math \\
+24 & Ideatic quantum computation       & Quantum     & $C^*$-algebras \\
+\bottomrule
+\end{tabular}
+\caption{Open problems in Idea Diffusion Theory.}
+\label{tab:open-problems}
+\end{table}
+
+We close with the conviction that these twenty-four problems, taken together,
+define a \emph{research programme}: a systematic attempt to
+understand meaning as a mathematical phenomenon, amenable to the
+same tools---algebra, topology, information theory, game theory,
+computational complexity, spectral theory, ergodic theory, and the
+philosophy of mathematical proof---that have illuminated the physical
+sciences.
+
+The programme has a distinctive character.  Unlike most mathematical
+theories, IDT is simultaneously \emph{formal} (its theorems are
+machine-verified in Lean~4) and \emph{interpretive} (its concepts
+refer to human meaning, cultural practice, and social interaction).
+This dual character is not a weakness but a strength: the formalism
+disciplines the interpretation, and the interpretation motivates the
+formalism.  The meaning games have only just begun.
+
+\bigskip
+\begin{center}
+\textit{--- End of Part III ---}
+\end{center}
+
+

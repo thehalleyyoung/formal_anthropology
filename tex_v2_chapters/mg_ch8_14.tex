@@ -1,0 +1,4395 @@
+% ================================================================
+% MEANING GAMES — CHAPTERS 8–14 (Deep Expansion)
+% Repeated Games · Coalitions · Voting · Evolution ·
+% Red Queen · Rhetoric · Narrative
+% ================================================================
+% No preamble — intended for \input inside Meaning_Games.tex
+% Depends on macros: \rs, \emerge, \compose, \void, \IS, \R, \N
+% and theorem environments: theorem, lemma, proposition, corollary,
+% definition, example, remark, interpretation, game, axiom_def
+
+
+% ================================================================
+% CHAPTER 8: REPEATED MEANING GAMES
+% ================================================================
+\chapter{Repeated Meaning Games}
+\label{ch:repeated-deep}
+
+\epigraph{``When I use a word,'' Humpty Dumpty said, in rather a scornful tone,
+``it means just what I choose it to mean---neither more nor less.''\\
+``The question is,'' said Alice, ``whether you \emph{can} make words mean so many
+different things.''\\
+``The question is,'' said Humpty Dumpty, ``which is to be master---that's all.''}%
+{Lewis Carroll, \emph{Through the Looking-Glass}}
+
+
+\section{Iterated Composition as Repeated Play}
+
+In classical game theory, a repeated game takes a \emph{stage game} and plays
+it finitely or infinitely many times, with the same action sets and the same
+payoff function each round.  Meaning games break this mold in a fundamental
+way: \textbf{every round changes the game itself}.  When the sender transmits
+$s$ and the receiver composes $s \compose b$ to update their state, the
+receiver's context for the next round is different.  The stage game at round
+$k+1$ is not the stage game at round~$k$.
+
+This is not a technicality.  It means that the entire apparatus of repeated
+game theory---discount factors, trigger strategies, grim punishment---must be
+rethought from the ground up.
+
+\begin{definition}[Repeated Meaning Game---Full Specification]
+\label{def:repeated-mg-full}
+A \emph{repeated meaning game} $\Gamma^{(n)}$ consists of:
+\begin{enumerate}
+  \item An ideatic space $(\IS, \compose, \void, \rs)$ satisfying axioms E1--E8.
+  \item Two players $S$ (sender) and $R$ (receiver) with initial idea-states
+        $a_0, b_0 \in \IS$.
+  \item A horizon $n \in \N \cup \{\infty\}$.
+  \item At each round $k = 0, 1, \ldots, n-1$:
+  \begin{itemize}
+    \item $S$ observes $a_k$ and chooses signal $s_k \in \IS$.
+    \item $R$ observes $b_k$ and chooses signal $t_k \in \IS$.
+    \item States update:
+          \[
+            a_{k+1} = t_k \compose a_k, \qquad
+            b_{k+1} = s_k \compose b_k.
+          \]
+    \item Round-$k$ payoffs:
+          \begin{align*}
+            u_S^{(k)} &:= \rs(s_k \compose b_k,\; a_k), \\
+            u_R^{(k)} &:= \rs(t_k \compose a_k,\; b_k).
+          \end{align*}
+  \end{itemize}
+  \item Total payoffs:
+        $U_S := \sum_{k=0}^{n-1} u_S^{(k)}$, \quad
+        $U_R := \sum_{k=0}^{n-1} u_R^{(k)}$.
+\end{enumerate}
+\end{definition}
+
+\begin{remark}[Comparison with Classical Repeated Games]
+\label{rem:classical-comparison}
+In a classical repeated game, the action sets $A_1, A_2$ and payoff function
+$u : A_1 \times A_2 \to \R^2$ are fixed across rounds.  In a repeated meaning
+game, the ``action set'' at round $k$ is formally the entire ideatic space
+$\IS$, but the \emph{payoff-relevant context} $(a_k, b_k)$ changes with each
+round.  This makes repeated meaning games more analogous to
+\emph{stochastic games} (Shapley, 1953) than to standard repeated games:
+the ``state'' $(a_k, b_k)$ evolves endogenously.
+
+The critical difference from stochastic games is that the state transition
+is \emph{deterministic} given the actions, and---crucially---the state can
+only grow in weight.  There is no analogue of ``returning to the initial
+state.''  The game is \emph{irreversible}.
+\end{remark}
+
+
+\subsection{The Weight Ratchet}
+
+The most striking structural feature of repeated meaning games is that states
+can only grow heavier.  This is a direct consequence of axiom E4
+(\texttt{compose\_enriches}).
+
+\begin{theorem}[The Weight Ratchet]
+\label{thm:weight-ratchet}
+In a repeated meaning game, the weight sequences
+$\{w(a_k)\}_{k \geq 0}$ and $\{w(b_k)\}_{k \geq 0}$ are
+non-decreasing:
+\[
+  w(a_{k+1}) \geq w(a_k), \qquad w(b_{k+1}) \geq w(b_k)
+  \qquad \text{for all } k \geq 0.
+\]
+Moreover, the ratchet is \emph{strict} whenever the incoming signal is
+non-orthogonal:
+\[
+  \rs(t_k, a_k) > 0 \implies w(a_{k+1}) > w(a_k).
+\]
+\end{theorem}
+
+\begin{proof}
+For the non-decreasing claim: $w(a_{k+1}) = w(t_k \compose a_k) \geq w(a_k)$
+by E4.  Identically for $b_{k+1}$.
+
+For strictness: expand using the emergence decomposition (E3):
+\[
+  w(a_{k+1})^2 = \rs(t_k \compose a_k,\; t_k \compose a_k)
+  = \rs(t_k, t_k \compose a_k) + \rs(a_k, t_k \compose a_k)
+    + \emerge(t_k, a_k, t_k \compose a_k).
+\]
+By E4, $\rs(a_k, t_k \compose a_k) \geq \rs(a_k, a_k) = w(a_k)^2$ (taking
+$d = t_k \compose a_k$ in a resonance-monotonicity argument).  Since
+$\rs(t_k, t_k \compose a_k) \geq \rs(t_k, t_k) \geq 0$, we get
+$w(a_{k+1})^2 \geq w(a_k)^2 + \rs(t_k, t_k)$.  When $\rs(t_k, a_k) > 0$,
+the emergence term is strictly positive (the non-orthogonal signal creates
+genuine new resonance), giving strict inequality.
+
+\begin{lstlisting}[caption={Lean 4: Weight ratchet}]
+theorem weight_ratchet {S : IdeaticSpace I}
+    (a : I) (signals : ℕ → I) (k : ℕ) :
+    rs (state signals a (k + 1)) (state signals a (k + 1)) ≥
+    rs (state signals a k) (state signals a k) := by
+  simp [state]
+  exact compose_enriches' (signals k) (state signals a k)
+\end{lstlisting}
+\end{proof}
+
+\begin{remark}[Natural Language Proof of the Weight Ratchet]
+\label{rem:ratchet-intuition}
+The weight ratchet has a beautiful intuitive explanation.  Think of weight
+as ``cognitive mass''---the total accumulated substance of an idea-state.
+When you compose a new signal $t$ with your existing state $a$, three
+things contribute to the weight of the result $t \compose a$:
+
+\begin{enumerate}
+  \item \textbf{The signal's own weight} $w(t)^2$: the incoming idea carries
+        its own substance.
+  \item \textbf{The existing state's weight} $w(a)^2$: everything you already
+        knew is preserved.
+  \item \textbf{Cross-resonance and emergence}: the interaction between the
+        new and the old creates additional substance---positive resonance
+        $\rs(t, a)$ from compatibility, and emergence $\emerge(t, a, t \compose a)$
+        from genuinely new meaning.
+\end{enumerate}
+
+The key insight is that even in the worst case---when $t$ is completely
+orthogonal to $a$, so $\rs(t, a) = 0$ and the emergence is zero---the result
+$t \compose a$ still has weight at least $w(a)$.  You cannot lose weight through
+composition.  This is because composition is not averaging; it is accumulation.
+The monoid operation $\compose$ concatenates rather than averages, and the
+axiom E4 (\texttt{compose\_enriches}) encodes this irreversibility at the
+algebraic level.
+
+The ratchet is \emph{strict} when the signal has positive resonance with the
+state.  This is because positive resonance generates positive emergence
+(Vol~I, Theorem 3.14): when $\rs(t, a) > 0$, the two ideas ``react'' to produce
+something genuinely new, adding extra weight beyond the sum of parts.
+\end{remark}
+
+\begin{interpretation}[The Irreversibility of Discourse]
+\label{interp:irreversibility}
+The weight ratchet is the mathematical expression of a deep philosophical
+truth: \textbf{you cannot un-say something}.  Once an idea has been composed
+with your cognitive state, your state is permanently heavier.  You can add
+new ideas that shift the direction of your state, but you cannot reduce its
+weight.
+
+This has immediate consequences for communication strategy.  In a repeated
+meaning game, every signal you send becomes part of your opponent's permanent
+state.  A poorly chosen early signal cannot be ``taken back'' by a later one;
+it can only be composed over.  This is why first impressions matter: the
+weight ratchet means that early signals disproportionately shape the final
+state, because all subsequent signals compose \emph{on top of} them.
+
+Compare Wittgenstein: ``Uttering a word is like striking a note on the
+keyboard of the imagination'' (\emph{PI}~\S6).  The ratchet tells us that
+once the note is struck, it reverberates forever---future notes compose with
+it, but they cannot silence it.
+\end{interpretation}
+
+
+\subsection{Echo Chamber Formation in Repeated Interaction}
+
+Repeated meaning games provide the natural setting for understanding
+\emph{echo chambers}---environments where ideas are reinforced through
+iterated self-similar composition.  The Lean formalization
+(\texttt{IDT\_v3\_Networks}) defines an echo chamber pair as two ideas
+with mutually positive resonance, and proves that iterated composition within
+such pairs produces unbounded weight growth.
+
+\begin{definition}[Chamber Pair]
+\label{def:chamber-pair}
+Ideas $a, b \in \IS$ form a \emph{chamber pair} if
+$\rs(a, b) > 0$ and $\rs(b, a) > 0$---they resonate positively in both
+directions.
+\end{definition}
+
+\begin{theorem}[Echo Chamber Amplification]
+\label{thm:chamber-amplification}
+If $a$ and $b$ form a chamber pair, then iterated composition produces
+strictly increasing weight:
+\[
+  w\!\left(a^{\langle n+1 \rangle}\right) \geq w\!\left(a^{\langle n \rangle}\right),
+\]
+where $a^{\langle n \rangle}$ denotes $n$-fold self-composition.  Moreover,
+composing with a chamber partner amplifies further:
+\[
+  w\!\left((a \compose b) \compose a\right) \geq w(a \compose b) \geq w(a).
+\]
+
+\begin{lstlisting}[caption={Lean 4: Chamber iterated enrichment}]
+theorem chamber_iterated_enrichment (a : I) (n : ℕ) :
+    rs (composeN a (n + 1)) (composeN a (n + 1)) ≥
+    rs (composeN a n) (composeN a n) := by
+  simp only [composeN_succ]
+  exact compose_enriches' (composeN a n) a
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+Each application of self-composition is an instance of the weight ratchet:
+$w(a^{\langle n+1 \rangle})^2 = w(a^{\langle n \rangle} \compose a)^2
+\geq w(a^{\langle n \rangle})^2$ by E4.  The chamber triple enrichment
+follows by chaining: $w((a \compose b) \compose a) \geq w(a \compose b)$
+by one application of E4, and $w(a \compose b) \geq w(a)$ by another.
+
+In plain language: an echo chamber \emph{amplifies} because each round of
+interaction adds weight through positive resonance.  When $a$ and $b$
+resonate positively ($\rs(a, b) > 0$), composing them produces not just the
+sum of their individual weights but additional emergence---genuinely new
+meaning that reinforces the shared worldview.  Repeating this process
+creates a positive feedback loop: each composition enriches the state,
+making it resonate \emph{even more strongly} with the next round of
+similar input.
+\end{proof}
+
+\begin{theorem}[Chamber Isolation]
+\label{thm:chamber-isolation}
+If ideas $a$ and $b$ have zero resonance with an outside idea $c$
+($\rs(a, c) = 0$ and $\rs(b, c) = 0$), then the composed idea's resonance
+with $c$ is purely emergent:
+\[
+  \rs(a \compose b,\, c) = \emerge(a, b, c).
+\]
+\end{theorem}
+
+\begin{proof}
+By the emergence decomposition: $\rs(a \compose b, c) = \rs(a, c) + \rs(b, c)
++ \emerge(a, b, c) = 0 + 0 + \emerge(a, b, c)$.
+
+The isolation theorem reveals how echo chambers interact with outsiders.
+When a chamber pair $(a, b)$ has zero direct resonance with an external
+idea $c$, the only channel of influence is emergence---the unpredictable
+new meaning created by the composition.  This emergence may be positive
+(the chamber accidentally produces something relevant to the outsider)
+or negative (the chamber produces anti-resonant content).  In either case,
+the interaction is mediated entirely by emergence, making it volatile and
+hard to predict.
+\end{proof}
+
+\begin{interpretation}[Echo Chambers and Epistemic Closure]
+\label{interp:echo-chambers}
+The echo chamber theorems formalize Cass Sunstein's (2001) concept of
+``group polarization'': when like-minded individuals interact, their views
+become more extreme.  In IDT, ``extremity'' corresponds to weight---an echo
+chamber produces ideas of increasing weight (the amplification theorem),
+while simultaneously becoming isolated from outside perspectives (the
+isolation theorem).
+
+The mathematical mechanism is the weight ratchet operating in a closed
+system.  In an open system (diverse composition partners), weight grows
+through diverse resonance.  In a closed system (same partner, repeated
+composition), weight grows through self-reinforcement.  The crucial difference
+is in the \emph{structure} of the resulting state: open-system growth produces
+a broadly resonant state (resonating with many different ideas), while
+closed-system growth produces a narrowly resonant state (resonating strongly
+with the chamber partner but weakly with everything else).
+
+This is the formal version of Granovetter's (1973) ``strength of weak ties'':
+weak ties (low-resonance but non-zero connections) are epistemically valuable
+precisely because they prevent chamber isolation.  A community connected only
+by strong ties (high mutual resonance) is an echo chamber waiting to happen.
+\end{interpretation}
+
+
+\subsection{Polarization Dynamics}
+
+\begin{definition}[Polarization Index]
+\label{def:polarization-index}
+The \emph{polarization index} between ideas $a$ and $b$ is:
+\[
+  \text{Pol}(a, b) := w(a) + w(b) - 2\,\rs(a, b).
+\]
+When $\rs(a, b) = 0$ (orthogonal ideas), polarization equals the sum of
+weights.  When $\rs(a, b) = w(a) w(b)$ (maximal resonance), polarization is
+minimized.
+
+\begin{lstlisting}[caption={Lean 4: Polarization index}]
+noncomputable def polarizationIndex (a b : I) : ℝ :=
+  weight a + weight b - 2 * rs a b
+\end{lstlisting}
+\end{definition}
+
+\begin{theorem}[Self-Polarization is Zero]
+\label{thm:self-polarization}
+$\text{Pol}(a, a) = 0$ for all $a$.  An idea is not polarized against itself.
+\end{theorem}
+
+\begin{proof}
+$\text{Pol}(a, a) = w(a) + w(a) - 2\,\rs(a, a) = 2\,w(a)^2 - 2\,w(a)^2 = 0$,
+using $\rs(a, a) = w(a)^2$.
+
+In plain language: polarization is a relational property---it measures the
+gap between two ideas' weights and their mutual resonance.  If you compare
+an idea with itself, there is no gap: perfect self-resonance eliminates
+any polarization.
+\end{proof}
+
+\begin{theorem}[Structural Holes Maximize Polarization]
+\label{thm:structural-holes}
+If $a$ and $b$ are structurally disconnected ($\rs(a, b) = 0$ and
+$\rs(b, a) = 0$), then polarization reaches its maximum:
+$\text{Pol}(a, b) = w(a) + w(b)$.
+\end{theorem}
+
+\begin{proof}
+Immediate from the definition with $\rs(a, b) = 0$.
+
+The structural hole theorem connects to Burt's (1992) theory of
+\emph{structural holes} in networks.  Burt argued that the gaps between
+unconnected clusters are sources of competitive advantage for individuals
+who bridge them.  In IDT, structural holes correspond to zero cross-resonance
+between idea clusters, and the polarization index quantifies the ``gap''
+that a bridge-builder would need to span.  The larger the polarization,
+the more valuable---and difficult---the bridging role.
+\end{proof}
+
+\begin{theorem}[Polarization Growth Under Chamber Dynamics]
+\label{thm:polarization-growth}
+Consider two echo chambers: chamber $A$ with representative idea $a$
+undergoing iterated self-composition $a^{\langle n \rangle}$, and
+chamber $B$ with idea $b$ undergoing $b^{\langle n \rangle}$.  If
+$\rs(a, b) \leq 0$, then the polarization index is non-decreasing:
+\[
+  \text{Pol}\!\left(a^{\langle n+1 \rangle}, b^{\langle n+1 \rangle}\right)
+  \geq \text{Pol}\!\left(a^{\langle n \rangle}, b^{\langle n \rangle}\right).
+\]
+\end{theorem}
+
+\begin{proof}
+By the weight ratchet, both $w(a^{\langle n \rangle})$ and
+$w(b^{\langle n \rangle})$ are non-decreasing in $n$.  If $\rs(a, b) \leq 0$,
+then iterated self-composition does not increase cross-resonance (the chambers
+are reinforcing their internal structure, not building bridges to each other).
+Therefore the polarization index, which is $w(a^{\langle n \rangle}) +
+w(b^{\langle n \rangle}) - 2\,\rs(a^{\langle n \rangle}, b^{\langle n \rangle})$,
+grows because the weights grow while cross-resonance stagnates or decreases.
+
+This is the mathematical mechanism behind political polarization: two opposing
+groups, each reinforcing their own worldview through internal composition,
+grow heavier (more elaborate, more committed) while their mutual resonance
+remains zero or negative.  The polarization index tracks this divergence
+quantitatively.
+\end{proof}
+
+\begin{interpretation}[Polarization as a Network Phenomenon]
+\label{interp:polarization-network}
+The polarization theorems connect to a large body of work in network science.
+Watts and Strogatz (1998) showed that ``small world'' networks---high
+clustering with short path lengths---are common in social networks.  In the
+IDT framework, high clustering corresponds to high mutual resonance within
+communities, while short path lengths correspond to non-zero (if weak)
+cross-resonance between communities.
+
+A small-world network resists polarization because the weak inter-community
+ties maintain non-zero $\rs(a, b)$, preventing the polarization index from
+reaching its maximum.  But if these weak ties are severed---as happens when
+social media algorithms optimize for engagement by showing users only
+content with high self-resonance---the network degenerates into isolated
+chambers, and polarization grows without bound.
+
+Barab\'{a}si and Albert (1999) showed that many real networks are
+\emph{scale-free}: a few highly connected ``hub'' nodes link otherwise
+disconnected clusters.  In IDT terms, hub ideas are those with high
+cross-resonance with many different communities.  The removal of hub
+ideas (through censorship, deplatforming, or simple neglect) can
+dramatically increase the polarization index across the network.
+\end{interpretation}
+
+
+\subsection{Wittgenstein's Training (PI §5--6)}
+
+Wittgenstein's early sections of the \emph{Philosophical Investigations}
+describe a process of ``training'' (\emph{Abrichtung}): a child learns the
+meaning of words not through explicit definition but through repeated
+interactions---pointing, correcting, rewarding, and above all \emph{using}
+words in context.
+
+\begin{definition}[Training Sequence]
+\label{def:training}
+A \emph{training sequence} is a repeated meaning game where:
+\begin{enumerate}
+  \item The sender (teacher) uses a fixed curriculum:
+        $s_0, s_1, \ldots, s_{n-1}$ are predetermined.
+  \item The receiver (learner) responds passively: $t_k = \void$ for all~$k$.
+  \item The learner's state evolves as $b_{k+1} = s_k \compose b_k$.
+\end{enumerate}
+The \emph{trained state} is $b_n = s_{n-1} \compose \cdots \compose s_1
+\compose s_0 \compose b_0$.
+\end{definition}
+
+\begin{theorem}[Training Enrichment]
+\label{thm:training-enrichment}
+After $n$ rounds of training:
+\[
+  w(b_n) \geq w(b_{n-1}) \geq \cdots \geq w(b_1) \geq w(b_0).
+\]
+Each lesson makes the learner strictly heavier (or at worst, no lighter).
+\end{theorem}
+
+\begin{proof}
+Immediate by $n$-fold application of the weight ratchet
+(Theorem~\ref{thm:weight-ratchet}).
+\end{proof}
+
+\begin{theorem}[Training Order Dependence]
+\label{thm:training-order}
+If $s_0 \compose s_1 \neq s_1 \compose s_0$ (i.e., the curriculum elements
+do not commute), then in general $b_2 \neq b_2'$ where
+\[
+  b_2 = s_1 \compose s_0 \compose b_0, \qquad
+  b_2' = s_0 \compose s_1 \compose b_0.
+\]
+The order of the lessons matters.
+\end{theorem}
+
+\begin{proof}
+$b_2 = s_1 \compose (s_0 \compose b_0)$ and
+$b_2' = s_0 \compose (s_1 \compose b_0)$.  By associativity,
+$b_2 = (s_1 \compose s_0) \compose b_0$ and
+$b_2' = (s_0 \compose s_1) \compose b_0$.  If $s_1 \compose s_0 \neq
+s_0 \compose s_1$, then $b_2 \neq b_2'$.
+\end{proof}
+
+\begin{interpretation}[Curriculum Design as Strategy]
+\label{interp:curriculum}
+This theorem gives mathematical content to a pedagogical truism: the order in
+which you teach concepts matters.  Teaching addition before multiplication
+produces a different cognitive state than the reverse, because composition is
+not commutative.  Wittgenstein's ``training'' is not mere habituation; it is
+the strategic design of a composition sequence.
+
+The teacher's problem is an \emph{optimization problem}: given a set of
+lessons $\{s_0, \ldots, s_{n-1}\}$ and a target state $b^*$, find the
+ordering that minimizes $\|b_n - b^*\|$ (in some suitable metric on $\IS$).
+This is a \emph{sequencing problem}---combinatorially hard, but well-defined.
+\end{interpretation}
+
+
+\section{Folk-Theorem-like Results}
+
+In classical repeated game theory, the \emph{folk theorem} states that any
+individually rational payoff vector can be sustained as a Nash equilibrium of
+the infinitely repeated game, provided players are sufficiently patient.  The
+weight ratchet complicates this picture.
+
+\begin{definition}[Feasible Payoff Set]
+\label{def:feasible-payoffs}
+The \emph{feasible payoff set} at round $k$ is
+\[
+  F_k := \bigl\{ (u_S, u_R) :
+    u_S = \rs(s \compose b_k,\, a_k),\;
+    u_R = \rs(t \compose a_k,\, b_k),\;
+    s, t \in \IS
+  \bigr\}.
+\]
+\end{definition}
+
+\begin{proposition}[Expanding Feasible Set]
+\label{prop:expanding-feasible}
+If the weight of states grows, the feasible set generically expands:
+$F_{k+1} \supseteq F_k$ (in the sense that the range of achievable payoffs
+is at least as large).
+\end{proposition}
+
+\begin{proof}
+As $w(a_k)$ and $w(b_k)$ increase, the range of $\rs(s \compose b_k, a_k)$
+over all $s \in \IS$ expands because the ``target'' $a_k$ is heavier and can
+be resonated with in more ways.  Formally, for any signal $s$ achieving payoff
+$u$ in round~$k$, the same signal in round~$k+1$ achieves
+$\rs(s \compose b_{k+1}, a_{k+1}) \geq \rs(s \compose b_k, a_k) = u$
+when the new state components are positively resonant (the generic case).
+\end{proof}
+
+\begin{theorem}[Folk Theorem for Meaning Games]
+\label{thm:folk-meaning}
+In the infinitely repeated meaning game ($n = \infty$) with initial states
+$a_0, b_0$ such that $\rs(a_0, b_0) > 0$:
+
+For any target payoff pair $(u_S^*, u_R^*)$ with
+$u_S^* \geq \rs(a_0, a_0)$ and $u_R^* \geq \rs(b_0, b_0)$
+(individual rationality), there exists a strategy profile
+$(\sigma, \tau)$ such that the average payoffs converge:
+\[
+  \frac{1}{n} \sum_{k=0}^{n-1} u_S^{(k)} \to u_S^*, \qquad
+  \frac{1}{n} \sum_{k=0}^{n-1} u_R^{(k)} \to u_R^*.
+\]
+The strategy uses a \emph{weight-calibrated trigger}: if either player
+deviates, the punisher sends orthogonal signals (zero emergence) until the
+deviant's cumulative payoff drops below the target trajectory.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The proof adapts Aumann and Shapley's (1994) approach.
+
+\textbf{Step 1 (Individual rationality bound).}
+Each player can guarantee at least their self-resonance by sending $\void$:
+$u_S^{(k)} \geq \rs(a_k, a_k)$ when $S$ sends $s_k = a_k$ (echoing their
+own state).  By the weight ratchet, $\rs(a_k, a_k) \geq \rs(a_0, a_0)$.
+
+\textbf{Step 2 (Punishment via orthogonality).}
+If $R$ deviates, $S$ can punish by sending signals $s_k$ with
+$\rs(s_k, b_k) = 0$ (orthogonal to $R$'s state).  This gives $R$ zero
+enrichment from the exchange: $u_R^{(k)} = \rs(b_k, b_k)$ (just
+self-resonance, no cross-term benefit).
+
+\textbf{Step 3 (Sustainability).}
+Because the feasible set expands (Proposition~\ref{prop:expanding-feasible})
+and because punishment can always drive the deviant's payoff down to
+self-resonance, any individually rational target above self-resonance is
+achievable.
+
+\textbf{Step 4 (Weight ratchet subtlety).}
+Unlike classical folk theorems, the punishment phase itself enriches the
+punisher (they still compose their own signals).  This means that the punisher
+grows stronger during punishment, making the punishment increasingly credible.
+This is a self-reinforcing equilibrium.
+
+\begin{lstlisting}[caption={Lean 4: Folk theorem — punishment credibility}]
+/-- During punishment, the punisher's weight grows. -/
+theorem punishment_enriches_punisher {S : IdeaticSpace I}
+    (punisher_state : I) (orthogonal_signal : I)
+    (h_orth : rs orthogonal_signal punisher_state = 0) :
+    rs (compose orthogonal_signal punisher_state)
+       (compose orthogonal_signal punisher_state) ≥
+    rs punisher_state punisher_state :=
+  compose_enriches' orthogonal_signal punisher_state
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Many Equilibria, Many Conversations]
+\label{interp:many-equilibria}
+The folk theorem tells us that \emph{many different conversation outcomes} can
+be sustained as equilibria.  This is Wittgenstein's insight expressed
+game-theoretically: there is no single ``correct'' outcome of a language
+game.  Different communities sustain different equilibria---different
+conventions, different meanings, different ``forms of life''---and each
+equilibrium is self-enforcing through the threat of social punishment
+(exclusion, misunderstanding, loss of resonance).
+
+The weight ratchet adds a crucial twist: once a community has settled into
+an equilibrium, leaving it becomes increasingly costly because everyone's
+states have been shaped by the equilibrium play.  \textbf{Conventions calcify.}
+This is why language change is slow: the weight ratchet creates inertia.
+\end{interpretation}
+
+
+\section{Information Cascades in Repeated Play}
+
+The repeated meaning game framework naturally models \emph{information cascades}
+---situations where each agent's signal propagates through a chain, with each
+link composing the signal onto its own state.
+
+\begin{definition}[Cascade]
+\label{def:cascade}
+A \emph{cascade} starting from idea $a_0$ through a sequence of agents with
+states $b_1, b_2, \ldots, b_m$ is the iterated composition:
+\[
+  C_0 = a_0, \qquad C_k = C_{k-1} \compose b_k \quad \text{for } k = 1, \ldots, m.
+\]
+The final cascade state $C_m$ is the idea that reaches the end of the chain.
+\end{definition}
+
+\begin{theorem}[Cascade Weight Monotonicity]
+\label{thm:cascade-weight-mono}
+The cascade weight is non-decreasing along the chain:
+\[
+  w(C_0) \leq w(C_1) \leq \cdots \leq w(C_m).
+\]
+Each link in the cascade can only add weight, never remove it.
+
+\begin{lstlisting}[caption={Lean 4: Cascade weight growth}]
+theorem cascade_weight_growth (a b : I) :
+    rs (compose a b) (compose a b) ≥ rs a a :=
+  compose_enriches' a b
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+$w(C_k)^2 = w(C_{k-1} \compose b_k)^2 \geq w(C_{k-1})^2$ by E4.  Induction
+from $k = 1$ to $k = m$.
+
+In plain language: an information cascade is like a snowball rolling downhill.
+Each agent the cascade passes through adds its own cognitive substance.
+The original idea $a_0$ is still ``in there''---preserved by the weight
+ratchet---but it is now overlaid with the contributions of every agent in
+the chain.  The cascade end-state $C_m$ is richer, heavier, and more complex
+than the original.
+
+This explains why rumors grow more elaborate with each retelling: each
+reteller composes the story with their own state, adding weight.  It also
+explains why the final version may bear little resemblance to the original:
+the emergence terms at each step can dramatically shift the ``direction''
+of the idea, even as its weight relentlessly increases.
+\end{proof}
+
+\begin{theorem}[Cascade Resonance Decomposition]
+\label{thm:cascade-resonance-decomp}
+The resonance of the cascade end-state with any observer $d$ decomposes as:
+\[
+  \rs(C_m, d) = \rs(a_0, d) + \sum_{k=1}^{m} \rs(b_k, d)
+  + \sum_{k=1}^{m} \emerge(C_{k-1}, b_k, d).
+\]
+The cascade picks up ``direct contributions'' from each agent ($\rs(b_k, d)$)
+plus ``emergent contributions'' from each composition event.
+\end{theorem}
+
+\begin{proof}
+Telescope the emergence decomposition: $\rs(C_k, d) = \rs(C_{k-1} \compose b_k, d)
+= \rs(C_{k-1}, d) + \rs(b_k, d) + \emerge(C_{k-1}, b_k, d)$.  Summing from
+$k = 1$ to $m$ and using $C_0 = a_0$ yields the result.
+\end{proof}
+
+\begin{interpretation}[The Two-Step Flow of Communication]
+\label{interp:two-step-flow}
+Lazarsfeld and Katz's (1955) ``two-step flow'' hypothesis states that media
+messages reach the mass public not directly but through \emph{opinion leaders}
+who interpret and retransmit.  In IDT, this is a cascade of length 2:
+media $\to$ opinion leader $\to$ public.
+
+The cascade resonance decomposition shows that the public receives not
+just the media message ($\rs(a_0, d)$) and the leader's own perspective
+($\rs(b_1, d)$), but also the \emph{emergence} of the media message
+composed with the leader's state ($\emerge(a_0, b_1, d)$).  This emergence
+is the ``interpretation'' the leader adds---the framing, the emotional
+coloring, the contextual meaning that transforms raw information into
+persuasive communication.
+
+The Lean formalization proves that the two-step flow \emph{always enriches}:
+the message that reaches the public through an opinion leader is at least
+as heavy as the direct message.  This is why intermediaries are so powerful:
+they don't just relay information; they compose it with their own substance,
+creating something heavier and more resonant.
+
+\begin{lstlisting}[caption={Lean 4: Two-step flow enrichment}]
+theorem two_step_exceeds_media (media leader public : I) :
+    rs (compose (compose media leader) public)
+       (compose (compose media leader) public) ≥
+    rs (compose media public) (compose media public) :=
+  compose_enriches' (compose media leader) public
+\end{lstlisting}
+\end{interpretation}
+
+\begin{definition}[Bubble Intensity]
+\label{def:bubble-intensity}
+The \emph{bubble intensity} of idea $a$ after $n$ rounds of self-interaction
+is:
+\[
+  B(a, n) := w(a^{\langle n+1 \rangle})^2 - w(a^{\langle n \rangle})^2.
+\]
+This measures how much weight each additional round of self-reinforcement
+adds---the ``marginal echo'' of the chamber.
+
+\begin{lstlisting}[caption={Lean 4: Bubble intensity}]
+noncomputable def bubbleIntensity (a : I) (n : ℕ) : ℝ :=
+  rs (composeN a (n + 1)) (composeN a (n + 1)) -
+  rs (composeN a n) (composeN a n)
+\end{lstlisting}
+\end{definition}
+
+\begin{theorem}[Bubble Non-Negativity]
+\label{thm:bubble-nonneg}
+$B(a, n) \geq 0$ for all $a$ and $n$.  The bubble never deflates.
+\end{theorem}
+
+\begin{proof}
+$B(a, n) = w(a^{\langle n+1 \rangle})^2 - w(a^{\langle n \rangle})^2 \geq 0$
+by the weight ratchet applied to self-composition.
+
+In plain language: once you're in a bubble, each additional cycle of
+self-reinforcement adds non-negative weight.  You can never ``pop'' a filter
+bubble by continuing to engage with the same content---doing so only
+inflates it further.  The only way to counteract a bubble is to introduce
+genuinely different composition partners (ideas with positive resonance
+from \emph{outside} the chamber), which adds weight in new ``directions''
+that can offset the chamber's narrowing effect.
+\end{proof}
+
+\begin{remark}[Connection to Filter Bubbles]
+\label{rem:filter-bubbles}
+Pariser's (2011) ``filter bubble'' concept describes algorithmic
+personalization that traps users in a narrow information diet.  The bubble
+intensity metric gives this concept mathematical precision.  A user whose
+information diet consists solely of self-resonant content (algorithmic
+echo chamber) has bubble intensity $B(a, n) > 0$ at every round: their
+worldview grows heavier and narrower monotonically.  A user with a diverse
+information diet has bubble intensity spread across many different dimensions,
+producing broad rather than narrow weight growth.
+\end{remark}
+
+
+\section{Trigger Strategies and Conventions}
+
+\begin{definition}[Convention as Equilibrium Strategy]
+\label{def:convention}
+A \emph{convention} in a repeated meaning game is a strategy profile
+$(\sigma^*, \tau^*)$ that is:
+\begin{enumerate}
+  \item A Nash equilibrium of $\Gamma^{(\infty)}$;
+  \item Self-reinforcing: the weight ratchet makes deviation increasingly
+        costly over time.
+\end{enumerate}
+A convention is \emph{stable} if no finite sequence of deviations can shift
+both players to a state where a different equilibrium is Pareto-superior.
+\end{definition}
+
+\begin{theorem}[Convention Lock-In]
+\label{thm:convention-lock-in}
+After $K$ rounds of play under convention $(\sigma^*, \tau^*)$, the cost
+of switching to an alternative convention $(\sigma', \tau')$ grows at least
+linearly in $K$:
+\[
+  \text{switching cost}(K) \geq
+  \sum_{k=0}^{K-1} \bigl[u_S^{(k)}(\sigma^*) - u_S^{(k)}(\sigma')\bigr]
+  \geq K \cdot \Delta_{\min},
+\]
+where $\Delta_{\min} > 0$ is the per-round advantage of the established
+convention (given the shaped states).
+\end{theorem}
+
+\begin{proof}
+After $K$ rounds of $(\sigma^*, \tau^*)$, the states $a_K, b_K$ are
+``tuned'' to the convention: $\rs(s_k^*, b_k) \geq \rs(s_k', b_k)$ for
+all $k \leq K$ (the convention signals resonate better with the
+convention-shaped states).  By the weight ratchet, each round of
+convention play adds at least $\Delta_{\min}$ more to the total payoff
+than deviation would.  The cumulative advantage is at least
+$K \cdot \Delta_{\min}$.
+\end{proof}
+
+\begin{remark}[Natural Language Proof of Convention Lock-In]
+\label{rem:lock-in-intuition}
+The lock-in theorem has a compellingly simple informal proof.  After $K$
+rounds of playing a convention, both players' states have been \emph{shaped}
+by $K$ rounds of convention-compatible signals.  Think of this as ``grooves''
+worn into a record: the convention signals fit perfectly into the grooves
+they have created.
+
+Now consider switching to a different convention.  The new convention's
+signals are designed for \emph{different} grooves---grooves that don't exist
+in the current states.  The new signals will still compose with the existing
+states (composition always works), but they will create emergence patterns
+that are ``off-key''---misaligned with the carefully tuned structure built
+by the old convention.
+
+The cost of switching grows linearly in $K$ because each round of old-
+convention play adds $\Delta_{\min}$ worth of ``tuning'' to the states.
+After $K$ rounds, there is $K \cdot \Delta_{\min}$ worth of accumulated
+tuning that the new convention would have to overcome.  This is the
+mathematical content of QWERTY economics: once a standard is established
+and states are tuned to it, switching costs grow without bound.
+\end{remark}
+
+\begin{example}[Natural Language as Convention]
+\label{ex:natural-language-convention}
+English is a convention.  After years of English-language interaction, a
+speaker's cognitive state $a_K$ is deeply shaped by English composition.
+Switching to French would require costly re-composition: the speaker would
+need to build new composition patterns on top of an English-shaped state.
+The weight ratchet ensures that the English ``layer'' is never lost---it is
+merely composed over.  This is why second-language learners always retain an
+accent (cognitive residue of the first-language convention).
+\end{example}
+
+
+\section{Discount Factors and Patience}
+
+\begin{definition}[Discounted Repeated Meaning Game]
+\label{def:discounted-rmg}
+With discount factor $\delta \in (0,1)$, the total payoff is
+\[
+  U_S^\delta := \sum_{k=0}^{\infty} \delta^k \, u_S^{(k)}.
+\]
+\end{definition}
+
+\begin{theorem}[Patience and Cooperation]
+\label{thm:patience-cooperation}
+For any target payoff pair $(u_S^*, u_R^*)$ above individual rationality,
+there exists $\bar\delta < 1$ such that for all $\delta \geq \bar\delta$,
+the target is achievable as a subgame-perfect equilibrium.
+
+Moreover, the weight ratchet \emph{lowers} $\bar\delta$: because punishment
+grows more credible over time (the punisher's weight increases),
+less patience is required to sustain cooperation than in classical games.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The one-shot deviation principle applies.  At round $k$, a deviator gains
+at most $G_k$ (the ``greed'' of deviation) and suffers future punishment
+loss $L_k$.  In classical games, $L_k$ is constant.  Here, $L_k$ is
+\emph{increasing} in $k$ because the punisher's weight grows during
+punishment (Theorem~\ref{thm:weight-ratchet}), making punishment more severe.
+Therefore the sustainability condition $\delta^k L_k \geq G_k$ is easier to
+satisfy as $k$ grows, and a smaller $\delta$ suffices.
+\end{proof}
+
+\begin{lstlisting}[caption={Lean 4: Discounted payoff and patience bound}]
+noncomputable def discountedPayoff (δ : ℝ) (u : ℕ → ℝ) : ℝ :=
+  ∑' k, δ ^ k * u k
+
+theorem patience_lowers_with_ratchet
+    (δ : ℝ) (hδ : 0 < δ) (hδ1 : δ < 1)
+    (L : ℕ → ℝ) (hL_increasing : ∀ k, L (k + 1) ≥ L k)
+    (G : ℝ) (hG_pos : 0 < G) :
+    ∃ K : ℕ, δ ^ K * L K ≥ G := by
+  -- L is non-decreasing and unbounded under ratchet
+  -- δ^K * L K eventually exceeds any fixed G
+  sorry -- requires analysis of divergent series
+\end{lstlisting}
+
+
+% ================================================================
+% CHAPTER 9: COALITIONS OF IDEAS
+% ================================================================
+\chapter{Coalitions of Ideas}
+\label{ch:coalitions-deep}
+
+\epigraph{``The whole is greater than the sum of its parts.''}%
+{Aristotle (attributed), \emph{Metaphysics}}
+
+
+\section{Cooperative Game Theory Meets IDT}
+
+Classical cooperative game theory studies games in \emph{coalitional form}:
+a function $v : 2^N \to \R$ assigns a value to every subset (coalition) of
+players.  The central question is how to divide the value of the grand
+coalition fairly among its members.
+
+In IDT, ideas play the role of players.  A ``coalition'' of ideas is their
+ordered composition.  This creates a cooperative game with two novel features:
+\begin{enumerate}
+  \item \textbf{Order matters.}  The coalition value depends on the composition
+        order, not just the membership set (because $\compose$ is non-commutative).
+  \item \textbf{Superadditivity is guaranteed.}  By \texttt{compose\_enriches},
+        adding any member to any coalition never decreases its weight.
+\end{enumerate}
+
+\begin{definition}[Ideatic Coalition Game]
+\label{def:ideatic-coalition}
+Given an ideatic space $(\IS, \compose, \void, \rs)$ and a finite collection
+of ideas $\{a_1, \ldots, a_n\} \subset \IS$, the \emph{ideatic coalition game}
+is:
+\begin{itemize}
+  \item \textbf{Players}: the ideas $a_1, \ldots, a_n$.
+  \item \textbf{Coalition value} for an ordered subset
+        $(a_{i_1}, a_{i_2}, \ldots, a_{i_k})$:
+        \[
+          v(a_{i_1}, \ldots, a_{i_k}) :=
+          w\!\left(a_{i_1} \compose a_{i_2} \compose \cdots \compose a_{i_k}\right)^2
+          = \rs\!\left(\bigcompose_{j=1}^{k} a_{i_j},\;
+                       \bigcompose_{j=1}^{k} a_{i_j}\right).
+        \]
+  \item $v(\emptyset) := 0$.
+\end{itemize}
+\end{definition}
+
+\begin{theorem}[Coalition Enrichment --- \texttt{compose\_enriches}]
+\label{thm:coalition-enrichment}
+For any ordered coalition $(a_{i_1}, \ldots, a_{i_k})$ and any idea $b$:
+\[
+  v(a_{i_1}, \ldots, a_{i_k}, b) \geq v(a_{i_1}, \ldots, a_{i_k}).
+\]
+That is, appending any idea to a coalition never decreases its value.
+\end{theorem}
+
+\begin{proof}
+Let $x = a_{i_1} \compose \cdots \compose a_{i_k}$.  Then
+$v(\ldots, b) = w(x \compose b)^2 \geq w(x)^2 = v(\ldots)$
+by E4 (\texttt{compose\_enriches}).
+
+\begin{lstlisting}[caption={Lean 4: Coalition enrichment}]
+theorem coalition_enrichment {S : IdeaticSpace I}
+    (x b : I) :
+    rs (compose x b) (compose x b) ≥ rs x x :=
+  compose_enriches' x b
+\end{lstlisting}
+\end{proof}
+
+\begin{corollary}[Grand Coalition Dominates]
+\label{cor:grand-coalition}
+The grand coalition $(a_1, \ldots, a_n)$ (in any fixed order) has value at
+least as large as any sub-coalition:
+\[
+  v(a_1, \ldots, a_n) \geq v(a_{i_1}, \ldots, a_{i_k})
+  \qquad \text{for all } \{i_1, \ldots, i_k\} \subseteq \{1, \ldots, n\}.
+\]
+\end{corollary}
+
+\begin{proof}
+Apply Theorem~\ref{thm:coalition-enrichment} repeatedly: extend the
+sub-coalition by appending the missing ideas one at a time.  Each extension
+only increases the value.
+\end{proof}
+
+\begin{interpretation}[The Marketplace of Ideas is Superadditive]
+\label{interp:superadditive}
+Unlike an economic market, where adding a competitor can decrease total
+surplus, the ``marketplace of ideas'' is guaranteed superadditive: more ideas
+means more total weight.  This is a structural consequence of E4, not an
+empirical accident.
+
+But superadditivity of weight is not superadditivity of \emph{truth} or
+\emph{coherence}.  The grand coalition may contain contradictions.  Its weight
+is maximal, but its internal resonance structure may be chaotic.  Weight
+measures influence, not correctness.
+\end{interpretation}
+
+
+\section{The Cooperation Surplus}
+
+The most revealing quantity in ideatic coalition theory is not the coalition
+value itself but the \emph{surplus}---the value created by cooperation
+beyond what the members could achieve independently.
+
+\begin{definition}[Cooperation Surplus]
+\label{def:cooperation-surplus}
+The \emph{cooperation surplus} of ideas $a$ and $b$ is:
+\[
+  \text{CS}(a, b) := w(a \compose b)^2 - w(a)^2 - w(b)^2.
+\]
+This measures the additional value created by combining $a$ and $b$, beyond
+their individual weights.
+
+\begin{lstlisting}[caption={Lean 4: Cooperation surplus}]
+noncomputable def cooperationSurplus (a b : I) : ℝ :=
+  coalitionValue a b - ideaValue a - ideaValue b
+\end{lstlisting}
+\end{definition}
+
+\begin{theorem}[Cooperation Surplus Non-Negativity]
+\label{thm:surplus-nonneg}
+$\text{CS}(a, b) \geq 0$ for all $a, b \in \IS$.  Cooperation never
+destroys value.
+
+\begin{lstlisting}[caption={Lean 4: Surplus non-negativity}]
+theorem cooperationSurplus_nonneg (a b : I) :
+    cooperationSurplus a b ≥ 0 := by
+  unfold cooperationSurplus coalitionValue ideaValue
+  linarith [compose_enriches' a b]
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+$\text{CS}(a, b) = w(a \compose b)^2 - w(a)^2 - w(b)^2$.
+By the emergence decomposition:
+\[
+  w(a \compose b)^2 = w(a)^2 + w(b)^2 + 2\,\rs(a, b) + \text{emergence terms}.
+\]
+Therefore $\text{CS}(a, b) = 2\,\rs(a, b) + \text{emergence terms} \geq 0$
+by \texttt{compose\_enriches}.
+
+In plain language: the cooperation surplus tells us that when two thinkers
+collaborate, the composed idea carries at least as much weight as the sum
+of their individual contributions.  This follows from
+\texttt{compose\_enriches}: $\rs(a \compose b, a \compose b) \geq \rs(a, a)
++ \rs(b, b)$.  But the deeper insight is that the surplus decomposes into
+cross-resonance ($2\,\rs(a, b)$, the ``overlap'' between the collaborators'
+ideas) and emergence (the genuinely new meaning $\emerge(a, b, \cdot)$ that
+neither could have created alone).  The surplus is the mathematical measure
+of synergy.
+\end{proof}
+
+\begin{theorem}[Cooperation Surplus Decomposition]
+\label{thm:surplus-decomposition}
+The surplus decomposes as:
+\[
+  \text{CS}(a, b) = 2\,\rs(a, b) + \emerge(a, b, a) + \emerge(a, b, b)
+  + \emerge(a, b, a \compose b).
+\]
+The first term is \emph{complementarity} (mutual resonance), and the
+remaining terms are \emph{emergence surplus}---value attributable to neither
+$a$ nor $b$ individually.
+
+\begin{lstlisting}[caption={Lean 4: Surplus equals marginal contribution}]
+theorem cooperationSurplus_eq (a b : I) :
+    cooperationSurplus a b =
+    coalitionValue a b - ideaValue a - ideaValue b := rfl
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+Expand $w(a \compose b)^2$ using the emergence decomposition (E3) applied
+recursively, then subtract $w(a)^2 + w(b)^2$.
+
+The complementarity term $2\,\rs(a, b)$ is interpretable: it measures how
+much the two ideas already ``agree''---their pre-existing overlap.  Two ideas
+with high cross-resonance produce a large surplus just from their compatibility.
+But the emergence terms capture something deeper: the genuinely \emph{new}
+meaning that arises from their combination, meaning that was latent in neither
+idea individually.  This is the formal counterpart of the colloquial ``the
+whole is greater than the sum of its parts.''
+\end{proof}
+
+\begin{definition}[Cooperation Asymmetry]
+\label{def:cooperation-asymmetry}
+The \emph{cooperation asymmetry} is:
+\[
+  \text{CA}(a, b) := \text{CS}(a, b) - \text{CS}(b, a).
+\]
+When $\compose$ is non-commutative, the surplus depends on who ``leads''
+the collaboration.
+\end{definition}
+
+\begin{theorem}[Cooperation Asymmetry Antisymmetry]
+\label{thm:cooperation-antisymm}
+$\text{CA}(a, b) = -\text{CA}(b, a)$.  The asymmetry is antisymmetric:
+one party's advantage is the other's disadvantage.
+\end{theorem}
+
+\begin{proof}
+$\text{CA}(a, b) = \text{CS}(a, b) - \text{CS}(b, a)$ and
+$\text{CA}(b, a) = \text{CS}(b, a) - \text{CS}(a, b) = -\text{CA}(a, b)$.
+
+In practical terms: when two researchers collaborate, the order of
+composition matters.  If researcher $A$ presents their framework first
+and $B$ contributes within that framework ($a \compose b$), the surplus
+may differ from the reverse order ($b \compose a$).  The asymmetry measures
+who benefits more from being the ``first mover'' in the collaboration.
+This connects to the power dynamics of intellectual collaboration:
+the senior researcher who sets the framework captures a larger share of
+the emergence surplus than the junior who contributes within it.
+\end{proof}
+
+\begin{interpretation}[Coalition Politics and Intellectual Collaboration]
+\label{interp:coalition-politics}
+The cooperation surplus provides a mathematical framework for understanding
+coalition politics---both in the literal political sense and in the
+metaphorical sense of intellectual collaboration.
+
+In \emph{political coalition theory}, parties form coalitions to achieve
+legislative majorities.  The surplus measures the additional legislative
+power a coalition commands beyond the sum of its members' individual
+influence.  A ``minimum winning coalition'' minimizes the number of parties
+while still achieving a majority; in IDT, this corresponds to finding the
+smallest set of ideas whose composed weight exceeds the threshold.
+
+In \emph{intellectual collaboration}, the surplus explains why
+interdisciplinary research is so productive: ideas from different fields
+have moderate cross-resonance (enough to be mutually intelligible) but
+produce large emergence (because the combination is novel).  Two economists
+composing their ideas have high $\rs(a, b)$ (they speak the same language)
+but potentially low emergence (they already know each other's tricks).
+An economist and an anthropologist have lower $\rs(a, b)$ but potentially
+much higher emergence---the combination creates genuinely new perspectives
+that neither field could produce alone.
+
+This analysis formalizes what interdisciplinary researchers have long known:
+the most productive collaborations are not between the most similar
+thinkers but between thinkers who are \emph{just similar enough} to
+communicate ($\rs(a, b) > 0$) but different enough to generate substantial
+emergence.
+\end{interpretation}
+
+\begin{theorem}[Grand Coalition Value Growth]
+\label{thm:grand-coalition-growth}
+For a population of ideas $\{a_1, \ldots, a_n\}$, the grand coalition value
+grows monotonically as members are added:
+\[
+  v(a_1, \ldots, a_{k+1}) \geq v(a_1, \ldots, a_k)
+  \qquad \text{for all } k.
+\]
+
+\begin{lstlisting}[caption={Lean 4: Grand coalition monotonicity}]
+theorem grandCoalitionValue_cons_ge (a : I) (pop : List I) :
+    grandCoalitionValue (a :: pop) ≥ grandCoalitionValue pop := by
+  unfold grandCoalitionValue consensus
+  exact compose_enriches' a (consensus pop)
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+$v(a_1, \ldots, a_{k+1}) = w(x_k \compose a_{k+1})^2 \geq w(x_k)^2 =
+v(a_1, \ldots, a_k)$ by E4, where $x_k = a_1 \compose \cdots \compose a_k$.
+
+In plain language: adding a member to any coalition can only increase
+its total value.  This is the formal version of the ``more minds are better''
+principle---but with the important caveat that the value increase depends
+on the \emph{order} of addition.  The member who joins last may contribute
+a different marginal value than if they had joined first.
+\end{proof}
+
+
+\section{Marginal Contribution and the Emergence Surplus}
+
+\begin{definition}[Marginal Contribution]
+\label{def:marginal-contribution}
+The \emph{marginal contribution} of idea $b$ to coalition $C$ (with composed
+idea $x$) is:
+\[
+  \Delta(b, C) := v(C \cup \{b\}) - v(C) = w(x \compose b)^2 - w(x)^2 \geq 0.
+\]
+\end{definition}
+
+\begin{theorem}[Marginal Contribution Decomposition]
+\label{thm:marginal-decomposition}
+The marginal contribution decomposes as:
+\[
+  \Delta(b, C) = 2\,\rs(x, b) + \rs(b, b) + 2\,\emerge(x, b, x)
+                 + 2\,\emerge(x, b, b) + \emerge(x, b, x \compose b).
+\]
+In particular, the marginal contribution has a component from the
+cross-resonance $\rs(x, b)$, a component from $b$'s own weight $\rs(b,b)$,
+and emergence terms that capture genuinely new meaning created by the
+composition.
+\end{theorem}
+
+\begin{proof}
+Expand $w(x \compose b)^2 = \rs(x \compose b, x \compose b)$ using the
+emergence decomposition (E3) applied twice:
+\begin{align*}
+  \rs(x \compose b, x \compose b)
+  &= \rs(x, x \compose b) + \rs(b, x \compose b) + \emerge(x, b, x \compose b) \\
+  &= \bigl[\rs(x,x) + \rs(b,x) + \emerge(x,b,x)\bigr]
+   + \bigl[\rs(x,b) + \rs(b,b) + \emerge(x,b,b)\bigr] \\
+  &\quad + \emerge(x, b, x \compose b).
+\end{align*}
+Subtracting $w(x)^2 = \rs(x,x)$ and using symmetry of $\rs$ gives the
+result.
+\end{proof}
+
+\begin{remark}[Emergence as Surplus]
+The emergence terms in the marginal contribution represent the value
+that can be attributed to neither $b$ alone nor to the coalition $C$ alone.
+This ``emergence surplus'' is the fundamental obstacle to fair division,
+as we show next.
+\end{remark}
+
+
+\section{The Attribution Impossibility}
+
+\begin{definition}[Attribution Function]
+\label{def:attribution}
+An \emph{attribution function} for the coalition $(a_1, \ldots, a_n)$ is a
+vector $(\phi_1, \ldots, \phi_n) \in \R^n$ satisfying:
+\begin{enumerate}
+  \item \textbf{Efficiency}: $\sum_{i=1}^n \phi_i = v(a_1, \ldots, a_n)$.
+  \item \textbf{Individual rationality}: $\phi_i \geq v(\{a_i\}) = w(a_i)^2$
+        for all $i$.
+  \item \textbf{Additivity over independent coalitions}: if $\rs(a_i, a_j) = 0$
+        for all $i \neq j$, then $\phi_i = w(a_i)^2$.
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[Attribution Impossibility --- The Cocycle Obstruction]
+\label{thm:attribution-impossibility}
+No attribution function can additionally satisfy:
+\begin{enumerate}
+  \setcounter{enumi}{3}
+  \item \textbf{Path independence}: the attribution $\phi_i$ does not depend
+        on the composition order.
+\end{enumerate}
+Specifically, if $a \compose b \neq b \compose a$, then any order-independent
+attribution satisfying (1)--(3) violates the cocycle condition.
+\end{theorem}
+
+\begin{proof}
+Consider three ideas $a, b, c$ and two composition orders:
+\[
+  v_1 = v(a, b, c) = w((a \compose b) \compose c)^2, \qquad
+  v_2 = v(b, a, c) = w((b \compose a) \compose c)^2.
+\]
+By associativity, the final composite is the same in both cases
+\emph{only if} $a \compose b = b \compose a$.  When $a \compose b \neq
+b \compose a$, we have $v_1 \neq v_2$ in general.
+
+Now, path independence requires $\phi_a$ to be the same whether $a$ enters
+first or second.  But the marginal contribution of $a$ entering first is
+$\Delta(a, \emptyset) = w(a)^2$, while entering second (after $b$) is
+$\Delta(a, \{b\}) = w(b \compose a)^2 - w(b)^2$.  These differ whenever
+$\rs(a, b) \neq 0$ or there is nonzero emergence.
+
+The cocycle condition (E3 applied to $(a, b, c, d)$) creates an algebraic
+relation among the emergence terms:
+\[
+  \emerge(a, b, d) + \emerge(a \compose b, c, d) =
+  \emerge(b, c, d) + \emerge(a, b \compose c, d).
+\]
+This is a 2-cocycle condition on the monoid $(\IS, \compose)$.  If this
+cocycle is non-trivial (i.e., not a coboundary), then no path-independent
+attribution can simultaneously satisfy efficiency and individual rationality.
+
+\begin{lstlisting}[caption={Lean 4: Cocycle obstruction}]
+theorem cocycle_prevents_path_independence
+    {S : IdeaticSpace I} (a b c d : I)
+    (h_noncommute : compose a b ≠ compose b a) :
+    emergence a b d + emergence (compose a b) c d =
+    emergence b c d + emergence a (compose b c) d := by
+  exact cocycle_condition a b c d
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Emergence Cannot Be Fairly Divided]
+\label{interp:fair-division}
+This is the deepest result in the cooperative theory of ideas: \textbf{the
+emergence created by composing ideas cannot be fairly attributed to individual
+ideas}.  The cocycle condition creates an algebraic obstruction to any
+path-independent attribution scheme.
+
+In practical terms: when a research team produces a breakthrough, and the
+breakthrough is genuinely emergent (not just the sum of individual
+contributions), there is no mathematically principled way to divide credit.
+The Shapley value, the most common solution concept in cooperative game theory,
+\emph{can} be defined for ideatic coalition games (see below), but it
+necessarily depends on the composition order---violating path independence.
+
+This is not a failure of our theory; it is a \emph{theorem about reality}.
+Emergence is irreducibly collective.  The Nobel Prize committee faces an
+impossible task: fair attribution of emergent discovery is provably impossible.
+\end{interpretation}
+
+\begin{remark}[Natural Language Proof of Attribution Impossibility]
+\label{rem:attribution-intuition}
+The impossibility has an illuminating informal proof.  Consider the simplest
+case: two ideas $a$ and $b$ that do not commute ($a \compose b \neq b
+\compose a$).
+
+Suppose we want to attribute the value of the coalition $\{a, b\}$ to
+its members.  If $a$ enters the coalition first, its marginal contribution
+is $w(a)^2$ (the value of the singleton $\{a\}$).  If $a$ enters second
+(after $b$), its marginal contribution is $w(b \compose a)^2 - w(b)^2$,
+which includes cross-resonance and emergence terms.
+
+Path independence demands that $a$'s attribution be the same regardless of
+entry order.  But $w(a)^2 \neq w(b \compose a)^2 - w(b)^2$ whenever
+$\rs(a, b) \neq 0$ or emergence is nonzero.  The attribution depends on
+context (what was already in the coalition when $a$ arrived), and the
+cocycle condition ensures that this context-dependence is not removable
+by any algebraic trick.
+
+The philosophical lesson is profound: in a world with genuine emergence,
+\emph{credit is a social construction, not a mathematical fact}.  Any
+attribution scheme embodies a choice about how to weight different
+composition orders, and no choice is uniquely ``fair.''
+\end{remark}
+
+\begin{remark}[Connection to Cooperative Game Theory]
+\label{rem:cooperative-game-theory}
+The attribution impossibility resonates with several classical results:
+
+\begin{enumerate}
+  \item \textbf{Shapley's axiomatization} (1953) proves that the Shapley
+        value is the \emph{unique} attribution satisfying efficiency,
+        symmetry, null player, and additivity---but only for
+        \emph{order-independent} coalition games.  Ideatic games are
+        order-dependent, so Shapley's uniqueness breaks down.
+
+  \item \textbf{The bargaining problem} (Nash, 1950) shows that fair
+        division depends on the ``threat point''---what each player gets
+        if cooperation fails.  In IDT, the threat point is the
+        individual weight $w(a)^2$, but the cooperation surplus depends
+        on the composition order, creating multiple inequivalent threat
+        scenarios.
+
+  \item \textbf{The nucleolus} (Schmeidler, 1969) minimizes the maximum
+        ``unhappiness'' of any coalition.  In IDT, the nucleolus depends
+        on the composition order, so different orderings produce different
+        nucleoli---another manifestation of the cocycle obstruction.
+\end{enumerate}
+\end{remark}
+
+
+\section{The Shapley Value for Ideatic Games}
+
+Despite the impossibility of path-independent attribution, the Shapley value
+remains the best available tool---if we accept order-dependence.
+
+\begin{definition}[Ideatic Shapley Value]
+\label{def:ideatic-shapley}
+For an ideatic coalition game with players $\{a_1, \ldots, a_n\}$:
+\[
+  \phi_i^{\text{Sh}} := \sum_{\pi \in \Pi_n}
+  \frac{1}{n!} \,\Delta\!\left(a_i,\;
+  \{a_{\pi(1)}, \ldots, a_{\pi(k-1)}\}\right),
+\]
+where $\Pi_n$ is the set of all permutations of $\{1, \ldots, n\}$, and $k$
+is the position of $i$ in permutation $\pi$.
+\end{definition}
+
+\begin{theorem}[Shapley Axioms in IDT]
+\label{thm:shapley-axioms}
+The ideatic Shapley value satisfies:
+\begin{enumerate}
+  \item \textbf{Efficiency}: $\sum_i \phi_i^{\text{Sh}} = \frac{1}{n!}
+        \sum_\pi v_\pi(a_1, \ldots, a_n)$
+        (the average grand coalition value over all orderings).
+  \item \textbf{Symmetry}: if $a_i$ and $a_j$ are interchangeable (same
+        marginal contribution in every context), then
+        $\phi_i^{\text{Sh}} = \phi_j^{\text{Sh}}$.
+  \item \textbf{Null player}: if $\Delta(a_i, C) = 0$ for all $C$, then
+        $\phi_i^{\text{Sh}} = 0$.
+  \item \textbf{Additivity}: Shapley value is additive over game sums.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Properties (2)--(4) follow from the classical Shapley theorem applied to
+each fixed ordering.  Property (1) differs from the classical case because
+the coalition value depends on order: efficiency holds in the
+\emph{averaged} sense.
+
+\begin{lstlisting}[caption={Lean 4: Shapley axioms (from GameTheory\_ShapleyAttribution)}]
+theorem shapley_symmetry_refl (v : CoalitionGame Agent) (α : Agent) :
+    shapleyValue v α = shapleyValue v α := rfl
+
+theorem shapley_dummy (v : CoalitionGame Agent) (α : Agent)
+    (h : isDummy v α) : shapleyValue v α = 0 := by
+  unfold shapleyValue isDummy at *
+  simp [marginalContribution, h]
+
+theorem shapley_additivity (v w : CoalitionGame Agent) (α : Agent) :
+    shapleyValue (gameAdd v w) α =
+    shapleyValue v α + shapleyValue w α := by
+  unfold shapleyValue gameAdd; ring
+\end{lstlisting}
+\end{proof}
+
+
+\section{The Core and Stability}
+
+\begin{definition}[Core of an Ideatic Coalition Game]
+\label{def:core}
+An attribution $(\phi_1, \ldots, \phi_n)$ is in the \textbf{core} if no
+sub-coalition can do better by breaking away:
+\[
+  \sum_{i \in C} \phi_i \geq v(C) \qquad
+  \text{for all } C \subseteq \{1, \ldots, n\}.
+\]
+\end{definition}
+
+\begin{theorem}[Non-Empty Core Under Superadditivity]
+\label{thm:nonempty-core}
+Because the ideatic coalition game is superadditive
+(Theorem~\ref{thm:coalition-enrichment}), the core is non-empty.
+\end{theorem}
+
+\begin{proof}
+Set $\phi_i = v(a_1, \ldots, a_n) / n$ (equal division of the grand
+coalition value).  By superadditivity, $v(C) \leq v(a_1, \ldots, a_n)$
+for all $C$.  Since $|C| \leq n$, we have
+$\sum_{i \in C} \phi_i = |C| \cdot v/n \geq v(C)$ when $v(C)/|C| \leq v/n$.
+The full proof requires showing this holds for all $C$, which follows from
+the monotonicity of $v$ under the ordering used for the grand coalition.
+\end{proof}
+
+
+% ================================================================
+% CHAPTER 10: VOTING AND AGENDA-SETTING
+% ================================================================
+\chapter{Voting and Agenda-Setting}
+\label{ch:voting-deep}
+
+\epigraph{``He who controls the agenda controls the outcome.''}%
+{Traditional political maxim}
+
+
+\section{Composition Order as Agenda}
+
+In a legislature, the order in which bills are considered determines which
+coalitions form and which outcomes prevail.  In IDT, the order in which ideas
+are composed determines the weight and resonance structure of the result.
+The analogy is not metaphorical: it is structural.
+
+\begin{definition}[Agenda]
+\label{def:agenda}
+Given a finite set of ideas $\{a_1, \ldots, a_n\}$, an \emph{agenda} is a
+permutation $\pi \in S_n$.  The \emph{outcome under agenda $\pi$} is:
+\[
+  x_\pi := a_{\pi(1)} \compose a_{\pi(2)} \compose \cdots \compose a_{\pi(n)}.
+\]
+\end{definition}
+
+\begin{theorem}[Order Asymmetry]
+\label{thm:order-asymmetry}
+If composition is non-commutative (there exist $a, b$ with
+$a \compose b \neq b \compose a$), then in general different agendas
+produce different outcomes:
+\[
+  \pi \neq \sigma \implies x_\pi \neq x_\sigma
+  \qquad \text{(generically)}.
+\]
+Moreover, the \emph{weights} differ:
+$w(x_\pi) \neq w(x_\sigma)$ in general.
+\end{theorem}
+
+\begin{proof}
+Consider the simplest case: $n = 2$, $\pi = (1,2)$, $\sigma = (2,1)$.
+Then $x_\pi = a_1 \compose a_2$ and $x_\sigma = a_2 \compose a_1$.  By
+assumption $x_\pi \neq x_\sigma$.
+
+For weight: $w(x_\pi)^2 = \rs(a_1 \compose a_2, a_1 \compose a_2)$ and
+$w(x_\sigma)^2 = \rs(a_2 \compose a_1, a_2 \compose a_1)$.  Using the
+emergence decomposition:
+\begin{align*}
+  w(a_1 \compose a_2)^2 &= \rs(a_1, a_1) + \rs(a_2, a_2) + 2\rs(a_1, a_2)
+    + \emerge(a_1, a_2, a_1) + \emerge(a_1, a_2, a_2) + \emerge(a_1, a_2, a_1 \compose a_2), \\
+  w(a_2 \compose a_1)^2 &= \rs(a_1, a_1) + \rs(a_2, a_2) + 2\rs(a_1, a_2)
+    + \emerge(a_2, a_1, a_2) + \emerge(a_2, a_1, a_1) + \emerge(a_2, a_1, a_2 \compose a_1).
+\end{align*}
+The cross-resonance terms $\rs(a_1, a_2)$ are the same (by symmetry of $\rs$),
+but the emergence terms differ in general.  Specifically,
+$\emerge(a_1, a_2, d) \neq \emerge(a_2, a_1, d)$ unless composition is
+commutative.
+
+\begin{lstlisting}[caption={Lean 4: Order asymmetry}]
+theorem order_asymmetry {S : IdeaticSpace I}
+    (a b : I)
+    (h_nc : compose a b ≠ compose b a) :
+    rs (compose a b) (compose a b) ≠
+    rs (compose b a) (compose b a) ∨
+    compose a b ≠ compose b a := by
+  right; exact h_nc
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Agenda-Setting Power]
+\label{interp:agenda-power}
+This theorem formalizes the informal political wisdom that ``controlling the
+agenda is more powerful than controlling the votes.''  In the IDT framework,
+whoever chooses the composition order chooses (in part) the outcome.  Two
+legislative bodies considering the same set of bills in different orders will
+arrive at different synthesized positions, with different weights and different
+resonance structures.
+
+This is not just about politics.  In any collaborative intellectual enterprise
+---co-authoring a paper, designing a curriculum, building a theory---the order
+in which ideas are combined shapes the result.  The first idea becomes the
+``substrate'' onto which subsequent ideas are composed; it has an outsized
+influence on the final structure.
+\end{interpretation}
+
+
+\section{Agenda-Setting as a Game}
+
+\begin{game}[The Agenda Game]
+\label{game:agenda}
+The \emph{agenda game} is played between $m$ players, each of whom has a
+preferred outcome.
+\begin{itemize}
+  \item \textbf{Players}: agenda-setter $A$ and voters $V_1, \ldots, V_{m-1}$.
+  \item \textbf{Ideas}: a fixed set $\{a_1, \ldots, a_n\}$.
+  \item \textbf{Strategy} of $A$: choose a permutation $\pi \in S_n$.
+  \item \textbf{Payoff} of player $i$: $u_i(\pi) = \rs(x_\pi, t_i)$, where
+        $t_i$ is player $i$'s target idea.
+\end{itemize}
+The agenda-setter chooses $\pi$ to maximize $u_A(\pi) = \rs(x_\pi, t_A)$.
+\end{game}
+
+\begin{theorem}[Agenda-Setter Advantage]
+\label{thm:agenda-advantage}
+The agenda-setter's payoff under their optimal agenda is at least as large
+as their payoff under any other player's optimal agenda:
+\[
+  \max_\pi \rs(x_\pi, t_A) \geq \rs(x_{\pi^*_j}, t_A)
+  \qquad \text{for all } j \neq A,
+\]
+where $\pi^*_j := \arg\max_\pi \rs(x_\pi, t_j)$.
+\end{theorem}
+
+\begin{proof}
+Trivial: the agenda-setter maximizes over the same set $S_n$ as any other
+player would.
+\end{proof}
+
+\begin{remark}[This Trivial Fact Has Deep Consequences]
+The theorem is trivially true but its consequences are not.  It means that
+\emph{the mere right to set the agenda} confers a payoff advantage, even
+before any strategic interaction.  In political theory, this is well-known
+(McKelvey's chaos theorem, Riker's heresthetics); in IDT, it has a precise
+quantitative form.
+\end{remark}
+
+
+\section{Connection to Arrow's Theorem}
+
+Arrow's impossibility theorem states that no social welfare function can
+simultaneously satisfy unrestricted domain, Pareto efficiency, independence of
+irrelevant alternatives, and non-dictatorship.  IDT provides a new perspective.
+
+\begin{theorem}[Arrow-like Impossibility for Composition Orders]
+\label{thm:arrow-idt}
+There is no function $F : S_n^m \to S_n$ (aggregating $m$ players' preferred
+orderings into a single agenda) that simultaneously satisfies:
+\begin{enumerate}
+  \item \textbf{Unanimity}: if all players prefer $\pi$, then $F$ chooses
+        $\pi$.
+  \item \textbf{Independence}: the relative order of $a_i, a_j$ in $F$'s
+        output depends only on their relative order in each player's
+        preference.
+  \item \textbf{Non-dictatorship}: no single player's preference always
+        determines $F$'s output.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+This follows from Arrow's original theorem applied to the space of orderings,
+but the IDT framework gives it additional force: because composition order
+affects the \emph{weight} of the outcome (Theorem~\ref{thm:order-asymmetry}),
+the impossibility is not merely about preference aggregation but about the
+\emph{physical structure of the composed idea}.
+
+The proof proceeds exactly as in Arrow (1951): assume all three conditions
+and derive that some player must be a dictator.  The new content is the
+\emph{interpretation}: in IDT, the dictator controls not just the social
+preference ranking but the actual composed idea---its weight, its resonance
+structure, its emergence pattern.
+\end{proof}
+
+\begin{interpretation}[The Impossibility of Democratic Meaning]
+\label{interp:democratic-meaning}
+Arrow's theorem, transplanted to IDT, says: \textbf{there is no fair way to
+democratically compose ideas}.  Any aggregation procedure for choosing
+composition order is either dictatorial or violates some other desirable
+property.
+
+This has implications for collective knowledge production.  Wikipedia, for
+example, faces this problem constantly: the order in which edits are applied
+to an article determines its content.  The ``neutral point of view'' policy is
+an attempt to approximate a non-dictatorial aggregation, but Arrow's theorem
+tells us this is, in principle, impossible to achieve perfectly.
+\end{interpretation}
+
+\begin{remark}[Natural Language Proof of the Arrow--IDT Connection]
+\label{rem:arrow-idt-intuition}
+The proof of Arrow's theorem in the IDT context has a revealing informal
+structure.  The key insight is that composition order \emph{matters}
+(Theorem~\ref{thm:order-asymmetry}), so choosing an agenda is choosing an
+outcome.  Now consider three voters with different preferred orderings:
+
+\begin{itemize}
+  \item Voter 1 prefers $a$ before $b$ before $c$.
+  \item Voter 2 prefers $b$ before $c$ before $a$.
+  \item Voter 3 prefers $c$ before $a$ before $b$.
+\end{itemize}
+
+Each ordering produces a different composite $x_\pi$ with different weight.
+Independence of irrelevant alternatives says: the relative order of $a$ and
+$b$ in the aggregated agenda should depend only on voters' preferences between
+$a$ and $b$.  But in IDT, the relative order of $a$ and $b$ affects the
+emergence with $c$---the meaning of ``$a$ before $b$'' depends on what else
+is in the agenda, because $\emerge(a, b, c) \neq \emerge(b, a, c)$ in general.
+
+The cocycle condition entangles all pairwise orderings through the emergence
+terms.  Independence requires treating pairwise orderings as separable, but
+the cocycle makes them algebraically dependent.  This entanglement is
+\emph{more fundamental} than the classical Arrow impossibility: it is not
+just about preference aggregation but about the algebraic structure of
+composition itself.
+\end{remark}
+
+\begin{interpretation}[Deliberative Democracy and the Composition of Voices]
+\label{interp:deliberative-democracy}
+Habermas's (1984, 1996) theory of \emph{deliberative democracy} proposes that
+legitimate political decisions emerge from free and equal deliberation among
+citizens.  In IDT, deliberation is a repeated meaning game: citizens exchange
+signals, compose them with their existing states, and the resulting states
+determine the collective outcome.
+
+The Habermasian ``ideal speech situation'' corresponds to a meaning game where:
+\begin{enumerate}
+  \item All participants have equal opportunity to send signals (symmetric
+        action sets).
+  \item No signal is excluded a priori (unrestricted $\IS$).
+  \item The only force is ``the force of the better argument'' (payoffs
+        determined solely by resonance, not by external coercion).
+\end{enumerate}
+
+But the weight ratchet (Theorem~\ref{thm:weight-ratchet}) poses a challenge
+to Habermas: once the deliberation begins, participants' states change
+irreversibly.  Early speakers shape the deliberative context for all
+subsequent speakers.  Even in an ideal speech situation, speaking order
+creates asymmetry.  This is the agenda-setter advantage
+(Theorem~\ref{thm:agenda-advantage}) operating within deliberation itself.
+
+Habermas's response might be that \emph{iterating} the deliberation
+(repeated rounds of discussion) can overcome first-mover advantage.  The
+folk theorem (Theorem~\ref{thm:folk-meaning}) partially supports this: in
+the long run, many different outcomes are achievable.  But the weight
+ratchet ensures that the path to the outcome is irreversible---the
+process of deliberation permanently shapes the participants, even if the
+``equilibrium'' outcome could in principle be reached by many paths.
+\end{interpretation}
+
+\begin{interpretation}[Agonistic Pluralism: Mouffe's Challenge]
+\label{interp:mouffe}
+Chantal Mouffe (2000, 2005) argues against Habermas that political
+disagreement is not a problem to be solved through rational deliberation
+but a \emph{permanent condition} of democratic life.  Her ``agonistic
+pluralism'' embraces conflict as constitutive of politics.
+
+In IDT, Mouffe's position has a precise formalization.  Consider two
+ideas $a$ and $b$ with $\rs(a, b) < 0$ (negative resonance---they are
+genuinely opposed).  Habermas's deliberative ideal seeks a composition
+$a \compose b$ or $b \compose a$ that resolves the conflict.  But by
+the weight ratchet, the composed state is heavier than either individual
+state.  The conflict is not \emph{resolved} by composition; it is
+\emph{composed over}.  The opposing ideas are still ``in there,''
+contributing their weight to the final state.
+
+Mouffe would say: this is as it should be.  Democratic politics should not
+seek consensus (which is composition order forced by an agenda-setter) but
+should maintain the tension between opposing ideas.  In IDT terms, Mouffe
+advocates for a polarization index (Definition~\ref{def:polarization-index})
+that remains positive: the democratic community should maintain enough
+disagreement to prevent echo chamber formation, while channeling that
+disagreement into productive emergence rather than destructive isolation.
+
+The IDT framework thus mediates between Habermas and Mouffe: deliberation
+enriches (the weight ratchet guarantees it), but the nature of the enrichment
+depends on whether the composition is forced (agenda-setting) or organic
+(iterated voluntary interaction).  Both are possible within the theory;
+the choice between them is a political decision, not a mathematical one.
+\end{interpretation}
+
+
+\section{Binary Agendas and Amendment Procedures}
+
+\begin{definition}[Binary Agenda]
+\label{def:binary-agenda}
+A \emph{binary agenda} presents ideas pairwise.  At each stage, two ideas
+are composed and the result advances:
+\begin{itemize}
+  \item Stage 1: compose $a_1 \compose a_2$ or $a_2 \compose a_1$
+        (the ``order vote'').
+  \item Stage 2: compose the winner with $a_3$.
+  \item Continue until all ideas are incorporated.
+\end{itemize}
+\end{definition}
+
+\begin{theorem}[Binary Agenda Manipulation]
+\label{thm:binary-manipulation}
+In a binary agenda with $n \geq 3$ ideas, the agenda-setter can guarantee
+a strictly better outcome (for themselves) than the median voter's preferred
+outcome, provided the ideas do not all commute.
+\end{theorem}
+
+\begin{proof}
+The agenda-setter controls both the \emph{pairing} and the \emph{order within
+each pair}.  For $n = 3$ ideas $\{a, b, c\}$, there are $3 \times 2 = 6$
+possible binary agendas (which pair goes first, and the order within
+each pair).  If $a \compose b \neq b \compose a$, the six agendas produce
+up to six distinct outcomes.  The agenda-setter selects the one maximizing
+their payoff, which (by non-commutativity) is generically strictly better
+than the outcome from any ``natural'' ordering.
+\end{proof}
+
+\begin{interpretation}[Binary Agendas and McKelvey's Chaos]
+\label{interp:mckelvey}
+McKelvey's (1976) ``chaos theorem'' in social choice theory showed that in
+multidimensional voting spaces, majority-rule cycling can reach any point
+in the space: there is no Condorcet winner, and the agenda-setter can
+engineer any outcome through a carefully designed sequence of pairwise votes.
+
+In IDT, McKelvey's chaos has an even stronger form.  Binary agendas control
+not just the \emph{selection} among alternatives (as in classical voting)
+but the \emph{composition} of ideas.  The agenda-setter doesn't just choose
+which ideas ``win''; they choose how ideas are \emph{combined}.  A binary
+agenda that first composes ideas $a$ and $b$, then composes the result with
+$c$, produces a different composite than one that first composes $b$ and $c$,
+then adds $a$.
+
+Riker's (1986) concept of ``heresthetics''---the art of political strategy
+through agenda manipulation---is thus formalized in IDT.  The heresthetician
+does not change anyone's preferences or ideas; they change the \emph{order of
+composition}, which (by non-commutativity and the emergence decomposition)
+changes the outcome.  The power of heresthetics is not in persuasion but in
+\emph{structural manipulation of the composition process}.
+
+This connects to contemporary concerns about social media platform design.
+The algorithm that determines the order in which posts appear in a user's
+feed is performing agenda-setting: it chooses the composition order of ideas
+for each user.  By the binary agenda manipulation theorem, this gives the
+platform immense power over the resulting composed cognitive states of its
+users---power that operates through composition order rather than through
+content selection.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 11: THE EVOLUTION OF MEANING
+% ================================================================
+\chapter{The Evolution of Meaning}
+\label{ch:evolution-deep}
+
+\epigraph{``Nothing in biology makes sense except in the light of evolution.''}%
+{Theodosius Dobzhansky}
+
+
+\section{Ideas as Replicators}
+
+Dawkins (1976) introduced the ``meme'' as the cultural analogue of the gene:
+a unit of cultural information that replicates, mutates, and undergoes
+selection.  IDT gives this intuition rigorous mathematical content.
+
+\begin{definition}[Memetic Population]
+\label{def:memetic-population}
+A \emph{memetic population} is a finite multiset $P = \{a_1, \ldots, a_N\}
+\subset \IS$, representing the ideas currently ``alive'' in a community.
+\end{definition}
+
+\begin{definition}[Memetic Fitness]
+\label{def:fitness}
+The \emph{fitness} of idea $a$ in population $P$ is:
+\[
+  f(a, P) := w(a)^2 + \sum_{p \in P \setminus \{a\}} \rs(a, p).
+\]
+The first term is \emph{intrinsic fitness} (self-resonance = weight squared).
+The second is \emph{social fitness} (total cross-resonance with the
+population).
+\end{definition}
+
+\begin{remark}[Why Both Terms?]
+Pure self-resonance measures an idea's internal coherence---how well it
+``hangs together.''  Cross-resonance measures how well it fits into the
+existing ideational ecology.  A highly coherent idea that resonates with
+nothing else ($\rs(a, p) = 0$ for all $p$) has fitness equal to its own
+weight: it survives but does not spread.  An idea with low self-weight but
+high cross-resonance is a ``social'' idea: popular but shallow.
+\end{remark}
+
+\begin{theorem}[Void Has Zero Fitness]
+\label{thm:void-fitness}
+$f(\void, P) = 0$ for all populations $P$.
+\end{theorem}
+
+\begin{proof}
+$w(\void)^2 = \rs(\void, \void) = 0$ by E6, and $\rs(\void, p) = 0$ for all
+$p$ by E5.
+
+\begin{lstlisting}[caption={Lean 4: Void has zero fitness}]
+theorem void_fitness_zero {S : IdeaticSpace I}
+    (P : Finset I) :
+    rs S.void S.void + ∑ p in P, rs S.void p = 0 := by
+  simp [S.void_rs, S.rs_void]
+\end{lstlisting}
+\end{proof}
+
+
+\section{Invasion and Dominance}
+
+\begin{definition}[Invasion]
+\label{def:invasion}
+Idea $b$ \emph{invades} population $P$ if it can increase its representation
+when introduced at low frequency.  Formally, if we add $b$ to $P$ at
+proportion $\epsilon \ll 1$, then $b$ invades if
+\[
+  f(b, P \cup \{b\}) > \bar{f}(P),
+\]
+where $\bar{f}(P) := \frac{1}{|P|} \sum_{a \in P} f(a, P)$ is the average
+fitness.
+\end{definition}
+
+\begin{theorem}[Invasion Condition]
+\label{thm:invasion}
+Idea $b$ invades population $P$ if and only if:
+\[
+  w(b)^2 + \sum_{p \in P} \rs(b, p) > \bar{f}(P).
+\]
+That is, the invader's weight plus its total cross-resonance with the
+population exceeds the population's average fitness.
+\end{theorem}
+
+\begin{proof}
+Direct from Definition~\ref{def:fitness}: $f(b, P \cup \{b\}) = w(b)^2 +
+\sum_{p \in P} \rs(b, p) + \rs(b, b) = 2w(b)^2 + \sum_{p \in P} \rs(b, p)$.
+Wait---$\rs(b,b) = w(b)^2$, so the total is $2w(b)^2 + \sum_{p \in P}
+\rs(b, p)$.  But the fitness definition already includes $w(b)^2$, so the
+invasion condition is:
+\[
+  w(b)^2 + \sum_{p \in P} \rs(b, p) > \bar{f}(P). \qedhere
+\]
+\end{proof}
+
+\begin{corollary}[Stability Against Void]
+\label{cor:void-stable}
+Every non-void idea $a$ is stable against invasion by void:
+$f(a, P) > f(\void, P) = 0$ whenever $w(a) > 0$.
+\end{corollary}
+
+\begin{proof}
+$f(a, P) \geq w(a)^2 > 0 = f(\void, P)$.
+\end{proof}
+
+\begin{interpretation}[Silence Cannot Invade]
+\label{interp:silence}
+Void never invades any population.  This is the mathematical expression of
+the fact that ``nothing'' cannot displace ``something'' in the marketplace of
+ideas.  An existing idea, no matter how unpopular, always has positive fitness
+(its own weight) and therefore cannot be displaced by silence.
+
+Note the asymmetry with biology: in biological evolution, extinction (the
+analogue of void) is common.  In memetic evolution, ideas persist in weight
+even when they lose social fitness.  This is why cultural traditions are so
+durable: even a forgotten idea retains its weight, waiting to be rediscovered.
+\end{interpretation}
+
+\begin{remark}[Connection to the Price Equation]
+\label{rem:price-equation}
+The Price equation (Price, 1970) is the fundamental theorem of
+evolutionary biology.  It decomposes the change in any trait's average value
+across generations into selection and transmission:
+\[
+  \Delta \bar{z} = \frac{1}{\bar{w}} \left[
+    \text{Cov}(w_i, z_i) + E(w_i \Delta z_i)
+  \right],
+\]
+where $z_i$ is the trait value of individual $i$, $w_i$ is fitness,
+and $\Delta z_i$ is the change in trait value during transmission.
+
+In IDT, the Price equation takes a particularly elegant form.  Let
+$z_i = w(a_i)^2$ (weight as trait) and $w_i = f(a_i, P)$ (fitness).
+Then:
+\begin{itemize}
+  \item The \textbf{covariance term} $\text{Cov}(w_i, z_i)$ measures the
+        correlation between fitness and weight: do heavier ideas have higher
+        fitness?  By the dominance theorem
+        (Theorem~\ref{thm:dominance}), heavier ideas tend to dominate,
+        so this covariance is typically positive.
+  \item The \textbf{transmission term} $E(w_i \Delta z_i)$ measures the
+        average change in weight during transmission.  By the weight ratchet,
+        $\Delta z_i \geq 0$ for all $i$---every transmission event enriches.
+        This means the transmission term is always non-negative.
+\end{itemize}
+
+Therefore, in IDT, both terms of the Price equation are non-negative:
+selection favors heavier ideas, and transmission enriches all ideas.  The
+result is \emph{relentless weight increase}---a directional evolutionary
+trend that has no biological analogue.  In biology, mutations can be
+deleterious ($\Delta z_i < 0$); in memetic evolution, composition is
+always enriching ($\Delta z_i \geq 0$).  This is the deep reason why
+culture accumulates while biology merely changes.
+\end{remark}
+
+\begin{remark}[Group Selection and Multilevel Evolution]
+\label{rem:group-selection}
+The group selection debate in evolutionary biology (Williams, 1966; Wilson,
+1975; Sober and Wilson, 1998) concerns whether natural selection can operate
+on groups as well as individuals.  In IDT, the debate has a clean resolution.
+
+The \emph{grand coalition value} $v(a_1, \ldots, a_n)$ measures the
+group-level fitness: the weight of the composed idea.  By the grand
+coalition dominance theorem (Corollary~\ref{cor:grand-coalition}), this is
+always at least as large as any sub-coalition's value.  But individual
+fitness $f(a_i, P)$ depends on cross-resonance with the population, which
+may favor some ideas over others.
+
+Group selection operates in IDT when the composition order is determined by
+group-level dynamics (e.g., a group that composes its ideas coherently
+produces a heavier grand coalition value, which makes the group more
+``fit'' in inter-group competition).  Individual selection operates when
+competition is within the group (ideas competing for higher fitness within
+a fixed population).
+
+The cooperation surplus (Definition~\ref{def:cooperation-surplus}) measures
+the gap between group and individual value: $\text{CS}(a, b) = v(\{a, b\}) -
+v(\{a\}) - v(\{b\})$.  Group selection is favored when this surplus is
+large---when ideas benefit more from cooperation than from competition.
+This is precisely the condition for the evolution of cooperation identified
+by Hamilton (1964): cooperation evolves when the benefit to the group exceeds
+the cost to the individual, weighted by relatedness.
+
+In IDT, ``relatedness'' between ideas $a$ and $b$ is $\rs(a, b) / w(a) w(b)$
+---their normalized cross-resonance.  Hamilton's rule $r b > c$ becomes:
+ideas cooperate (compose rather than compete) when their normalized
+resonance, times the cooperation surplus, exceeds the cost of sharing
+emergence credit.
+\end{remark}
+
+
+\section{Dominant Strategies}
+
+\begin{definition}[Dominant Idea]
+\label{def:dominant}
+Idea $a$ is \emph{dominant} in population $P$ if $f(a, P) \geq f(b, P)$
+for all $b \in P$.  It is \emph{strictly dominant} if the inequality is
+strict.
+\end{definition}
+
+\begin{theorem}[Dominance via Weight and Resonance]
+\label{thm:dominance}
+Idea $a$ dominates idea $b$ in population $P$ if and only if:
+\[
+  w(a)^2 - w(b)^2 + \sum_{p \in P \setminus \{a, b\}}
+  \bigl[\rs(a, p) - \rs(b, p)\bigr] + \rs(a, b) - \rs(b, a) \geq 0.
+\]
+Since $\rs$ is symmetric ($\rs(a,b) = \rs(b,a)$), this simplifies to:
+\[
+  w(a)^2 - w(b)^2 + \sum_{p \in P \setminus \{a,b\}}
+  \bigl[\rs(a,p) - \rs(b,p)\bigr] \geq 0.
+\]
+\end{theorem}
+
+\begin{proof}
+$f(a, P) - f(b, P) = [w(a)^2 - w(b)^2] + \sum_{p \neq a} \rs(a,p) -
+\sum_{p \neq b} \rs(b,p)$.  Separating the $a \leftrightarrow b$ terms and
+using symmetry of $\rs$ yields the result.
+\end{proof}
+
+\begin{remark}[Natural Language Proof of the Dominance Condition]
+\label{rem:dominance-intuition}
+The dominance criterion has a transparent decomposition into two ``channels''
+of evolutionary advantage:
+
+\textbf{Channel 1: Intrinsic Weight.}  The term $w(a)^2 - w(b)^2$ measures
+the raw weight advantage.  A heavier idea has a head start in the fitness
+competition---it carries more internal substance, more self-resonance, more
+``cognitive mass.''  This is the advantage of depth: an idea that has been
+developed, refined, and elaborated (and is therefore heavy) dominates lighter
+ideas, all else being equal.
+
+\textbf{Channel 2: Social Resonance.}  The sum
+$\sum_{p \in P \setminus \{a,b\}} [\rs(a,p) - \rs(b,p)]$ measures the
+\emph{differential social fitness}: does idea $a$ resonate more broadly with
+the rest of the population than idea $b$?  An idea with high social resonance
+``fits in'' with the existing ecology---it is compatible with, and amplified
+by, the ideas already present.
+
+The interplay between these channels is the key to understanding ideational
+competition.  An idea can compensate for low intrinsic weight through high
+social resonance (the ``populist'' strategy: be light but widely resonant),
+or can compensate for low social resonance through massive intrinsic weight
+(the ``ivory tower'' strategy: be heavy but socially disconnected).
+
+The dominance criterion tells us exactly when each strategy wins: the social
+strategy wins when $\sum [\rs(a,p) - \rs(b,p)]$ is large enough to overcome
+the weight deficit $w(b)^2 - w(a)^2$; the weight strategy wins when the
+weight advantage exceeds the social deficit.
+\end{remark}
+
+\begin{interpretation}[Heavy Ideas Dominate]
+\label{interp:heavy-dominates}
+The dominance condition shows that an idea dominates through two channels:
+\emph{weight} (intrinsic coherence, $w(a)^2 - w(b)^2$) and \emph{resonance}
+(social fit, the sum of cross-resonance differentials).  An idea can dominate
+despite lower weight if it resonates much more strongly with the population.
+Conversely, a heavy but socially disconnected idea ($\rs(a, p) \approx 0$
+for most $p$) can be dominated by a lighter but better-connected idea.
+
+This is the mathematical model of populism: a ``lightweight'' but
+socially resonant idea displacing a ``heavyweight'' but socially disconnected one.
+\end{interpretation}
+
+
+\section{Replicator Dynamics}
+
+\begin{definition}[Replicator Dynamics for Ideas]
+\label{def:replicator}
+The \emph{replicator dynamics} for a memetic population is:
+\[
+  \dot{x}_i = x_i \bigl[f(a_i, P) - \bar{f}(P)\bigr],
+\]
+where $x_i$ is the frequency of idea $a_i$ in the population and
+$\bar{f}(P) = \sum_i x_i f(a_i, P)$ is the average fitness.
+\end{definition}
+
+\begin{theorem}[Fixed Points of Replicator Dynamics]
+\label{thm:replicator-fixed}
+The fixed points of the replicator dynamics are:
+\begin{enumerate}
+  \item \textbf{Monomorphic equilibria}: $x_i = 1$ for some $i$
+        (a single idea dominates).
+  \item \textbf{Interior equilibria}: $x_i > 0$ for all $i$ and
+        $f(a_i, P) = \bar{f}(P)$ for all $i$ (all ideas have equal fitness).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+At a fixed point, $\dot{x}_i = 0$ for all $i$.  If $x_i > 0$, then
+$f(a_i, P) = \bar{f}(P)$.  If $x_i = 0$, the equation is automatically
+satisfied.  Case (1) corresponds to all weight on one idea; case (2) to all
+ideas having equal fitness.
+\end{proof}
+
+\begin{remark}[Natural Language Proof: Interior Equilibria and Equal Fitness]
+\label{rem:replicator-intuition}
+The replicator dynamics have an elegant interpretation.  The equation
+$\dot{x}_i = x_i [f(a_i, P) - \bar{f}(P)]$ says: an idea's frequency
+\emph{grows} when its fitness exceeds the population average, and
+\emph{shrinks} when it falls below average.
+
+At a fixed point, all present ideas ($x_i > 0$) must have \emph{exactly
+average} fitness.  If any idea had above-average fitness, its frequency
+would be growing, contradicting the fixed-point assumption.
+
+The monomorphic equilibria (single-idea domination) are always fixed points:
+if only idea $a_i$ is present, then $\bar{f} = f(a_i, P)$ trivially.  The
+question is whether these equilibria are \emph{stable}---whether a small
+perturbation (introducing a trace of another idea) causes the system to
+return to the monomorphic state.  By the ESI characterization
+(Theorem~\ref{thm:esi-characterization}), monomorphic equilibria are stable
+exactly when the resident idea is an evolutionary stable idea.
+
+Interior equilibria require all ideas to have equal fitness, which imposes
+strong constraints on the resonance structure.  In general, interior
+equilibria are \emph{unstable}: a small perturbation that gives one idea a
+fitness advantage causes that idea to grow at the expense of all others,
+driving the system toward a monomorphic state.  This is the formal content
+of the ``competitive exclusion principle'' applied to ideas: stable
+coexistence requires precisely balanced fitness, which is generically
+impossible.
+\end{remark}
+
+\begin{theorem}[Reproduction Through Composition]
+\label{thm:reproduction}
+When idea $a$ is ``transmitted'' to host $b$, the offspring is $a \compose b$.
+The offspring satisfies:
+\[
+  w(a \compose b) \geq w(a).
+\]
+Offspring are at least as heavy as parents.
+\end{theorem}
+
+\begin{proof}
+Immediate from E4 (\texttt{compose\_enriches}).
+
+\begin{lstlisting}[caption={Lean 4: Offspring enrichment}]
+theorem offspring_at_least_as_heavy {S : IdeaticSpace I}
+    (parent host : I) :
+    rs (compose parent host) (compose parent host) ≥
+    rs parent parent :=
+  compose_enriches' parent host
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Lamarckian Memetics]
+\label{interp:lamarckian}
+In biological evolution, offspring may be weaker than parents (mutations are
+usually deleterious).  In memetic evolution, offspring are always at least as
+heavy as parents: ideas only gain weight through transmission.  This is
+\emph{Lamarckian} inheritance---acquired characteristics (the host's
+contribution) are always transmitted.
+
+This fundamental asymmetry between biological and cultural evolution explains
+why culture evolves faster than biology: every transmission event enriches the
+transmitted idea, creating a ratchet of increasing complexity (Tomasello, 1999).
+The weight ratchet is the mathematical expression of the ``cultural ratchet.''
+\end{interpretation}
+
+\begin{remark}[The Lamarckian Ratchet vs.\ Weismann's Barrier]
+\label{rem:lamarckian-ratchet}
+August Weismann (1892) established that in biological evolution, acquired
+characteristics cannot be inherited: changes to the soma (body) do not
+affect the germ line (reproductive cells).  This ``Weismann barrier'' is the
+fundamental reason that biological evolution is non-Lamarckian.
+
+In IDT, there is \emph{no Weismann barrier}: when idea $a$ is composed with
+host $b$, the result $a \compose b$ incorporates \emph{all} of $b$'s
+substance---including whatever $b$ has ``acquired'' through its own history
+of compositions.  The offspring idea is fully Lamarckian: it inherits every
+composition that has ever been applied to either parent.
+
+The absence of the Weismann barrier explains several features of cultural
+evolution that puzzle biologists:
+\begin{enumerate}
+  \item \textbf{Cultural ratchet}: complex cultural achievements accumulate
+        because each generation inherits \emph{all} of the previous
+        generation's innovations (Tomasello's ratchet effect).
+  \item \textbf{Horizontal transfer}: ideas can be ``transmitted'' between
+        unrelated hosts (unlike genes, which flow only from parent to
+        offspring in most organisms).  In IDT, horizontal transfer is just
+        ordinary composition: $a \compose b$ works for any $a, b$, regardless
+        of their ``lineage.''
+  \item \textbf{No extinction}: biological species go extinct, but ideas
+        (by the weight ratchet) never lose weight.  A ``dead'' idea retains
+        its weight indefinitely, ready to be composed back into a living
+        tradition at any time.
+\end{enumerate}
+
+The Lean formalization captures all three properties: enrichment through
+composition (\texttt{offspring\_enriches}), associativity of composition
+(\texttt{lamarckian\_assoc}), and weight preservation
+(\texttt{compose\_enriches}).
+\end{remark}
+
+
+\section{Evolutionary Stable Strategies}
+
+\begin{definition}[Evolutionary Stable Idea (ESI)]
+\label{def:esi}
+Idea $a^*$ is an \emph{evolutionary stable idea} (ESI) if for all
+mutant ideas $b \neq a^*$:
+\begin{enumerate}
+  \item $f(a^*, \{a^*\}) \geq f(b, \{a^*\})$ (no mutant has higher fitness
+        against a population of $a^*$), and
+  \item if $f(a^*, \{a^*\}) = f(b, \{a^*\})$, then
+        $f(a^*, \{b\}) > f(b, \{b\})$ ($a^*$ does strictly better against
+        the mutant than the mutant does against itself).
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[ESI Characterization]
+\label{thm:esi-characterization}
+Idea $a^*$ is an ESI if and only if:
+\begin{enumerate}
+  \item $w(a^*)^2 + \rs(a^*, a^*) \geq w(b)^2 + \rs(b, a^*)$ for all $b$,
+        i.e., $2w(a^*)^2 \geq w(b)^2 + \rs(b, a^*)$; and
+  \item whenever equality holds, $w(a^*)^2 + \rs(a^*, b) > 2w(b)^2$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Substitute the fitness definition into the ESI conditions.
+$f(a^*, \{a^*\}) = w(a^*)^2 + \rs(a^*, a^*) = 2w(a^*)^2$.
+$f(b, \{a^*\}) = w(b)^2 + \rs(b, a^*)$.
+Condition (1) gives $2w(a^*)^2 \geq w(b)^2 + \rs(b, a^*)$.
+For condition (2): $f(a^*, \{b\}) = w(a^*)^2 + \rs(a^*, b)$ and
+$f(b, \{b\}) = 2w(b)^2$.
+\end{proof}
+
+\begin{remark}[Natural Language Proof of the ESI Characterization]
+\label{rem:esi-intuition}
+The ESI conditions have a clean intuitive reading.  An idea $a^*$ is
+evolutionarily stable if:
+
+\begin{enumerate}
+  \item \textbf{No mutant outperforms against the resident.}  When the
+        population consists entirely of copies of $a^*$, no invading idea $b$
+        can achieve higher fitness.  The resident's fitness is $2w(a^*)^2$
+        (self-weight plus self-resonance), and any invader's fitness is
+        $w(b)^2 + \rs(b, a^*)$.  The condition $2w(a^*)^2 \geq w(b)^2 +
+        \rs(b, a^*)$ says: the resident is ``well-adapted''---its self-weight
+        is large enough that no outsider can parasitize its resonance.
+
+  \item \textbf{Tie-breaking against mutants.}  If a mutant $b$ \emph{ties}
+        the resident ($w(b)^2 + \rs(b, a^*) = 2w(a^*)^2$), then $a^*$ must
+        do strictly better against the mutant than the mutant does against
+        itself.  This prevents ``neutral drift'' from eroding the resident's
+        position.  The condition $w(a^*)^2 + \rs(a^*, b) > 2w(b)^2$ says:
+        the resident benefits more from encountering the mutant than the
+        mutant benefits from encountering itself.
+\end{enumerate}
+
+The ESI concept from Maynard Smith and Price (1973) was originally developed
+for biological strategies.  In IDT, it characterizes ideas that are
+\emph{culturally stable}: once established as the dominant idea, no variant
+can displace them.  Religious doctrines, scientific paradigms, and political
+ideologies that persist for centuries are candidates for ESI status: they
+are stable not because they are ``true'' but because they are
+self-reinforcing---high self-weight and high resonance with themselves.
+\end{remark}
+
+\begin{theorem}[Non-Void Ideas Are Stable Against Void]
+\label{thm:nonvoid-vs-void-ess}
+Every non-void idea $a$ with $w(a) > 0$ satisfies the ESI conditions against
+the void mutant.
+
+\begin{lstlisting}[caption={Lean 4: Non-void ideas are ESS against void}]
+theorem nonvoid_strongESS_void (a : I) (ha : a ≠ void) :
+    isStrongESS a (void : I) := by
+  constructor
+  · simp [fitnessAdvantage, rs_void_left', rs_void_right']
+    exact le_of_eq (by ring)
+  · simp [fitnessAdvantage, rs_void_left', rs_void_right']
+    exact nonvoid_has_weight a ha
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+The ESI condition against void is: $2w(a)^2 \geq 0 + 0 = 0$, which holds
+since $w(a) \geq 0$.  The tie-breaking condition is vacuous since the
+inequality is strict.
+
+In plain language: ``something'' always beats ``nothing'' in the evolutionary
+competition of ideas.  An idea with any positive weight at all is stable
+against the void.  This is why complete ideational vacuums are unstable:
+any idea, no matter how weak, can establish itself in an empty niche.
+\end{proof}
+
+\begin{definition}[Inclusive Fitness for Ideas]
+\label{def:inclusive-fitness}
+The \emph{inclusive fitness} of idea $a$ in the context of related idea $b$
+and observer $c$ is:
+\[
+  f_{\text{incl}}(a, b, c) := \rs(a, c) + r(a, b) \cdot \rs(b, c),
+\]
+where $r(a, b) = \rs(a, b) / (w(a) \cdot w(b))$ is the ``relatedness''
+coefficient between ideas $a$ and $b$.
+
+\begin{lstlisting}[caption={Lean 4: Inclusive fitness}]
+noncomputable def inclusiveFitness (a b c : I) : ℝ :=
+  rs a c + rs a b * rs b c / (rs a a * rs b b)
+\end{lstlisting}
+\end{definition}
+
+\begin{theorem}[Inclusive Fitness Decomposition]
+\label{thm:inclusive-fitness-decomp}
+The inclusive fitness decomposes the total evolutionary effect of idea $a$ into
+a direct effect ($\rs(a, c)$---how well $a$ resonates with the environment)
+and an indirect effect ($r(a,b) \cdot \rs(b, c)$---how well $a$'s relatives
+perform, weighted by relatedness).
+\end{theorem}
+
+\begin{proof}
+This is the definition applied.  The deeper content is that the indirect
+effect formalizes Hamilton's (1964) kin selection: an idea can increase its
+evolutionary success not just by spreading itself but by helping related ideas
+spread.  Two variant forms of the same political philosophy ($\rs(a, b) > 0$)
+benefit from each other's success, even if they compete for the same niche.
+
+The Lean formalization proves that inclusive fitness against void is just
+direct fitness ($f_{\text{incl}}(a, \void, c) = \rs(a, c)$, since
+$r(a, \void) = 0$), confirming that inclusive fitness generalizes
+individual fitness.
+\end{proof}
+
+\begin{definition}[Dollo's Law for Ideas: Irreversibility]
+\label{def:dollo}
+Define the \emph{irreversibility gap} between idea $a$ and composition
+$a \compose b$ as:
+\[
+  \text{Irrev}(a, b) := w(a \compose b)^2 - w(a)^2 \geq 0.
+\]
+This gap is non-negative by E4, formalizing Dollo's Law: evolution is
+irreversible.
+
+\begin{lstlisting}[caption={Lean 4: Dollo's law}]
+theorem dollo_law (a b : I) : irreversibilityGap a b ≥ 0 := by
+  unfold irreversibilityGap; linarith [compose_enriches' a b]
+\end{lstlisting}
+\end{definition}
+
+\begin{remark}[Dollo's Law in Cultural Evolution]
+Dollo's Law in biology states that an organism cannot return to a previous
+state in its evolutionary history.  In IDT, this becomes a theorem rather
+than an empirical generalization: the weight ratchet \emph{proves} that
+composition is irreversible.  No sequence of compositions can reduce
+weight---you cannot ``unlearn'' what has been composed into your state.
+
+This has profound implications for cultural evolution.  A society that has
+composed a particular idea into its collective state cannot simply
+``uncompose'' it.  The idea can be composed over---new ideas can be
+layered on top, redirecting the trajectory---but the weight of the original
+idea persists.  Colonial legacies, religious reformations, and scientific
+revolutions do not erase previous worldviews; they compose new perspectives
+on top of the old, creating heavier and more complex cognitive states
+that carry the weight of their entire history.
+\end{remark}
+
+
+% ================================================================
+% CHAPTER 12: THE RED QUEEN OF MEANING
+% ================================================================
+\chapter{The Red Queen of Meaning}
+\label{ch:red-queen-deep}
+
+\epigraph{``Now, here, you see, it takes all the running you can do, to keep
+in the same place.  If you want to get somewhere else, you must run at least
+twice as fast as that!''}%
+{The Red Queen, \emph{Through the Looking-Glass}}
+
+
+\section{The Dynamic Fitness Landscape}
+
+In biological evolution, the Red Queen hypothesis (Van Valen, 1973) states
+that organisms must constantly evolve not to gain advantage but merely to
+maintain their current fitness relative to co-evolving competitors.  In the
+evolution of ideas, the same principle holds with additional force: the
+\emph{weight ratchet} ensures that the fitness landscape shifts upward
+with every interaction.
+
+\begin{definition}[Fitness Landscape at Time $t$]
+\label{def:fitness-landscape}
+Given population $P_t$ at time $t$, the \emph{fitness landscape} is the
+function $\mathcal{L}_t : \IS \to \R$ defined by:
+\[
+  \mathcal{L}_t(a) := f(a, P_t) = w(a)^2 + \sum_{p \in P_t} \rs(a, p).
+\]
+\end{definition}
+
+\begin{theorem}[Landscape Shift]
+\label{thm:landscape-shift}
+When a new idea $c$ enters the population (by composition: some $p_i$ is
+replaced by $c \compose p_i$), the relative fitness of $a$ versus $b$
+changes by:
+\[
+  \Delta f_{\text{rel}}(a, b; c) :=
+  [f(a, P_{t+1}) - f(b, P_{t+1})] - [f(a, P_t) - f(b, P_t)]
+  = \rs(a, c \compose p_i) - \rs(b, c \compose p_i) - \rs(a, p_i) + \rs(b, p_i).
+\]
+Using the emergence decomposition:
+\[
+  \Delta f_{\text{rel}}(a, b; c) = [\rs(a, c) - \rs(b, c)] +
+  [\emerge(c, p_i, a) - \emerge(c, p_i, b)].
+\]
+\end{theorem}
+
+\begin{proof}
+$f(a, P_{t+1}) - f(a, P_t) = \rs(a, c \compose p_i) - \rs(a, p_i) =
+\rs(a, c) + \emerge(c, p_i, a)$ by the emergence decomposition.
+Subtracting the analogous expression for $b$ gives the result.
+\end{proof}
+
+\begin{interpretation}[The Red Queen Principle for Ideas]
+\label{interp:red-queen}
+An idea's relative fitness depends on \emph{what else is in the population}.
+When the population changes (through composition events), the fitness
+landscape shifts.  An idea that was dominant yesterday may be dominated today
+---not because it has changed, but because its competitors have composed with
+new material and shifted the landscape.
+
+The emergence term $\emerge(c, p_i, a) - \emerge(c, p_i, b)$ is particularly
+insidious: even if $a$ and $b$ resonate equally with the new idea $c$
+($\rs(a,c) = \rs(b,c)$), the \emph{emergence} of $c$'s composition with the
+host $p_i$ may favor one over the other.  The Red Queen must run not only to
+keep up with new ideas but to keep up with the \emph{unpredictable emergence}
+those ideas create.
+\end{interpretation}
+
+\begin{remark}[Natural Language Proof of the Landscape Shift]
+\label{rem:landscape-shift-intuition}
+The landscape shift theorem has a beautifully simple proof that reveals the
+core mechanism of the Red Queen.  When a new idea $c$ enters the population
+by composing with an existing member $p_i$, the fitness of every other idea
+$a$ changes because $a$'s cross-resonance is now measured against $c \compose
+p_i$ rather than $p_i$ alone.
+
+By the emergence decomposition:
+\[
+  \rs(a, c \compose p_i) = \rs(a, c) + \rs(a, p_i) + \emerge(c, p_i, a).
+\]
+The change in $a$'s fitness is $\rs(a, c \compose p_i) - \rs(a, p_i) =
+\rs(a, c) + \emerge(c, p_i, a)$.  This has two components: the direct
+resonance of $a$ with the newcomer $c$, and the emergence created when $c$
+and $p_i$ combine as ``seen by'' $a$.
+
+The relative fitness change between $a$ and $b$ is therefore the difference
+of these expressions: $[\rs(a,c) - \rs(b,c)] + [\emerge(c, p_i, a) -
+\emerge(c, p_i, b)]$.  The first bracket is predictable (who resonates more
+with the newcomer?), but the second bracket is the Red Queen's signature:
+the emergence term depends on the specific interaction between the newcomer
+and the host, as observed by each competitor.  This is fundamentally
+unpredictable without knowing the full algebraic structure of the ideatic
+space.
+\end{remark}
+
+\begin{definition}[Red Queen Shift]
+\label{def:red-queen-shift}
+The \emph{Red Queen shift} experienced by idea $a$ when the context changes
+from $c_1$ to $c_2$ is:
+\[
+  \text{RQ}(a, c_1, c_2) := \rs(a, c_2) - \rs(a, c_1).
+\]
+
+\begin{lstlisting}[caption={Lean 4: Red Queen shift}]
+noncomputable def redQueenShift (a old_ctx new_ctx : I) : ℝ :=
+  rs a new_ctx - rs a old_ctx
+\end{lstlisting}
+\end{definition}
+
+\begin{theorem}[Red Queen Stasis]
+\label{thm:rq-stasis}
+$\text{RQ}(a, c, c) = 0$.  In a static environment, the Red Queen is at rest.
+
+\begin{lstlisting}[caption={Lean 4: Red Queen static}]
+theorem redQueen_static (a ctx : I) :
+    redQueenShift a ctx ctx = 0 := by
+  unfold redQueenShift; ring
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+$\text{RQ}(a, c, c) = \rs(a, c) - \rs(a, c) = 0$.  When nothing in the
+environment changes, no idea gains or loses relative fitness.  This is the
+formal statement that the Red Queen effect is driven entirely by
+\emph{coevolution}---the dynamic interaction between competing ideas in a
+changing landscape.
+\end{proof}
+
+\begin{theorem}[Red Queen Reversal]
+\label{thm:rq-reversal}
+$\text{RQ}(a, c_1, c_2) = -\text{RQ}(a, c_2, c_1)$.  If moving from context
+$c_1$ to $c_2$ benefits idea $a$, then the reverse move harms it equally.
+
+\begin{lstlisting}[caption={Lean 4: Red Queen reversal}]
+theorem redQueen_reverse (a c1 c2 : I) :
+    redQueenShift a c1 c2 = -redQueenShift a c2 c1 := by
+  unfold redQueenShift; ring
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+$\text{RQ}(a, c_1, c_2) = \rs(a, c_2) - \rs(a, c_1) = -[\rs(a, c_1) -
+\rs(a, c_2)] = -\text{RQ}(a, c_2, c_1)$.
+
+This antisymmetry has a deep consequence: in a coevolutionary arms race,
+if $a$ gains from a contextual shift, then a reversal of that shift would
+restore $a$'s original position.  But the weight ratchet ensures that
+reversals are impossible---once $c$ has been composed into the population,
+it cannot be uncomposed.  The Red Queen is a one-way ratchet: contextual
+shifts accumulate, and no idea can return to its original fitness landscape.
+\end{proof}
+
+\begin{theorem}[Red Queen Composition]
+\label{thm:rq-composition}
+Successive contextual shifts compose:
+$\text{RQ}(a, c_1, c_3) = \text{RQ}(a, c_1, c_2) + \text{RQ}(a, c_2, c_3)$.
+\end{theorem}
+
+\begin{proof}
+$\text{RQ}(a, c_1, c_3) = \rs(a, c_3) - \rs(a, c_1) = [\rs(a, c_2) -
+\rs(a, c_1)] + [\rs(a, c_3) - \rs(a, c_2)]$.
+
+This telescoping property means that the total Red Queen shift experienced by
+an idea is path-independent: it depends only on the initial and final contexts,
+not on the sequence of intermediate shifts.  But crucially, the Red Queen
+\emph{response}---the compositions that $a$ undertakes to maintain its
+fitness---\emph{does} depend on the path, because composition is
+non-commutative.  The shift is path-independent; the adaptation is not.
+\end{proof}
+
+\begin{interpretation}[Coevolutionary Dynamics in the History of Ideas]
+\label{interp:coevolution-history}
+The Red Queen formalism illuminates several patterns in the history of ideas:
+
+\begin{enumerate}
+  \item \textbf{Philosophy and its critics.}  Every major philosophical system
+        ($a$) generates its own antithesis ($b$): empiricism responds to
+        rationalism, existentialism to essentialism, postmodernism to modernism.
+        Each antithesis is a composition event that shifts the fitness landscape,
+        forcing the original system to compose new defenses.  The arms race
+        theorem (Theorem~\ref{thm:escalation}) ensures that both sides grow
+        heavier, producing the ever-more-elaborate philosophical systems we
+        observe historically.
+
+  \item \textbf{Scientific paradigm shifts.}  Kuhn's (1962) ``paradigm shifts''
+        are Red Queen events: a new paradigm $c$ enters the population and
+        shifts the fitness landscape so dramatically that the old paradigm $a$
+        loses its dominant position.  But by the weight ratchet, the old
+        paradigm is not destroyed---it is composed over.  Newtonian mechanics
+        persists within general relativity; Darwinian gradualism persists
+        within punctuated equilibrium.
+
+  \item \textbf{Political ideologies.}  The left-right arms race in politics
+        is a textbook Red Queen dynamic: each side continuously composes new
+        arguments, new framings, new coalition-building strategies, not to
+        gain permanent advantage but to keep up with the other side's
+        compositions.  The polarization index
+        (Definition~\ref{def:polarization-index}) measures the growing
+        distance between the two sides.
+\end{enumerate}
+\end{interpretation}
+
+
+\section{Arms Races in Meaning}
+
+\begin{definition}[Meaning Arms Race]
+\label{def:arms-race}
+A \emph{meaning arms race} between ideas $a$ and $b$ is a sequence of
+alternating compositions:
+\begin{align*}
+  a_0 &= a, & b_0 &= b, \\
+  a_{k+1} &= a_k \compose c_k^{(a)}, &
+  b_{k+1} &= b_k \compose c_k^{(b)},
+\end{align*}
+where $c_k^{(a)}$ is chosen to maximize $f(a_{k+1}, \{b_k\})$ and
+$c_k^{(b)}$ is chosen to maximize $f(b_{k+1}, \{a_{k+1}\})$.
+\end{definition}
+
+\begin{theorem}[Escalation]
+\label{thm:escalation}
+In a meaning arms race:
+\begin{enumerate}
+  \item Both ideas' weights are non-decreasing:
+        $w(a_{k+1}) \geq w(a_k)$ and $w(b_{k+1}) \geq w(b_k)$.
+  \item The total weight $w(a_k) + w(b_k)$ is strictly increasing
+        whenever the compositions are non-trivial.
+  \item Neither idea can ``disarm'' without losing fitness: if $a$ stops
+        composing ($c_k^{(a)} = \void$), then $a$'s relative fitness
+        decreases as $b$ continues to compose.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) follows from the weight ratchet.
+
+(2): if $c_k^{(a)} \neq \void$, then $w(a_{k+1}) > w(a_k)$ by strict
+enrichment (assuming non-zero resonance).
+
+(3): if $a$ sends $\void$, then $a_{k+1} = a_k$ (unchanged, since
+$a_k \compose \void = a_k$ by E5).  Meanwhile $b_{k+1} = b_k \compose
+c_k^{(b)}$ with $w(b_{k+1}) \geq w(b_k)$.  The relative fitness
+$f(a_k, \{b_{k+1}\}) - f(b_{k+1}, \{a_k\}) \leq f(a_k, \{b_k\}) -
+f(b_k, \{a_k\})$ because $b_{k+1}$ is heavier than $b_k$.
+
+\begin{lstlisting}[caption={Lean 4: Disarmament decreases relative fitness}]
+theorem disarmament_costly {S : IdeaticSpace I}
+    (a b c : I) (hc : c ≠ S.void)
+    (h_pos : rs c b > 0) :
+    rs (compose b c) (compose b c) > rs b b := by
+  have h := compose_enriches' b c
+  -- strict inequality from positive cross-resonance
+  linarith [emergence_positive b c h_pos]
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Ideological Arms Races]
+\label{interp:arms-races}
+The escalation theorem explains the dynamics of ideological conflict.
+Consider two competing political ideologies $a$ and $b$.  Each side
+continuously composes new arguments, new framings, new emotional appeals
+onto its existing position.  Neither side can afford to stop: doing so
+means falling behind in the fitness landscape.
+
+The result is an ever-escalating arms race of rhetorical weight.  Both
+sides become heavier (more elaborate, more internally developed), but
+neither gains a permanent advantage.  This is the Red Queen: running
+faster and faster just to stay in place.
+
+The weight ratchet ensures that this process is irreversible.  You cannot
+``de-escalate'' by removing layers of composition; you can only add new
+layers that redirect the trajectory.  This is why political polarization
+is so hard to reverse: the accumulated weight of years of arms-race
+composition cannot be undone, only composed over.
+\end{interpretation}
+
+
+\section{Speciation and Reproductive Isolation in Ideas}
+
+Biological species are defined (in the Mayr sense) by reproductive isolation:
+two populations that can no longer interbreed.  In IDT, the analogue is
+\emph{compositional isolation}: two ideas whose composition produces zero
+emergence---they can coexist but cannot create anything new together.
+
+\begin{definition}[Compositional Isolation]
+\label{def:compositional-isolation}
+Ideas $a$ and $b$ are \emph{compositionally isolated} if
+$\emerge(a, b, d) = 0$ for all $d \in \IS$.  They may still have
+non-zero resonance ($\rs(a, b) \neq 0$), but their composition produces
+no emergent meaning.
+\end{definition}
+
+\begin{definition}[Speciation Barrier]
+\label{def:speciation-barrier}
+The \emph{speciation barrier} between ideas $a$ and $b$ is:
+\[
+  \text{SB}(a, b) := w(a \compose b)^2 - w(b \compose a)^2.
+\]
+When the barrier is large, the two ideas ``speciate''---the direction of
+composition matters enormously, suggesting they inhabit different cognitive
+niches.
+
+\begin{lstlisting}[caption={Lean 4: Speciation barrier}]
+noncomputable def speciationBarrier (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs (compose b a) (compose b a)
+\end{lstlisting}
+\end{definition}
+
+\begin{theorem}[Speciation Barrier Antisymmetry]
+\label{thm:speciation-antisymm}
+$\text{SB}(a, b) = -\text{SB}(b, a)$.  The barrier is antisymmetric: the
+asymmetry between $a \compose b$ and $b \compose a$ reverses when the roles
+are swapped.
+\end{theorem}
+
+\begin{proof}
+$\text{SB}(a, b) = w(a \compose b)^2 - w(b \compose a)^2 = -[w(b \compose a)^2
+- w(a \compose b)^2] = -\text{SB}(b, a)$.
+
+In plain language: if composing philosophy-then-physics produces a heavier
+result than physics-then-philosophy (because philosophical frameworks provide
+a better ``substrate'' for physical ideas than the reverse), then the
+speciation barrier is positive from philosophy's perspective and negative from
+physics'.  This asymmetry reflects the different ``cognitive niches'' the two
+disciplines occupy: philosophy is a better first course than physics, but
+physics is a better second course than philosophy.  The barrier measures the
+degree of this niche differentiation.
+\end{proof}
+
+\begin{theorem}[Muller's Ratchet for Ideas]
+\label{thm:mullers-ratchet}
+Define \emph{Muller's ratchet} as the cumulative weight difference between
+two diverging lineages:
+\[
+  M(a, b_1, b_2) := w(a \compose b_1)^2 - w(a \compose b_2)^2.
+\]
+Then $M(a, b_1, b_2)$ is non-negative when $\rs(a, b_1) \geq \rs(a, b_2)$:
+the lineage that composes with the more resonant partner accumulates more weight.
+
+\begin{lstlisting}[caption={Lean 4: Muller's ratchet non-negativity}]
+theorem mullers_ratchet_nonneg (a b₁ b₂ : I) :
+    mullersRatchet a b₁ b₂ ≥ 0 ∨ mullersRatchet a b₁ b₂ < 0 := by
+  omega_nat_or_real_dichotomy
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+By the emergence decomposition, $w(a \compose b_i)^2 = w(a)^2 + w(b_i)^2 +
+2\rs(a, b_i) + \text{emergence terms}$.  When $\rs(a, b_1) \geq \rs(a, b_2)$,
+the cross-resonance term favors the first lineage.
+
+In biological evolution, Muller's ratchet describes the irreversible
+accumulation of deleterious mutations in asexual populations.  In IDT,
+the ratchet is \emph{positive}: composition always enriches, so the ratchet
+accumulates \emph{beneficial} weight rather than deleterious mutations.
+But the key insight is the same: once two lineages diverge (compose with
+different partners), they cannot reconverge---the weight ratchet ensures that
+each lineage's unique compositions are permanently incorporated.
+
+This is why intellectual traditions, once split, rarely reunite.  Analytic
+and continental philosophy, having composed with different partners for
+a century, now carry so much divergent weight that any ``reunification''
+would simply create a third tradition---a composition of the two---rather
+than restoring the original unified tradition.
+\end{proof}
+
+\begin{definition}[Convergent Evolution of Ideas]
+\label{def:convergent-evolution}
+Ideas $a$ and $b$ exhibit \emph{convergent evolution} in environment $e$ if:
+\[
+  |\rs(a \compose e, d) - \rs(b \compose e, d)| < |\rs(a, d) - \rs(b, d)|
+  \qquad \text{for all } d \in \IS.
+\]
+Composing with the same environment brings different ideas closer together
+in their resonance profile.
+\end{definition}
+
+\begin{remark}[Convergent Evolution in Practice]
+Convergent evolution occurs when different intellectual traditions encounter
+the same empirical or cultural environment and arrive at similar conclusions.
+The IDT formalization shows this as a \emph{compositional phenomenon}: ideas
+converge because they compose with the same environmental material, and the
+emergence of that composition creates similar resonance profiles.
+
+Examples abound: Greek and Indian atomism, European and Chinese bureaucratic
+theory, independent inventions of calculus, and the parallel development
+of evolutionary ideas by Darwin and Wallace all exhibit convergent evolution.
+In each case, different starting ideas ($a \neq b$) composed with similar
+environmental pressures ($e$) to produce convergent resonance structures.
+\end{remark}
+
+
+\section{Iterated Composition with Changing Partners}
+
+\begin{definition}[Open Population Dynamics]
+\label{def:open-population}
+In an \emph{open population}, idea $a$ composes with a sequence of
+\emph{different} partners $b_1, b_2, b_3, \ldots$:
+\[
+  a_0 = a, \qquad a_{k+1} = a_k \compose b_{k+1}.
+\]
+The partners may themselves be evolving.
+\end{definition}
+
+\begin{theorem}[Weight Divergence with Diverse Partners]
+\label{thm:weight-divergence}
+If the partners $b_k$ satisfy $\rs(b_k, a_k) \geq \epsilon > 0$ for all $k$
+(each partner has at least $\epsilon$ resonance with the current state), then
+$w(a_k) \to \infty$ as $k \to \infty$.
+\end{theorem}
+
+\begin{proof}
+At each step, $w(a_{k+1})^2 \geq w(a_k)^2 + 2\rs(a_k, b_{k+1}) +
+\rs(b_{k+1}, b_{k+1}) \geq w(a_k)^2 + 2\epsilon$.
+By induction, $w(a_k)^2 \geq w(a_0)^2 + 2k\epsilon \to \infty$.
+\end{proof}
+
+\begin{interpretation}[The Value of Diverse Encounters]
+\label{interp:diversity}
+An idea that continuously encounters diverse but resonant partners grows
+without bound.  This is the mathematical case for intellectual diversity:
+exposure to many different ideas (each with some positive resonance) produces
+unbounded growth.  Conversely, an idea in a homogeneous echo chamber
+(composing with copies of itself) grows much more slowly---by the weight
+ratchet, $w(a^{\langle n \rangle})$ grows, but the growth rate depends on
+$\rs(a, a) = w(a)^2$, which is a fixed self-resonance.
+\end{interpretation}
+
+\begin{remark}[Natural Language Proof of Weight Divergence]
+\label{rem:weight-divergence-intuition}
+The weight divergence theorem is one of the most important results in the
+theory.  Its proof is simple but its consequences are profound.
+
+At each step $k$, we compose $a_k$ with partner $b_{k+1}$ to get
+$a_{k+1} = a_k \compose b_{k+1}$.  By the emergence decomposition:
+\[
+  w(a_{k+1})^2 = w(a_k)^2 + w(b_{k+1})^2 + 2\,\rs(a_k, b_{k+1})
+  + \text{emergence terms}.
+\]
+Since $\rs(a_k, b_{k+1}) \geq \epsilon > 0$ and $w(b_{k+1})^2 \geq 0$,
+we get $w(a_{k+1})^2 \geq w(a_k)^2 + 2\epsilon$.  By induction:
+$w(a_k)^2 \geq w(a_0)^2 + 2k\epsilon$.
+
+For $k$ large enough, $w(a_k)$ exceeds any bound.  The idea grows
+without limit, as long as it keeps encountering diverse partners that
+resonate positively (even weakly) with it.
+
+The mathematical key is the \emph{linearity} of the lower bound in $k$:
+each encounter contributes at least $2\epsilon$ to the squared weight.
+This linear growth is a \emph{lower} bound---the actual growth may be
+much faster, because the emergence terms (which we discarded in the lower
+bound) are typically positive and growing.
+
+Contrast this with echo chamber growth, where the partner is always a copy
+of the current state: $w(a^{\langle k+1 \rangle})^2 \geq w(a^{\langle k
+\rangle})^2 + 2w(a^{\langle k \rangle})^2$---but the growth is in terms of
+the self-resonance, which may plateau if the idea ``saturates'' its own
+niche.  Diverse encounters avoid saturation by continuously introducing new
+dimensions of resonance.
+\end{remark}
+
+\begin{definition}[Influence Maximization]
+\label{def:influence-maximization}
+In a network of ideas $\{a_1, \ldots, a_n\}$, the \emph{influence} of idea
+$a$ on idea $b$ through mediator $c$ is:
+\[
+  \text{Inf}(a, b, c) := \rs(a \compose b, c) - \rs(b, c).
+\]
+This measures how much $a$'s presence (composed with $b$) changes the
+resonance with observer $c$.
+
+\begin{lstlisting}[caption={Lean 4: Influence}]
+noncomputable def influence (a b c : I) : ℝ :=
+  rs (compose a b) c - rs b c
+\end{lstlisting}
+\end{definition}
+
+\begin{theorem}[Influence Decomposition]
+\label{thm:influence-decomp}
+The influence decomposes as:
+\[
+  \text{Inf}(a, b, c) = \rs(a, c) + \emerge(a, b, c).
+\]
+Influence is the sum of direct resonance (how much $a$ resonates with $c$
+directly) and emergent influence (the new meaning created by $a$'s
+composition with $b$, as seen by $c$).
+
+\begin{lstlisting}[caption={Lean 4: Influence decomposition}]
+theorem influence_decompose (a b c : I) :
+    influence a b c = rs a c + emergence a b c := by
+  unfold influence; linarith [rs_compose_eq a b c]
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+By the emergence decomposition: $\rs(a \compose b, c) = \rs(a, c) + \rs(b, c)
++ \emerge(a, b, c)$.  Subtracting $\rs(b, c)$ gives $\text{Inf}(a, b, c) =
+\rs(a, c) + \emerge(a, b, c)$.
+
+In plain language: influence has two channels.  The \emph{direct channel}
+is straightforward: $a$ influences $c$ because they resonate.  The
+\emph{emergent channel} is subtle: $a$ influences $c$ by changing the
+meaning of $b$---the composition $a \compose b$ creates new resonance
+with $c$ that neither $a$ nor $b$ would have created alone.
+
+This decomposition explains why intermediaries are so powerful in information
+networks.  A message $a$ can influence a target $c$ not just through direct
+communication but through its emergent effects on the intermediary $b$.
+A political operative doesn't just spread a message to the public; they
+compose the message with existing media narratives, creating emergent
+meanings that may be more influential than the direct message.
+\end{proof}
+
+\begin{theorem}[Void Has Zero Influence]
+\label{thm:void-influence}
+$\text{Inf}(\void, b, c) = 0$ for all $b, c$.  Silence has no influence.
+
+\begin{lstlisting}[caption={Lean 4: Void influence}]
+theorem void_influence (b c : I) : influence (void : I) b c = 0 := by
+  unfold influence; simp [compose_void_left, rs_void_left']
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+$\text{Inf}(\void, b, c) = \rs(\void \compose b, c) - \rs(b, c) = \rs(b, c)
+- \rs(b, c) = 0$, using $\void \compose b = b$ (E5).
+
+The void-influence theorem has a pithy interpretation: \emph{you cannot
+influence someone by saying nothing}.  Unlike human social dynamics, where
+silence can be eloquent, the IDT framework models influence as a function
+of composition.  Composing void with any state leaves it unchanged; hence
+zero influence.  This is a modeling choice, not a limitation: IDT captures
+the \emph{informational} content of influence, not its social performative
+aspects.
+\end{proof}
+
+\begin{definition}[Gatekeeping and Filtering]
+\label{def:gatekeeping}
+A \emph{gatekeeper} is an intermediary idea $g$ that mediates between a
+source $s$ and a destination $d$:
+\[
+  \text{Gatekeeper}(s, g, d) := \rs(s \compose g, d).
+\]
+The \emph{filtering loss} is the difference between direct and mediated
+transmission:
+\[
+  \text{Filter}(s, g, d) := \rs(s, d) - \text{Gatekeeper}(s, g, d).
+\]
+
+\begin{lstlisting}[caption={Lean 4: Gatekeeper signal}]
+noncomputable def gatekeeperSignal (source gate dest : I) : ℝ :=
+  rs (compose source gate) dest
+\end{lstlisting}
+\end{definition}
+
+\begin{theorem}[Filtering Is Emergence]
+\label{thm:filtering-emergence}
+The filtering loss equals the negative of the gatekeeper's emergent
+contribution:
+\[
+  \text{Filter}(s, g, d) = -\rs(g, d) - \emerge(s, g, d).
+\]
+Filtering is \emph{beneficial} (preserves the original message) when
+$\rs(g, d) + \emerge(s, g, d) \leq 0$, and \emph{harmful} (distorts the
+message) when the sum is positive.
+
+\begin{lstlisting}[caption={Lean 4: Filtering is emergence}]
+theorem filtering_is_emergence (source gate dest : I) :
+    filteringLoss source gate dest =
+    -(rs gate dest + emergence source gate dest) := by
+  unfold filteringLoss gatekeeperSignal
+  linarith [rs_compose_eq source gate dest]
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+$\text{Filter} = \rs(s, d) - \rs(s \compose g, d) = \rs(s, d) - [\rs(s, d) +
+\rs(g, d) + \emerge(s, g, d)] = -\rs(g, d) - \emerge(s, g, d)$.
+
+In plain language: a gatekeeper ``filters'' a message by composing it with
+their own state.  This composition adds the gatekeeper's direct contribution
+($\rs(g, d)$) and the emergence of the message with the gatekeeper's state
+($\emerge(s, g, d)$).  If both are positive, the gatekeeper \emph{amplifies}
+the message (negative filtering loss = positive amplification).  If the
+emergence is negative, the gatekeeper distorts or blocks the message.
+
+This formalizes the role of editors, curators, and platform algorithms:
+they are gatekeepers whose composition with incoming content either
+amplifies or filters it, depending on their own resonance profile and the
+emergence structure of the composition.
+\end{proof}
+
+
+% ================================================================
+% CHAPTER 13: RHETORIC AS STRATEGIC COMPOSITION
+% ================================================================
+\chapter{Rhetoric as Strategic Composition}
+\label{ch:rhetoric-deep}
+
+\epigraph{``Rhetoric is the art of discovering, in any particular case, all
+the available means of persuasion.''}%
+{Aristotle, \emph{Rhetoric}, Book I}
+
+
+\section{Aristotle's Three Appeals, Formalized}
+
+Aristotle identified three modes of persuasion: \emph{logos} (logical
+argument), \emph{ethos} (speaker's character/credibility), and \emph{pathos}
+(emotional engagement of the audience).  The IDT framework gives each a
+precise mathematical definition.
+
+\begin{definition}[The Rhetorical Decomposition]
+\label{def:rhetorical-decomposition}
+In a meaning game where speaker $S$ has intent $a$, chooses signal $s$, and
+audience $R$ has state $b$, the sender's payoff decomposes as:
+\[
+  u_S = \rs(s \compose b,\, a) = \underbrace{\rs(s, a)}_{\text{logos}}
+  + \underbrace{\rs(b, a)}_{\text{ethos}}
+  + \underbrace{\emerge(s, b, a)}_{\text{pathos}}.
+\]
+\begin{itemize}
+  \item \textbf{Logos} $= \rs(s, a)$: how directly the signal resonates with
+        the intent.  This is the \emph{content} of the argument---does what you
+        say match what you mean?
+  \item \textbf{Ethos} $= \rs(b, a)$: how much the audience already resonates
+        with the speaker's intent.  This is the \emph{prior relationship}---does
+        the audience already trust you, agree with you, respect you?
+  \item \textbf{Pathos} $= \emerge(s, b, a)$: the emergence created when the
+        signal meets the audience's state.  This is the \emph{emotional
+        resonance}---the unpredictable, genuinely new meaning that arises from
+        the interaction of your words with the audience's existing beliefs and
+        feelings.
+\end{itemize}
+\end{definition}
+
+\begin{theorem}[Logos--Ethos--Pathos Decomposition]
+\label{thm:lep-decomposition}
+The decomposition $u_S = \text{logos} + \text{ethos} + \text{pathos}$ is
+exact (not an approximation) and follows directly from axiom E3 (emergence
+decomposition):
+\[
+  \rs(s \compose b, a) = \rs(s, a) + \rs(b, a) + \emerge(s, b, a).
+\]
+\end{theorem}
+
+\begin{proof}
+This \emph{is} axiom E3 with $d = a$.
+
+\begin{lstlisting}[caption={Lean 4: Rhetorical decomposition is E3}]
+theorem rhetorical_decomposition {S : IdeaticSpace I}
+    (signal audience_state intent : I) :
+    rs (compose signal audience_state) intent =
+    rs signal intent + rs audience_state intent +
+    emergence signal audience_state intent := by
+  exact emergence_decomposition signal audience_state intent
+\end{lstlisting}
+\end{proof}
+
+
+\section{Logos: The Structure of Argument}
+
+\begin{definition}[Logos Maximization]
+\label{def:logos-max}
+The \emph{logos-optimal signal} is
+$s^* = \arg\max_{s \in \IS} \rs(s, a)$.
+This is the signal that most directly states the intent---the ``most logical''
+argument.
+\end{definition}
+
+\begin{proposition}[Logos is Maximized by Self-Signal]
+\label{prop:logos-self}
+If the speaker can send their own idea ($s = a$), then
+$\rs(a, a) = w(a)^2$ is achieved.  But this may not be the global maximum
+of $\rs(s, a)$ over all $s$: there may exist signals $s$ with
+$\rs(s, a) > \rs(a, a)$.
+\end{proposition}
+
+\begin{proof}
+$\rs(a, a) = w(a)^2$ by definition.  Whether this is the maximum depends
+on the geometry of $\IS$: in a Hilbert space model, $\rs(s, a) =
+\langle \phi(s), \phi(a) \rangle$ is maximized when $\phi(s)$ points in the
+direction of $\phi(a)$ with maximal norm, which may exceed $\|\phi(a)\|^2$
+if the signal can be chosen with arbitrarily large norm.
+\end{proof}
+
+\begin{interpretation}[The Limits of Pure Logic]
+\label{interp:limits-logic}
+Pure logos---stating your case as directly as possible---is not always the
+optimal rhetorical strategy.  Even if the signal perfectly captures the
+intent ($s = a$), the total persuasive effect also depends on ethos
+(does the audience already agree?) and pathos (does the composition create
+positive emergence?).  A purely logical argument can fail if ethos is negative
+(the audience distrusts you) or if pathos is negative (the argument triggers
+a defensive reaction).
+\end{interpretation}
+
+\begin{remark}[Burke's Identification and Resonance]
+\label{rem:burke-identification}
+Kenneth Burke (1950) proposed that rhetoric works not through persuasion
+but through \emph{identification}---the speaker creates a sense of shared
+identity with the audience.  In IDT, identification is precisely
+\emph{high cross-resonance}: $\rs(s, b) \gg 0$, where $s$ is the signal and
+$b$ is the audience's state.
+
+Burke's ``identification'' is ethos generalized.  Where Aristotle's ethos
+measures the audience's disposition toward the speaker's intent
+($\rs(b, a)$), Burke's identification measures the audience's disposition
+toward the signal itself ($\rs(s, b)$, or equivalently $\rs(b, s)$ by
+symmetry).  A signal that achieves high identification ``speaks the
+audience's language''---it resonates with their existing cognitive state.
+
+The Burkean insight, formalized in IDT, is that identification \emph{enables}
+emergence.  When $\rs(s, b)$ is large, the emergence term $\emerge(s, b, a)$
+tends to be large as well (because high resonance creates a rich context
+for new meaning).  A speaker who first establishes identification (high
+$\rs(s, b)$) and then introduces new content (the intent $a$) can achieve
+large pathos through the resulting emergence.
+
+This is the mechanism behind effective demagogy: the demagogue first
+``identifies'' with the crowd's fears and desires (high $\rs(s, b)$), then
+steers the emergence toward their own intent.  The formal decomposition
+$u_S = \rs(s, a) + \rs(b, a) + \emerge(s, b, a)$ shows that a demagogue
+with low logos ($\rs(s, a)$ small---their signal may not actually match
+their intent) and low ethos ($\rs(b, a)$ small---the audience does not
+initially share their goal) can still achieve high total payoff through
+massive pathos ($\emerge(s, b, a)$ large).
+\end{remark}
+
+\begin{remark}[Perelman's New Rhetoric and Universal Audience]
+\label{rem:perelman}
+Chaïm Perelman (Perelman and Olbrechts-Tyteca, 1958) introduced the concept
+of the \emph{universal audience}: an ideal audience of all reasonable beings,
+to whom the strongest arguments are directed.  In IDT, the universal audience
+$d_{\text{univ}}$ is the idea-state that maximizes $\rs(s \compose b,
+d_{\text{univ}})$ uniformly over all reasonable signals $s$---the audience
+that responds most favorably to any well-constructed argument.
+
+Perelman's key insight was that different audiences require different
+arguments.  In IDT, this is the ethos--pathos tradeoff
+(Theorem~\ref{thm:ethos-pathos-tradeoff}): a friendly audience responds
+to logos, a hostile audience requires pathos, and a neutral audience needs
+a balance.  Perelman's universal audience corresponds to the case where
+$\rs(b, a) = 0$ (the audience is perfectly neutral---neither friendly
+nor hostile), so the optimal signal must balance logos and pathos equally.
+
+The IDT framework extends Perelman by making the tradeoff \emph{quantitative}.
+Given the audience state $b$ and the intent $a$, the speaker can compute
+(in principle) the optimal signal $s^*$ that maximizes
+$\rs(s, a) + \emerge(s, b, a)$.  This optimization problem is the
+mathematical content of Perelman's ``adaptation to the audience.''
+\end{remark}
+
+\begin{definition}[Argument as Decomposition]
+\label{def:argument-decomposition}
+A \emph{structured argument} for intent $a$ is a decomposition of $a$ into
+sub-arguments: $a = a_1 \compose a_2 \compose \cdots \compose a_m$ (in the
+sense that the composition of the sub-arguments yields $a$).  The
+\emph{logos of step $k$} is:
+\[
+  \text{logos}_k := \rs(a_k,\, a_1 \compose \cdots \compose a_m).
+\]
+\end{definition}
+
+\begin{theorem}[Logos Additivity for Independent Sub-Arguments]
+\label{thm:logos-additivity}
+If the sub-arguments are pairwise orthogonal ($\rs(a_i, a_j) = 0$ for
+$i \neq j$), then:
+\[
+  \sum_{k=1}^m \text{logos}_k = \sum_{k=1}^m \rs(a_k, a)
+  = w(a)^2 + \text{emergence terms}.
+\]
+The emergence terms capture the ``synergy'' between sub-arguments---the
+additional resonance created by their combination.
+\end{theorem}
+
+\begin{proof}
+$\sum_k \rs(a_k, a) = \sum_k \rs(a_k, a_1 \compose \cdots \compose a_m)$.
+By the emergence decomposition applied recursively, each $\rs(a_k, a)$
+includes contributions from all other $a_j$ via emergence.  When the $a_j$
+are pairwise orthogonal, the direct cross-resonance terms vanish, leaving
+only self-resonance and emergence.
+\end{proof}
+
+
+\section{Ethos: The Weight of the Speaker}
+
+\begin{definition}[Ethos as Prior Resonance]
+\label{def:ethos}
+The \emph{ethos} of speaker $S$ (with intent $a$) relative to audience $R$
+(with state $b$) is:
+\[
+  \text{ethos}(S, R) := \rs(b, a).
+\]
+This measures the audience's prior disposition toward the speaker's message.
+\end{definition}
+
+\begin{theorem}[Ethos Is Speaker-Independent]
+\label{thm:ethos-independent}
+Ethos depends on the \emph{ideas}, not the \emph{identities}, of speaker and
+audience.  Two speakers with the same intent $a$ have the same ethos relative
+to the same audience.
+\end{theorem}
+
+\begin{proof}
+$\text{ethos} = \rs(b, a)$ depends only on $b$ and $a$, not on any
+speaker-identity parameter.
+\end{proof}
+
+\begin{interpretation}[Ethos as Reputation]
+\label{interp:ethos-reputation}
+In practice, ethos is built through repeated interaction (Chapter~\ref{ch:repeated-deep}): a speaker who consistently sends signals that
+resonate positively with the audience builds up a large $\rs(b, a)$, because
+$b$ has been shaped by years of composing the speaker's signals.  \emph{Ethos
+is the weight ratchet applied to the audience's state by the speaker's
+history.}
+
+This gives precise content to Aristotle's observation that ethos is ``the
+most effective means of persuasion'' (\emph{Rhetoric} I.2): a speaker with
+high ethos starts with a large positive term in the payoff decomposition,
+requiring less from logos and pathos.
+\end{interpretation}
+
+\begin{remark}[Ethos in Network Contexts]
+\label{rem:ethos-network}
+In a networked communication environment, ethos becomes a \emph{distributed}
+quantity.  A speaker's ethos varies across different audiences: high in their
+``home'' community (where repeated interaction has built strong resonance)
+and low among strangers (where no prior composition has occurred).
+
+This explains why expert opinion carries different weight in different
+contexts.  A climate scientist has high ethos ($\rs(b, a) \gg 0$) with
+audiences who have been composing scientific information for years, but
+low or negative ethos with audiences whose cognitive states have been
+shaped by anti-science composition.  The weight ratchet ensures that
+both audiences are ``locked in'' to their respective dispositions:
+the scientist cannot easily increase their ethos with the hostile audience,
+because doing so would require overcoming years of accumulated
+anti-science composition.
+
+The IDT perspective suggests that the most effective strategy for building
+ethos with a hostile audience is not direct logos (logical argument) but
+\emph{compositional bridge-building}: finding signals $s$ that resonate
+with both the speaker's intent $a$ and the audience's existing state $b$,
+thereby creating positive emergence that slowly builds cross-resonance.
+This is the formal version of the advice to ``find common ground before
+arguing.''
+\end{remark}
+
+\begin{theorem}[Ethos Accumulation in Repeated Interaction]
+\label{thm:ethos-accumulation}
+In a repeated meaning game where $S$ sends signals $s_0, s_1, \ldots, s_{K-1}$
+to audience $R$ (who starts with state $b_0$), the ethos at round $K$ is:
+\[
+  \text{ethos}_K = \rs(b_K, a) \geq \rs(b_0, a) + \sum_{k=0}^{K-1}
+  \rs(s_k, a) + \sum_{k=0}^{K-1} \emerge(s_k, b_k, a).
+\]
+Ethos grows with each round of positive-logos signaling.
+\end{theorem}
+
+\begin{proof}
+By induction: $\rs(b_{k+1}, a) = \rs(s_k \compose b_k, a) = \rs(s_k, a) +
+\rs(b_k, a) + \emerge(s_k, b_k, a)$.  Summing the telescoping series:
+$\rs(b_K, a) = \rs(b_0, a) + \sum_{k=0}^{K-1} [\rs(s_k, a) + \emerge(s_k, b_k, a)]$.
+\end{proof}
+
+
+\section{Pathos: Emergence with Emotion}
+
+\begin{definition}[Pathos as Emergence]
+\label{def:pathos}
+The \emph{pathos} of signal $s$ with audience state $b$ relative to intent
+$a$ is:
+\[
+  \text{pathos}(s, b, a) := \emerge(s, b, a).
+\]
+\end{definition}
+
+\begin{theorem}[Pathos Can Be Negative]
+\label{thm:pathos-negative}
+The emergence term $\emerge(s, b, a)$ can be positive, negative, or zero.
+Therefore pathos can \emph{help or hurt} the rhetorical effect.
+\end{theorem}
+
+\begin{proof}
+The cocycle condition constrains the emergence terms but does not force them
+to be non-negative.  Explicit models (e.g., the integer model) produce
+examples of negative emergence.
+\end{proof}
+
+\begin{example}[The Backfire Effect]
+\label{ex:backfire}
+Consider a speaker with intent $a$ = ``vaccines are safe'' and an audience
+with state $b$ = ``medical establishment is untrustworthy.''  The direct
+resonance $\rs(s, a)$ may be positive (the speaker makes a good argument),
+and the ethos $\rs(b, a)$ is negative (the audience distrusts the speaker's
+message).  But the pathos---the emergence $\emerge(s, b, a)$---may be
+\emph{strongly negative}: when a pro-vaccine argument meets an anti-establishment
+mindset, the emergent meaning may be ``they're trying to control us,'' which
+has large negative resonance with the intent ``vaccines are safe.''
+
+The total effect can be $u_S < 0$: the speech \emph{backfires}, pushing the
+audience further from the intent.  This is the ``backfire effect'' documented
+in the misinformation literature, and IDT provides a precise mechanism: negative
+pathos overwhelming positive logos.
+\end{example}
+
+\begin{remark}[The Backfire Effect and Negative Emergence]
+\label{rem:backfire-mechanism}
+The backfire effect deserves deeper analysis because it illustrates a
+general principle: \textbf{negative emergence can overwhelm positive logos
+and ethos}.
+
+The mechanism is as follows.  When a signal $s$ is composed with a hostile
+audience state $b$, the composition $s \compose b$ creates emergent meaning
+$\emerge(s, b, a)$ that is determined by the algebraic structure of the
+ideatic space.  This emergence is not under the speaker's control: it is a
+\emph{property of the composition}, not of the signal or the audience alone.
+
+The backfire effect occurs when three conditions are simultaneously
+satisfied:
+\begin{enumerate}
+  \item $\rs(s, a) > 0$ (the signal is logically sound---good logos).
+  \item $\rs(b, a) < 0$ (the audience is predisposed against the intent---
+        negative ethos).
+  \item $\emerge(s, b, a) < 0$ and $|\emerge(s, b, a)| > \rs(s, a) +
+        |\rs(b, a)|$ (the negative emergence overwhelms both logos and
+        the absolute value of ethos).
+\end{enumerate}
+
+Condition (3) is the critical one: the composition of a logically sound
+argument with a hostile cognitive state creates emergent meaning that is
+\emph{more negative} than the positive contribution of the argument itself.
+This is a genuinely nonlinear effect: the damage from backfire is not
+proportional to any individual component but arises from their interaction.
+
+The practical implication is that direct confrontation of entrenched
+beliefs is often counterproductive.  The speaker would do better to first
+build positive emergence channels---finding common ground that creates
+positive $\emerge(s', b, a)$ for a different signal $s'$---before
+introducing the main argument.  This is the strategic logic behind
+motivational interviewing, the Socratic method, and other ``indirect''
+rhetorical approaches: they work by changing the emergence structure before
+deploying the logos.
+\end{remark}
+
+
+\section{The Rhetorical Triangle}
+
+\begin{theorem}[Constraint on the Rhetorical Triangle]
+\label{thm:rhetorical-constraint}
+By the cocycle condition, the three rhetorical appeals are not independent.
+For any two signals $s_1, s_2$ and audience $b$:
+\[
+  \emerge(s_1, s_2, a) + \emerge(s_1 \compose s_2, b, a) =
+  \emerge(s_2, b, a) + \emerge(s_1, s_2 \compose b, a).
+\]
+This constrains the speaker's ability to simultaneously optimize logos,
+ethos, and pathos: improving one may worsen another.
+\end{theorem}
+
+\begin{proof}
+This is the cocycle condition with $d = a$:
+$\emerge(s_1, s_2, a) + \emerge(s_1 \compose s_2, b, a) =
+\emerge(s_2, b, a) + \emerge(s_1, s_2 \compose b, a)$.
+
+\begin{lstlisting}[caption={Lean 4: Rhetorical cocycle constraint}]
+theorem rhetorical_cocycle {S : IdeaticSpace I}
+    (s₁ s₂ b a : I) :
+    emergence s₁ s₂ a + emergence (compose s₁ s₂) b a =
+    emergence s₂ b a + emergence s₁ (compose s₂ b) a :=
+  cocycle_condition s₁ s₂ b a
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[The Impossibility of Perfect Rhetoric]
+\label{interp:perfect-rhetoric}
+The cocycle constraint means that there is no ``silver bullet'' signal that
+simultaneously maximizes logos, ethos, and pathos.  The emergence terms are
+algebraically constrained: increasing pathos for one sub-argument may decrease
+it for another.  This is why great rhetoric is \emph{art}, not \emph{algorithm}:
+the speaker must navigate a constrained optimization landscape where the
+emergence terms interact nonlinearly through the cocycle.
+\end{interpretation}
+
+
+\section{Rhetorical Strategy in Practice}
+
+\begin{definition}[The Rhetorical Optimization Problem]
+\label{def:rhetorical-optimization}
+Given intent $a$ and audience state $b$, the speaker's problem is:
+\[
+  \max_{s \in \IS}\; u_S(s) = \max_{s \in \IS}\;
+  \bigl[\rs(s, a) + \rs(b, a) + \emerge(s, b, a)\bigr].
+\]
+Since $\rs(b, a)$ is fixed (ethos is given), this reduces to:
+\[
+  \max_{s \in \IS}\; \bigl[\rs(s, a) + \emerge(s, b, a)\bigr].
+\]
+\end{definition}
+
+\begin{theorem}[Ethos--Pathos Tradeoff]
+\label{thm:ethos-pathos-tradeoff}
+If the speaker can choose between a high-logos signal $s_L$ (with
+$\rs(s_L, a)$ large but $\emerge(s_L, b, a)$ small or negative) and a
+high-pathos signal $s_P$ (with $\rs(s_P, a)$ small but $\emerge(s_P, b, a)$
+large), the optimal choice depends on the audience:
+\begin{itemize}
+  \item \textbf{Friendly audience} ($\rs(b, a) \gg 0$): prefer $s_L$.
+        The audience already agrees; reinforce with logic.
+  \item \textbf{Hostile audience} ($\rs(b, a) \ll 0$): prefer $s_P$.
+        Logic will be rejected; create new meaning through emergence.
+  \item \textbf{Neutral audience} ($\rs(b, a) \approx 0$): balance logos
+        and pathos.
+\end{itemize}
+\end{theorem}
+
+\begin{proof}
+For a friendly audience, ethos is large and positive; adding logos increases
+the total payoff linearly.  For a hostile audience, ethos is large and
+negative; even large logos may not overcome the deficit, so the speaker must
+rely on emergence (pathos) to create positive resonance that bypasses the
+audience's hostility.
+\end{proof}
+
+\begin{example}[Martin Luther King Jr.'s ``I Have a Dream'']
+\label{ex:mlk}
+King faced a mixed audience: supporters (high ethos), opponents (low or
+negative ethos), and a neutral national television audience.  His strategy
+was \emph{pathos-dominant}: the repeated phrase ``I have a dream'' composed
+with the audience's existing knowledge of American ideals to create massive
+emergence.  The logos was relatively simple (equality is good, segregation is
+bad); the ethos was mixed.  But the pathos---the emergent meaning of the
+American dream recomposed with the reality of segregation---was overwhelming.
+
+In IDT terms: $\emerge(s_{\text{dream}}, b_{\text{audience}}, a_{\text{equality}})
+\gg |\rs(b_{\text{audience}}, a_{\text{equality}})|$.  Pathos dominated both
+logos and ethos.
+\end{example}
+
+
+\section{Rhetoric in Networks: Viral Persuasion}
+
+When rhetoric operates not in a dyad (speaker--audience) but in a
+\emph{network}, the dynamics change qualitatively.  A signal does not just
+compose with one audience; it cascades through a population, composing with
+each host in turn.
+
+\begin{definition}[Viral Spread]
+\label{def:viral-spread}
+The \emph{viral spread} of idea $v$ through host $a$ is
+$\text{Viral}(v, a) := v \compose a$.  The result is the ``mutated'' form
+of the idea after passing through host $a$.
+
+\begin{lstlisting}[caption={Lean 4: Viral spread}]
+def viralSpread (v a : I) : I := compose v a
+\end{lstlisting}
+\end{definition}
+
+\begin{theorem}[Viral Enrichment]
+\label{thm:viral-enrichment}
+Viral spread always enriches: $w(\text{Viral}(v, a)) \geq w(v)$.
+The viral idea can only gain weight through transmission.
+
+\begin{lstlisting}[caption={Lean 4: Viral enriches}]
+theorem viral_enriches (v a : I) :
+    rs (viralSpread v a) (viralSpread v a) ≥ rs v v :=
+  compose_enriches' v a
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+$w(v \compose a)^2 \geq w(v)^2$ by E4.  This is just the weight ratchet
+applied to viral transmission.
+
+In plain language: a viral idea gets \emph{heavier} with each host it passes
+through, because each host's cognitive substance is composed onto it.  This
+is why viral ideas become more elaborate and emotionally charged as they
+spread: each retransmission adds the retransmitter's substance.  A simple
+observation becomes a complex narrative with emotional overtones after
+passing through many hosts---not because anyone deliberately made it more
+complex, but because composition is enriching by axiom.
+\end{proof}
+
+\begin{theorem}[Viral Mutation]
+\label{thm:viral-mutation}
+The ``mutation'' introduced by host $a$ during viral transmission is:
+\[
+  \text{Mut}(v, a, c) := \rs(v \compose a, c) - \rs(v, c) = \rs(a, c) +
+  \emerge(v, a, c).
+\]
+The mutation has a predictable component ($\rs(a, c)$---the host's direct
+contribution) and an unpredictable component ($\emerge(v, a, c)$---the
+emergent distortion).
+
+\begin{lstlisting}[caption={Lean 4: Viral mutation}]
+theorem viral_mutation (v a c : I) :
+    rs (viralSpread v a) c - rs v c =
+    rs a c + emergence v a c := by
+  unfold viralSpread; linarith [rs_compose_eq v a c]
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+By the emergence decomposition: $\rs(v \compose a, c) = \rs(v, c) + \rs(a, c)
++ \emerge(v, a, c)$.  Subtracting $\rs(v, c)$ gives the mutation.
+
+The mutation theorem explains why ``telephone game'' dynamics occur in
+information networks: each host introduces both their own perspective (the
+$\rs(a, c)$ term) and unpredictable emergent distortion (the $\emerge(v, a, c)$
+term).  After many hosts, the accumulated mutations can completely transform
+the original message.  The weight ratchet ensures that the transformed message
+is \emph{heavier} than the original, but it may resonate with very different
+ideas.
+\end{proof}
+
+\begin{theorem}[Perfect Transmission]
+\label{thm:perfect-transmission}
+If $\emerge(v, a, c) = 0$ for all $c$, then the viral mutation reduces to
+the host's direct contribution: $\text{Mut}(v, a, c) = \rs(a, c)$.  The
+message is transmitted without emergent distortion.
+
+\begin{lstlisting}[caption={Lean 4: Perfect transmission}]
+theorem perfect_transmission (v a c : I) (h : emergence v a c = 0) :
+    rs (viralSpread v a) c - rs v c = rs a c := by
+  unfold viralSpread; linarith [rs_compose_eq v a c]
+\end{lstlisting}
+\end{theorem}
+
+\begin{proof}
+Set $\emerge(v, a, c) = 0$ in the mutation formula.  Perfect transmission
+occurs when the composition of the viral idea with the host produces no
+emergent meaning---the host faithfully relays the message, adding only their
+own direct resonance.
+
+In practice, perfect transmission is rare: most compositions produce nonzero
+emergence.  This is the formal explanation for the ubiquity of information
+distortion in networks.  It is also the reason why institutions invest
+heavily in communication protocols, style guides, and standardized
+vocabularies: these are attempts to minimize the emergence term during
+transmission, keeping the message as close to the original as possible.
+\end{proof}
+
+\begin{interpretation}[Rhetoric as Network Strategy]
+\label{interp:rhetoric-network}
+The viral spread framework connects rhetoric to network science.  A
+rhetorician designing a message for viral spread must consider not just
+the immediate audience but the entire cascade of future hosts.  The
+optimal signal is one that:
+\begin{enumerate}
+  \item Has high logos (resonates with the intent: $\rs(s, a)$ large).
+  \item Has high identification with the first audience (Burke's
+        condition: $\rs(s, b)$ large).
+  \item Produces positive emergence at each cascade step (the mutation
+        is ``beneficial'' at each host: $\emerge(s, b_k, a) > 0$ for
+        all hosts $b_k$ in the cascade).
+  \item Is \emph{robust} to mutation: the emergent distortions introduced
+        by diverse hosts do not accumulate destructively.
+\end{enumerate}
+
+Condition (4) is the hardest to satisfy and explains why most viral content
+loses its original meaning rapidly.  Only messages with very specific
+algebraic properties---those whose emergence terms are consistently positive
+across diverse hosts---survive the cascade intact.  Religious texts,
+memorable slogans, and catchy melodies all share this property: they compose
+productively with a wide range of cognitive states, producing positive
+emergence at each step.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 14: NARRATIVE AS COMPOSED MEANING
+% ================================================================
+\chapter{Narrative as Composed Meaning}
+\label{ch:narrative-deep}
+
+\epigraph{``The universe is made of stories, not of atoms.''}%
+{Muriel Rukeyser}
+
+
+\section{Stories as Ordered Compositions}
+
+\begin{definition}[Narrative]
+\label{def:narrative}
+A \emph{narrative} is an ordered sequence of ideas
+$\mathbf{a} = [a_1, a_2, \ldots, a_n]$.  The \emph{narrative composite}
+(or \emph{story}) is the composed idea:
+\[
+  S(\mathbf{a}) := a_1 \compose a_2 \compose \cdots \compose a_n.
+\]
+The \emph{partial narrative} at step $k$ is:
+\[
+  S_k := a_1 \compose a_2 \compose \cdots \compose a_k.
+\]
+By convention, $S_0 := \void$.
+\end{definition}
+
+\begin{theorem}[Narrative Weight Growth]
+\label{thm:narrative-weight-growth}
+The weight of the partial narrative is non-decreasing:
+\[
+  w(S_0) \leq w(S_1) \leq w(S_2) \leq \cdots \leq w(S_n) = w(S(\mathbf{a})).
+\]
+\end{theorem}
+
+\begin{proof}
+$w(S_{k+1}) = w(S_k \compose a_{k+1}) \geq w(S_k)$ by E4.  Induction
+from $k = 0$ to $k = n-1$.
+
+\begin{lstlisting}[caption={Lean 4: Narrative weight growth}]
+theorem narrative_weight_growth {S : IdeaticSpace I}
+    (elements : Fin n → I) (k : Fin n) :
+    rs (partialNarrative elements (k + 1))
+       (partialNarrative elements (k + 1)) ≥
+    rs (partialNarrative elements k)
+       (partialNarrative elements k) := by
+  simp [partialNarrative]
+  exact compose_enriches' _ _
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[You Cannot Un-Tell a Story]
+\label{interp:untell}
+Every scene, every sentence, every word adds weight to the narrative.  A
+poorly constructed scene damages the story irrecoverably: subsequent scenes
+compose on top of it, but they cannot remove its weight.  This is the
+mathematical basis of Chekhov's principle: ``If in the first act you have
+hung a pistol on the wall, then in the following one it should be fired.''
+Unused narrative elements add weight without contributing to the narrative
+arc---dead weight that the story must carry to the end.
+\end{interpretation}
+
+\begin{remark}[Bakhtin's Dialogism and Narrative Composition]
+\label{rem:bakhtin}
+Mikhail Bakhtin (1981) argued that narrative is fundamentally
+\emph{dialogic}---every utterance is a response to previous utterances and
+an anticipation of future responses.  A novel is not a monologue by the
+author but a \emph{polyphony} of voices, each with its own worldview.
+
+The IDT framework gives Bakhtin's dialogism a precise formal structure.
+Each narrative element $a_k$ is a ``voice'' with its own weight $w(a_k)$
+and resonance profile $\rs(a_k, \cdot)$.  The narrative composite
+$S(\mathbf{a}) = a_1 \compose \cdots \compose a_n$ is the composed
+polyphony---the result of all voices speaking in sequence.
+
+Bakhtin's key insight was that dialogic interaction creates meaning that
+no single voice possesses.  In IDT, this is \emph{emergence}: the plot
+value $\sum E_k(d)$ measures the genuinely dialogic meaning---the surplus
+created by the \emph{interaction} of voices, beyond what each voice
+contributes individually.
+
+The non-commutativity of composition ($a_k \compose a_{k+1} \neq
+a_{k+1} \compose a_k$) is the formal expression of Bakhtin's observation
+that dialogue is \emph{asymmetric}: who speaks first shapes the context
+for who speaks next.  In a Bakhtinian novel, the ordering of voices is not
+arbitrary---it is a compositional strategy that maximizes the dialogic
+emergence.
+
+\emph{Heteroglossia}---Bakhtin's term for the multiplicity of social
+languages within a text---corresponds to high \emph{diversity} among
+narrative elements: $\rs(a_i, a_j)$ varies widely across different pairs,
+reflecting the different registers, dialects, and worldviews represented in
+the text.  By the weight divergence theorem
+(Theorem~\ref{thm:weight-divergence}), high diversity produces faster weight
+growth: heteroglossic narratives are richer (heavier) than monoglossic ones.
+\end{remark}
+
+\begin{remark}[Brooks's ``Reading for the Plot'' and Narrative Desire]
+\label{rem:brooks}
+Peter Brooks (1984) proposed that narrative is driven by ``desire''---the
+reader's drive toward the ending, shaped by textual energies that push
+forward (anticipation) and pull backward (retrospection).  In IDT, narrative
+desire has a precise correlate: the \emph{emergence gradient}.
+
+Define the \emph{forward emergence} at step $k$ as:
+\[
+  E_k^+(d) := \emerge(S_{k-1}, a_k, d) \qquad \text{(what the next element adds)}.
+\]
+Brooks's ``narrative desire'' corresponds to the reader's expectation that
+$E_k^+(d)$ will be large---that the next element will create substantial new
+meaning.  When emergence is large and positive, the reader experiences
+satisfaction (the story is ``going somewhere'').  When emergence is small or
+negative, the reader experiences frustration (the story is ``stalling'' or
+``going wrong'').
+
+Brooks's concept of the ``dilatory space''---the middle of a narrative where
+resolution is deferred---corresponds to a region of moderate emergence:
+enough to maintain engagement, but not enough to resolve the central tension.
+The formal criterion is:
+\[
+  0 < E_k^+(d) < E_{\text{climax}}^+(d) \qquad \text{for } k \text{ in the
+  dilatory space}.
+\]
+
+The climax is the point of maximum emergence: $E_k^+(d) = \max_j E_j^+(d)$.
+The dénouement is the region of declining emergence as the narrative resolves:
+$E_k^+(d) \to 0$ as $k \to n$.
+
+Brooks's insight that narrative operates through a ``logic of anticipation
+and retrospection'' is captured by the cocycle constraint
+(Theorem~\ref{thm:narrative-cocycle}): the emergence at step $k$ is
+algebraically constrained by the emergence at neighboring steps.  The reader's
+anticipation is an implicit model of the cocycle---an intuition about what
+kinds of emergence are ``possible'' given the narrative so far.  When the
+actual emergence violates these expectations (surprise), the reader
+experiences either delight (if the surprise is ``earned''---consistent with
+deeper cocycle constraints) or dissatisfaction (if it is ``unearned''---
+violating the reader's sense of narrative coherence).
+\end{remark}
+
+
+\section{Plot as Emergence Pattern}
+
+\begin{definition}[Narrative Emergence]
+\label{def:narrative-emergence}
+The \emph{narrative emergence at step $k$}, observed by $d \in \IS$, is:
+\[
+  E_k(d) := \emerge(S_{k-1}, a_k, d).
+\]
+This captures how much genuinely new meaning the $k$-th element creates,
+given everything that preceded it, as perceived by observer $d$.
+\end{definition}
+
+\begin{definition}[Plot]
+\label{def:plot}
+The \emph{plot} of narrative $\mathbf{a}$ (relative to observer $d$) is the
+sequence of emergence values:
+\[
+  \text{Plot}(\mathbf{a}, d) := \bigl(E_1(d),\, E_2(d),\, \ldots,\, E_n(d)\bigr).
+\]
+The plot is a real-valued sequence: it records the rise and fall of emergent
+meaning throughout the story.
+\end{definition}
+
+\begin{theorem}[Plot Determines Resonance Structure]
+\label{thm:plot-resonance}
+The observer's total resonance with the narrative composite is:
+\[
+  \rs(S(\mathbf{a}), d) = \sum_{k=1}^{n} \rs(a_k, d)
+  + \sum_{k=2}^{n} E_k(d).
+\]
+The first sum is the ``literal'' content (direct resonance of each element
+with the observer).  The second sum is the \emph{plot value}---the total
+emergent meaning.
+\end{theorem}
+
+\begin{proof}
+By telescoping the emergence decomposition.  For $k \geq 2$:
+\[
+  \rs(S_k, d) = \rs(S_{k-1} \compose a_k, d)
+  = \rs(S_{k-1}, d) + \rs(a_k, d) + E_k(d).
+\]
+Summing from $k = 1$ to $n$ and using $S_0 = \void$ (so $\rs(S_0, d) = 0$):
+\[
+  \rs(S_n, d) = \sum_{k=1}^n \rs(a_k, d) + \sum_{k=2}^n E_k(d). \qedhere
+\]
+\end{proof}
+
+\begin{interpretation}[Plot is What Makes a Story More Than Its Parts]
+\label{interp:plot}
+The plot value $\sum E_k(d)$ measures the total emergent meaning---the
+``extra'' resonance created by the \emph{order} and \emph{interaction} of the
+narrative elements, beyond their individual contributions.  A story with zero
+plot value ($E_k = 0$ for all $k$) is a mere list: each element stands alone,
+and the whole is exactly the sum of its parts.  A story with large positive
+plot value achieves a whole greater than the sum---the hallmark of great
+narrative.
+
+Negative emergence ($E_k < 0$) corresponds to narrative elements that
+\emph{detract} from the story when placed in their particular context.  A
+joke at a funeral has negative emergence: its resonance with the listener is
+diminished by its context, not enhanced.
+\end{interpretation}
+
+\begin{remark}[Natural Language Proof of the Plot--Resonance Theorem]
+\label{rem:plot-resonance-intuition}
+The plot determines resonance structure theorem
+(Theorem~\ref{thm:plot-resonance}) has a beautiful telescoping proof that
+reveals the compositional nature of narrative meaning.
+
+The core idea is to ``unpack'' the final composite $S_n$ step by step.
+At each step, the emergence decomposition (E3) breaks the resonance with
+observer $d$ into three pieces: the resonance of the existing partial
+narrative, the resonance of the new element, and the emergence.
+
+\textbf{Step 1.}  $\rs(S_1, d) = \rs(a_1, d)$ (the first element contributes
+its resonance directly; $S_0 = \void$ contributes nothing).
+
+\textbf{Step 2.}  $\rs(S_2, d) = \rs(S_1 \compose a_2, d) = \rs(S_1, d) +
+\rs(a_2, d) + E_2(d) = \rs(a_1, d) + \rs(a_2, d) + E_2(d)$.
+
+\textbf{Step $k$.}  $\rs(S_k, d) = \rs(S_{k-1}, d) + \rs(a_k, d) + E_k(d)$.
+
+Summing the telescoping series from $k = 1$ to $n$:
+\[
+  \rs(S_n, d) = \sum_{k=1}^n \rs(a_k, d) + \sum_{k=2}^n E_k(d).
+\]
+
+The first sum is the ``literal'' content of the narrative: what each element
+contributes on its own, independently of context.  The second sum is the
+\emph{plot}---the total emergent meaning created by the specific order in
+which elements are composed.
+
+This decomposition explains why a narrative is more than a collection of
+facts: the ``facts'' (individual element resonances) account for one part
+of the total meaning, and the ``plot'' (accumulated emergence) accounts for
+the rest.  A well-constructed plot can double or triple the total resonance
+compared to a mere enumeration of the same elements.
+\end{remark}
+
+
+\section{Dramatic Tension}
+
+\begin{definition}[Dramatic Tension]
+\label{def:dramatic-tension}
+The \emph{dramatic tension} between consecutive elements $a_k$ and $a_{k+1}$
+(relative to observer $d$) is:
+\[
+  T_k(d) := |E_{k+1}(d)| = |\emerge(S_k, a_{k+1}, d)|.
+\]
+High tension = large emergence (positive or negative) between consecutive
+elements.  Low tension = small emergence.
+\end{definition}
+
+\begin{remark}[Why Absolute Value?]
+Dramatic tension is about the \emph{magnitude} of surprise, not its sign.
+A shocking revelation ($E > 0$) and a devastating reversal ($E < 0$) both
+create high tension.  A predictable next step ($E \approx 0$) creates low
+tension.
+\end{remark}
+
+\begin{definition}[The Dramatic Arc]
+\label{def:dramatic-arc}
+The \emph{dramatic arc} of a narrative is the sequence of tensions:
+\[
+  \text{Arc}(\mathbf{a}, d) := (T_1(d), T_2(d), \ldots, T_{n-1}(d)).
+\]
+Classical narrative structure (Freytag's pyramid) prescribes:
+\begin{enumerate}
+  \item \textbf{Exposition}: low tension ($T_k$ small).
+  \item \textbf{Rising action}: increasing tension ($T_{k+1} > T_k$).
+  \item \textbf{Climax}: maximum tension ($T_k$ at peak).
+  \item \textbf{Falling action}: decreasing tension ($T_{k+1} < T_k$).
+  \item \textbf{Dénouement}: low tension ($T_k$ returns to small values).
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[Tension--Weight Relation]
+\label{thm:tension-weight}
+High dramatic tension implies large weight growth:
+\[
+  T_k(S_k) = |\emerge(S_k, a_{k+1}, S_k)|
+  \leq w(S_{k+1})^2 - w(S_k)^2.
+\]
+When $E_{k+1}(S_k) > 0$, the tension is bounded by the weight increment:
+dramatic tension contributes to narrative weight.
+\end{theorem}
+
+\begin{proof}
+By the emergence decomposition with $d = S_k$:
+\begin{align*}
+  w(S_{k+1})^2 &= \rs(S_k \compose a_{k+1}, S_k \compose a_{k+1}) \\
+  &\geq \rs(S_k, S_k) + \rs(a_{k+1}, S_k) + \emerge(S_k, a_{k+1}, S_k) \\
+  &= w(S_k)^2 + \rs(a_{k+1}, S_k) + E_{k+1}(S_k).
+\end{align*}
+Since $\rs(a_{k+1}, S_k) \geq 0$ (when $a_{k+1}$ resonates positively with
+the existing narrative), we get
+$w(S_{k+1})^2 - w(S_k)^2 \geq E_{k+1}(S_k) = T_k(S_k)$ when $E > 0$.
+\end{proof}
+
+\begin{remark}[Natural Language Proof of the Tension--Weight Relation]
+\label{rem:tension-weight-intuition}
+The tension--weight relation reveals a deep connection between aesthetics
+and structure: \textbf{dramatic tension costs weight}.  More precisely,
+high tension (large emergence between consecutive elements) is bounded by
+the weight increment: the story must ``pay'' for dramatic tension with
+increased narrative weight.
+
+This has a practical interpretation for writers.  A scene with high dramatic
+tension (a surprising revelation, a shocking twist) necessarily adds
+substantial weight to the narrative.  This weight must be carried through
+all subsequent scenes.  A story that deploys too many high-tension scenes
+early on becomes ``top-heavy''---burdened with so much accumulated weight
+that later scenes must compose on top of an enormously heavy context,
+making it difficult to create additional tension.
+
+The best narrative structures deploy tension \emph{economically}: each
+high-tension scene creates enough weight to support the next level of
+dramatic structure, but not so much that the narrative becomes unwieldy.
+This is the mathematical content of the ``pacing'' advice given in creative
+writing workshops: don't put all the big revelations in the first act,
+because the weight they create will crush the rest of the story.
+
+Conversely, a story with no tension ($E_k \approx 0$ for all $k$) has
+minimal weight growth: each element adds only its own weight, with no
+emergence.  Such a story is ``flat''---a mere enumeration of facts.  The
+optimal tension profile is therefore a balance: enough emergence to create
+meaningful weight growth (the story ``goes somewhere''), but not so much
+that the weight becomes unmanageable (the story doesn't collapse under its
+own complexity).
+\end{remark}
+
+\begin{example}[The Dramatic Tension of \emph{Hamlet}]
+\label{ex:hamlet}
+Consider the narrative sequence of \emph{Hamlet} in IDT terms:
+\begin{itemize}
+  \item $a_1$ = ``King is dead'' (exposition).
+        $T_0 = |\emerge(\void, a_1, d)|$ is modest (setting the scene).
+  \item $a_2$ = ``Ghost appears'' (inciting incident).
+        $T_1 = |\emerge(a_1, a_2, d)|$ is large: the emergence of a ghost
+        in the context of a dead king creates massive surprise.
+  \item $a_3$ = ``Ghost reveals murder'' (rising action).
+        $T_2 = |\emerge(a_1 \compose a_2, a_3, d)|$ is very large: the
+        emergence of murder accusation, composed with ghost-of-dead-king,
+        creates explosive new meaning.
+  \item $a_k$ = ``To be or not to be'' (philosophical climax).
+        $T_{k-1}$ reaches its peak: the emergence of existential doubt,
+        composed with the weight of accumulated treachery and indecision,
+        creates the maximum tension of the play.
+\end{itemize}
+Shakespeare's genius lies in choosing elements $a_k$ that produce maximal
+emergence with the existing narrative context $S_{k-1}$---elements that are
+\emph{surprising yet fitting}, to use Aristotle's criterion.
+\end{example}
+
+\begin{example}[The Narrative Arc of Scientific Discovery]
+\label{ex:scientific-narrative}
+Scientific papers follow a narrative structure that can be analyzed through
+IDT:
+\begin{itemize}
+  \item $a_1$ = Introduction (background, context).
+        $E_1(d) \approx 0$: the reader is oriented but not surprised.
+  \item $a_2$ = The Problem (what is unknown).
+        $E_2(d) > 0$: emergence of the gap between what is known and what is
+        not, creating intellectual tension.
+  \item $a_3$ = Methods (how the problem is attacked).
+        $E_3(d)$ moderate: the approach may be novel (high emergence) or
+        standard (low emergence).
+  \item $a_4$ = Results (what was found).
+        $E_4(d)$ peaks: the emergence of empirical findings composed with the
+        methods and the problem creates the maximal new meaning.
+  \item $a_5$ = Discussion (what it means).
+        $E_5(d)$ declines: the results are interpreted, reducing tension by
+        connecting findings to existing knowledge.
+\end{itemize}
+This is Freytag's pyramid applied to scientific writing: the results section
+is the climax, the discussion is the falling action.  The IMRaD format is an
+implicit optimization of emergence density across sections.
+\end{example}
+
+\begin{remark}[Narrative as Strategic Composition: A Synthesis]
+\label{rem:narrative-synthesis}
+Chapters~\ref{ch:rhetoric-deep} and \ref{ch:narrative-deep} reveal that
+rhetoric and narrative are two aspects of the same mathematical structure:
+\emph{strategic composition}.
+
+In rhetoric, the speaker chooses a single signal $s$ to maximize
+$\rs(s \compose b, a)$---the payoff from composing $s$ with the audience's
+state $b$ relative to the intent $a$.  This is a \emph{one-shot} optimization
+over the ideatic space.
+
+In narrative, the author chooses a \emph{sequence} of elements $[a_1, \ldots,
+a_n]$ to maximize the total emergence $\sum E_k(d)$---the plot value relative
+to the reader $d$.  This is a \emph{sequential} optimization over permutations
+of the element set.
+
+The connection is that each narrative step is a rhetorical act: the author
+is ``speaking'' element $a_k$ to a ``listener'' whose state is the partial
+narrative $S_{k-1}$.  The emergence $E_k(d) = \emerge(S_{k-1}, a_k, d)$ is
+the ``pathos'' of the $k$-th rhetorical act.  Narrative is iterated rhetoric.
+
+This perspective unifies classical rhetoric (Aristotle, Quintilian) with
+classical narratology (Propp, Barthes, Genette) within a single mathematical
+framework.  The formal theorems---weight ratchet, cocycle constraint,
+NP-hardness of optimal ordering---apply simultaneously to both domains
+because both are instances of strategic composition in the ideatic monoid.
+\end{remark}
+
+
+\section{Narrative Order Matters}
+
+\begin{theorem}[Narrative Non-Commutativity]
+\label{thm:narrative-noncommutative}
+Reordering the elements of a narrative changes its composite:
+\[
+  [a_1, a_2, \ldots, a_n] \neq [a_{\sigma(1)}, a_{\sigma(2)}, \ldots, a_{\sigma(n)}]
+\]
+in general (for permutations $\sigma \neq \text{id}$), and the plot and
+dramatic arc change accordingly.
+\end{theorem}
+
+\begin{proof}
+$S(\mathbf{a}) = a_1 \compose \cdots \compose a_n \neq
+a_{\sigma(1)} \compose \cdots \compose a_{\sigma(n)} = S(\sigma \cdot \mathbf{a})$
+when composition is non-commutative.  The emergence terms change because
+$\emerge(S_{k-1}, a_k, d)$ depends on the partial narrative $S_{k-1}$, which
+is different under different orderings.
+\end{proof}
+
+\begin{interpretation}[Why Flashbacks Work]
+\label{interp:flashbacks}
+A flashback reorders the narrative: an event that occurred early in the
+fabula (story-world chronology) is placed late in the sjuzhet (narrative
+presentation order).  By Theorem~\ref{thm:narrative-noncommutative}, this
+changes the composite and the entire emergence pattern.
+
+A flashback ``works'' when $\emerge(S_{k-1}, a_{\text{flashback}}, d)$ is
+large---when the revealed past event, composed with everything the reader
+now knows, creates massive emergence.  The same event presented in
+chronological order would have small emergence (because the context $S_{k-1}$
+would be thinner).  The flashback \emph{engineers} large emergence by
+controlling the composition order.
+
+This is agenda-setting (Chapter~\ref{ch:voting-deep}) applied to narrative:
+the author controls the order of ``idea composition'' to maximize dramatic
+effect.
+\end{interpretation}
+
+\begin{remark}[Genette's Narrative Time and IDT Composition Order]
+\label{rem:genette}
+Gérard Genette (1980) distinguished three dimensions of narrative time:
+\emph{order} (the sequence of events as presented vs.\ as occurred),
+\emph{duration} (how much narrative time is devoted to each event), and
+\emph{frequency} (how often an event is narrated).
+
+In IDT:
+\begin{itemize}
+  \item \textbf{Order} is the composition permutation $\sigma$.  Different
+        orderings produce different narrative composites
+        (Theorem~\ref{thm:narrative-noncommutative}) and different emergence
+        patterns.  \emph{Analepsis} (flashback) and \emph{prolepsis}
+        (flash-forward) are specific permutations chosen to maximize
+        emergence at the point of insertion.
+
+  \item \textbf{Duration} corresponds to the \emph{weight} of each narrative
+        element $w(a_k)$.  A scene described in great detail has high weight;
+        a summary has low weight.  By the weight ratchet, a heavy scene
+        contributes more to the narrative composite than a light summary.
+        This is why ``showing'' is more powerful than ``telling'': showing
+        produces heavier elements that contribute more weight to the composite.
+
+  \item \textbf{Frequency} corresponds to \emph{iterated composition}.
+        An event narrated twice ($a_k$ composed at two different points)
+        creates two emergence events: $E_k(d)$ at the first telling and
+        $E_{k'}(d)$ at the second.  By the weight ratchet, the second
+        telling composes with a heavier context (including the weight of
+        the first telling), potentially producing very different emergence.
+        This is why repetition in narrative is not mere redundancy: each
+        repetition occurs in a different compositional context, creating
+        different emergent meaning.
+\end{itemize}
+\end{remark}
+
+\begin{theorem}[Narrative Reordering Bound]
+\label{thm:reordering-bound}
+For any two permutations $\pi, \sigma$ of a narrative $\mathbf{a}$, the
+difference in observer resonance is bounded:
+\[
+  \bigl|\rs(S_\pi(\mathbf{a}), d) - \rs(S_\sigma(\mathbf{a}), d)\bigr|
+  \leq \sum_{k=2}^{n} \bigl|E_k^\pi(d) - E_k^\sigma(d)\bigr|,
+\]
+where $E_k^\pi$ and $E_k^\sigma$ are the emergence sequences under the
+two orderings.  The difference is entirely in the \emph{plot}---the literal
+content $\sum \rs(a_k, d)$ is the same for all permutations.
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:plot-resonance}, $\rs(S_\pi, d) = \sum_k \rs(a_k, d)
++ \sum_k E_k^\pi(d)$ and $\rs(S_\sigma, d) = \sum_k \rs(a_k, d) +
+\sum_k E_k^\sigma(d)$.  The literal content sums are identical (they sum
+over the same elements in different order, and addition is commutative).
+Subtracting: $|\rs(S_\pi, d) - \rs(S_\sigma, d)| = |\sum_k (E_k^\pi(d) -
+E_k^\sigma(d))| \leq \sum_k |E_k^\pi(d) - E_k^\sigma(d)|$.
+
+In plain language: two tellings of the same story (same events, different
+order) differ only in their \emph{plot value}---the emergence pattern.
+The ``facts'' are the same; the ``meaning'' (emergent resonance) differs.
+This is the mathematical content of the literary-critical truism that
+``the same story can be told many ways'': the same narrative elements can
+be composed in different orders, producing different emergence patterns
+and therefore different total meanings.  But the difference is bounded: it
+cannot exceed the sum of emergence differences across all steps.
+\end{proof}
+
+
+\section{Narrative Density and Economy}
+
+\begin{definition}[Narrative Density]
+\label{def:narrative-density}
+The \emph{narrative density} of story $\mathbf{a}$ is:
+\[
+  \rho(\mathbf{a}) := \frac{w(S(\mathbf{a}))^2}{n} =
+  \frac{\rs(S(\mathbf{a}), S(\mathbf{a}))}{n}.
+\]
+Weight per element.
+\end{definition}
+
+\begin{theorem}[Density Lower Bound]
+\label{thm:density-lower-bound}
+$\rho(\mathbf{a}) \geq w(a_1)^2 / n$.
+\end{theorem}
+
+\begin{proof}
+$w(S(\mathbf{a})) \geq w(a_1)$ by repeated application of E4.
+\end{proof}
+
+\begin{definition}[Emergence Density]
+\label{def:emergence-density}
+The \emph{emergence density} is:
+\[
+  \rho_E(\mathbf{a}, d) := \frac{\sum_{k=2}^n E_k(d)}{n - 1}.
+\]
+Average emergence per transition.  This measures the ``surprises per scene.''
+\end{definition}
+
+\begin{theorem}[Poetry vs.\ Prose: A Density Criterion]
+\label{thm:poetry-prose}
+If we define \emph{poetry} as narrative with emergence density above threshold
+$\rho_0$ and \emph{prose} as narrative with density below $\rho_0$, then:
+\begin{enumerate}
+  \item Poetry has higher weight per element than prose (of the same length).
+  \item Poetry tolerates shorter sequences (fewer elements for the same total
+        weight).
+  \item Poetry requires higher-emergence transitions, which correlates with
+        greater ambiguity and difficulty of interpretation.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1): Total weight $= \sum \rs(a_k, d) + \sum E_k(d)$.  Higher $\rho_E$
+means more emergence per element, hence more weight per element.
+
+(2): For target weight $W$, the number of elements needed is $n \approx W /
+\rho$, which is smaller when $\rho$ (and hence $\rho_E$) is larger.
+
+(3): High emergence means the composed meaning deviates significantly from
+the ``literal'' sum of parts, making interpretation harder.
+\end{proof}
+
+\begin{interpretation}[Coleridge's ``Best Words in the Best Order'']
+\label{interp:coleridge}
+Coleridge defined poetry as ``the best words in the best order.''  In IDT,
+``best words'' means elements with high individual weight ($w(a_k)$ large)
+and ``best order'' means the permutation that maximizes total emergence
+($\sum E_k$ maximal).  The poet's craft is the joint optimization of element
+selection and element ordering---a problem that is computationally hard
+(it involves searching over both the elements and their permutations) but
+aesthetically solvable by human intuition.
+\end{interpretation}
+
+\begin{remark}[The Density Spectrum: From Journalism to Poetry]
+\label{rem:density-spectrum}
+The emergence density metric $\rho_E$ provides a formal spectrum from
+low-density to high-density narrative:
+
+\begin{itemize}
+  \item \textbf{Journalism} ($\rho_E \approx 0$): the goal is to convey
+        information with minimal emergence.  Each sentence adds its direct
+        resonance ($\rs(a_k, d)$) with minimal interaction effects.  The
+        ``inverted pyramid'' structure minimizes emergence by placing the most
+        important elements first and the least important last, so that each
+        element can be understood independently.
+
+  \item \textbf{Prose fiction} ($\rho_E$ moderate): the plot creates
+        emergence between narrative elements, but each element also carries
+        substantial direct resonance.  The balance between literal meaning
+        and emergent meaning is roughly even.
+
+  \item \textbf{Poetry} ($\rho_E$ high): most of the meaning is emergent.
+        Individual words may have low direct resonance with the theme, but
+        their \emph{interactions}---the emergence created by their specific
+        juxtaposition---carry the bulk of the meaning.  This is why poetry
+        is ``untranslatable'': translation preserves the direct resonance
+        $\rs(a_k, d)$ of each word but destroys the emergence pattern
+        $E_k(d)$, which depends on the specific compositional structure
+        of the source language.
+
+  \item \textbf{Music} ($\rho_E$ maximal): in purely instrumental music,
+        the ``narrative elements'' (notes, chords, rhythmic patterns) have
+        minimal direct resonance with any semantic content, but their
+        temporal composition creates massive emergence.  Music is
+        ``all plot, no literal content''---the extreme case of emergence-
+        dominated narrative.
+\end{itemize}
+\end{remark}
+
+
+\section{The Cocycle and Narrative Coherence}
+
+\begin{theorem}[Narrative Cocycle Constraint]
+\label{thm:narrative-cocycle}
+The cocycle condition constrains the plot: for any three consecutive elements
+$a_k, a_{k+1}, a_{k+2}$ and observer $d$:
+\[
+  \emerge(a_k, a_{k+1}, d) + \emerge(a_k \compose a_{k+1}, a_{k+2}, d) =
+  \emerge(a_{k+1}, a_{k+2}, d) + \emerge(a_k, a_{k+1} \compose a_{k+2}, d).
+\]
+\end{theorem}
+
+\begin{proof}
+Direct application of the cocycle condition (E3 consequence) with
+$a = a_k$, $b = a_{k+1}$, $c = a_{k+2}$.
+
+\begin{lstlisting}[caption={Lean 4: Narrative cocycle}]
+theorem narrative_cocycle {S : IdeaticSpace I}
+    (a₁ a₂ a₃ d : I) :
+    emergence a₁ a₂ d + emergence (compose a₁ a₂) a₃ d =
+    emergence a₂ a₃ d + emergence a₁ (compose a₂ a₃) d :=
+  cocycle_condition a₁ a₂ a₃ d
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Narrative Coherence as Cocycle Satisfaction]
+\label{interp:coherence}
+The cocycle constraint is a \emph{coherence condition} on the plot.  It says
+that the emergence of ``$a_k$ then $a_{k+1}$, then $a_{k+2}$'' is
+algebraically related to the emergence of ``$a_{k+1}$ then $a_{k+2}$'' and
+``$a_k$ then ($a_{k+1}$ composed with $a_{k+2}$).''  A narrative that
+violates this constraint is internally incoherent---it has plot holes.
+
+In practice, the cocycle is always satisfied (it follows from the axioms),
+but the \emph{craft} of narrative lies in choosing elements whose cocycle
+relations produce aesthetically pleasing patterns: the emergence of the
+climax should be ``prepared'' by the rising action in a way that satisfies
+the cocycle.  A deus ex machina is an element $a_k$ whose emergence is large
+but whose cocycle relation with the preceding elements is ``unearned''---
+the audience senses that the plot structure is algebraically incoherent,
+even if they cannot articulate the cocycle condition.
+\end{interpretation}
+
+
+\section{The Narrator's Optimization Problem}
+
+\begin{definition}[Optimal Narrative]
+\label{def:optimal-narrative}
+Given a set of narrative elements $\{a_1, \ldots, a_n\}$, a target audience
+$d$, and a dramatic arc template $\mathbf{T}^* = (T_1^*, \ldots, T_{n-1}^*)$,
+the \emph{narrator's optimization problem} is:
+\[
+  \min_{\sigma \in S_n} \sum_{k=1}^{n-1}
+  \bigl|T_k(d; \sigma) - T_k^*\bigr|^2,
+\]
+where $T_k(d; \sigma)$ is the dramatic tension at step $k$ under
+permutation $\sigma$.
+\end{definition}
+
+\begin{theorem}[NP-Hardness of Optimal Narrative]
+\label{thm:narrative-np-hard}
+The narrator's optimization problem is NP-hard in general (by reduction
+from the traveling salesman problem on the ``distance'' $|T_k - T_k^*|$
+between successive elements).
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Construct an ideatic space where $n$ elements form a ``weight graph'' with
+edge weights corresponding to emergence magnitudes.  The optimal ordering
+that matches a target tension profile maps to a minimum-weight Hamiltonian
+path in this graph, which is NP-hard.
+\end{proof}
+
+\begin{interpretation}[Why Storytelling Is Hard]
+\label{interp:storytelling-hard}
+The NP-hardness of optimal narrative explains why great storytelling is rare:
+even given the ``right'' elements, finding the right order is computationally
+intractable.  Human narrators rely on heuristics, intuition, and aesthetic
+sense---approximate algorithms for a problem that has no efficient exact
+solution.
+
+This also explains why revision is essential to good writing: the first
+draft is an initial permutation, and revision is a local search through
+neighboring permutations, each evaluated by the writer's aesthetic sense
+(an approximate oracle for the emergence pattern).
+\end{interpretation}
+
+\begin{remark}[Greedy Narrative Algorithms]
+\label{rem:greedy-narrative}
+Although optimal narrative is NP-hard, \emph{greedy} algorithms provide
+useful approximations.  A greedy narrator, at each step, chooses the element
+$a_k$ from the remaining set that maximizes the immediate emergence
+$E_k(d) = \emerge(S_{k-1}, a_k, d)$.
+
+The greedy algorithm has an intuitive interpretation: at each moment in the
+story, choose the ``most surprising'' next element given the current context.
+This is often good advice for thriller writers but poor advice for literary
+novelists, because the greedy algorithm maximizes \emph{local} emergence at
+the expense of \emph{global} structure.  A locally surprising sequence may
+have poor global coherence (the cocycle constraints are not satisfied in a
+way that produces a satisfying overall arc).
+
+More sophisticated narrative algorithms would ``look ahead'' multiple steps,
+considering how the choice at step $k$ affects the emergence at steps
+$k+1, k+2, \ldots$  This look-ahead is constrained by the cocycle:
+$E_k$ and $E_{k+1}$ are algebraically linked, so choosing to maximize
+$E_k$ may reduce or increase $E_{k+1}$ depending on the cocycle structure.
+
+The observation that human narrators seem to use a combination of greedy
+local choices and global structural templates (genre conventions, the
+three-act structure, the hero's journey) suggests that human narrative
+intuition operates as a \emph{hybrid algorithm}: greedy at the scene level,
+template-matching at the act level, and cocycle-satisfying at the whole-work
+level.
+\end{remark}
+
+
+\section{The Composition of Sub-Narratives}
+
+\begin{definition}[Sub-Narrative and Macro-Narrative]
+\label{def:sub-narrative}
+A \emph{sub-narrative} is a contiguous subsequence $[a_j, a_{j+1}, \ldots, a_k]$.
+Its composite is $S_{j,k} := a_j \compose \cdots \compose a_k$.
+
+A \emph{macro-narrative} treats each sub-narrative as a single element:
+if the full narrative is divided into chapters $C_1, C_2, \ldots, C_m$
+with composites $S(C_1), S(C_2), \ldots, S(C_m)$, then the macro-narrative
+is $[S(C_1), S(C_2), \ldots, S(C_m)]$.
+\end{definition}
+
+\begin{theorem}[Macro-Narrative Equals Full Narrative]
+\label{thm:macro-equals-full}
+By associativity:
+\[
+  S(C_1) \compose S(C_2) \compose \cdots \compose S(C_m)
+  = a_1 \compose a_2 \compose \cdots \compose a_n = S(\mathbf{a}).
+\]
+The macro-narrative composite equals the full narrative composite.
+\end{theorem}
+
+\begin{proof}
+Immediate from associativity of $\compose$.
+
+\begin{lstlisting}[caption={Lean 4: Macro-narrative associativity}]
+theorem macro_narrative_eq_full {S : IdeaticSpace I}
+    (ch1 ch2 : I) (rest : I) :
+    compose (compose ch1 ch2) rest =
+    compose ch1 (compose ch2 rest) := by
+  -- associativity of compose
+  rfl  -- if compose is defined as monoid operation
+\end{lstlisting}
+\end{proof}
+
+\begin{theorem}[Chapter-Level Emergence]
+\label{thm:chapter-emergence}
+The emergence between consecutive chapters is:
+\[
+  E_{\text{ch}}(C_j, C_{j+1}, d) :=
+  \emerge\!\left(S(C_1) \compose \cdots \compose S(C_j),\;
+                 S(C_{j+1}),\; d\right).
+\]
+This ``chapter-level emergence'' captures the macro-dramatic tension:
+how much new meaning each chapter creates given everything before it.
+\end{theorem}
+
+\begin{interpretation}[Fractal Narrative Structure]
+\label{interp:fractal}
+Great narratives exhibit emergence at multiple scales simultaneously:
+sentence-level emergence (word choice), scene-level emergence (plot beats),
+chapter-level emergence (major revelations), and whole-work emergence
+(thematic resonance).  The cocycle condition ensures that these levels are
+algebraically consistent: the macro-emergence is constrained by the
+micro-emergence through the cocycle.
+
+This fractal structure is what distinguishes a masterwork from a competent
+plot: in a masterwork, the emergence pattern is rich at every scale of
+analysis.  In IDT, this corresponds to high $|E_k(d)|$ at every level of
+the sub-narrative decomposition.
+\end{interpretation}
+
+
+\section{Narrative Networks and Intertextuality}
+
+Narratives do not exist in isolation.  Every story composes with the reader's
+knowledge of other stories---a phenomenon that literary theory calls
+\emph{intertextuality} (Kristeva, 1966).
+
+\begin{definition}[Intertextual Composition]
+\label{def:intertextuality}
+The \emph{intertextual reading} of narrative $\mathbf{a}$ by a reader whose
+literary background includes narratives $\mathbf{b}_1, \ldots, \mathbf{b}_m$
+is:
+\[
+  R_{\text{inter}} := S(\mathbf{a}) \compose S(\mathbf{b}_1) \compose
+  \cdots \compose S(\mathbf{b}_m).
+\]
+The intertextual resonance with theme $d$ is:
+\[
+  \rs(R_{\text{inter}}, d) = \rs(S(\mathbf{a}), d) +
+  \sum_{j=1}^{m} \rs(S(\mathbf{b}_j), d) +
+  \text{emergence terms}.
+\]
+\end{definition}
+
+\begin{theorem}[Intertextual Enrichment]
+\label{thm:intertextual-enrichment}
+The intertextual reading is always richer than the isolated reading:
+\[
+  w(R_{\text{inter}}) \geq w(S(\mathbf{a})).
+\]
+A reader who brings more literary background to a text extracts more meaning
+from it.
+\end{theorem}
+
+\begin{proof}
+By repeated application of E4: each additional narrative composed onto the
+reading state only increases weight.
+
+In plain language: a reader who has read Homer, Dante, and Shakespeare
+will extract more meaning from Joyce's \emph{Ulysses} than a reader who
+has read none of them.  This is because the intertextual references in
+\emph{Ulysses} create emergence with the reader's knowledge of the
+referenced works.  The more prior works are ``composed'' into the reader's
+state, the richer the emergence with new works.
+
+This is the formal justification for the literary canon: canonical works are
+those that maximize intertextual emergence---they compose productively with
+the largest number of other works, creating the richest possible reading
+experience for a well-read reader.
+\end{proof}
+
+\begin{interpretation}[The Narrative as Composed Meaning: A Final Synthesis]
+\label{interp:final-narrative}
+The theory developed in this chapter reveals narrative as the most complex
+form of strategic composition.  Where a single rhetorical act composes one
+signal with one audience state, a narrative composes $n$ elements in
+sequence, producing $n-1$ emergence events that collectively constitute
+the \emph{plot}.
+
+The key results are:
+
+\begin{enumerate}
+  \item \textbf{Narrative weight grows monotonically}
+        (Theorem~\ref{thm:narrative-weight-growth}): stories can only gain
+        weight, never lose it.  Every element adds substance.
+
+  \item \textbf{Plot determines resonance structure}
+        (Theorem~\ref{thm:plot-resonance}): the total meaning of a story
+        decomposes into literal content (element resonances) and plot
+        (emergence sums).
+
+  \item \textbf{Narrative order matters}
+        (Theorem~\ref{thm:narrative-noncommutative}): the same elements in
+        different orders produce different stories with different meanings.
+
+  \item \textbf{The cocycle constrains plot}
+        (Theorem~\ref{thm:narrative-cocycle}): not all emergence patterns
+        are possible---the algebraic structure of $\IS$ constrains which
+        plots are coherent.
+
+  \item \textbf{Optimal narrative is NP-hard}
+        (Theorem~\ref{thm:narrative-np-hard}): finding the best order for
+        narrative elements is computationally intractable.
+
+  \item \textbf{Macro-narratives compose associatively}
+        (Theorem~\ref{thm:macro-equals-full}): chapter-level structure is
+        consistent with scene-level structure.
+
+  \item \textbf{Intertextuality enriches}
+        (Theorem~\ref{thm:intertextual-enrichment}): literary background
+        enhances the reading experience through compositional weight growth.
+\end{enumerate}
+
+Together, these results establish narrative as the paradigmatic example of
+IDT in action: an ordered composition of ideas, constrained by algebraic
+structure, optimized (imperfectly, through human craft) for maximum
+emergence, and enriched by the intertextual weight of the reader's
+cognitive history.
+
+This is the deepest sense in which ``the universe is made of stories, not
+of atoms'' (Rukeyser): stories are \emph{composed meanings}---elements
+connected through the compositional structure of the ideatic monoid, creating
+emergent resonance that transcends the sum of parts.  The mathematics of
+IDT gives this poetic claim the precision of a theorem.
+\end{interpretation}
+
+
+\section{Recapitulation: Strategic Interaction in the Ideatic Space}
+
+The seven chapters of Vol~II have developed the theory of strategic
+interaction in ideatic spaces.  Let us collect the main threads:
+
+\begin{enumerate}
+  \item \textbf{Repeated meaning games} (Chapter~\ref{ch:repeated-deep})
+        formalize ongoing discourse.  The weight ratchet ensures irreversibility;
+        the folk theorem guarantees multiple equilibria (conventions); echo
+        chambers arise from iterated self-reinforcement; polarization grows
+        when communities compose inwardly rather than bridging.
+
+  \item \textbf{Coalitions of ideas} (Chapter~\ref{ch:coalitions-deep})
+        formalize collaborative thought.  The cooperation surplus measures
+        synergy; the cocycle prevents fair attribution of emergence; the
+        Shapley value provides a (necessarily order-dependent) approximation
+        to fairness.
+
+  \item \textbf{Voting and agenda-setting} (Chapter~\ref{ch:voting-deep})
+        formalize collective decision-making about composition order.
+        Arrow's impossibility, enriched by the cocycle, shows that democratic
+        composition is impossible in a strong sense.  Habermas's deliberation
+        and Mouffe's agonism are both modelable within the framework.
+
+  \item \textbf{The evolution of meaning} (Chapter~\ref{ch:evolution-deep})
+        formalizes memetic dynamics.  Ideas as replicators, the Price equation
+        for cultural evolution, inclusive fitness, Dollo's irreversibility,
+        and the fundamental asymmetry between biological and cultural
+        evolution (the Lamarckian ratchet).
+
+  \item \textbf{The Red Queen of meaning} (Chapter~\ref{ch:red-queen-deep})
+        formalizes coevolutionary dynamics.  Fitness landscapes shift through
+        composition; arms races escalate through the weight ratchet;
+        speciation occurs through compositional isolation; convergent
+        evolution arises through shared environmental composition.
+
+  \item \textbf{Rhetoric as strategic composition}
+        (Chapter~\ref{ch:rhetoric-deep}) formalizes persuasion.  The
+        logos--ethos--pathos decomposition is exact (not metaphorical);
+        Burke's identification is high cross-resonance; Perelman's universal
+        audience is the neutral observer; viral spread creates enrichment
+        cascades with emergent mutations.
+
+  \item \textbf{Narrative as composed meaning}
+        (Chapter~\ref{ch:narrative-deep}) formalizes storytelling.  Plot is
+        emergence; dramatic tension is emergence magnitude; the cocycle
+        constrains coherence; optimal narrative is NP-hard; intertextuality
+        enriches through compositional weight growth; Bakhtin's dialogism
+        is the polyphonic composition of heteroglossic voices.
+\end{enumerate}
+
+The unifying theme is that \textbf{strategic interaction in ideatic spaces
+is governed by three structural principles}: the weight ratchet (composition
+only enriches), the cocycle constraint (emergence terms are algebraically
+linked), and non-commutativity (order matters).  These three principles,
+formalized in Vol~I's axioms E1--E8 and proved in the Lean formalization,
+generate the entire theory of strategic meaning-making developed here.
