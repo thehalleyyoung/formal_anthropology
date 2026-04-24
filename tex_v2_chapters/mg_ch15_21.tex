@@ -72,7 +72,7 @@ By the decomposition axiom,
     + \emerge(a,b,a\compose b).
 \]
 Since $\rs(a, a\compose b) \ge \rs(a,a) = w(a)$ by non-decreasing
-self-resonance under extension (Axiom~A3 of~\cite{idt}), and
+self-resonance under extension (Axiom~A3 of \emph{Idea Diffusion Theory}), and
 similarly $\rs(b, a\compose b) \ge w(b)$, we obtain
 \[
   w(a \compose b)
@@ -169,7 +169,7 @@ $a^{\compose n}$ inductively:
 \end{definition}
 
 \begin{theorem}[Weight ratchet]
-\label{thm:weight-ratchet}
+\label{thm:poetic-weight-ratchet}
 If $\emerge(a^{\compose n}, a, a^{\compose(n+1)}) \ge 0$ for all
 $n \ge 1$, then the sequence $(w(a^{\compose n}))_{n \ge 1}$ is
 non-decreasing:
@@ -242,7 +242,7 @@ large numbers.
 \begin{interpretation}[Repetition in ritual and liturgy]
 The weight ratchet provides a mathematical foundation for the
 observation, widespread in the anthropology of religion, that
-\emph{ritual repetition creates sacredness}.  Rappaport~\cite{rappaport}
+\emph{ritual repetition creates sacredness}.  Roy Rappaport
 argued that the invariance of liturgical form is constitutive of the
 sacred: by repeating the same words in the same order, a community
 creates a weight that no single utterance could achieve.  The weight
@@ -712,8 +712,8 @@ a Bayesian Nash equilibrium in mixed strategies.
 \end{theorem}
 
 \begin{proof}
-We apply Milgrom and Weber's theorem on distributional strategies
-\cite{milgrom-weber}.  The strategy space $\mathcal{P}(\IS)$ is
+We apply Milgrom and Weber's theorem on distributional strategies.
+The strategy space $\mathcal{P}(\IS)$ is
 compact and convex in the weak-$*$ topology (since $\IS$ is compact
 metrizable).  The expected payoff
 \[
@@ -759,7 +759,7 @@ solution is unique or optimal (see Open Problem~\ref{op:bne-unique}).
 \begin{interpretation}[Connection to Bayesian persuasion]
 The Bayesian meaning game framework naturally connects to the
 theory of \emph{Bayesian persuasion} developed by Kamenica and
-Gentzkow~\cite{kamenica-gentzkow}.  In their framework, a sender
+Gentzkow.  In their framework, a sender
 designs an information structure (a ``signal'') to influence a
 receiver's action.  In IDT, the ``signal'' is a composed idea
 $a \in \IS$, and the ``information structure'' is the mapping from
@@ -1360,7 +1360,7 @@ whose report changes the outcome pays for the disruption she causes.
 As proved in Volume~I, the VCG mechanism is the \emph{unique}
 mechanism (up to the choice of~$h_i$) that achieves both efficiency
 and incentive compatibility when the type space is sufficiently rich.
-This uniqueness result, due to Green and Laffont~\cite{green-laffont},
+This uniqueness result, due to Green and Laffont,
 strengthens the case for VCG as the canonical institution for
 ideatic allocation.
 \end{remark}
@@ -1392,7 +1392,7 @@ budget-balanced ($t_1 + t_2 = 0$).
 \end{theorem}
 
 \begin{proof}
-Adapt Myerson and Satterthwaite~\cite{myerson-satterthwaite}.
+Adapt the Myerson--Satterthwaite impossibility theorem.
 Efficiency requires trade whenever $\rs_{\theta_2}(a,\cdot) >
 \rs_{\theta_1}(a,\cdot)$.  IC pins down expected transfers via
 the revenue equivalence lemma.  Budget balance and IR jointly
@@ -1527,7 +1527,7 @@ to $n > k$ competing ideas based on reported types.
 \begin{theorem}[Revenue-optimal auction]
 \label{thm:optimal-auction}
 The revenue-optimal auction for resonance slots is a
-Myerson-type auction~\cite{myerson-auction} where each idea~$a_i$
+Myerson-type auction where each idea~$a_i$
 with reported type~$\theta_i$ receives a \textbf{virtual
 resonance} score
 \[
@@ -3086,7 +3086,7 @@ $f(\pi) = w(a_{\pi(1)} \compose \cdots \compose a_{\pi(n)})$
 is a monotone submodular function of the ordered set of ideas
 composed so far.  The greedy algorithm for monotone submodular
 maximisation achieves a $(1-1/e)$-approximation by the classical
-result of Nemhauser, Wolsey, and Fisher~\cite{nemhauser1978}.
+result of Nemhauser, Wolsey, and Fisher.
 Since $1-1/e > 1/2$, the stated bound follows.
 \end{proof}
 
@@ -3350,7 +3350,7 @@ game admit a \emph{unique} Bayesian Nash equilibrium?
 existence but not uniqueness.  Uniqueness would imply that meaning
 is ``determined'' by the structure of the game, a strong
 philosophical claim.  Supermodularity conditions on the payoff
-(analogous to those in Milgrom and Roberts~\cite{milgrom-roberts})
+(analogous to those in Milgrom and Roberts)
 are a promising avenue.
 \end{game}
 
@@ -3364,7 +3364,7 @@ converge to an ESS?
 profile resistant to invasion by a small proportion of mutant
 players.  The replicator dynamics on ideatic spaces are
 infinite-dimensional, making analysis non-trivial.  Connections
-to evolutionary game theory (Maynard Smith~\cite{maynard-smith})
+to evolutionary game theory (Maynard Smith)
 and population genetics are largely unexplored.
 \end{game}
 
@@ -3374,8 +3374,8 @@ and population genetics are largely unexplored.
 ratio of optimal social welfare to worst Nash equilibrium welfare---in meaning games?
 
 \textbf{Discussion.}  The price of anarchy quantifies the cost of
-selfish meaning-making.  For congestion games it is bounded
-\cite{roughgarden-tardos}; for meaning games, the bound likely
+selfish meaning-making.  For congestion games it is bounded in the
+classical Roughgarden--Tardos setting; for meaning games, the bound likely
 depends on the structure of $\emerge$.  If emergence is
 super-additive, selfish play may actually \emph{exceed} the
 coordinated optimum (``price of anarchy $< 1$''), a phenomenon
@@ -3535,7 +3535,7 @@ physics.
 \label{op:consciousness}
 \textbf{Problem.}  Is there a formal relationship between the
 emergence term $\emerge$ in IDT and theories of consciousness
-that invoke ``integrated information'' (IIT, Tononi~\cite{tononi})?
+that invoke ``integrated information'' (IIT, as in Tononi's work)?
 
 \textbf{Discussion.}  IIT defines consciousness as integrated
 information: $\Phi > 0$.  IDT defines cultural emergence as
@@ -3814,5 +3814,4 @@ formalism.  The meaning games have only just begun.
 \begin{center}
 \textit{--- End of Part III ---}
 \end{center}
-
 

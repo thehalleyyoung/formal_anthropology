@@ -379,7 +379,7 @@ $a_S^* \compose a_T^*$ is a feasible composition for $S \cup T$, so
 \end{proof}
 
 \begin{corollary}[The grand coalition is optimal]
-\label{cor:grand-coalition}
+\label{cor:grand-coalition-political}
 Under non-negative emergence, the grand coalition $N$ achieves
 the highest value: $v(N) \ge v(S)$ for all $S \subseteq N$.
 In particular, inclusive democracy (involving all citizens)
@@ -1525,7 +1525,7 @@ ensures no author has a unilateral incentive to deviate---this is
 the Nash equilibrium condition.  Condition~(c) ensures the
 equilibrium is dynamically stable: each new work in the genre
 reinforces the template, increasing $w(T_G)$ via the weight
-ratchet (Theorem~\ref{thm:weight-ratchet} from Chapter~15).
+ratchet (Theorem~\ref{thm:poetic-weight-ratchet} from Chapter~15).
 
 Formally, genre $G$ is a correlated equilibrium (Aumann, 1974)
 where the correlation device is the genre label itself: upon
@@ -1707,7 +1707,7 @@ context---its ``use in the language.''
 \end{definition}
 
 \begin{theorem}[Meaning is use]
-\label{thm:meaning-is-use}
+\label{thm:meaning-is-use-synthesis}
 Two ideas $a, b \in \IS$ have the same meaning (in the sense that
 they are interchangeable in all contexts without changing the
 weight of any composition) if and only if they have the same
@@ -1921,7 +1921,7 @@ of life'' (PI, p.~226).  We give a formal definition and prove
 that forms of life are the fundamental units of meaning.
 
 \begin{definition}[Form of life]
-\label{def:form-of-life}
+\label{def:form-of-life-synthesis}
 A \textbf{form of life} is a maximal connected component of
 the resonance graph $G_\tau = (\IS, \{(a,b) : \rs(a,b) > \tau\})$
 for some threshold $\tau > 0$.  Equivalently, a form of life is
@@ -2111,9 +2111,9 @@ theorem that not only shows what meaning is \emph{not} but what
 meaning \emph{is}:
 \begin{enumerate}
   \item Meaning is the use-profile $\mathcal{U}_a$
-    (Theorem~\ref{thm:meaning-is-use}).
+    (Theorem~\ref{thm:meaning-is-use-synthesis}).
   \item Meaning is resonance structure, not mental content
-    (direct consequence of Theorem~\ref{thm:meaning-is-use}).
+    (direct consequence of Theorem~\ref{thm:meaning-is-use-synthesis}).
   \item Private language is strategically void
     (Theorem~\ref{thm:private-language}).
   \item Private ideas drop out of the game
@@ -2141,12 +2141,12 @@ The bijection is constructed in Aside~\ref{aside:programme}.
 We verify that each pairing satisfies the correspondence:
 
 (1)~PI~\S43 (``meaning is use'') $\longleftrightarrow$
-Theorem~\ref{thm:meaning-is-use} (meaning is use-profile).
+Theorem~\ref{thm:meaning-is-use-synthesis} (meaning is use-profile).
 The informal thesis asserts that meaning is determined by use;
 the theorem proves this as a biconditional.
 
 (2)~PI~\S\S139--141 (meaning is not a mental image)
-$\longleftrightarrow$ Theorem~\ref{thm:meaning-is-use} (corollary).
+$\longleftrightarrow$ Theorem~\ref{thm:meaning-is-use-synthesis} (corollary).
 If meaning is determined by the use-profile, then any ``mental
 image'' that doesn't affect use is irrelevant---this is exactly
 the corollary that the use-profile uniquely determines meaning.

@@ -90,7 +90,7 @@ can only grow heavier.  This is a direct consequence of axiom E4
 (\texttt{compose\_enriches}).
 
 \begin{theorem}[The Weight Ratchet]
-\label{thm:weight-ratchet}
+\label{thm:repeated-weight-ratchet}
 In a repeated meaning game, the weight sequences
 $\{w(a_k)\}_{k \geq 0}$ and $\{w(b_k)\}_{k \geq 0}$ are
 non-decreasing:
@@ -427,7 +427,7 @@ Each lesson makes the learner strictly heavier (or at worst, no lighter).
 
 \begin{proof}
 Immediate by $n$-fold application of the weight ratchet
-(Theorem~\ref{thm:weight-ratchet}).
+(Theorem~\ref{thm:repeated-weight-ratchet}).
 \end{proof}
 
 \begin{theorem}[Training Order Dependence]
@@ -816,7 +816,7 @@ The one-shot deviation principle applies.  At round $k$, a deviator gains
 at most $G_k$ (the ``greed'' of deviation) and suffers future punishment
 loss $L_k$.  In classical games, $L_k$ is constant.  Here, $L_k$ is
 \emph{increasing} in $k$ because the punisher's weight grows during
-punishment (Theorem~\ref{thm:weight-ratchet}), making punishment more severe.
+       punishment (Theorem~\ref{thm:repeated-weight-ratchet}), making punishment more severe.
 Therefore the sustainability condition $\delta^k L_k \geq G_k$ is easier to
 satisfy as $k$ grows, and a smaller $\delta$ suffices.
 \end{proof}
@@ -874,15 +874,15 @@ is:
         \[
           v(a_{i_1}, \ldots, a_{i_k}) :=
           w\!\left(a_{i_1} \compose a_{i_2} \compose \cdots \compose a_{i_k}\right)^2
-          = \rs\!\left(\bigcompose_{j=1}^{k} a_{i_j},\;
-                       \bigcompose_{j=1}^{k} a_{i_j}\right).
+          = \rs\!\left(a_{i_1} \compose a_{i_2} \compose \cdots \compose a_{i_k},\;
+                       a_{i_1} \compose a_{i_2} \compose \cdots \compose a_{i_k}\right).
         \]
   \item $v(\emptyset) := 0$.
 \end{itemize}
 \end{definition}
 
 \begin{theorem}[Coalition Enrichment --- \texttt{compose\_enriches}]
-\label{thm:coalition-enrichment}
+\label{thm:coalition-enrichment-ordered}
 For any ordered coalition $(a_{i_1}, \ldots, a_{i_k})$ and any idea $b$:
 \[
   v(a_{i_1}, \ldots, a_{i_k}, b) \geq v(a_{i_1}, \ldots, a_{i_k}).
@@ -904,7 +904,7 @@ theorem coalition_enrichment {S : IdeaticSpace I}
 \end{proof}
 
 \begin{corollary}[Grand Coalition Dominates]
-\label{cor:grand-coalition}
+\label{cor:grand-coalition-ordered}
 The grand coalition $(a_1, \ldots, a_n)$ (in any fixed order) has value at
 least as large as any sub-coalition:
 \[
@@ -914,7 +914,7 @@ least as large as any sub-coalition:
 \end{corollary}
 
 \begin{proof}
-Apply Theorem~\ref{thm:coalition-enrichment} repeatedly: extend the
+Apply Theorem~\ref{thm:coalition-enrichment-ordered} repeatedly: extend the
 sub-coalition by appending the missing ideas one at a time.  Each extension
 only increases the value.
 \end{proof}
@@ -1169,7 +1169,7 @@ vector $(\phi_1, \ldots, \phi_n) \in \R^n$ satisfying:
 \end{definition}
 
 \begin{theorem}[Attribution Impossibility --- The Cocycle Obstruction]
-\label{thm:attribution-impossibility}
+\label{thm:attribution-impossibility-ordered}
 No attribution function can additionally satisfy:
 \begin{enumerate}
   \setcounter{enumi}{3}
@@ -1357,7 +1357,7 @@ sub-coalition can do better by breaking away:
 \begin{theorem}[Non-Empty Core Under Superadditivity]
 \label{thm:nonempty-core}
 Because the ideatic coalition game is superadditive
-(Theorem~\ref{thm:coalition-enrichment}), the core is non-empty.
+(Theorem~\ref{thm:coalition-enrichment-ordered}), the core is non-empty.
 \end{theorem}
 
 \begin{proof}
@@ -1591,7 +1591,7 @@ The Habermasian ``ideal speech situation'' corresponds to a meaning game where:
         determined solely by resonance, not by external coercion).
 \end{enumerate}
 
-But the weight ratchet (Theorem~\ref{thm:weight-ratchet}) poses a challenge
+But the weight ratchet (Theorem~\ref{thm:repeated-weight-ratchet}) poses a challenge
 to Habermas: once the deliberation begins, participants' states change
 irreversibly.  Early speakers shape the deliberative context for all
 subsequent speakers.  Even in an ideal speech situation, speaking order
@@ -1865,7 +1865,7 @@ on groups as well as individuals.  In IDT, the debate has a clean resolution.
 
 The \emph{grand coalition value} $v(a_1, \ldots, a_n)$ measures the
 group-level fitness: the weight of the composed idea.  By the grand
-coalition dominance theorem (Corollary~\ref{cor:grand-coalition}), this is
+coalition dominance theorem (Corollary~\ref{cor:grand-coalition-ordered}), this is
 always at least as large as any sub-coalition's value.  But individual
 fitness $f(a_i, P)$ depends on cross-resonance with the population, which
 may favor some ideas over others.
