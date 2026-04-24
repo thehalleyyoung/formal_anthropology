@@ -1,0 +1,254 @@
+\documentclass[11pt,oneside]{book}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{epigraph}
+\usepackage{tocloft}
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{axiom_def}[theorem]{Axiom}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{interpretation}[theorem]{Interpretation}
+
+% Lean code listings
+\lstdefinelanguage{Lean4}{
+  morekeywords={theorem,lemma,def,noncomputable,class,instance,where,
+    variable,open,namespace,section,end,import,structure,inductive,
+    match,with,fun,let,in,if,then,else,do,return,have,show,by,
+    exact,rfl,simp,linarith,nlinarith,ring,intro,apply,rw,unfold,
+    calc,sorry,Prop,Type,Sort,axiom,extends,deriving},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[s]{/-}{-/},
+  morestring=[b]",
+}
+
+\lstset{
+  language=Lean4,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red},
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  xleftmargin=1em,
+  xrightmargin=1em,
+}
+
+% Custom commands
+\newcommand{\rs}{\mathrm{rs}}
+\newcommand{\emerge}{\kappa}
+\newcommand{\compose}{\circ}
+\newcommand{\void}{\varepsilon}
+\newcommand{\IS}{\mathcal{I}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+
+\title{\Huge\bfseries The Math of Ideas\\[0.3em]
+\LARGE Volume I: Foundations\\[0.5em]
+\Large Composition, Resonance, and Emergence from Eight Axioms}
+\author{A Formal Treatment with Machine-Verified Proofs\\[0.3em]
+\normalsize\textit{Part of the series ``The Math of Ideas''}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\frontmatter
+
+\chapter*{Preface}
+
+This is the first volume in a six-volume series, \emph{The Math of Ideas}, which 
+develops a unified mathematical framework for studying ideas---how they compose, 
+resonate, and give rise to genuinely new meaning. This volume establishes the 
+foundations: eight axioms from which all subsequent volumes build. Unlike existing 
+approaches to memetics, cultural evolution, or information theory, the math of 
+ideas takes the \emph{idea} as a primitive object and derives its properties from 
+a minimal set of axioms about composition and resonance.
+
+The five volumes that follow study the same mathematical universe from different 
+vantage points: strategic interaction (Vol.~II), philosophy of meaning (Vol.~III), 
+signs and culture (Vol.~IV), power and ethics (Vol.~V), and emergence itself 
+(Vol.~VI). But they all rest on the theorems proven here. This volume is therefore 
+not merely ``pure math before the applications''---it is the common language in 
+which all questions about ideas can be posed and, crucially, \emph{proven}.
+
+Every major theorem in this volume is interpreted through three lenses---literary 
+theory, philosophy, and semiotics---because the mathematics of ideas is not an 
+analogy \emph{applied to} the humanities; it \emph{is} the humanities, written in 
+the only language precise enough to prove things.
+
+The central mathematical object is the \emph{ideatic space} $(\IS, \compose, \void, \rs)$:
+a monoid of ideas equipped with a real-valued resonance function. The key innovation
+is the \emph{emergence term}
+\[
+\emerge(a,b,c) := \rs(a \compose b, c) - \rs(a,c) - \rs(b,c),
+\]
+which captures the genuinely new meaning that arises when ideas combine---meaning
+that is irreducible to the parts. When $\emerge = 0$, we recover a linear (Hilbert-like)
+theory; when $\emerge \neq 0$, we enter the domain of genuine creativity, metaphor,
+irony, and dialectical synthesis.
+
+Every theorem in this book has been formally verified in Lean 4 with zero \texttt{sorry}
+axioms. The Lean source files are referenced throughout. This is not merely a
+guarantee of correctness; it is a demonstration that the theory of ideas admits
+the same standard of rigor as algebra or analysis.
+
+\vspace{1em}
+
+The theory proceeds from just eight axioms:
+\begin{enumerate}
+\item Three \textbf{monoid axioms}: ideas compose associatively with a neutral element (void/silence).
+\item Two \textbf{void-resonance axioms}: silence resonates with nothing.
+\item Four \textbf{emergence axioms}: self-coherence is non-negative, only silence has zero presence,
+emergence satisfies a Cauchy--Schwarz bound, and composition enriches.
+\end{enumerate}
+
+From these eight axioms, we derive a remarkably rich theory encompassing:
+semiotics (the study of signs), hermeneutics (interpretation theory),
+dialectics (thesis--antithesis--synthesis), rhetoric (persuasion),
+narrative theory, game theory, evolutionary dynamics, translation theory,
+and the geometry of meaning.
+
+\tableofcontents
+
+\mainmatter
+
+%==========================================================================
+\part{Foundations}
+%==========================================================================
+
+\input{tex_v2_chapters/idt_ch1_7}
+
+%==========================================================================
+\part{Structure and Dynamics}
+%==========================================================================
+
+\input{tex_v2_chapters/idt_ch8_14}
+
+%==========================================================================
+\part{Applications and Synthesis}
+%==========================================================================
+
+\input{tex_v2_chapters/idt_ch15_22}
+
+%==========================================================================
+% END MATTER
+%==========================================================================
+
+\chapter*{Appendix: Complete Lean 4 Formalization}
+
+All theorems in this book have been formally verified in Lean 4 using the
+\texttt{IdeaticSpace} type class defined in \texttt{IDT\_v3\_Foundations.lean}.
+The complete formalization comprises the following files:
+
+\begin{itemize}
+\item \texttt{IDT\_v3\_Foundations.lean} --- 103 theorems. The axiom class,
+emergence definition, cocycle condition, self-resonance, semiotics, models.
+
+\item \texttt{IDT\_v3\_Emergence.lean} --- 199 theorems. Cocycle algebra,
+higher cocycles, spectrum classification, curvature, stability, differential
+calculus, chain algebra, convexity.
+
+\item \texttt{IDT\_v3\_Interpretation.lean} --- 230 theorems. Gadamer,
+Ricoeur, Schleiermacher, Benjamin, Heidegger, Derrida, hermeneutic circle,
+fusion of horizons, tradition, intertextuality.
+
+\item \texttt{IDT\_v3\_SignalGames.lean} --- 208 theorems. Nash equilibrium,
+babbling equilibria, costly signaling, revelation, strategic silence,
+signaling chains, grand unification.
+
+\item \texttt{IDT\_v3\_Wittgenstein.lean} --- 183 theorems. Language games,
+rule-following, private language, family resemblance, hinge propositions,
+Tractatus vs.\ Investigations, showing vs.\ saying, philosophical therapy.
+
+\item \texttt{IDT\_v3\_Semiotics.lean} --- 158 theorems. Saussure, Peirce,
+Barthes, Eco's Open Work, Derrida's diff\'erance, Jakobson's six functions,
+Greimas' semiotic square.
+
+\item \texttt{IDT\_v3\_PowerStructure.lean} --- 152 theorems. Bourdieu,
+Gramsci, Foucault, Althusser, hegemony, ideology, propaganda, censorship,
+resistance, liberation dynamics.
+
+\item \texttt{IDT\_v3\_Networks.lean} --- 120 theorems. Network topology,
+diffusion dynamics, information cascades, community structure, influence.
+
+\item \texttt{IDT\_v3\_Poetics.lean} --- 103 theorems. Condensation,
+defamiliarization, meter, rhyme, irony, metaphor economy.
+
+\item \texttt{IDT\_v3\_Phenomenology.lean} --- 90 theorems. Husserl,
+Heidegger, Merleau-Ponty, intentionality, lifeworld, embodiment.
+
+\item \texttt{IDT\_v3\_DeepGames.lean} --- 72 theorems. Transparency,
+cocycle algebra, order sensitivity, attribution impossibility, weight ratchet,
+coalitions, fundamental synthesis.
+
+\item \texttt{IDT\_v3\_Diffusion.lean} --- 38 theorems. Transmission,
+chains, mutation, conservative/mutagenic receivers.
+
+\item \texttt{IDT\_v3\_Geometry.lean} --- 40 theorems. Distances,
+orthogonality, curvature, projections.
+
+\item \texttt{IDT\_v3\_Narrative.lean} --- 40 theorems. Plot, defamiliarization,
+narrative arcs, rhetoric.
+
+\item \texttt{IDT\_v3\_Cooperation.lean} --- 26 theorems. Coalition value,
+cooperation surplus, Shapley values.
+
+\item \texttt{IDT\_v3\_Evolution.lean} --- 24 theorems. Fitness, invasion,
+Red Queen, memetic drift.
+
+\item \texttt{IDT\_v3\_Translation.lean} --- 21 theorems. Faithful translation,
+untranslatability, round-trip fidelity.
+
+\item \texttt{IDT\_v3\_Dialectics.lean} --- 20 theorems. Opposition,
+synthesis, Aufhebung, iterated dialectics.
+\end{itemize}
+
+\noindent\textbf{Total: 1,827 theorems across 18 files, all compiling with zero
+\texttt{sorry} axioms.}
+
+\chapter*{Bibliography}
+
+\begin{enumerate}[label={[\arabic*]}]
+\item Aristotle, \emph{Metaphysics}.
+\item Austin, J.L., \emph{How to Do Things with Words}, Oxford, 1962.
+\item Bakhtin, M.M., \emph{The Dialogic Imagination}, University of Texas Press, 1981.
+\item Barthes, R., \emph{S/Z}, Hill and Wang, 1974.
+\item Bloom, H., \emph{The Anxiety of Influence}, Oxford, 1973.
+\item Dawkins, R., \emph{The Selfish Gene}, Oxford, 1976.
+\item Derrida, J., \emph{Of Grammatology}, Johns Hopkins, 1976.
+\item Gadamer, H.-G., \emph{Truth and Method}, Continuum, 1975.
+\item Grice, H.P., ``Logic and Conversation,'' in \emph{Syntax and Semantics 3}, 1975.
+\item Hegel, G.W.F., \emph{Phenomenology of Spirit}, Oxford, 1807/1977.
+\item Kristeva, J., ``Word, Dialogue, and Novel,'' in \emph{Desire in Language}, Columbia, 1980.
+\item Lewis, D., \emph{Convention}, Harvard, 1969.
+\item Nash, J., ``Non-Cooperative Games,'' \emph{Annals of Mathematics} 54(2), 1951.
+\item Peirce, C.S., \emph{Collected Papers}, Harvard, 1931--1958.
+\item de Saussure, F., \emph{Course in General Linguistics}, Open Court, 1916/1986.
+\item Shannon, C.E., ``A Mathematical Theory of Communication,'' \emph{Bell System Technical Journal}, 1948.
+\item Shklovsky, V., ``Art as Technique,'' 1917.
+\item von Neumann, J.\ and Morgenstern, O., \emph{Theory of Games and Economic Behavior}, Princeton, 1944.
+\item Wittgenstein, L., \emph{Philosophical Investigations}, Blackwell, 1953.
+\item Wittgenstein, L., \emph{Tractatus Logico-Philosophicus}, Routledge, 1921/1922.
+\end{enumerate}
+
+\end{document}

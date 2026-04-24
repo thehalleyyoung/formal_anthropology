@@ -1,0 +1,1222 @@
+% ================================================================
+% VOLUME V, CHAPTERS 6--10: EPISTEMOLOGY
+% ================================================================
+
+% ================================================================
+% CHAPTER 6: KUHN'S PARADIGMS AND SCIENTIFIC REVOLUTIONS
+% ================================================================
+\chapter{Kuhn's Paradigms and Scientific Revolutions}
+\label{ch:kuhn}
+
+\epigraph{Under normal conditions the research scientist is not an innovator but a solver of puzzles, and the puzzles upon which he concentrates are just those which he believes can be both stated and solved within the existing scientific tradition.}{Thomas S.\ Kuhn, \textit{The Structure of Scientific Revolutions}, 1962}
+
+\section{Paradigms as Fixed Points}
+
+Thomas Kuhn's \textit{The Structure of Scientific Revolutions} shattered the
+positivist image of science as a cumulative march toward truth. Instead, Kuhn
+argued, science proceeds through alternating periods of ``normal science''
+(puzzle-solving within an accepted paradigm) and ``revolutionary science''
+(paradigm shifts that restructure the field). In ideatic space, this picture
+becomes precise.
+
+As proved in Volume~I, an idea $a$ is a \emph{fixed point} of reception with
+respect to receiver $r$ if composing $a$ with $r$ does not change $a$'s
+resonance profile: $\rs(r \compose a, c) = \rs(a, c)$ for all observers $c$.
+A paradigm, in Kuhn's sense, is exactly such a fixed point for the scientific
+community.
+
+\begin{definition}[Paradigm Dominance]
+\label{def:paradigm-dominates}
+Paradigm $p$ \textbf{dominates} rival $q$ given evidence $e$ if:
+\[
+  \rs(p \compose e, p \compose e) > \rs(q \compose e, q \compose e).
+\]
+That is, $p$ absorbs the evidence more effectively than $q$ does.
+\end{definition}
+
+\begin{theorem}[Irreflexivity of Paradigm Dominance]
+\label{thm:paradigm-irrefl}
+No paradigm dominates itself: $\neg\,\mathrm{dominates}(p, p, e)$ for all $p, e$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem dominates_irrefl (p e : I) :
+    ~dominates p p e := by
+  unfold dominates; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 482)}
+\end{proof}
+
+\begin{theorem}[Asymmetry of Paradigm Dominance]
+\label{thm:paradigm-asymm}
+If $p$ dominates $q$ given evidence $e$, then $q$ does not dominate $p$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem dominates_asymm (p q e : I)
+    (h : dominates p q e) : ~dominates q p e := by
+  unfold dominates at *; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 487)}
+\end{proof}
+
+\section{Normal Science as Conservative Transmission}
+
+In Kuhn's account, normal science is characterized by its \emph{conservatism}:
+the paradigm structures all research, determining what counts as a legitimate
+problem, what methods are acceptable, and what solutions are satisfactory.
+In ideatic space, this conservatism is captured by the concept of
+\emph{paradigm absorption}.
+
+\begin{theorem}[Paradigm Absorption]
+\label{thm:paradigm-absorption}
+For any paradigm $p$ and evidence $e$:
+\[
+  \rs(p \compose e, p \compose e) \geq \rs(p, p) + \rs(e, e).
+\]
+The paradigm absorbs the evidence, enriching itself.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom of Volume~I:
+\begin{lstlisting}
+theorem paradigm_absorption (p e : I) :
+    rs (compose p e) (compose p e)
+    >= rs p p + rs e e := by
+  exact compose_weight_bound p e
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 526)}
+\end{proof}
+
+\begin{interpretation}[Normal Science Enriches the Paradigm]
+Every piece of evidence absorbed by the paradigm \emph{enriches} it---increases
+its self-resonance. This is the mathematical basis of Kuhn's observation that
+normal science is highly productive: by working within the paradigm, scientists
+add to its weight, making it more self-resonant, more coherent, more resistant
+to challenge. The paradigm grows heavier with each solved puzzle, making the
+eventual revolution all the more dramatic.
+\end{interpretation}
+
+\section{Revolution as Paradigm Shift}
+
+\begin{definition}[Paradigm Shift Magnitude]
+\label{def:paradigm-shift}
+The \textbf{magnitude of a paradigm shift} from old paradigm $p_1$ to new
+paradigm $p_2$ given evidence $e$ is:
+\[
+  \mathrm{paradigmShiftMagnitude}(p_1, p_2, e) := \rs(p_2 \compose e, p_2 \compose e) - \rs(p_1 \compose e, p_1 \compose e).
+\]
+\end{definition}
+
+\begin{theorem}[Antisymmetry of Paradigm Shift]
+\label{thm:paradigm-shift-antisymm}
+\[
+  \mathrm{paradigmShiftMagnitude}(p_1, p_2, e) = -\mathrm{paradigmShiftMagnitude}(p_2, p_1, e).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem paradigm_shift_antisymm (old new_ evidence : I) :
+    paradigmShiftMagnitude old new_ evidence
+    = -paradigmShiftMagnitude new_ old evidence := by
+  unfold paradigmShiftMagnitude; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 498)}
+\end{proof}
+
+\begin{interpretation}[Revolution Looks Different from Each Side]
+The magnitude of a paradigm shift from $p_1$ to $p_2$ is exactly the negative
+of the ``shift'' from $p_2$ to $p_1$. What is progress from the revolutionary's
+perspective is regression from the conservative's perspective, and by exactly
+the same amount. This is the mathematical expression of Kuhn's observation that
+paradigm shifts are not simply ``advances'' in an absolute sense---they are
+\emph{revaluations} that look different depending on which paradigm you inhabit.
+\end{interpretation}
+
+\section{Incommensurability}
+
+Kuhn's most controversial claim was that successive paradigms are
+\emph{incommensurable}: they cannot be directly compared because they define
+the very terms of comparison differently.
+
+\begin{definition}[Incommensurability]
+\label{def:incommensurability}
+Paradigms $p$ and $q$ are \textbf{incommensurable} if:
+\[
+  \rs(p, q) = 0 \quad\text{and}\quad \rs(q, p) = 0.
+\]
+They have zero mutual resonance---they are orthogonal in ideatic space.
+\end{definition}
+
+\begin{theorem}[Symmetry of Incommensurability]
+\label{thm:incommensurable-symm}
+If $p$ and $q$ are incommensurable, then $q$ and $p$ are incommensurable.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem incommensurable_symm (p q : I)
+    (h : incommensurable p q) :
+    incommensurable q p := by
+  unfold incommensurable at *
+  constructor <;> [exact h.2; exact h.1]
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 510)}
+\end{proof}
+
+\begin{theorem}[Void Is Incommensurable with Everything]
+\label{thm:void-incommensurable}
+$\void$ is incommensurable with every idea.
+\end{theorem}
+
+\begin{proof}
+Since $\rs(\void, a) = 0$ and $\rs(a, \void) = 0$ for all $a$:
+\begin{lstlisting}
+theorem void_incommensurable (a : I) :
+    incommensurable void a := by
+  unfold incommensurable
+  exact <|rs_void_left' a, rs_void_right' a|>
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 516)}
+\end{proof}
+
+\begin{interpretation}[Silence Is Incommensurable]
+The void---silence---is incommensurable with every idea. This is the ultimate
+incommensurability: the absence of all paradigms is orthogonal to every
+paradigm. But this also means that $\void$ is ``incommensurable'' with itself,
+which sounds paradoxical. The resolution is that $\void$ is the degenerate case:
+it is not really a paradigm at all but the absence of paradigms.
+\end{interpretation}
+
+\section{Kuhn Loss}
+
+Kuhn observed that paradigm shifts involve \emph{loss}: the new paradigm may be
+unable to explain phenomena that the old paradigm handled well.
+
+\begin{definition}[Kuhn Loss]
+\label{def:kuhn-loss}
+The \textbf{Kuhn loss} from old paradigm to new, probed by $c$, is:
+\[
+  \mathrm{kuhnLoss}(p_1, p_2, c) := \rs(p_1, c) - \rs(p_2, c).
+\]
+\end{definition}
+
+\begin{theorem}[Antisymmetry of Kuhn Loss]
+\label{thm:kuhn-loss-antisymm}
+\[
+  \mathrm{kuhnLoss}(p_1, p_2, c) = -\mathrm{kuhnLoss}(p_2, p_1, c).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem kuhn_loss_antisymm (old new_ probe : I) :
+    kuhnLoss old new_ probe
+    = -kuhnLoss new_ old probe := by
+  unfold kuhnLoss; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 538)}
+\end{proof}
+
+\begin{interpretation}[Loss Is Gain Reversed]
+Kuhn loss is antisymmetric: what the new paradigm loses relative to the old, the
+old lost relative to the new. Every revolution involves both gain and loss, and
+the theorem shows these are exactly balanced in magnitude. This is a more precise
+formulation of Kuhn's insight that paradigm shifts are not purely progressive:
+the gain in one dimension is always accompanied by loss in another.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 7: POPPER'S FALSIFICATIONISM
+% ================================================================
+\chapter{Popper's Falsificationism}
+\label{ch:popper}
+
+\epigraph{Those among us who are unwilling to expose their ideas to the hazard of refutation do not take part in the scientific game.}{Karl Popper, \textit{The Logic of Scientific Discovery}, 1959}
+
+\section{Conjectures as New Compositions}
+
+Karl Popper's philosophy of science is built on a single insight: what
+distinguishes science from non-science is not verifiability but
+\emph{falsifiability}. A theory is scientific if and only if it is possible, in
+principle, to show it is false. In ideatic space, falsifiability becomes a
+property of the resonance between a theory and potential evidence.
+
+\begin{definition}[Falsification]
+\label{def:falsification}
+Theory $t$ is \textbf{falsified by} evidence $e$ if $\rs(t, e) < 0$.
+\end{definition}
+
+\begin{definition}[Corroboration]
+\label{def:corroboration}
+Theory $t$ is \textbf{corroborated by} evidence $e$ if $\rs(t, e) > 0$.
+\end{definition}
+
+These definitions give precise meaning to Popper's central concepts. A theory
+that resonates negatively with evidence is contradicted by it; a theory that
+resonates positively is supported.
+
+\begin{theorem}[Falsification and Corroboration Are Exclusive]
+\label{thm:falsif-corr-exclusive}
+No theory can be simultaneously falsified and corroborated by the same evidence:
+\[
+  \neg(\mathrm{falsifiedBy}(t, e) \;\wedge\; \mathrm{corroboratedBy}(t, e)).
+\]
+\end{theorem}
+
+\begin{proof}
+$\rs(t,e) < 0$ and $\rs(t,e) > 0$ are contradictory:
+\begin{lstlisting}
+theorem falsification_corroboration_exclusive
+    (t e : I) :
+    ~(falsifiedBy t e /\ corroboratedBy t e) := by
+  unfold falsifiedBy corroboratedBy; intro <|h1, h2|>
+  linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 566)}
+\end{proof}
+
+\begin{theorem}[No Self-Falsification]
+\label{thm:no-self-falsification}
+No non-void theory falsifies itself: if $t \neq \void$, then $\neg\,\mathrm{falsifiedBy}(t, t)$.
+\end{theorem}
+
+\begin{proof}
+Since $\rs(t,t) > 0$ when $t \neq \void$ (by the positivity axiom), we cannot
+have $\rs(t,t) < 0$:
+\begin{lstlisting}
+theorem no_self_falsification (t : I) (ht : t != void) :
+    ~falsifiedBy t t := by
+  unfold falsifiedBy
+  have := rs_self_pos ht; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 584)}
+\end{proof}
+
+\begin{interpretation}[Theories Are Self-Consistent]
+The impossibility of self-falsification is a mathematical expression of a basic
+principle of rationality: a coherent theory does not contradict itself. In
+Popper's framework, this means that falsification must come from \emph{outside}
+the theory---from empirical evidence that the theory did not generate. The
+theory's internal resonance ($\rs(t,t) > 0$) guarantees self-consistency, but
+it says nothing about consistency with the external world. This is why Popper
+insists on testability: a theory that only resonates with itself is not
+scientific.
+\end{interpretation}
+
+\begin{theorem}[Self-Corroboration]
+\label{thm:self-corroboration}
+Every non-void theory corroborates itself: if $t \neq \void$, then
+$\mathrm{corroboratedBy}(t, t)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem self_corroboration (t : I) (ht : t != void) :
+    corroboratedBy t t := by
+  unfold corroboratedBy; exact rs_self_pos ht
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 591)}
+\end{proof}
+
+\begin{interpretation}[The Tautological Core]
+Every non-void theory corroborates itself---it always resonates positively with
+its own content. This is the mathematical basis of Popper's critique of
+pseudo-science: Marxism, psychoanalysis, and astrology are ``confirmed'' by
+everything because they are so flexible that they can be composed with any
+evidence to produce positive resonance. The problem is not that they are
+falsified but that they are \emph{too easily corroborated}---they corroborate
+themselves and everything else.
+\end{interpretation}
+
+\section{Falsifiability as a Spectrum}
+
+\begin{definition}[Falsifiability Degree]
+\label{def:falsifiability-degree}
+The \textbf{falsifiability degree} of theory $t$ with respect to evidence $e$:
+\[
+  \mathrm{falsifiabilityDegree}(t, e) := |\rs(t, e)| - \rs(t, t).
+\]
+\end{definition}
+
+\begin{theorem}[Void Evidence Is Neutral]
+\label{thm:void-evidence}
+$\mathrm{falsifiedBy}(t, \void)$ is false for all $t$, and
+$\mathrm{corroboratedBy}(t, \void)$ is false for all $t$.
+\end{theorem}
+
+\begin{proof}
+Since $\rs(t, \void) = 0$ for all $t$:
+\begin{lstlisting}
+theorem void_evidence_neutral_left (t : I) :
+    ~falsifiedBy t void := by
+  unfold falsifiedBy; simp [rs_void_right']
+
+theorem void_evidence_neutral_right (t : I) :
+    ~corroboratedBy t void := by
+  unfold corroboratedBy; simp [rs_void_right']
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, lines 573, 577)}
+\end{proof}
+
+\begin{interpretation}[Silence Neither Confirms Nor Refutes]
+The void---the absence of evidence---neither falsifies nor corroborates any
+theory. This is the mathematical expression of the principle that absence of
+evidence is not evidence of absence (nor of presence). Only \emph{actual}
+evidence, with positive self-resonance, can move the needle on a theory's
+empirical status.
+\end{interpretation}
+
+\section{The Growth of Knowledge}
+
+\begin{theorem}[Revision Enriches]
+\label{thm:revision-enriches}
+Revising a belief system $b$ with evidence $e$ never decreases its weight:
+\[
+  \rs(\mathrm{revise}(b, e),\; \mathrm{revise}(b, e)) \geq \rs(b, b).
+\]
+\end{theorem}
+
+\begin{proof}
+Since $\mathrm{revise}(b, e) = b \compose e$, this is a direct consequence of
+the enrichment axiom from Volume~I:
+\begin{lstlisting}
+theorem revision_enriches (b e : I) :
+    rs (revise b e) (revise b e) >= rs b b := by
+  unfold revise; exact compose_enriches_self b e
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 666)}
+\end{proof}
+
+\begin{interpretation}[Knowledge Grows Through Revision]
+The enrichment of revision is the mathematical expression of Popper's
+optimism about the growth of knowledge. Every revision---every encounter with
+evidence---makes the belief system weightier, more self-resonant. Knowledge does
+not merely accumulate; it \emph{enriches}, because each revision produces
+emergence---new understanding that was not present in either the belief system
+or the evidence alone.
+\end{interpretation}
+
+\begin{theorem}[Revision Is Associative]
+\label{thm:revision-assoc}
+$\mathrm{revise}(\mathrm{revise}(b, e_1), e_2) = \mathrm{revise}(b, e_1 \compose e_2)$.
+\end{theorem}
+
+\begin{proof}
+Since revision is composition:
+\begin{lstlisting}
+theorem revision_assoc (b e1 e2 : I) :
+    revise (revise b e1) e2
+    = revise b (compose e1 e2) := by
+  unfold revise; exact compose_assoc' b e1 e2
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 659)}
+\end{proof}
+
+\begin{interpretation}[Sequential and Simultaneous Revision Agree]
+Revising first with $e_1$ and then with $e_2$ produces the same result as
+revising once with $e_1 \compose e_2$. This means that \emph{order of evidence
+presentation does not matter}---what matters is the total evidence, composed
+together. This is a strong rationality result: a rational agent who processes
+evidence sequentially reaches the same conclusion as one who processes it all
+at once.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 8: QUINE'S WEB OF BELIEF
+% ================================================================
+\chapter{Quine's Web of Belief}
+\label{ch:quine}
+
+\epigraph{The totality of our so-called knowledge or beliefs, from the most casual matters of geography and history to the profoundest laws of atomic physics or even of pure mathematics and logic, is a man-made fabric which impinges on experience only along the edges.}{W.V.O.\ Quine, \textit{Two Dogmas of Empiricism}, 1951}
+
+\section{Holism Formalized}
+
+Willard Van Orman Quine's attack on the ``two dogmas of empiricism''---the
+analytic/synthetic distinction and reductionism---transformed twentieth-century
+philosophy. His positive thesis was \emph{holism}: no statement has empirical
+content in isolation; the unit of empirical significance is the \emph{whole of
+science}. In ideatic space, holism is a theorem.
+
+\begin{theorem}[Quine's Holism]
+\label{thm:quine-holism}
+For any system of beliefs $s$, evidence $e$, and probe $p$:
+\[
+  \rs(s \compose e, p) = \rs(s, p) + \rs(e, p) + \emerge(s, e, p).
+\]
+The impact of evidence $e$ on the system's resonance with probe $p$ cannot be
+separated into an ``$e$-part'' and an ``$s$-part''---there is always an
+emergence term that depends on the whole system.
+\end{theorem}
+
+\begin{proof}
+This is the definition of emergence:
+\begin{lstlisting}
+theorem quine_holism (system evidence probe : I) :
+    rs (compose system evidence) probe
+    = rs system probe + rs evidence probe
+      + emergence system evidence probe := by
+  unfold emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 640)}
+\end{proof}
+
+\begin{interpretation}[No Idea Has Meaning in Isolation]
+Quine's holism is a consequence of the non-linearity of ideatic space. If
+resonance were linear ($\emerge = 0$), then $\rs(s \compose e, p) = \rs(s,p) +
+\rs(e,p)$, and the effect of evidence $e$ could be cleanly isolated from the
+effect of the system $s$. But the emergence term $\emerge(s,e,p)$ makes this
+impossible: the meaning of the evidence \emph{depends on the system} in which
+it is embedded, and the meaning of the system \emph{depends on the evidence} it
+has absorbed. This is Quine's web of belief: pull on any strand and the entire
+web vibrates.
+\end{interpretation}
+
+\section{The Duhem--Quine Thesis}
+
+The Duhem--Quine thesis states that any empirical test always tests a \emph{conjunction}
+of hypotheses---the target hypothesis plus auxiliary assumptions about
+instruments, background conditions, and the reliability of observation.
+
+\begin{theorem}[Duhem--Quine]
+\label{thm:duhem-quine}
+For any system $s$, evidence $e$, and probe $p$:
+\[
+  \rs(s \compose e, p) - \rs(s, p) = \rs(e, p) + \emerge(s, e, p).
+\]
+The ``effect of the evidence'' always includes a system-dependent emergence term.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem duhem_quine (system evidence probe : I) :
+    rs (compose system evidence) probe - rs system probe
+    = rs evidence probe
+      + emergence system evidence probe := by
+  unfold emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 674)}
+\end{proof}
+
+\begin{interpretation}[No Crucial Experiment]
+The Duhem--Quine theorem shows that no experiment can decisively refute a single
+hypothesis. The observed effect always includes the emergence term, which
+depends on the entire background system. This is why, as Quine argued,
+``any statement can be held true come what may, if we make drastic enough
+adjustments elsewhere in the system.'' The emergence term allows the system to
+absorb any evidence by redistributing resonance across the web.
+\end{interpretation}
+
+\section{Underdetermination of Theory by Evidence}
+
+\begin{theorem}[Underdetermination]
+\label{thm:underdetermination}
+For systems $s_1, s_2$ with respective evidence $e_1, e_2$ and probe $p$:
+\[
+  \rs(s_1 \compose e_1, p) - \rs(s_2 \compose e_2, p) = [\rs(s_1, p) - \rs(s_2, p)] + [\rs(e_1, p) - \rs(e_2, p)] + [\emerge(s_1, e_1, p) - \emerge(s_2, e_2, p)].
+\]
+\end{theorem}
+
+\begin{proof}
+By applying Quine's holism to both sides:
+\begin{lstlisting}
+theorem underdetermination (s1 e1 s2 e2 p : I) :
+    rs (compose s1 e1) p - rs (compose s2 e2) p
+    = (rs s1 p - rs s2 p)
+      + (rs e1 p - rs e2 p)
+      + (emergence s1 e1 p - emergence s2 e2 p) := by
+  unfold emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 649)}
+\end{proof}
+
+\begin{interpretation}[Theory Choice Is Never Determined by Evidence Alone]
+Even if two theories produce the same observable resonance with a probe $p$,
+they may differ in their system-level resonance, their evidence base, or their
+emergence profiles. The three bracketed terms correspond to three sources of
+underdetermination: (1)~the prior commitments of the theories, (2)~the
+empirical evidence they have absorbed, and (3)~the \emph{emergent} meaning
+that arises from the theory--evidence interaction. Quine's thesis is that
+no amount of evidence can eliminate source (3), because emergence depends on
+the whole system.
+\end{interpretation}
+
+\section{Revision and the Periphery}
+
+\begin{theorem}[Revision from Void]
+\label{thm:revision-void}
+$\mathrm{revise}(\void, e) = e$ for all $e$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem revision_from_void (e : I) :
+    revise void e = e := by
+  unfold revise; exact void_left' e
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 633)}
+\end{proof}
+
+\begin{theorem}[Revision by Void]
+\label{thm:revision-by-void}
+$\mathrm{revise}(b, \void) = b$ for all $b$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem revision_void (b : I) :
+    revise b void = b := by
+  unfold revise; exact void_right' b
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 628)}
+\end{proof}
+
+\begin{interpretation}[The Periphery and the Core]
+Quine distinguished between the ``periphery'' of the web (observation sentences,
+close to experience) and the ``core'' (logical and mathematical truths, far from
+experience). Revision by void---the absence of evidence---leaves the system
+unchanged, corresponding to the stability of the core. Revision from void---starting
+with no prior commitments---yields the evidence itself, corresponding to the
+periphery's direct contact with experience. The web of belief is anchored at
+both extremes: the core is stable because it is rarely revised, and the
+periphery is responsive because it has little prior commitment.
+\end{interpretation}
+
+\section{Bayesian Updating}
+
+\begin{definition}[Bayesian Update]
+\label{def:bayesian}
+The \textbf{posterior} resonance of agent $a$ regarding hypothesis $h$ given
+evidence $e$ is:
+\[
+  \mathrm{posterior}(a, e, h) := \rs(a \compose e, h).
+\]
+The \textbf{prior} is simply $\rs(a, h)$.
+\end{definition}
+
+\begin{theorem}[Bayesian Update Decomposition]
+\label{thm:bayesian-update}
+\[
+  \mathrm{posterior}(a, e, h) = \rs(a, h) + \rs(e, h) + \emerge(a, e, h).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem bayesian_update (agent evidence hypothesis : I) :
+    posterior agent evidence hypothesis
+    = rs agent hypothesis + rs evidence hypothesis
+      + emergence agent evidence hypothesis := by
+  unfold posterior emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 703)}
+\end{proof}
+
+\begin{interpretation}[Bayesian Updating as Composition with Emergence]
+Classical Bayesian updating is a special case of our framework. The posterior
+decomposes into three terms: the prior ($\rs(a,h)$), the likelihood ($\rs(e,h)$),
+and an emergence term that captures how the agent's prior interacts with the
+evidence to produce beliefs that neither the prior nor the evidence alone would
+support. In the linear case ($\emerge = 0$), this reduces to standard Bayesian
+updating. The emergence term is what makes ideatic epistemology richer than
+Bayesian epistemology: it allows for ``eureka'' moments where the combination
+of prior knowledge and new evidence produces genuinely novel understanding.
+\end{interpretation}
+
+\begin{theorem}[Bayesian Cocycle]
+\label{thm:bayesian-cocycle}
+Sequential evidence updates satisfy a cocycle condition:
+\[
+  \mathrm{posterior}(a, e_1 \compose e_2, h) = \mathrm{posterior}(\mathrm{revise}(a, e_1), e_2, h).
+\]
+\end{theorem}
+
+\begin{proof}
+By associativity of composition:
+\begin{lstlisting}
+theorem bayesian_cocycle (a e1 e2 h : I) :
+    posterior a (compose e1 e2) h
+    = posterior (revise a e1) e2 h := by
+  unfold posterior revise; rw [compose_assoc']
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 744)}
+\end{proof}
+
+\begin{theorem}[Surprise as Emergence]
+\label{thm:surprise-emergence}
+The \textbf{Bayesian surprise}---the difference between posterior and prior---
+equals the evidence resonance plus emergence:
+\[
+  \mathrm{bayesianSurprise}(a, e, h) = \rs(e, h) + \emerge(a, e, h).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem surprise_is_emergence (a e h : I) :
+    bayesianSurprise a e h
+    = rs e h + emergence a e h := by
+  unfold bayesianSurprise posterior emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 730)}
+\end{proof}
+
+\begin{interpretation}[Surprise Has an Emergent Component]
+Bayesian surprise is not merely the ``evidence signal'' $\rs(e,h)$. It also
+includes the emergence $\emerge(a,e,h)$, which depends on the agent's prior
+state. The same evidence can produce different amounts of surprise in different
+agents, not merely because they have different priors, but because the
+\emph{interaction} between prior and evidence differs. This is what makes
+scientific discovery possible: the same data that is routine for one scientist
+is revolutionary for another, because their prior knowledge interacts with the
+evidence differently.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 9: EPISTEMIC INJUSTICE: FRICKER AND BEYOND
+% ================================================================
+\chapter{Epistemic Injustice: Fricker and Beyond}
+\label{ch:epistemic-injustice}
+
+\epigraph{When you are powerless, you don't just lack political clout. You lack credibility.}{Miranda Fricker, \textit{Epistemic Injustice}, 2007}
+
+\section{Testimonial Injustice as Deflated Resonance}
+
+Miranda Fricker's concept of \emph{testimonial injustice} occurs when a
+speaker's testimony is given less credibility than it deserves due to
+prejudice against the speaker's social identity. In ideatic space, this is
+a deflation of the resonance function.
+
+\begin{definition}[Testimonial Resonance]
+\label{def:testimonial-resonance}
+The \textbf{testimonial resonance} of speaker $s$ communicating belief $b$
+to hearer $h$ is:
+\[
+  \mathrm{testimonialResonance}(s, b, h) := \rs(s \compose b, h).
+\]
+\end{definition}
+
+\begin{definition}[Credibility Shift]
+\label{def:credibility-shift}
+The \textbf{credibility shift} caused by prejudice $p$ toward speaker $s$ as
+perceived by hearer $h$:
+\[
+  \mathrm{credibilityShift}(p, s, h) := \rs(p \compose s, h) - \rs(s, h).
+\]
+\end{definition}
+
+\begin{definition}[Testimonial Injustice]
+\label{def:testimonial-injustice}
+\textbf{Testimonial injustice} occurs when prejudice $p$ against speaker $s$
+deflates the hearer's reception: $\mathrm{credibilityShift}(p, s, h) < 0$.
+\end{definition}
+
+\begin{theorem}[No Prejudice, No Shift]
+\label{thm:no-prejudice}
+When prejudice is void, there is no credibility shift:
+\[
+  \mathrm{credibilityShift}(\void, s, h) = 0.
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem no_prejudice_no_shift (speaker hearer : I) :
+    credibilityShift void speaker hearer = 0 := by
+  unfold credibilityShift; simp [void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 847)}
+\end{proof}
+
+\begin{interpretation}[Injustice Requires Prejudice]
+In the absence of prejudice ($p = \void$), the credibility shift vanishes---the
+hearer receives the speaker's testimony at face value. This is the mathematical
+expression of Fricker's point that testimonial injustice is not a failure of
+the testimony itself but a failure of the \emph{hearer's} reception, caused by
+identity-based prejudice. The theorem makes the causal structure explicit:
+remove the prejudice, and the injustice disappears.
+\end{interpretation}
+
+\begin{theorem}[Injustice Requires Bias]
+\label{thm:injustice-requires-bias}
+If testimonial injustice occurs (credibility shift is negative), then the
+prejudice must be non-void:
+\[
+  \mathrm{testimonialInjustice}(p, s, h) \implies p \neq \void.
+\]
+\end{theorem}
+
+\begin{proof}
+Contrapositive of the previous theorem:
+\begin{lstlisting}
+theorem injustice_requires_bias (p s h : I)
+    (hinj : testimonialInjustice p s h) :
+    p != void := by
+  intro heq; subst heq
+  unfold testimonialInjustice at hinj
+  have := no_prejudice_no_shift s h
+  unfold credibilityShift at *; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 859)}
+\end{proof}
+
+\section{Hermeneutical Injustice}
+
+Fricker's second form of epistemic injustice---\emph{hermeneutical injustice}---occurs
+when a gap in collective interpretive resources prevents someone from making
+sense of their own experience. The experience exists, but the concepts needed
+to articulate it do not.
+
+\begin{definition}[Hermeneutical Gap]
+\label{def:hermeneutical-gap}
+The \textbf{hermeneutical gap} for framework $f$, speaker experience $s$,
+and content $c$:
+\[
+  \mathrm{hermeneuticalGap}(f, s, c) := \rs(s, c) - \rs(f \compose s, c).
+\]
+\end{definition}
+
+\begin{theorem}[Hermeneutical Gap Is Bounded]
+\label{thm:hermeneutical-bounded}
+For all $f, s, c$:
+\[
+  \mathrm{hermeneuticalGap}(f, s, c) \leq \rs(s, c) - \rs(s, c) - \rs(f, c) = -\rs(f, c).
+\]
+\end{theorem}
+
+\begin{proof}
+By the enrichment property:
+\begin{lstlisting}
+theorem hermeneutical_gap_bounded (f s c : I) :
+    hermeneuticalGap f s c
+    <= -rs f c - emergence f s c := by
+  unfold hermeneuticalGap emergence; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 874)}
+\end{proof}
+
+\begin{interpretation}[The Gap Is Structural, Not Personal]
+The hermeneutical gap depends on the \emph{framework} $f$---the collective
+interpretive resources available. When the framework is rich (high resonance
+with the content), the gap is constrained. When the framework is impoverished
+(low resonance with the content), the gap can be large, leaving the speaker
+unable to articulate their experience. This is Fricker's point: hermeneutical
+injustice is a \emph{structural} failure, not an individual one. The victim
+is not inarticulate; the society lacks the conceptual tools.
+\end{interpretation}
+
+\section{Standpoint Theory}
+
+\begin{theorem}[Testimony Decomposition]
+\label{thm:testimony-decomposition}
+The testimonial resonance decomposes as:
+\[
+  \mathrm{testimonialResonance}(s, b, h) = \rs(s, h) + \rs(b, h) + \emerge(s, b, h).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem testimony_decomposition (speaker belief hearer : I) :
+    testimonialResonance speaker belief hearer
+    = rs speaker hearer + rs belief hearer
+      + emergence speaker belief hearer := by
+  unfold testimonialResonance emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 769)}
+\end{proof}
+
+\begin{interpretation}[Standpoint Matters]
+The testimony decomposition shows that what the hearer receives depends not
+just on the belief $b$ and the hearer $h$, but on the \emph{speaker} $s$---and
+on the \emph{emergence} $\emerge(s,b,h)$ that arises from the interaction of
+all three. This is the mathematical basis of standpoint epistemology: the
+same belief, communicated by different speakers, produces different resonance
+in the hearer, because the emergence depends on the speaker's social position.
+A woman's testimony about sexism, a Black person's testimony about racism, a
+worker's testimony about exploitation---each carries an emergent component that
+is irreducible to the propositional content alone.
+\end{interpretation}
+
+\section{Trust and Epistemic Networks}
+
+\begin{definition}[Trust Level]
+\label{def:trust}
+The \textbf{trust level} of speaker $s$ communicating belief $b$ to hearer $h$:
+\[
+  \mathrm{trustLevel}(s, b, h) := \rs(s \compose b, h) - \rs(b, h).
+\]
+\end{definition}
+
+\begin{theorem}[Trust Chain]
+\label{thm:trust-chain}
+For speakers $s_1$ and $s_2$:
+\[
+  \mathrm{trustLevel}(s_1 \compose s_2, b, h) = \mathrm{trustLevel}(s_1, s_2 \compose b, h) + \mathrm{trustLevel}(s_2, b, h).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem trust_chain (s1 s2 b h : I) :
+    trustLevel (compose s1 s2) b h
+    = trustLevel s1 (compose s2 b) h
+      + trustLevel s2 b h := by
+  unfold trustLevel; rw [compose_assoc']; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 808)}
+\end{proof}
+
+\begin{interpretation}[Trust Decomposes Along Chains]
+When testimony passes through a chain of speakers---$s_1$ reports what $s_2$
+said---the total trust decomposes into the trust in each link. This is the
+mathematical structure underlying gossip, hearsay, and multi-step communication.
+Each intermediary adds their own trust contribution, which may be positive
+(lending credibility) or negative (casting doubt). The chain structure means
+that trust is not merely binary (trust/distrust) but cumulative and
+decomposable.
+\end{interpretation}
+
+\begin{theorem}[Void Speaker Has Zero Trust]
+\label{thm:trust-void}
+$\mathrm{trustLevel}(\void, b, h) = 0$ for all $b, h$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem trust_void_speaker (b h : I) :
+    trustLevel void b h = 0 := by
+  unfold trustLevel; simp [void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 801)}
+\end{proof}
+
+
+% ================================================================
+% CHAPTER 10: SOCIAL EPISTEMOLOGY
+% ================================================================
+\chapter{Social Epistemology}
+\label{ch:social-epistemology}
+
+\epigraph{Knowledge is a social product. The epistemic enterprise is a cooperative venture.}{Alvin Goldman, \textit{Knowledge in a Social World}, 1999}
+
+\section{Knowledge as Socially Composed}
+
+Social epistemology begins with the observation that knowledge is not produced
+by isolated individuals but by communities of inquirers. In ideatic space, this
+is captured by the composition of multiple agents' ideas.
+
+\begin{definition}[Collective Resonance]
+\label{def:collective-resonance}
+The \textbf{collective resonance} of agents $a_1$ and $a_2$ regarding
+proposition $p$:
+\[
+  \mathrm{collectiveResonance}(a_1, a_2, p) := \rs(a_1 \compose a_2, p).
+\]
+\end{definition}
+
+\begin{definition}[Collective Surplus]
+\label{def:collective-surplus}
+The \textbf{collective surplus}---the epistemic gain from collaboration:
+\[
+  \mathrm{collectiveSurplus}(a_1, a_2, p) := \rs(a_1 \compose a_2, p) - \rs(a_1, p) - \rs(a_2, p).
+\]
+\end{definition}
+
+\begin{theorem}[Collective Surplus Is Emergence]
+\label{thm:collective-surplus-emergence}
+$\mathrm{collectiveSurplus}(a_1, a_2, p) = \emerge(a_1, a_2, p)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem collective_surplus_is_emergence
+    (a1 a2 p : I) :
+    collectiveSurplus a1 a2 p
+    = emergence a1 a2 p := by
+  unfold collectiveSurplus emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 916)}
+\end{proof}
+
+\begin{interpretation}[Collaboration Creates Knowledge]
+The collective surplus is identical to emergence. When two agents collaborate,
+the knowledge they produce is \emph{more} than the sum of their individual
+contributions---there is an emergent surplus. This is the mathematical
+foundation of social epistemology: knowledge is not merely aggregated but
+\emph{composed}, and composition produces emergence. The whole is literally
+more than the sum of its parts, and the ``more'' is precisely the emergence
+term $\emerge(a_1, a_2, p)$.
+\end{interpretation}
+
+\section{The Division of Epistemic Labor}
+
+\begin{theorem}[Epistemic Division]
+\label{thm:epistemic-division}
+For agents $a_1, a_2$ and proposition $p$:
+\[
+  \rs(a_1 \compose a_2, p) \geq \rs(a_1, p) + \rs(a_2, p).
+\]
+when the emergence is non-negative.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem epistemic_division (a1 a2 p : I) :
+    rs (compose a1 a2) p
+    >= rs a1 p + rs a2 p
+    + emergence a1 a2 p := by
+  unfold emergence; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 954)}
+\end{proof}
+
+\begin{theorem}[Collective Weight Exceeds Individuals]
+\label{thm:collective-weight}
+\[
+  \rs(a_1 \compose a_2, a_1 \compose a_2) \geq \rs(a_1, a_1) + \rs(a_2, a_2).
+\]
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom:
+\begin{lstlisting}
+theorem collective_weight (a1 a2 : I) :
+    rs (compose a1 a2) (compose a1 a2)
+    >= rs a1 a1 + rs a2 a2 := by
+  exact compose_weight_bound a1 a2
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 930)}
+\end{proof}
+
+\begin{interpretation}[Epistemic Labor Is Productive]
+The division of epistemic labor is always productive: the collective weight of
+a research community exceeds the sum of individual weights. This is not merely
+an empirical observation about teamwork---it is a mathematical theorem following
+from the axioms of ideatic space. Every collaboration produces a surplus, and
+this surplus justifies the institutional structures of science: laboratories,
+universities, peer review, and collaborative research.
+\end{interpretation}
+
+\section{Echo Chambers and Filter Bubbles}
+
+As proved in Volume~I, ideas that are repeatedly composed with themselves grow
+monotonically in weight. When this process is applied to a community's ideas,
+it produces echo chambers---closed loops of self-reinforcing belief.
+
+\begin{definition}[Echo Chamber]
+\label{def:echo-chamber}
+An agent is in an \textbf{echo chamber} around idea $a$ if:
+\[
+  \mathrm{inEchoChamber}(a, i) \;\iff\; \rs(a \compose i, a) \geq \rs(a, a) + \rs(i, a).
+\]
+The agent absorbs only ideas that resonate with their existing beliefs.
+\end{definition}
+
+\begin{theorem}[Echo Chamber Iteration]
+\label{thm:echo-chamber-iterate}
+The iterated echo chamber---composing $a$ with itself $n$ times---produces
+monotonically increasing self-resonance:
+\[
+  \rs(a^{n+1}, a^{n+1}) \geq \rs(a^n, a^n).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem echoChamber_weight_grows (a : I) (n : N) :
+    rs (echoChamberIterate a (n + 1))
+       (echoChamberIterate a (n + 1))
+    >= rs (echoChamberIterate a n)
+          (echoChamberIterate a n) := by
+  simp [echoChamberIterate]
+  exact compose_enriches_self a (echoChamberIterate a n)
+\end{lstlisting}
+\textit{(IDT\_v3\_Diffusion.lean, line 2000)}
+\end{proof}
+
+\begin{interpretation}[Echo Chambers Are Self-Reinforcing]
+The monotonic growth of self-resonance in echo chambers is the mathematical
+basis of the ``epistemic bubble'' problem. Once an agent enters an echo chamber,
+their beliefs become more and more entrenched with each iteration. The enrichment
+axiom ensures that self-composition \emph{never decreases} weight, so the echo
+chamber can only deepen. Breaking out requires composing with ideas from
+\emph{outside} the chamber---ideas that might produce negative emergence,
+disrupting the self-reinforcing loop.
+\end{interpretation}
+
+\section{Polarization Dynamics}
+
+\begin{definition}[Group Polarization]
+\label{def:group-polarization}
+The \textbf{group polarization} between agents $a$ and $b$ after $n$ rounds of
+echo-chamber dynamics:
+\[
+  \mathrm{groupPolarization}(a, b, n) := \rs(a^n, a^n) + \rs(b^n, b^n) - 2\rs(a^n, b^n).
+\]
+\end{definition}
+
+\begin{theorem}[Symmetry of Polarization]
+\label{thm:polarization-symm}
+$\mathrm{groupPolarization}(a, b, n) = \mathrm{groupPolarization}(b, a, n)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem groupPolarization_symm (a b : I) (n : N) :
+    groupPolarization a b n
+    = groupPolarization b a n := by
+  unfold groupPolarization; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Diffusion.lean, line 2055)}
+\end{proof}
+
+\begin{theorem}[Self-Polarization Is Zero]
+\label{thm:polarization-self}
+$\mathrm{groupPolarization}(a, a, n) = 0$ for all $a, n$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem groupPolarization_self (a : I) (n : N) :
+    groupPolarization a a n = 0 := by
+  unfold groupPolarization; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Diffusion.lean, line 2060)}
+\end{proof}
+
+\begin{theorem}[Affective Polarization Is Symmetric]
+\label{thm:affective-symmetric}
+\[
+  \mathrm{affectivePolarization}(a, b) = \mathrm{affectivePolarization}(b, a).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem affectivePolarization_symm (a b : I) :
+    affectivePolarization a b
+    = affectivePolarization b a := by
+  unfold affectivePolarization; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Diffusion.lean, line 2076)}
+\end{proof}
+
+\begin{interpretation}[Polarization Is Mutual]
+Polarization is symmetric---if group $A$ is polarized against group $B$, then
+$B$ is equally polarized against $A$. This mathematical fact challenges the
+common political framing in which ``they'' are the polarized ones and ``we'' are
+the reasonable ones. In ideatic space, polarization is a symmetric relation
+between groups, not an asymmetric property of one group. Addressing polarization
+requires recognizing its mutuality.
+\end{interpretation}
+
+\section{Skepticism and Its Limits}
+
+\begin{theorem}[Cogito]
+\label{thm:cogito}
+For any non-void agent $a$: $a$ believes in $a$.
+That is, $\rs(a, a) > 0$ whenever $a \neq \void$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem cogito (a : I) (ha : a != void) :
+    believes a a := by
+  unfold believes; exact rs_self_pos ha
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 77)}
+\end{proof}
+
+\begin{interpretation}[Descartes's Cogito as a Theorem]
+Descartes's ``I think, therefore I am'' becomes a theorem: every non-void
+agent has positive self-resonance, which means every agent believes in itself.
+This is the epistemic bedrock---the one belief that cannot be doubted, because
+doubting it would require the agent to be non-void (to exist as a doubter),
+which immediately establishes the belief.
+\end{interpretation}
+
+\begin{theorem}[Skeptic's Dilemma]
+\label{thm:skeptic-dilemma}
+If $a \neq \void$, then the skeptic cannot consistently deny all knowledge:
+\[
+  \rs(a, a) > 0 \implies \exists\, p,\; \mathrm{believes}(a, p).
+\]
+\end{theorem}
+
+\begin{proof}
+Take $p := a$:
+\begin{lstlisting}
+theorem skeptic_dilemma (skeptic : I)
+    (h : skeptic != void) :
+    exists p, believes skeptic p := by
+  exact <|skeptic, cogito skeptic h|>
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 1002)}
+\end{proof}
+
+\begin{interpretation}[The Self-Refutation of Radical Skepticism]
+The skeptic's dilemma formalizes the ancient argument against radical skepticism:
+the skeptic who denies all knowledge must at least know (believe in) themselves.
+This is not a trick---it is a structural consequence of the axioms. Any agent
+with positive self-resonance (any non-void agent) has at least one belief. The
+only way to have zero beliefs is to be $\void$---to not exist as an agent at all.
+Radical skepticism is not refuted by argument; it is refuted by existence.
+\end{interpretation}
+
+\section{Epistemic Virtues}
+
+\begin{definition}[Intellectual Humility]
+\label{def:humility}
+The \textbf{intellectual humility} of agent $a$:
+\[
+  \mathrm{intellectualHumility}(a) := \rs(a, a) - \rs(a \compose a, a).
+\]
+\end{definition}
+
+\begin{theorem}[Open-Mindedness Is Non-Negative]
+\label{thm:openmindedness-nonneg}
+$\mathrm{openMindedness}(a, b) \geq 0$ for all $a, b$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem openMindedness_nonneg (a b : I) :
+    openMindedness a b >= 0 := by
+  unfold openMindedness
+  exact compose_enriches_self a b
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 1140)}
+\end{proof}
+
+\begin{theorem}[Epistemic Resilience]
+\label{thm:epistemic-resilience}
+The resilience of an agent $a$ facing challenge $c$:
+\[
+  \rs(a \compose c, a \compose c) \geq \rs(a, a).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem resilience_preserves (a c : I) :
+    rs (compose a c) (compose a c) >= rs a a := by
+  exact compose_enriches_self a c
+\end{lstlisting}
+\textit{(IDT\_v3\_Epistemology.lean, line 1158)}
+\end{proof}
+
+\begin{interpretation}[Challenges Cannot Diminish an Epistemic Agent]
+An agent who confronts a challenge---who composes their beliefs with challenging
+evidence---can never become epistemically \emph{weaker}. Their self-resonance
+is preserved or increased. This is the mathematical foundation of intellectual
+courage: engaging with difficult ideas, far from being dangerous, can only
+enrich the agent. The only risk is the qualitative change in what the agent
+believes, not a loss of epistemic capacity.
+\end{interpretation}

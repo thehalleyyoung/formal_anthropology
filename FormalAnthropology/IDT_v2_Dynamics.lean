@@ -1,227 +1,204 @@
-import Mathlib.Data.Real.Basic
-import Mathlib.Data.Nat.Defs
-import Mathlib.Data.List.Basic
-import Mathlib.Order.Basic
-import Mathlib.Tactic
 import FormalAnthropology.IDT_Foundations_v2
 
 /-!
-# IDT v2: Dynamics and Evolution
+# IDT v2: Idea Diffusion Dynamics
 
-Dynamics and evolution in the real-valued resonance framework.
-Transmission, mutation, selection, and convergence interact
-with the quantitative resonance structure.
+Dynamics of idea diffusion in the ideatic space. How ideas spread,
+compose, and change over time. Diffusion operators model agents
+updating their ideas by composing with received signals.
 
 ## NO SORRIES, NO ADMITS, NO AXIOMS
 -/
 
-namespace IDT2
+namespace IDT2.Dynamics
 
-/-! ## §1. Transmission Dynamics -/
-
-section Transmission
+open IDT2
 variable {I : Type*} [IdeaticSpace2 I]
 open IdeaticSpace2
 
-/-- A transmission function: how ideas propagate through a medium -/
-structure TransmissionFn (I : Type*) [IdeaticSpace2 I] where
-  transmit : I → I
-  transmit_void : transmit void = void
+/-! ## §1. Diffusion Step -/
 
-/-- Transmission fidelity: resonance between original and transmitted idea -/
-noncomputable def transmissionFidelity (T : TransmissionFn I) (a : I) : ℝ :=
-  resonanceStrength a (T.transmit a)
+/-- A diffusion step: an agent updates their idea by composing with a received signal -/
+def diffusionStep (signal current : I) : I := compose current signal
 
-theorem transmissionFidelity_nonneg (T : TransmissionFn I) (a : I) :
-    transmissionFidelity T a ≥ 0 := by
-  unfold transmissionFidelity; exact IdeaticSpace2.rs_nonneg a _
+/-- n steps of diffusion with the same signal -/
+def iteratedDiffusion (signal : I) : ℕ → I → I
+  | 0, current => current
+  | n + 1, current => diffusionStep signal (iteratedDiffusion signal n current)
 
-/-- Fidelity of void transmission = 1 -/
-theorem transmissionFidelity_void (T : TransmissionFn I) :
-    transmissionFidelity T (void : I) = 1 := by
-  unfold transmissionFidelity; rw [T.transmit_void]; exact IdeaticSpace2.rs_void_self
+/-- A fixed point: when diffusing doesn't change the idea -/
+def isFixedPoint (signal current : I) : Prop :=
+  diffusionStep signal current = current
 
-/-- A faithful transmission preserves ideas exactly -/
-structure FaithfulTransmission (I : Type*) [IdeaticSpace2 I] extends TransmissionFn I where
-  faithful : ∀ (a : I), transmit a = a
+/-- Resonance gain from a single diffusion step -/
+noncomputable def diffusionGain (signal current : I) : ℝ :=
+  resonanceStrength (diffusionStep signal current) (diffusionStep signal current) -
+  resonanceStrength current current
 
-/-- Faithful transmission has perfect fidelity -/
-theorem faithful_fidelity (T : FaithfulTransmission I) (a : I) :
-    transmissionFidelity T.toTransmissionFn a = resonanceStrength a a := by
-  unfold transmissionFidelity; rw [T.faithful]
+/-! ## §2. Basic Diffusion Properties -/
 
-/-- Faithful fidelity is at least 1 -/
-theorem faithful_fidelity_ge_one (T : FaithfulTransmission I) (a : I) :
-    transmissionFidelity T.toTransmissionFn a ≥ 1 := by
-  rw [faithful_fidelity]; exact rs_self_ge_one a
+@[simp] theorem diffusionStep_void_signal (c : I) :
+    diffusionStep (void : I) c = c := by
+  unfold diffusionStep; simp
 
-/-- Transmission loss: drop in fidelity -/
-noncomputable def transmissionLoss (T : TransmissionFn I) (a : I) : ℝ :=
-  resonanceStrength a a - transmissionFidelity T a
+@[simp] theorem diffusionStep_void_current (s : I) :
+    diffusionStep s (void : I) = s := by
+  unfold diffusionStep; simp
 
-/-- Faithful transmission has zero loss -/
-theorem faithful_zero_loss (T : FaithfulTransmission I) (a : I) :
-    transmissionLoss T.toTransmissionFn a = 0 := by
-  unfold transmissionLoss; rw [faithful_fidelity]; linarith
+theorem diffusionStep_eq_compose (s c : I) :
+    diffusionStep s c = compose c s := rfl
 
-/-- Compositional transmission preserves the compose structure -/
-structure CompositionalTransmission (I : Type*) [IdeaticSpace2 I]
-    extends TransmissionFn I where
-  compositionality : ∀ (a b : I),
-    transmit (compose a b) = compose (transmit a) (transmit b)
+/-- Sequential diffusion equals diffusion by composed signal -/
+theorem diffusionStep_assoc (a b c : I) :
+    diffusionStep a (diffusionStep b c) = diffusionStep (compose b a) c := by
+  unfold diffusionStep; rw [compose_assoc]
 
-/-- Compositional transmission is faithful on void -/
-theorem compositional_void (T : CompositionalTransmission I) :
-    T.transmit (void : I) = (void : I) := T.transmit_void
+/-! ## §3. Iterated Diffusion -/
 
-end Transmission
+@[simp] theorem iteratedDiffusion_zero (s : I) (c : I) :
+    iteratedDiffusion s 0 c = c := rfl
 
-/-! ## §2. Mutagenic Diffusion -/
+theorem iteratedDiffusion_one (s : I) (c : I) :
+    iteratedDiffusion s 1 c = diffusionStep s c := rfl
 
-section Mutagenic
-variable {I : Type*} [IdeaticSpace2 I]
-open IdeaticSpace2
+theorem iteratedDiffusion_succ (s : I) (n : ℕ) (c : I) :
+    iteratedDiffusion s (n + 1) c = diffusionStep s (iteratedDiffusion s n c) := rfl
 
-/-- Mutagenic transmission: ideas mutate, depth may decrease -/
-structure MutagenicTransmission (I : Type*) [IdeaticSpace2 I]
-    extends TransmissionFn I where
-  depth_decay : ∀ (a : I), depth (transmit a) ≤ depth a
-
-theorem mutagenic_void (T : MutagenicTransmission I) :
-    T.transmit (void : I) = (void : I) := T.transmit_void
-
-theorem mutagenic_depth_le (T : MutagenicTransmission I) (a : I) :
-    depth (T.transmit a) ≤ depth a := T.depth_decay a
-
-/-- Mutagenic fidelity of void is perfect -/
-theorem mutagenic_void_fidelity (T : MutagenicTransmission I) :
-    transmissionFidelity T.toTransmissionFn (void : I) = 1 :=
-  transmissionFidelity_void T.toTransmissionFn
-
-end Mutagenic
-
-/-! ## §3. Selective Diffusion -/
-
-section Selective
-variable {I : Type*} [IdeaticSpace2 I]
-open IdeaticSpace2
-
-/-- Fitness of an idea in a context -/
-noncomputable def fitness (context a : I) : ℝ := resonanceStrength context a
-
-theorem fitness_nonneg (context a : I) : fitness context a ≥ 0 := by
-  unfold fitness; exact IdeaticSpace2.rs_nonneg context a
-
-theorem fitness_symm (a b : I) : fitness a b = fitness b a := by
-  unfold fitness; exact IdeaticSpace2.rs_symm a b
-
-theorem self_fitness_ge_one (a : I) : fitness a a ≥ 1 := rs_self_ge_one a
-
-/-- Idea a is fitter than b in context c -/
-def fitterThan (c a b : I) : Prop := fitness c a > fitness c b
-
-theorem fitterThan_trans (c a b d : I) :
-    fitterThan c a b → fitterThan c b d → fitterThan c a d := by
-  unfold fitterThan; intro h1 h2; linarith
-
-/-- Selection function: picks the fitter idea -/
-noncomputable def selectFitter (context a b : I) : I :=
-  if fitness context a ≥ fitness context b then a else b
-
-/-- Selected idea is always one of the two candidates -/
-theorem selectFitter_is_a_or_b (context a b : I) :
-    selectFitter context a b = a ∨ selectFitter context a b = b := by
-  unfold selectFitter
-  by_cases h : fitness context a ≥ fitness context b
-  · simp [h]
-  · simp [h]
-
-/-- Selective pressure: maximum fitness of pair -/
-noncomputable def selectivePressure (context a b : I) : ℝ :=
-  max (fitness context a) (fitness context b)
-
-theorem selectivePressure_ge_left (context a b : I) :
-    selectivePressure context a b ≥ fitness context a :=
-  le_max_left _ _
-
-theorem selectivePressure_ge_right (context a b : I) :
-    selectivePressure context a b ≥ fitness context b :=
-  le_max_right _ _
-
-theorem selectivePressure_nonneg (context a b : I) :
-    selectivePressure context a b ≥ 0 := by
-  linarith [selectivePressure_ge_left (I := I) context a b,
-            fitness_nonneg (I := I) context a]
-
-end Selective
-
-/-! ## §4. Convergence -/
-
-section Convergence
-variable {I : Type*} [IdeaticSpace2 I]
-open IdeaticSpace2
-
-/-- A sequence converges in self-resonance -/
-def rsConverges (seq : ℕ → I) (limit : ℝ) : Prop :=
-  ∀ (ε : ℝ), ε > 0 → ∃ (N : ℕ), ∀ (n : ℕ), n ≥ N →
-    |resonanceStrength (seq n) (seq n) - limit| < ε
-
-/-- Constant sequences converge -/
-theorem const_seq_converges (a : I) :
-    rsConverges (fun _ => a) (resonanceStrength a a) := by
-  intro ε hε; exact ⟨0, fun _ _ => by simp; exact hε⟩
-
-/-- A sequence is resonance-bounded -/
-def rsBounded (seq : ℕ → I) (B : ℝ) : Prop :=
-  ∀ (n : ℕ), resonanceStrength (seq n) (seq n) ≤ B
-
-theorem const_seq_bounded (a : I) :
-    rsBounded (fun _ => a) (resonanceStrength a a) := fun _ => le_refl _
-
-/-- Self-resonance is non-decreasing in a monotone sequence -/
-def rsMonotone (seq : ℕ → I) : Prop :=
-  ∀ (n : ℕ), resonanceStrength (seq (n + 1)) (seq (n + 1)) ≥
-              resonanceStrength (seq n) (seq n)
-
-/-- ComposeN sequence is monotone -/
-theorem composeN_seq_monotone (a : I) :
-    rsMonotone (fun n => composeN a n) := by
-  intro n; exact rs_self_composeN_mono a n
-
-/-- Monotone sequences are bounded below by initial value -/
-theorem monotone_lower_bound (seq : ℕ → I) (hm : rsMonotone seq) (n : ℕ) :
-    resonanceStrength (seq n) (seq n) ≥ resonanceStrength (seq 0) (seq 0) := by
+theorem iteratedDiffusion_void_signal (n : ℕ) (c : I) :
+    iteratedDiffusion (void : I) n c = c := by
   induction n with
-  | zero => exact le_refl _
-  | succ k ih => linarith [hm k]
+  | zero => rfl
+  | succ n ih => unfold iteratedDiffusion; rw [ih, diffusionStep_void_signal]
 
-/-- All elements in any sequence have self-resonance ≥ 1 -/
-theorem monotone_seq_ge_one (seq : ℕ → I) (_ : rsMonotone seq) (n : ℕ) :
-    resonanceStrength (seq n) (seq n) ≥ 1 := rs_self_ge_one _
+/-- Iterated diffusion equals composing current with n-fold signal -/
+theorem iterated_as_compose (s : I) (n : ℕ) (c : I) :
+    iteratedDiffusion s n c = compose c (composeN s n) := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    change compose (iteratedDiffusion s n c) s = compose c (compose (composeN s n) s)
+    rw [ih, compose_assoc]
 
-end Convergence
+/-- Iterated diffusion from void equals iterated self-composition of signal -/
+theorem iterated_void_as_composeN (s : I) (n : ℕ) :
+    iteratedDiffusion s n (void : I) = composeN s n := by
+  rw [iterated_as_compose]; simp
 
-/-! ## §5. Diffusion Networks -/
+/-- Two steps equals iterated diffusion 2 -/
+theorem double_diffusion (s c : I) :
+    diffusionStep s (diffusionStep s c) = iteratedDiffusion s 2 c := rfl
 
-section Networks
-variable {I : Type*} [IdeaticSpace2 I]
-open IdeaticSpace2
+/-! ## §4. Fixed Points -/
 
-/-- Total resonance energy in a network -/
-noncomputable def networkEnergy (nodes : List I) : ℝ :=
-  sumSelfResonance nodes
+/-- Void signal leaves everything fixed -/
+theorem void_signal_all_fixed (c : I) : isFixedPoint (void : I) c := by
+  unfold isFixedPoint; simp [diffusionStep]
 
-theorem networkEnergy_nonneg (nodes : List I) :
-    networkEnergy nodes ≥ 0 := sumSelfResonance_nonneg nodes
+/-- Void is a fixed point iff the signal is void -/
+theorem void_current_fixed_iff (s : I) :
+    isFixedPoint s (void : I) ↔ s = (void : I) := by
+  unfold isFixedPoint diffusionStep; simp
 
-theorem networkEnergy_singleton (a : I) :
-    networkEnergy [a] = resonanceStrength a a :=
-  sumSelfResonance_singleton a
+/-- Fixed points are preserved under void signal -/
+theorem fixed_point_compose_void (s c : I) (_ : isFixedPoint s c) :
+    compose c (void : I) = c := by simp
 
-theorem networkEnergy_per_node_ge_one (a : I) :
-    networkEnergy [a] ≥ 1 := by
-  rw [networkEnergy_singleton]; exact rs_self_ge_one a
+/-! ## §5. Resonance During Diffusion -/
 
-end Networks
+/-- Each diffusion step preserves or increases self-resonance relative to current -/
+theorem diffusion_rs_ge_current (s c : I) :
+    resonanceStrength (diffusionStep s c) (diffusionStep s c) ≥
+    resonanceStrength c c := by
+  unfold diffusionStep; exact rs_compose_self_right c s
 
-end IDT2
+/-- Each diffusion step preserves or increases self-resonance relative to signal -/
+theorem diffusion_rs_ge_signal (s c : I) :
+    resonanceStrength (diffusionStep s c) (diffusionStep s c) ≥
+    resonanceStrength s s := by
+  unfold diffusionStep; exact rs_compose_self_left s c
+
+/-- Diffused ideas always have self-resonance ≥ 1 -/
+theorem diffusion_rs_ge_one (s c : I) :
+    resonanceStrength (diffusionStep s c) (diffusionStep s c) ≥ 1 := by
+  linarith [diffusion_rs_ge_current (I := I) s c, rs_self_ge_one (I := I) c]
+
+/-- Diffusion gain is always non-negative -/
+theorem diffusionGain_nonneg (s c : I) : diffusionGain s c ≥ 0 := by
+  unfold diffusionGain; linarith [diffusion_rs_ge_current (I := I) s c]
+
+/-- Diffusion with void signal has zero gain -/
+theorem diffusionGain_void_signal (c : I) : diffusionGain (void : I) c = 0 := by
+  unfold diffusionGain; simp [diffusionStep]
+
+/-! ## §6. Iterated Diffusion Resonance -/
+
+/-- Self-resonance is monotonically non-decreasing with each diffusion step -/
+theorem iterated_diffusion_rs_mono (s : I) (n : ℕ) (c : I) :
+    resonanceStrength (iteratedDiffusion s (n + 1) c) (iteratedDiffusion s (n + 1) c) ≥
+    resonanceStrength (iteratedDiffusion s n c) (iteratedDiffusion s n c) := by
+  change resonanceStrength (diffusionStep s (iteratedDiffusion s n c))
+           (diffusionStep s (iteratedDiffusion s n c)) ≥ _
+  exact diffusion_rs_ge_current s (iteratedDiffusion s n c)
+
+/-- Self-resonance after any number of diffusion steps is ≥ 1 -/
+theorem iterated_diffusion_rs_ge_one (s : I) (n : ℕ) (c : I) :
+    resonanceStrength (iteratedDiffusion s n c) (iteratedDiffusion s n c) ≥ 1 := by
+  induction n with
+  | zero => exact rs_self_ge_one c
+  | succ n ih => linarith [iterated_diffusion_rs_mono (I := I) s n c]
+
+/-- Self-resonance after diffusion is always ≥ starting self-resonance -/
+theorem iterated_diffusion_rs_ge_start (s : I) (c : I) : ∀ (n : ℕ),
+    resonanceStrength (iteratedDiffusion s n c) (iteratedDiffusion s n c) ≥
+    resonanceStrength c c
+  | 0 => le_refl _
+  | n + 1 => by linarith [iterated_diffusion_rs_mono (I := I) s n c,
+                           iterated_diffusion_rs_ge_start s c n]
+
+/-! ## §7. Depth Bounds -/
+
+theorem depth_diffusion_step (s c : I) :
+    depth (diffusionStep s c) ≤ depth c + depth s := by
+  unfold diffusionStep; exact depth_subadditive' c s
+
+theorem iteratedDiffusion_depth_bound (s : I) (n : ℕ) (c : I) :
+    depth (iteratedDiffusion s n c) ≤ n * depth s + depth c := by
+  induction n with
+  | zero => simp
+  | succ n ih =>
+    change depth (diffusionStep s (iteratedDiffusion s n c)) ≤ (n + 1) * depth s + depth c
+    have h1 := depth_diffusion_step (I := I) s (iteratedDiffusion s n c)
+    have h2 : (n + 1) * depth s + depth c = n * depth s + depth s + depth c := by ring
+    omega
+
+/-! ## §8. Cross-Resonance Bounds -/
+
+/-- After diffusion, resonance with the signal is at least rs(current, void) -/
+theorem diffusion_signal_rs_lower (s c : I) :
+    resonanceStrength (diffusionStep s c) s ≥ resonanceStrength c (void : I) := by
+  unfold diffusionStep
+  have key := IdeaticSpace2.rs_compose_right_mono c (void : I) s
+  simp at key; exact key
+
+/-- After diffusion, resonance with the current is at least rs(signal, void) -/
+theorem diffusion_current_rs_lower (s c : I) :
+    resonanceStrength (diffusionStep s c) c ≥ resonanceStrength s (void : I) := by
+  unfold diffusionStep
+  have key := IdeaticSpace2.rs_compose_left_mono s (void : I) c
+  simp at key; exact key
+
+/-- Diffusing two ideas with the same signal preserves their resonance -/
+theorem diffusion_preserves_rs (s a b : I) :
+    resonanceStrength (diffusionStep s a) (diffusionStep s b) ≥
+    resonanceStrength a b := by
+  unfold diffusionStep
+  exact IdeaticSpace2.rs_compose_right_mono a b s
+
+/-- Diffusion with common current preserves resonance between signals -/
+theorem diffusion_common_current_rs (a b c : I) :
+    resonanceStrength (diffusionStep a c) (diffusionStep b c) ≥
+    resonanceStrength a b := by
+  unfold diffusionStep
+  exact IdeaticSpace2.rs_compose_left_mono a b c
+
+end IDT2.Dynamics

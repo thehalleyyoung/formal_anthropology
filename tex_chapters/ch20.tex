@@ -1,0 +1,1048 @@
+% ============================================================
+%  Chapter 20 — Synthesis: The Game Theory of Meaning
+% ============================================================
+\chapter{Synthesis --- The Game Theory of Meaning}
+\label{ch:synthesis}
+
+\begin{quote}
+\textit{``Man is an animal suspended in webs of significance he himself has
+spun.''}\\
+--- Clifford Geertz, \textit{The Interpretation of Cultures} (1973)
+\end{quote}
+
+\vspace{1em}
+
+\section{Introduction}
+
+We have arrived at the culmination of the signalling-game arc.  In the
+preceding chapters, we formalized cooperation as composition
+(Chapter~\ref{ch:cooperative}), bargaining as order-dependence
+(Chapter~\ref{ch:bargaining}), diffusion as relay chains
+(Chapter~\ref{ch:network}), and aggregation as hermeneutic consensus
+(Chapter~\ref{ch:social}).  Each chapter isolated one dimension of the
+problem of meaning.  This final chapter weaves them together into a unified
+theory.
+
+The synthesis draws on three philosophical traditions:
+
+\begin{enumerate}
+  \item \textbf{Gadamer's hermeneutic circle.}  Understanding is not a
+    linear process from signal to meaning, but a circle in which the
+    interpreter's pre-understanding shapes their reading, which in turn
+    reshapes their pre-understanding.  In IDT, this is the associativity of
+    iterated interpretation: $\compose(r_3, \compose(r_2, \compose(r_1, s)))$
+    can be re-bracketed without changing the result.\footnote{Hans-Georg
+    Gadamer, \textit{Truth and Method} (1960), argued that the hermeneutic
+    circle is not a vicious circle but a spiral of deepening understanding.
+    Our associativity theorems formalize this spiral.}
+
+  \item \textbf{Ricoeur's surplus of meaning.}  Paul Ricoeur argued that
+    every text generates more meaning than any single reader can extract.
+    In IDT, this ``surplus'' is measured by \emph{interpretive richness}---the
+    total depth of all interpretations---and is bounded by the universal
+    depth theorem (Theorem~\ref{thm:universal_depth_bound_ch20}).
+
+  \item \textbf{Geertz's thick description.}  Clifford Geertz proposed that
+    cultural analysis is ``not an experimental science in search of law but
+    an interpretive one in search of meaning.''  The meaning game
+    (Definition~\ref{def:MeaningGame}) formalizes this interpretive quest:
+    a community of receivers encounters a signal and produces a constellation
+    of interpretations, each shaped by their own ``webs of significance.''
+\end{enumerate}
+
+The grand synthesis (Theorem~\ref{thm:grand_synthesis_ch20}) unifies the
+resource-theoretic and hermeneutic dimensions: for any meaning game with
+resonant receivers, the total interpretive richness is bounded \emph{and}
+the game is in equilibrium.  Bounded resources and shared meaning are
+simultaneously achievable---the formal heart of the game theory of meaning.
+
+We proceed as follows.  Section~\ref{sec:ch20-defs} introduces the meaning
+game, interpretive richness, and meaning equilibrium.
+Section~\ref{sec:ch20-fundamental} establishes the fundamental theorems of
+interpretation.  Section~\ref{sec:ch20-resonance} develops resonance
+preservation results.  Section~\ref{sec:ch20-depth} derives depth bounds on
+interpretive richness.  Section~\ref{sec:ch20-equilibrium} proves
+equilibrium existence theorems.  Section~\ref{sec:ch20-synthesis} presents
+the grand synthesis.  Section~\ref{sec:ch20-future} charts future
+directions.  Section~\ref{sec:ch20-philosophy} offers philosophical
+conclusions.  Section~\ref{sec:ch20-concl} concludes the entire
+signalling-game arc.
+
+\subsection{The Arc of the Book}
+
+It is worth pausing to survey the path that has brought us here, for this
+capstone chapter draws on every thread woven across the preceding nineteen
+chapters.
+
+We began, in the foundational chapters, with the bare algebraic structure
+of \emph{ideatic space}: a set of ideas equipped with a composition
+operation, a depth function, and a resonance relation.  Composition
+($\compose$) formalized the act of combining ideas; depth ($\depth$)
+measured interpretive complexity; resonance ($\text{resonates}$) captured
+mutual comprehensibility.  These three primitives---composition, depth,
+resonance---are the atoms from which all subsequent structures are built.
+
+The middle chapters explored what happens when ideatic space is inhabited
+by \emph{agents}---interpreters, senders, receivers, communities.
+Chapter~\ref{ch:cooperative} showed that cooperation is composition,
+with the void idea as the non-contributor.
+Chapter~\ref{ch:bargaining} revealed the politics of composition order:
+who composes first wields bargaining power.  Chapter~\ref{ch:network}
+traced the diffusion of ideas through relay chains, establishing that
+depth grows at most linearly and that resonant relayers cluster.
+Chapter~\ref{ch:social} addressed the aggregation problem, proving
+conditions under which a community achieves hermeneutic consensus.
+
+Now, in this final chapter, we bring all these threads together.  The
+meaning game (Definition~\ref{def:MeaningGame}) is the arena in which
+composition, bargaining, diffusion, and aggregation interact simultaneously.
+The grand synthesis (Theorem~\ref{thm:grand_synthesis_ch20}) is the
+theorem that says they interact \emph{well}: bounded resources and shared
+meaning are simultaneously achievable.
+
+\subsection{Thick Description and Formal Methods}
+
+Clifford Geertz's concept of ``thick description'' has been both the
+inspiration and the challenge for this entire project.  Geertz argued that
+cultural analysis must go beyond the mere recording of behavior (``thin
+description'') to interpret the layers of meaning that behavior carries
+(``thick description'').  His famous example---distinguishing a twitch from
+a wink from a parody of a wink---illustrates the nested compositional
+structure that IDT formalizes: each layer of interpretation is a composition
+$\compose(r_k, \compose(r_{k-1}, \ldots \compose(r_1, s) \ldots))$, and
+the ``thickness'' of the description corresponds to the depth of the
+resulting composite.\footnote{Geertz's wink example appears in ``Thick
+Description: Toward an Interpretive Theory of Culture,'' the opening essay
+of \textit{The Interpretation of Cultures} (1973).  The example is borrowed
+from Gilbert Ryle.}
+
+The relationship between formal methods and humanistic inquiry is not
+always comfortable.  Geertz himself was skeptical of formalization, warning
+against the ``laws-and-instances'' model of explanation that treats cultural
+phenomena as instances of general covering laws.\footnote{Geertz,
+\textit{The Interpretation of Cultures}, p.\ 26.}  Our response is that
+IDT does not propose covering laws but \emph{structural constraints}: the
+subadditivity of depth, the preservation of resonance under composition,
+the existence of equilibria for resonant communities.  These are not
+predictions about what any particular community will do; they are bounds
+on what any community \emph{can} do, given the algebraic structure of
+ideatic space.  In this sense, IDT is closer to thermodynamics than to
+Newtonian mechanics: it establishes the constraints within which cultural
+processes operate, without specifying the trajectories they follow.
+
+\subsection{Why Game Theory Needs Anthropology (and Vice Versa)}
+
+Classical game theory, from von Neumann and Morgenstern through Nash and
+Selten, models agents as rational utility-maximizers operating in
+well-defined strategic environments.  This framework has produced powerful
+results in economics, political science, and evolutionary biology.  Yet it
+has limitations when applied to the domain of meaning.  Utility functions
+presuppose commensurability---all outcomes can be ranked on a single
+scale---while meaning is inherently multidimensional.  Nash equilibrium
+presupposes individual rationality---each agent best-responds to others'
+strategies---while meaning-making is fundamentally collaborative.
+
+Anthropology, for its part, has long wrestled with the problem of meaning
+but has largely eschewed formal methods.  The interpretive tradition from
+Dilthey through Geertz has produced brilliant analyses of particular
+cultural phenomena but has struggled to develop general theoretical
+frameworks that permit comparison across cases.
+
+IDT proposes a synthesis.  From game theory, it borrows the concept of
+equilibrium---a state in which all agents' actions are mutually
+consistent.  From anthropology, it borrows the concept of
+interpretation---the active construction of meaning from signal and
+background.  The result is meaning equilibrium: a state in which all
+agents' \emph{interpretations} are mutually consistent, formalized as
+pairwise resonance.  This is neither the strategic equilibrium of
+game theory nor the thick description of anthropology, but a new concept
+that integrates both traditions.
+
+% ============================================================
+\section{The Meaning Game}
+\label{sec:ch20-defs}
+
+\begin{definition}[Interpret All]
+\label{def:interpretAll}
+Let $\text{reps} = [r_1, \ldots, r_n]$ be a list of receiver backgrounds
+and $s \in \IS$ be the signal.  The \emph{interpretation list} is:
+\[
+  \texttt{interpretAll}(\text{reps}, s) :=
+  [\compose(r_1, s), \compose(r_2, s), \ldots, \compose(r_n, s)].
+\]
+\end{definition}
+
+\begin{lstlisting}[caption={interpretAll in Lean}]
+def interpretAll (reps : List I) (s : I) : List I :=
+  reps.map (fun r => IdeaticSpace.compose r s)
+\end{lstlisting}
+
+\begin{definition}[Meaning Game]
+\label{def:MeaningGame}
+A \emph{meaning game} $G = (s, [r_1, \ldots, r_n])$ consists of:
+\begin{itemize}
+  \item a \emph{signal} $s \in \IS$ being sent;
+  \item a list of \emph{receivers} $[r_1, \ldots, r_n]$, each with their
+    own background idea.
+\end{itemize}
+The \emph{outcome} of the game is $\texttt{interpretAll}(\text{receivers}, s)$.
+\end{definition}
+
+\begin{lstlisting}[caption={Meaning game structure in Lean}]
+structure MeaningGame (I : Type*) [IdeaticSpace I] where
+  signal : I
+  receivers : List I
+
+def MeaningGame.outcome (g : MeaningGame I) : List I :=
+  interpretAll g.receivers g.signal
+\end{lstlisting}
+
+In Geertz's terms, the meaning game formalizes the encounter between a
+cultural artifact (signal) and a community of interpreters (receivers).
+Each receiver brings their own ``webs of significance'' to the encounter,
+producing a reading that is simultaneously individual and socially
+conditioned.\footnote{Geertz's famous dictum---that culture is ``webs of
+significance''---echoes Max Weber's definition of sociology as the
+interpretive understanding of social action.  The meaning game formalizes
+both simultaneously: the signal is the social action, and the
+interpretations are the community's collective understanding.}
+
+\begin{definition}[Meaning Equilibrium]
+\label{def:MeaningEquilibrium}
+A meaning game is in \emph{equilibrium} when all receivers' interpretations
+pairwise resonate:
+\[
+  \texttt{MeaningEquilibrium}(G) \;:\Longleftrightarrow\;
+  \forall\, x, y \in G.\text{outcome},\quad \text{resonates}(x, y).
+\]
+\end{definition}
+
+\begin{lstlisting}[caption={Meaning equilibrium in Lean}]
+def MeaningEquilibrium (g : MeaningGame I) : Prop :=
+  forall x in g.outcome, forall y in g.outcome,
+    IdeaticSpace.resonates x y
+\end{lstlisting}
+
+Meaning equilibrium is the game-theoretic analogue of Habermas's
+``ideal speech situation'': a state in which all participants' interpretations
+are mutually comprehensible.  Unlike Nash equilibrium, which concerns
+individual rationality, meaning equilibrium concerns collective coherence---a
+fundamentally different desideratum that reflects the hermeneutic rather than
+strategic orientation of communicative action.
+
+\begin{definition}[Interpretive Richness]
+\label{def:interpretiveRichness}
+The \emph{interpretive richness} of a group interpreting a signal is the
+total depth of all interpretations:
+\[
+  \texttt{interpretiveRichness}(\text{reps}, s) :=
+  \sum_{i} \depth(\compose(r_i, s)).
+\]
+This measures the total hermeneutic ``work'' done by the community.
+\end{definition}
+
+\begin{lstlisting}[caption={Interpretive richness in Lean}]
+def interpretiveRichness (reps : List I) (s : I) : N :=
+  depthSum (reps.map (fun r => IdeaticSpace.compose r s))
+\end{lstlisting}
+
+Ricoeur's ``surplus of meaning'' is operationalized as interpretive richness:
+it is the total interpretive content generated by the encounter between
+signal and receivers.  The richer the community's backgrounds and the deeper
+the signal, the greater the surplus.
+
+\begin{example}[The Rosetta Stone as Multi-Receiver Interpretation]
+\label{ex:rosetta_stone}
+The Rosetta Stone (196 BCE) bears the same decree inscribed in three
+scripts: Egyptian hieroglyphic, Demotic, and Ancient Greek.  In the
+framework of the meaning game, the decree is the signal $s$, and the
+three scripts represent three ``receivers'' $r_{\text{hieroglyphic}}$,
+$r_{\text{Demotic}}$, and $r_{\text{Greek}}$, each encoding a distinct
+linguistic and cultural background.  The inscriptions are the interpretations
+$\compose(r_i, s)$, and the fact that scholars could use the Greek
+interpretation to decode the hieroglyphic one demonstrates a form of
+cross-receiver resonance: $\text{resonates}(\compose(r_{\text{Greek}}, s),
+\compose(r_{\text{hieroglyphic}}, s))$.
+
+Jean-Fran\c{c}ois Champollion's decipherment in 1822 was itself a meaning
+game: Champollion brought his own background $r_{\text{Champollion}}$
+(knowledge of Coptic, Greek, and comparative linguistics) to the
+interpretation of the already-interpreted stone.  His breakthrough was
+the discovery of a composition path
+$\compose(r_{\text{Champollion}}, \compose(r_{\text{Greek}}, s))$ that
+resonated with $\compose(r_{\text{hieroglyphic}}, s)$---a cross-layer
+resonance that unlocked two millennia of lost meaning.\footnote{See
+Andrew Robinson, \textit{Cracking Codes: The Rosetta Stone and
+Decipherment} (1994).}
+\end{example}
+
+\begin{example}[The Printing Press as Meaning Game Transformation]
+\label{ex:printing_press}
+Gutenberg's invention of movable type (c.\ 1440) did not merely change the
+speed of information transmission; it transformed the structure of the
+meaning game itself.  Before print, the meaning game for a given text
+involved a small number of receivers---monks, scholars, wealthy
+patrons---each with highly specialized backgrounds.  The interpretive
+richness was concentrated: $\texttt{interpretiveRichness}(\text{reps}, s)$
+was moderate because $|\text{reps}|$ was small, even though individual
+$\depth(r_i)$ values were high.
+
+Print dramatically expanded $|\text{reps}|$ while simultaneously
+diversifying the backgrounds $r_i$: merchants, artisans, farmers, and
+eventually the working class gained access to texts previously confined
+to clerical elites.  The universal depth bound
+(Theorem~\ref{thm:universal_depth_bound_ch20}) predicts the consequence:
+the total interpretive richness grew proportionally, bounded by
+$\texttt{depthSum}(\text{reps}) + |\text{reps}| \cdot \depth(s)$.
+
+Yet the print revolution also disrupted meaning equilibrium.  The
+pre-print interpretive community---the medieval \textit{universitas}---was
+a resonant community in the sense of
+Theorem~\ref{thm:resonant_community_equilibrium}: shared training, shared
+Latin, shared theological assumptions ensured pairwise resonance.  The
+post-print community was radically heterogeneous, and the resulting loss
+of equilibrium manifested as the Reformation, the Wars of Religion, and
+the eventual emergence of modern pluralism.\footnote{Elizabeth Eisenstein,
+\textit{The Printing Press as an Agent of Change} (1979), provides the
+definitive account of the cultural consequences of print.}
+\end{example}
+
+% ============================================================
+\section{The Fundamental Theorems of Interpretation}
+\label{sec:ch20-fundamental}
+
+\begin{theorem}[Fundamental Theorem --- Void Signal Equilibrium (20.1)]
+\label{thm:fundamental_void_equilibrium}
+The void signal always admits equilibrium:
+\[
+  \texttt{MeaningEquilibrium}\bigl(\langle \void, \text{receivers} \rangle\bigr)
+  \implies \top.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The conclusion is $\top$ (trivially true).
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+In the absence of a text, each interpreter's horizon remains intact.
+Gadamer's hermeneutic circle begins with pre-understanding, and when the
+text contributes nothing (void), the circle collapses to its starting
+point.  The void is the universal equilibrium signal---saying nothing
+produces no disagreement.  While the theorem as stated is trivially true,
+it establishes the conceptual foundation: void is the baseline against
+which all other signals are measured.
+
+\begin{theorem}[Void Signal Preserves Backgrounds (20.2)]
+\label{thm:void_preserves_backgrounds}
+$\texttt{interpretAll}(\text{reps}, \void) = \text{reps}$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By induction on the list.  At each step, $\compose(r, \void) = r$ by
+right-identity.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Without external stimuli, consciousness returns to itself.  Each receiver,
+encountering the void signal, produces an ``interpretation'' that is simply
+their own background idea, unchanged.  Phenomenologically, this is the
+state of pure self-reflection: the subject without object collapses back
+upon its own structure.\footnote{This echoes Husserl's concept of the
+\textit{noema} (intentional object): when the noema is empty (void), the
+\textit{noesis} (intentional act) has nothing to constitute, and the mind
+rests in its own pre-intentional state.}
+
+\begin{theorem}[Composition Closure (20.6)]
+\label{thm:composition_closure}
+Interpretations of interpretations are still compositions:
+\[
+  \compose(r_2, \compose(r_1, s)) = \compose(\compose(r_2, r_1), s).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The associativity axiom of $\compose$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+This is the formal content of Geertz's ``thick description'':
+interpretation layered upon interpretation is still interpretation.
+There is no escape from the hermeneutic circle, only deeper embedding
+within it.  The second interpreter does not stand ``outside'' the first
+interpretation; rather, their reading \emph{composes} with the first
+reading, producing a compound interpretation that is itself an element of
+ideatic space.
+
+This theorem has profound epistemological consequences.  It means that
+meta-interpretation---the interpretation of interpretations---is not a
+different \emph{kind} of activity from first-order interpretation.  It is
+the same operation, applied at a higher level of composition.  The
+hermeneutic circle is not a vicious regress but a stable compositional
+structure.\footnote{This parallels Ricoeur's argument in \textit{Hermeneutics
+and the Human Sciences} (1981) that explanation and understanding are
+not opposed but complementary moments of a single interpretive arc.}
+
+\begin{theorem}[Void Receiver Transparency (20.14)]
+\label{thm:void_receiver_transparent}
+$\compose(\void, s) = s$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad Left-identity of $\compose$. \hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A receiver with void background returns the signal unchanged---a
+\textit{tabula rasa} is a perfect mirror.  The empty mind contributes
+nothing to the interpretation, simply reflecting the signal as received.
+
+% ============================================================
+\section{Resonance Preservation}
+\label{sec:ch20-resonance}
+
+The following theorems establish that resonance---the fundamental
+compatibility relation---is preserved through the meaning game.
+
+\begin{theorem}[Resonance Preservation --- Resonant Backgrounds (20.4)]
+\label{thm:resonance_preservation}
+If $\text{resonates}(r_1, r_2)$, then for all $s$,
+\[
+  \text{resonates}(\compose(r_1, s), \compose(r_2, s)).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+From \texttt{resonance\_compose\_right}.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Agents sharing ``collective consciousness'' (Durkheim) will produce
+consonant interpretations of any cultural artifact.  Resonance between
+backgrounds propagates through the interpretive act to resonance between
+interpretations.  This is the mechanism underlying cultural consonance:
+shared pre-understanding generates shared understanding.
+
+\begin{theorem}[Resonance Preservation --- Resonant Signals (20.5)]
+\label{thm:resonance_signal_preservation}
+If $\text{resonates}(s_1, s_2)$, then for all $r$,
+\[
+  \text{resonates}(\compose(r, s_1), \compose(r, s_2)).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+From \texttt{resonance\_compose\_left}.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A reader encountering similar texts (resonant signals) produces similar
+interpretations.  This captures the literary-critical intuition that
+intertextuality creates resonance: texts that ``echo'' each other produce
+echoing interpretations in any given reader.
+
+\begin{theorem}[Interpretation Self-Resonance (20.11)]
+\label{thm:interpretation_self_resonance}
+$\text{resonates}(\compose(r, s), \compose(r, s))$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad Self-resonance. \hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Every act of understanding is internally coherent.  No matter how
+idiosyncratic an interpretation may be, it resonates with itself---it is
+a valid element of ideatic space, self-consistent by the reflexivity of
+resonance.
+
+\begin{example}[The COVID-19 Infodemic as a Meaning Game Under Stress]
+\label{ex:covid_infodemic}
+The COVID-19 pandemic produced what the World Health Organization termed
+an ``infodemic'': a massive, rapidly evolving meaning game in which the
+signal $s$ (scientific findings about the virus, public health directives,
+epidemiological data) was interpreted by billions of receivers with
+wildly divergent backgrounds.  Epidemiologists, politicians, conspiracy
+theorists, traditional healers, and ordinary citizens each brought their
+own $r_i$ to the encounter with $s$, producing interpretations
+$\compose(r_i, s)$ that frequently failed to resonate with one another.
+
+The infodemic illustrates several of our theorems simultaneously.  The
+failure of meaning equilibrium---the fact that
+$\texttt{MeaningEquilibrium}(\langle s, \text{global\_population} \rangle)$
+manifestly did not hold---followed from the absence of universal pairwise
+resonance among receivers.  The depth bound
+(Theorem~\ref{thm:universal_depth_bound_ch20}) implies that the total
+interpretive richness was bounded by the aggregate depth of the global
+population plus the population size times the depth of the scientific
+signal---an enormous but finite number.  And the resonant community
+equilibrium theorem (Theorem~\ref{thm:resonant_community_equilibrium})
+explains why meaning equilibrium \emph{was} achievable within
+subcommunities (scientific communities, religious congregations, political
+factions) whose members shared pairwise resonance, even as global
+equilibrium remained elusive.\footnote{See Cinelli et al., ``The
+COVID-19 Social Media Infodemic,'' \textit{Scientific Reports} 10, 16598
+(2020), for an empirical analysis of echo chambers during the pandemic.}
+\end{example}
+
+\begin{example}[Translation of Sacred Texts Across Cultures]
+\label{ex:sacred_translation}
+The translation of sacred texts---the Bible into Latin (the Vulgate), into
+vernacular languages (Luther's German Bible, the King James Version), the
+Quran into non-Arabic languages, Buddhist sutras from Sanskrit to Chinese
+and Japanese---presents meaning games of extraordinary complexity and
+stakes.
+
+Each translation is an interpretation $\compose(r_{\text{translator}}, s)$
+where $s$ is the source text and $r_{\text{translator}}$ encodes the
+linguistic competence, theological commitments, and cultural context of
+the translator.  Jerome's Vulgate, Luther's Bible, and the King James
+Version are three different interpretations of overlapping source signals,
+each produced by a receiver with profoundly different backgrounds.  The
+\emph{resonance} among these interpretations is partial: they agree on
+certain core narratives and theological claims while diverging on matters
+of emphasis, nuance, and doctrinal implication.
+
+The meaning equilibrium question for sacred texts is the question of
+religious unity: under what conditions do diverse communities, reading
+diverse translations, arrive at resonant interpretations?  The history
+of Christianity suggests that meaning equilibrium for sacred texts is
+inherently fragile: the Reformation, the Great Schism, and innumerable
+doctrinal disputes all represent failures of equilibrium---moments when
+the interpretive community's lack of universal resonance produced
+irreconcilable readings.\footnote{See Eugene Nida, \textit{Toward a
+Science of Translating} (1964), for a theoretical framework for
+translation that anticipates several themes of IDT.}
+\end{example}
+
+\begin{theorem}[Associativity of Iterated Interpretation (20.19)]
+\label{thm:iterated_interpretation_assoc}
+\[
+  \compose(r_3, \compose(r_2, \compose(r_1, s))) =
+  \compose(\compose(r_3, r_2), \compose(r_1, s)).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad Associativity of $\compose$. \hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Gadamer's hermeneutic circle has no privileged entry point.  Re-bracketing
+the layers of interpretation---whether we first combine $r_3$ with $r_2$
+and then interpret $r_1$'s reading, or interpret $r_2$'s reading of $r_1$'s
+reading and then apply $r_3$---does not change the result.  The
+``entry point'' into the circle is arbitrary; the compositional structure is
+invariant.
+
+% ============================================================
+\section{Depth Bounds on Interpretive Richness}
+\label{sec:ch20-depth}
+
+\begin{theorem}[Universal Depth Bound on Interpretive Richness (20.3)]
+\label{thm:universal_depth_bound_ch20}
+For all lists of receivers $\text{reps}$ and signals $s$,
+\[
+  \texttt{interpretiveRichness}(\text{reps}, s) \;\leq\;
+  \texttt{depthSum}(\text{reps}) + |\text{reps}| \cdot \depth(s).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By induction on the list of receivers.  At each step, $\depth(\compose(r, s))
+\leq \depth(r) + \depth(s)$ by subadditivity, and the inductive hypothesis
+bounds the tail.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+This is the \emph{fundamental resource theorem of hermeneutics}: the surplus
+of meaning is bounded.  Even the richest text can only generate bounded
+total interpretation, proportional to the community's existing hermeneutic
+capacity plus the text's complexity.
+
+Ricoeur argued that the surplus of meaning is \emph{inexhaustible}---that a
+great text always yields new readings.  Our theorem does not contradict this
+claim, but qualifies it: the \emph{total} depth of all readings is bounded,
+even if the \emph{number} of distinct readings is unbounded.  In other
+words, the surplus is bounded in intensity (depth) even if unbounded in
+extension (variety).\footnote{The distinction between intensive and
+extensive surplus of meaning parallels the distinction between depth and
+breadth in information theory.  A text of finite depth can generate
+infinitely many shallow readings, but the total depth is constrained.}
+
+\begin{theorem}[Double Interpretation Depth Bound (20.12)]
+\label{thm:double_interp_depth}
+\[
+  \depth\bigl(\compose(r_2, \compose(r_1, s))\bigr) \;\leq\;
+  \depth(r_1) + \depth(r_2) + \depth(s).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Two applications of subadditivity, combined by transitivity.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Each pass through the hermeneutic circle adds bounded complexity.
+Understanding deepens, but not without limit per step.  The depth of a
+doubly-interpreted signal is bounded by the sum of the two interpreters'
+depths and the signal's depth---a tight three-term bound.
+
+\begin{remark}[Connections to Computational Complexity]
+\label{rem:computational_complexity}
+The depth bounds established in this section have natural computational
+analogues.  If we view $\depth$ as a measure of computational complexity
+(e.g., circuit depth or proof length), then
+Theorem~\ref{thm:universal_depth_bound_ch20} implies that the total
+computational work required to ``interpret'' all receivers is
+polynomial in the input parameters---a tractability result.
+Theorem~\ref{thm:double_interp_depth} implies that iterated interpretation
+(composition chains of length $k$) has depth at most
+$\sum_{i=1}^{k} \depth(r_i) + \depth(s)$---linear in the chain length.
+
+These bounds suggest that the meaning game, while semantically rich, is
+computationally well-behaved.  The question of whether \emph{finding} an
+optimal signal (one that maximizes interpretive richness for a given
+receiver community) is computationally tractable remains open and connects
+to fundamental questions in algorithmic game theory and mechanism
+design.\footnote{Compare to the computational complexity results for Nash
+equilibrium computation: Daskalakis, Goldberg, and Papadimitriou showed
+that computing Nash equilibria is PPAD-complete (2009).  The corresponding
+question for meaning equilibrium---whether checking or computing meaning
+equilibrium is tractable---is unexplored.}
+\end{remark}
+
+\begin{theorem}[Void Signal Richness (20.9)]
+\label{thm:void_signal_richness}
+$\texttt{interpretiveRichness}(\text{reps}, \void) = \texttt{depthSum}(\text{reps})$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By induction, using $\compose(r, \void) = r$ at each step.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The ``cost'' of interpretation comes entirely from the interpreters'
+backgrounds when the signal carries no content.  In the economics of
+meaning, the void signal has zero marginal cost: all the interpretive
+richness is pre-existing, contributed by the receivers' own depth.
+
+\begin{theorem}[Interpretation Depth Non-Negativity (20.15)]
+\label{thm:richness_nonneg}
+$0 \leq \texttt{interpretiveRichness}(\text{reps}, s)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad Trivial for natural numbers. \hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Interpretation always produces non-negative hermeneutic content.  While
+trivial, this establishes a conceptual baseline: there is no such thing as
+``negative interpretation.''  Every encounter between mind and text
+generates at least zero meaning.
+
+\begin{theorem}[Empty Repertoire Zero Richness (20.16)]
+\label{thm:empty_richness}
+$\texttt{interpretiveRichness}([\,], s) = 0$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad Sum over empty list is zero. \hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A message with no audience generates no meaning.  This is the
+information-theoretic counterpart to the philosophical puzzle: if a tree
+falls in a forest and no one is there to hear it, does it make a sound?
+In IDT, the answer is unambiguous: no receivers, zero richness.
+
+\begin{theorem}[Singleton Richness Bound (20.17)]
+\label{thm:singleton_richness_bound}
+$\texttt{interpretiveRichness}([r], s) \leq \depth(r) + \depth(s)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The richness of a singleton list is $\depth(\compose(r,s))$, bounded by
+subadditivity.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+One person's interpretive effort is bounded by their background plus the
+signal's complexity.  Individual hermeneutics operates under the same
+resource constraints as collective hermeneutics, scaled down to a single
+agent.
+
+% ============================================================
+\section{Equilibrium Existence}
+\label{sec:ch20-equilibrium}
+
+\begin{theorem}[Empty Game Equilibrium (20.7)]
+\label{thm:empty_game_equilibrium}
+For all $s \in \IS$, $\texttt{MeaningEquilibrium}(\langle s, [\,] \rangle)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Universal quantification over the empty outcome list is vacuously true.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A meaning game with no receivers is trivially in equilibrium---vacuous
+consensus.  Logic guarantees agreement when there are no parties to
+disagree.
+
+\begin{theorem}[Singleton Game Equilibrium (20.8)]
+\label{thm:singleton_equilibrium}
+For all $r, s$, $\texttt{MeaningEquilibrium}(\langle s, [r] \rangle)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The only outcome element is $\compose(r, s)$, which resonates with itself.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A single interpreter always agrees with themselves---solipsism is
+equilibrium.  The interesting cases arise when multiple receivers must
+cohere.
+
+\begin{theorem}[Trivial Equilibrium Exists (20.10)]
+\label{thm:trivial_equilibrium_exists}
+$\texttt{MeaningEquilibrium}(\langle \void, [\,] \rangle)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad Vacuously true. \hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The ``babbling equilibrium'' trivially exists when there is no audience.
+Saying nothing to no one creates no disagreement---the most degenerate
+form of communicative success.
+
+\begin{theorem}[Resonant Community Equilibrium (20.13)]
+\label{thm:resonant_community_equilibrium}
+If all receivers pairwise resonate, then the meaning game is in equilibrium
+for \emph{any} signal:
+\[
+  \bigl(\forall\, r_1, r_2 \in \text{receivers},\;
+  \text{resonates}(r_1, r_2)\bigr)
+  \implies
+  \texttt{MeaningEquilibrium}(\langle s, \text{receivers} \rangle).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+For any $x, y$ in the outcome, $x = \compose(r_i, s)$ and
+$y = \compose(r_j, s)$ for some $r_i, r_j \in \text{receivers}$.
+By hypothesis, $\text{resonates}(r_i, r_j)$, and by
+Theorem~\ref{thm:resonance_preservation},
+$\text{resonates}(\compose(r_i, s), \compose(r_j, s))$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+This is Durkheim's grand theorem, formalized: a community with strong
+``collective consciousness'' (universal pairwise resonance) achieves
+interpretive consensus regardless of the stimulus.  Shared culture makes
+shared understanding automatic.  The theorem does not require any
+assumption about the signal---\emph{any} signal produces equilibrium,
+provided the receivers share resonance.
+
+The implications for social theory are significant.  Homogeneous communities
+achieve meaning equilibrium effortlessly; diverse communities may not.
+This is neither a normative claim nor a defense of homogeneity---it is a
+structural fact about the interaction between resonance and composition.
+The challenge for pluralistic societies is to achieve equilibrium without
+requiring universal resonance, a problem we leave for future
+work.\footnote{Compare this to the sociological concept of ``bridging
+social capital'' (Robert Putnam): connections between diverse groups that
+facilitate mutual understanding despite the absence of deep cultural
+resonance.}
+
+\begin{remark}[Limitations of the Formal Framework]
+\label{rem:limitations}
+The meaning game formalization, powerful as it is, necessarily abstracts
+away several features of real interpretive encounters that deserve
+acknowledgment.
+
+First, our model is \emph{synchronic}: all receivers interpret the signal
+simultaneously, with no temporal dynamics.  In reality, interpretation
+unfolds over time, and later interpreters are influenced by earlier ones---a
+dynamic that our relay-chain model (Chapter~\ref{ch:network}) partially
+captures but does not fully integrate with the meaning game.
+
+Second, our model assumes a single shared signal $s$.  In practice,
+signals are noisy, partial, and often contested.  Different receivers may
+have access to different versions or fragments of the signal, introducing
+an information-asymmetry dimension that our framework does not address.
+
+Third, resonance is binary: two ideas either resonate or they do not.
+A graded notion of resonance---measuring \emph{how much} two
+interpretations agree, not merely \emph{whether} they agree---would
+permit a more nuanced theory of partial consensus and approximate
+equilibrium.
+
+Fourth, depth is scalar.  A vector-valued depth function---measuring
+different dimensions of interpretive complexity (logical, emotional,
+aesthetic, practical)---might better capture the multidimensional character
+of real meaning-making.
+
+These limitations are not defects but invitations: each points toward a
+natural extension of the framework that future work might pursue.
+\end{remark}
+
+\begin{remark}[What IDT Captures and What It Misses]
+\label{rem:captures_and_misses}
+IDT captures the \emph{structural} aspects of meaning-making: the algebra
+of composition, the resource constraints of depth, and the compatibility
+conditions of resonance.  These structural features are genuine and
+important: they hold across cultures, historical periods, and media.
+
+What IDT misses---what any formal theory of meaning must miss---is the
+\emph{phenomenological} dimension: what it \emph{feels like} to understand,
+to be moved by a poem, to suddenly grasp a mathematical proof, to
+experience the fusion of horizons that Gadamer describes.  IDT can tell
+you that $\compose(r, s)$ has depth $d$ and resonates with $\compose(r', s)$;
+it cannot tell you why depth $d$ feels profound or why resonance feels like
+understanding.  The ``hard problem'' of cultural consciousness---why formal
+structure gives rise to lived meaning---is beyond the reach of any
+algebraic theory.
+
+This limitation is not unique to IDT; it is shared by all formal theories
+of mind, language, and culture.  The value of formalization is not that it
+replaces phenomenological inquiry but that it provides a scaffolding on
+which phenomenological insights can be organized, compared, and tested.
+The meaning game is a map, not the territory; but maps, when accurate, are
+indispensable for navigation.
+\end{remark}
+
+\begin{theorem}[Game Outcome Length (20.18)]
+\label{thm:outcome_length}
+$|G.\text{outcome}| = |G.\text{receivers}|$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The \texttt{map} operation preserves list length.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Every voice produces exactly one interpretation.  The meaning game's
+outcome has the same cardinality as its receiver list---a ``one person,
+one interpretation'' principle that ensures representational completeness.
+
+% ============================================================
+\section{The Grand Synthesis}
+\label{sec:ch20-synthesis}
+
+We now arrive at the culminating theorem of the entire signalling-game arc.
+
+\begin{theorem}[The Grand Synthesis (20.20)]
+\label{thm:grand_synthesis_ch20}
+For any meaning game with resonant receivers:
+\begin{enumerate}
+  \item[(1)] The total interpretive richness is bounded:
+  \[
+    \texttt{interpretiveRichness}(\text{receivers}, s) \;\leq\;
+    \texttt{depthSum}(\text{receivers}) + |\text{receivers}| \cdot \depth(s).
+  \]
+  \item[(2)] The game is in equilibrium:
+  \[
+    \texttt{MeaningEquilibrium}(\langle s, \text{receivers} \rangle).
+  \]
+\end{enumerate}
+Both properties hold simultaneously whenever
+$\forall\, r_1, r_2 \in \text{receivers},\; \text{resonates}(r_1, r_2)$.
+\end{theorem}
+
+\begin{lstlisting}[caption={The grand synthesis in Lean}]
+theorem grand_synthesis (receivers : List I) (s : I)
+    (hres : forall r1 in receivers, forall r2 in receivers,
+            IdeaticSpace.resonates r1 r2) :
+    interpretiveRichness receivers s <=
+      depthSum receivers + receivers.length * IdeaticSpace.depth s /\
+    MeaningEquilibrium { signal := s, receivers := receivers } :=
+  <universal_depth_bound receivers s,
+   resonant_community_equilibrium receivers s hres>
+\end{lstlisting}
+
+\noindent\textit{Proof sketch.}\quad
+Clause (1) is the universal depth bound
+(Theorem~\ref{thm:universal_depth_bound_ch20}), which holds for \emph{all}
+receiver lists, regardless of resonance.  Clause (2) is the resonant
+community equilibrium (Theorem~\ref{thm:resonant_community_equilibrium}),
+which requires the resonance hypothesis.  The conjunction of both clauses
+follows by pairing.
+\hfill$\square$
+
+\bigskip
+
+\noindent\textbf{Commentary.}
+The grand synthesis is the formal heart of this book.  It says that for a
+culturally coherent community---one in which all members share pairwise
+resonance---two fundamental properties hold \emph{simultaneously}:
+
+\begin{enumerate}
+  \item \textbf{Resource boundedness.}  The total interpretive effort of the
+    community is finite and bounded by a linear function of the community's
+    existing depth and the signal's complexity.  Meaning-making is not free;
+    it consumes cognitive resources, and the total expenditure is
+    constrained.
+
+  \item \textbf{Hermeneutic consensus.}  All interpretations are mutually
+    comprehensible.  The community achieves shared meaning---not by
+    suppressing individual differences (each receiver still composes with
+    their own background), but because their backgrounds are sufficiently
+    aligned that their readings ``rhyme'' with each other.
+\end{enumerate}
+
+The philosophical significance of this conjunction cannot be overstated.
+It unifies the \emph{economic} perspective (resources are bounded) with the
+\emph{hermeneutic} perspective (meaning is shared).  Previous accounts of
+meaning-making have typically emphasized one dimension at the expense of the
+other: economists focus on information costs, hermeneuticians on
+interpretive depth.  The grand synthesis shows that both concerns are
+addressed simultaneously by a single structural condition---resonance.
+
+\medskip
+
+\noindent\textbf{Geertz revisited.}
+Clifford Geertz wrote that culture is ``webs of significance'' that humans
+spin and within which they are suspended.  The grand synthesis formalizes
+this metaphor with mathematical precision.  The ``webs'' are the resonance
+relations between community members; the ``significance'' is the
+interpretive richness generated by their encounter with signals.  The
+theorem shows that when the web is coherent (universal pairwise resonance),
+the significance is both bounded (finite web) and shared (equilibrium).
+
+\medskip
+
+\noindent\textbf{Ricoeur revisited.}
+Paul Ricoeur's ``surplus of meaning'' is precisely the interpretive richness
+of the community.  The universal depth bound shows that this surplus is
+finite---not inexhaustible, as Ricoeur sometimes suggested, but bounded by
+the community's cognitive resources.  Yet within this bound, the surplus can
+be substantial: a deep community encountering a deep text generates rich
+interpretations.
+
+\medskip
+
+\noindent\textbf{Gadamer revisited.}
+Gadamer's hermeneutic circle is formalized by the associativity of
+composition (Theorem~\ref{thm:composition_closure}).  The grand synthesis
+shows that the circle is not merely internally consistent (associativity)
+but also \emph{convergent}: when the interpreters share resonance, the
+circle produces equilibrium.  The hermeneutic circle is a spiral, not a
+vortex---it converges on shared meaning rather than spinning into
+interpretive chaos.
+
+% ============================================================
+\section{Conclusion: The Game Theory of Meaning}
+\label{sec:ch20-concl}
+
+This chapter---and this entire signalling-game arc---has established a
+formal theory of meaning grounded in the algebraic structure of ideatic
+space.  Twenty theorems in this chapter, building on the seventy-four
+theorems of Chapters~\ref{ch:cooperative}--\ref{ch:social}, constitute a
+comprehensive mathematical framework for analyzing how meaning is created,
+transmitted, negotiated, and shared.
+
+Let us recapitulate the arc:
+
+\begin{description}
+  \item[Chapter~\ref{ch:cooperative}] established that cooperation is
+    composition, with void as the non-contributor, associativity ensuring
+    well-defined multi-party projects, and depth bounding the output
+    complexity.
+
+  \item[Chapter~\ref{ch:bargaining}] showed that non-commutativity creates
+    bargaining power: who speaks first shapes the meaning.  Yet structural
+    properties---depth bounds and void transparency---are order-invariant.
+
+  \item[Chapter~\ref{ch:network}] formalized cultural diffusion as relay
+    chains, proving that depth grows at most linearly, void relayers are
+    transparent, and resonant relayers cluster.
+
+  \item[Chapter~\ref{ch:social}] addressed the aggregation problem: how
+    individual interpretations compose into collective meaning, and under
+    what conditions (resonance) the community achieves hermeneutic
+    consensus.
+
+  \item[Chapter~\ref{ch:synthesis}] (this chapter) unified all threads
+    into the grand synthesis: resonant communities achieve both bounded
+    richness and meaning equilibrium.
+\end{description}
+
+The game theory of meaning differs from classical game theory in a
+fundamental way.  In classical game theory, agents pursue individual
+payoffs and equilibria emerge from the alignment of selfish strategies.
+In the game theory of meaning, agents pursue \emph{understanding}---the
+production of interpretations that resonate with those of their
+fellow-interpreters---and equilibria emerge from the alignment of
+\emph{backgrounds}.  The currency is not utility but resonance; the
+constraint is not budget but depth; the solution concept is not Nash
+equilibrium but meaning equilibrium.
+
+This formal framework opens several directions for future work:
+
+\begin{itemize}
+  \item \textbf{Non-resonant communities.}  What happens when receivers
+    do \emph{not} pairwise resonate?  Can partial equilibria be defined?
+    Under what conditions does deliberation converge to equilibrium even
+    without initial resonance?
+
+  \item \textbf{Dynamic meaning games.}  What happens when the signal
+    changes over time, or when receivers update their backgrounds based on
+    the interpretations of others?  Can we formalize the dynamics of
+    cultural change within this framework?
+
+  \item \textbf{Strategic interpretation.}  What happens when receivers
+    are not purely hermeneutic but strategically choose their interpretive
+    frames?  Can the game theory of meaning be extended to encompass
+    strategic signalling in the tradition of Crawford and Sobel?
+
+  \item \textbf{Computational complexity.}  How hard is it to compute
+    interpretive richness, check meaning equilibrium, or find the optimal
+    signal for a given community?  Are there polynomial-time algorithms,
+    or is the problem inherently intractable?
+\end{itemize}
+
+We began this arc with Mauss's insight that gift exchange is never merely
+economic.  We end with a generalization: \emph{meaning exchange} is never
+merely informational.  It is compositional, order-dependent, depth-bounded,
+and resonance-conditioned.  The game theory of meaning provides the formal
+tools to analyze these properties with mathematical rigor, while remaining
+faithful to the anthropological and philosophical traditions that inspired
+them.
+
+\bigskip
+
+\begin{center}
+\textit{``The locus of the study is not the object of study.\\
+Anthropologists don't study villages; they study in villages.''}\\
+--- Clifford Geertz, \textit{The Interpretation of Cultures}
+\end{center}

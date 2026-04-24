@@ -1,0 +1,921 @@
+% ================================================================
+% Chapter 13: Coalition Value and Totemic Solidarity
+% ================================================================
+
+\chapter{Coalition Value and Totemic Solidarity}
+\label{ch:coalition}
+
+\epigraph{The totality of beliefs and sentiments common to the average members
+of a society forms a determinate system with a life of its own; one may call it
+the \emph{collective} or \emph{common consciousness.}}{Émile Durkheim,
+\textit{De la division du travail social} (1893)}
+
+% ----------------------------------------------------------------
+\section{Introduction}
+% ----------------------------------------------------------------
+
+Human groups are not mere collections of individuals---they are
+\emph{coalitions} that compose their ideas jointly.  Durkheim's
+\emph{mechanical solidarity} arises when members share a
+\emph{conscience collective}: a jointly composed idea-system deeper than
+any individual's contribution.  The totem, in Durkheim's analysis of
+Australian religions, is precisely this: the symbol that expresses the
+group's collective composition, the sign under which individual ideas are
+subsumed into a shared cultural complex.\footnote{Durkheim,
+\textit{Les Formes élémentaires de la vie religieuse} (1912).  The totem
+is not merely a label but the material expression of the clan's
+\emph{conscience collective}---what we formalize as the coalition composition.}
+
+This chapter formalizes cooperative game theory in ideatic space.  We
+introduce \emph{coalition composition}---the fold of a list of ideas via
+the monoid operation, starting from void---and \emph{coalition value},
+the depth of the joint composition.  We define \emph{marginal contribution},
+the ideatic analogue of the Shapley marginal value, and prove eighteen
+theorems showing that coalition formation is subadditive, void members
+contribute nothing, associativity makes coalition merging well-defined, and
+resonant coalitions produce resonant joint ideas.
+
+The structural lesson is austere: there is no free lunch in cultural
+synthesis.  The combined depth of a coalition never exceeds the sum of
+individual depths.  The genius raises the group by at most their own
+complexity; the free rider contributes nothing; and a coalition of voids
+has zero cultural value regardless of its size.
+
+% ----------------------------------------------------------------
+\subsection{Historical Context: From Game Theory to Solidarity}
+% ----------------------------------------------------------------
+
+The mathematical foundations of coalition theory originate in John von~Neumann
+and Oskar Morgenstern's \textit{Theory of Games and Economic Behavior}
+(1944), which introduced cooperative game theory as a framework for analyzing
+situations where binding agreements among players are possible.  Von~Neumann
+and Morgenstern's key insight was that when agents can form coalitions, the
+relevant strategic unit is no longer the individual but the \emph{group}:
+the coalition's aggregate payoff determines each member's bargaining position.
+The \emph{characteristic function} $v: 2^N \to \mathbb{R}$ assigns to each
+subset~$S$ of the player set~$N$ a value $v(S)$ representing the total payoff
+that coalition~$S$ can guarantee itself.  Our coalition value function is
+the ideatic analogue: instead of monetary payoffs, it measures the cultural
+depth that a group of idea-bearers can collectively achieve.\footnote{Von
+Neumann and Morgenstern, \textit{Theory of Games and Economic Behavior}
+(Princeton, 1944).  The cooperative game framework they developed has been
+applied across economics, political science, and operations research; our
+application to cultural composition is, to our knowledge, the first
+systematic formalization in this direction.}
+
+Lloyd Shapley's celebrated \emph{value} (1953) provides a unique allocation
+of the coalition's total payoff to individual members, satisfying axioms of
+efficiency, symmetry, linearity, and the null-player property.  The
+\emph{Shapley value} of player~$i$ in a cooperative game with characteristic
+function~$v$ is:
+\[
+  \phi_i(v) = \sum_{S \subseteq N \setminus \{i\}}
+  \frac{|S|!\;(|N| - |S| - 1)!}{|N|!}
+  \bigl[v(S \cup \{i\}) - v(S)\bigr].
+\]
+This formula averages the marginal contribution of player~$i$ across all
+possible orderings in which the coalition might form.  Our marginal
+contribution (Definition~\ref{def:marginal}) captures the same intuition in
+the ideatic setting: the depth that an individual adds to a coalition depends
+on when they join and what is already composed.  Shapley's null-player axiom
+is our Theorem~\ref{thm:void-marginal}: a player who contributes nothing to
+every coalition receives zero allocation.\footnote{Lloyd~S.\ Shapley, ``A
+Value for $n$-Person Games,'' \textit{Annals of Mathematics Studies}~28
+(1953), pp.\ 307--317.  For the connection between marginal contributions
+and fair allocation, see also Alvin~E.\ Roth, ed., \textit{The Shapley
+Value} (Cambridge, 1988).}
+
+The \emph{core} of a cooperative game---the set of allocations under which
+no coalition has an incentive to deviate---provides a complementary notion of
+stability.  An allocation is in the core if and only if every coalition
+receives at least its characteristic function value.  In ideatic terms,
+a cultural arrangement is stable when every possible sub-group feels
+adequately represented in the collective composition.  When the core is
+empty, no stable arrangement exists, and the culture is prone to fission:
+discontented sub-coalitions will break away to form their own collective
+representations.  The subadditivity of our coalition value
+(Theorem~\ref{thm:pair-subadd}) guarantees that the ``grand coalition''---the
+entire society---always has a non-empty core, since no sub-coalition can
+achieve more than the sum of its members' individual depths.
+
+These game-theoretic tools find their anthropological counterpart in
+Émile Durkheim's theory of solidarity.  In \textit{De la division du travail
+social} (1893), Durkheim distinguished two ideal types of social cohesion.
+\emph{Mechanical solidarity} characterizes segmentary societies---those
+organized into structurally identical, self-sufficient units (clans,
+lineages, moieties).  Here, solidarity arises from \emph{resemblance}:
+members share a strong conscience collective, a common body of beliefs and
+sentiments that integrates them through their very similarity.  The
+collective representation is the fold of many similar contributions---our
+coalition composition of ideas that largely resonate with one another.
+\emph{Organic solidarity}, by contrast, characterizes complex societies
+organized through the division of labor.  Here, solidarity arises from
+\emph{complementarity}: members contribute different, specialized ideas
+whose composition yields a collective representation richer than any
+individual could produce alone.  The depth of the coalition exceeds any
+singleton's depth precisely because the ideas are diverse.\footnote{Durkheim,
+\textit{De la division du travail social} (Paris, 1893).  The distinction
+between mechanical and organic solidarity maps onto our framework as follows:
+mechanical solidarity corresponds to coalitions of resonant (similar) ideas,
+while organic solidarity corresponds to coalitions of complementary
+(non-resonant, high-depth) ideas.  Both are subadditive, but organic
+solidarity tends to approach the subadditivity bound more closely.}
+
+Durkheim's analysis of totemism in \textit{Les Formes élémentaires de la
+vie religieuse} (1912) provides the ethnographic grounding for our
+formalization.  Among the Australian Aboriginal peoples---particularly the
+Aranda (Arrernte) of Central Australia and the Kariera of Western
+Australia---social organization is structured by elaborate section systems
+that partition the population into named groups, each associated with a
+totemic emblem drawn from the natural world (kangaroo, emu, witchetty grub,
+rain, etc.).  The Aranda system employs eight sections, arranged in a
+pattern of prescribed marriage classes and moiety divisions.  The Kariera
+system uses four sections.  In both cases, the totem functions as the
+\emph{symbol} of the group's coalition composition: it is the material sign
+under which individual contributions are subsumed into a collective
+representation.  Durkheim argued that the totem is not merely a label or
+taxonomic convenience but the very \emph{expression} of the group's social
+force---the conscience collective made visible.\footnote{On Australian
+section systems, see A.~P.~Elkin, \textit{The Australian Aborigines} (1938);
+W.~Lloyd Warner, \textit{A Black Civilization} (1937); and more recently,
+Patrick McConvell and Barry Alpher, ``The Formal Analysis of Kin Avoidance
+Language in Australia,'' in \textit{Kinship Systems} (2002).}
+
+The formal framework developed in this chapter also connects to contemporary
+applications that Durkheim could not have anticipated.  Wikipedia, the
+collaborative encyclopedia, exemplifies coalition composition at scale:
+each editor contributes an idea (an edit, a paragraph, a citation) that is
+composed with the existing article to produce a collective representation.
+The article's ``depth''---its comprehensiveness, accuracy, and
+sophistication---is the coalition value of the editor community.
+Open-source software development follows a similar logic: each contributor's
+code is composed with the existing codebase through version control, and the
+project's complexity is the coalition value of the development team.  In
+both cases, subadditivity holds: the project's depth never exceeds the sum
+of all individual contributions, though it may fall far short of that
+bound due to redundancy, conflicts, and the overhead of coordination.
+
+Social capital theory, as developed by James Coleman, Robert Putnam, and
+Pierre Bourdieu, provides a further bridge between cooperative game theory
+and anthropological analysis.\footnote{James~S.\ Coleman, ``Social Capital
+in the Creation of Human Capital,'' \textit{American Journal of Sociology}
+94 (1988), pp.\ S95--S120; Robert~D.\ Putnam, \textit{Bowling Alone}
+(2000); Pierre Bourdieu, ``The Forms of Capital,'' in J.~Richardson, ed.,
+\textit{Handbook of Theory and Research for the Sociology of Education}
+(1986).}  For Coleman, social capital inheres in the structure of
+relations among persons---precisely the coalition structure we formalize.
+For Putnam, social capital manifests as ``bridging'' (between diverse
+groups) and ``bonding'' (within homogeneous groups), a distinction that maps
+onto our framework: bonding capital corresponds to coalitions of resonant
+ideas (mechanical solidarity), while bridging capital corresponds to
+coalitions of diverse ideas (organic solidarity).  For Bourdieu, capital
+exists in multiple forms---economic, cultural, social, symbolic---and is
+convertible across forms through the habitus.  Our depth metric captures
+one dimension of Bourdieu's cultural capital; the composition operation
+captures the habitus's role in mediating between individual and collective
+representations.
+
+% ----------------------------------------------------------------
+\section{Core Definitions}
+\label{sec:ch13-defs}
+% ----------------------------------------------------------------
+
+\begin{definition}[Coalition Composition]
+\label{def:coalition-compose}
+The \emph{coalition composition} of a list of ideas $[a_1, a_2, \dots, a_n]$
+is defined recursively:
+\[
+  \operatorname{coalitionCompose}([]) = \void, \qquad
+  \operatorname{coalitionCompose}(a :: \text{rest}) =
+    \operatorname{coalitionCompose}(\text{rest}) \compose a.
+\]
+This models a group's \emph{collective idea}---the joint composition of all
+members' contributions.  In Durkheim's terms, this \emph{is} the conscience
+collective.
+\end{definition}
+
+\begin{lstlisting}[caption={Coalition composition in Lean~4}]
+def coalitionCompose : List I -> I
+  | []         => void
+  | a :: rest  => compose (coalitionCompose rest) a
+\end{lstlisting}
+
+Note the right-to-left fold: the earliest member in the list contributes
+last, layered atop the previous members' composition.  This models the
+anthropological fact that latecomers to a tradition interpret through---and
+are interpreted against---the existing collective representation.
+
+\begin{definition}[Coalition Value]
+\label{def:coalition-value}
+The \emph{coalition value} of a group is the depth of its joint composition:
+\[
+  \operatorname{coalitionValue}(\text{coalition}) =
+  \depth(\operatorname{coalitionCompose}(\text{coalition})).
+\]
+\end{definition}
+
+\begin{definition}[Marginal Contribution]
+\label{def:marginal}
+The \emph{marginal contribution} of idea $a$ to a coalition is the
+difference in coalition value when $a$ is added:
+\[
+  \operatorname{marginal}(a, C) =
+  \operatorname{coalitionValue}(a :: C) - \operatorname{coalitionValue}(C).
+\]
+This is the ideatic analogue of the Shapley marginal contribution in
+cooperative game theory.
+\end{definition}
+
+% ----------------------------------------------------------------
+\section{Empty and Singleton Coalitions}
+\label{sec:ch13-empty}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Empty Coalition is Void (13.1)]
+\label{thm:empty-void}
+The empty coalition composes to void: $\operatorname{coalitionCompose}([]) = \void$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By definition of the base case.
+\end{proof}
+
+A group with no members has no culture.  This is the structural zero of
+social organization---the ``state of nature'' in Hobbes's thought
+experiment, but formalized as the void of ideatic composition.  Before the
+first idea is contributed, the collective representation is empty.
+
+\begin{theorem}[Empty Coalition Has Zero Value (13.2)]
+\label{thm:empty-zero}
+The cultural complexity of the empty group is zero:
+$\operatorname{coalitionValue}([]) = 0$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\operatorname{coalitionCompose}([]) = \void$, and $\depth(\void) = 0$.
+\end{proof}
+
+\emph{Ex nihilo nihil fit}---from nothing, nothing comes.  A society begins
+with zero cultural depth and must build it through composition.  The
+Hobbesian ``war of all against all'' is not merely unpleasant; it is
+culturally sterile.
+
+\begin{theorem}[Singleton Coalition (13.3)]
+\label{thm:singleton-coal}
+A one-member coalition's composition is $\void \compose a$:
+$\operatorname{coalitionCompose}([a]) = \void \compose a$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By unfolding the recursive definition once.
+\end{proof}
+
+\begin{theorem}[Singleton Coalition Value (13.4)]
+\label{thm:singleton-value}
+A one-member coalition has value equal to that member's depth:
+$\operatorname{coalitionValue}([a]) = \depth(a)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\void \compose a = a$ by the void axiom, so
+$\depth(\void \compose a) = \depth(a)$.
+\end{proof}
+
+The isolated individual contributes exactly their own depth to culture---no
+more, no less.  Robinson Crusoe's cultural footprint is precisely his personal
+complexity.  This theorem anchors the individual as the unit of cultural
+measurement: before composition with others, each person's contribution is
+exactly what they carry.\footnote{This should be contrasted with Durkheim's
+anti-individualist position, which holds that the conscience collective is
+\emph{emergent} and irreducible to individual contributions.  Our theorem
+shows that at the singleton level, there is no emergence---emergence
+requires at least two members.}
+
+% ----------------------------------------------------------------
+\section{Void Members and Inert Contributions}
+\label{sec:ch13-void}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Adding Void Preserves Coalition Composition (13.5)]
+\label{thm:void-member}
+Adding void to the front of a coalition does not change its composition:
+\[
+  \operatorname{coalitionCompose}(\void :: C) = \operatorname{coalitionCompose}(C).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\operatorname{coalitionCompose}(C) \compose \void =
+\operatorname{coalitionCompose}(C)$ by the right-identity axiom.
+\end{proof}
+
+A ``member'' who brings nothing---the free rider, the passive observer---does
+not alter the group's collective idea.  Durkheim's distinction between
+mechanical and organic solidarity relies on each member \emph{contributing};
+void members are structurally invisible.  This is the formal basis of
+Olson's collective action problem: individuals who contribute nothing receive
+the benefits of the collective good without increasing it.
+
+\begin{theorem}[Void Member Has Zero Marginal Contribution (13.6)]
+\label{thm:void-marginal}
+Adding void to a coalition changes nothing about coalition value:
+$\operatorname{marginal}(\void, C) = 0$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Since $\operatorname{coalitionCompose}(\void :: C) =
+\operatorname{coalitionCompose}(C)$ by Theorem~\ref{thm:void-member}, the
+difference is zero.
+\end{proof}
+
+The free rider contributes nothing.  This formalizes Olson's central theorem
+in \textit{The Logic of Collective Action}: non-contributors do not enhance
+the collective good.\footnote{Mancur Olson, \textit{The Logic of Collective
+Action} (1965).  Olson's argument that rational individuals will not
+contribute to public goods unless compelled is captured by our result that
+void contributions have zero marginal value.}
+
+% ----------------------------------------------------------------
+\section{Two-Member Coalitions}
+\label{sec:ch13-dyad}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Two-Member Coalition (13.7)]
+\label{thm:two-member}
+A two-member coalition $[a, b]$ has composition
+$(\void \compose b) \compose a$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By unfolding the definition twice.
+\end{proof}
+
+\begin{theorem}[Two-Member Coalition Simplified (13.8)]
+\label{thm:two-member-simp}
+The two-member coalition $[a, b]$ simplifies to $b \compose a$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\void \compose b = b$ by the void axiom, so
+$(\void \compose b) \compose a = b \compose a$.
+\end{proof}
+
+The dyad---pair bond, marriage, master--apprentice---is the simplest
+non-trivial coalition.  Its collective idea is simply the composition of
+both members' ideas.  Simmel's insight that the dyad is qualitatively
+different from larger groups is confirmed algebraically: the dyad is the
+only coalition whose value reduces to a single composition, without nested
+structure.\footnote{Georg Simmel, ``The Number of Members as Determining the
+Sociological Form of the Group'' (1902).  Simmel argued that the dyad lacks
+the super-individual structure that emerges in triads and larger groups.
+Our simplification theorem confirms this: $[a, b]$ reduces to $b \compose a$,
+a simple composition with no nesting.}
+
+\begin{lstlisting}[caption={Two-member coalition simplified in Lean~4}]
+theorem two_member_simplified (a b : I) :
+    coalitionCompose [a, b] = compose b a := by
+  simp [coalitionCompose, void_left]
+\end{lstlisting}
+
+% ----------------------------------------------------------------
+\section{Subadditivity and Value Bounds}
+\label{sec:ch13-bounds}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Coalition Value Subadditivity for Pairs (13.9)]
+\label{thm:pair-subadd}
+The value of a two-member coalition is bounded by the sum of individual
+depths:
+\[
+  \operatorname{coalitionValue}([a, b]) \;\le\; \depth(a) + \depth(b).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By Theorem~\ref{thm:two-member-simp},
+$\operatorname{coalitionValue}([a, b]) = \depth(b \compose a)
+\le \depth(b) + \depth(a)$ by subadditivity.
+\end{proof}
+
+Two cultures merging cannot produce a joint culture deeper than the sum of
+their parts.  Cultural synthesis is bounded---there is no ``$1 + 1 = 3$'' in
+ideatic composition.  This constrains utopian visions of cultural fusion and
+places a hard ceiling on the ``synergy'' of intercultural dialogue.  The
+deepest possible synthesis of Shakespeare and Bashō is at most
+$\depth(\text{Shakespeare}) + \depth(\text{Bashō})$.
+
+\begin{example}[The Amish Barn Raising]
+\label{ex:barn-raising}
+The Amish barn raising exemplifies coalition composition in practice.
+Each participant brings a specific skill---carpentry, roofing, masonry---and
+the collective output is the composed structure.  The coalition value
+(the completed barn) exceeds what any individual could achieve alone, yet
+Theorem~\ref{thm:pair-subadd} ensures it cannot exceed the sum of all
+individual depths.  The barn raising also illustrates
+Theorem~\ref{thm:void-marginal}: community members who attend but
+contribute nothing (void members) do not increase the coalition's cultural
+output, though they may serve important social functions not captured by
+the depth metric.
+
+More precisely, let $a_1, a_2, \dots, a_n$ denote the ideas (skills,
+techniques, knowledge) brought by the $n$ participants.  The barn as a
+completed structure is $\operatorname{coalitionCompose}([a_1, \dots, a_n])$,
+and its complexity---the coalition value---is the depth of this composition.
+Subadditivity gives $\operatorname{coalitionValue}([a_1, \dots, a_n])
+\le \sum_{i=1}^n \depth(a_i)$: the barn is at most as complex as the sum
+of all individual skills.  In practice, the inequality is strict because
+skills overlap (multiple carpenters), and the coordination overhead
+(scheduling, communication) effectively reduces the realized depth below
+the theoretical maximum.\footnote{Donald Kraybill, \textit{The Riddle of Amish
+Culture} (2001), documents how barn raisings serve simultaneously as
+economic cooperation and social bonding rituals.  The event reinforces
+Durkheim's mechanical solidarity: participants share a common value system
+(Ordnung) that makes their individual contributions resonant.}
+\end{example}
+
+\begin{remark}[Connection to Olson's Collective Action Problem]
+\label{rem:olson}
+Mancur Olson's \textit{The Logic of Collective Action} (1965) identifies
+a fundamental tension in group behavior: rational self-interested agents
+will under-contribute to public goods because they can free-ride on
+others' contributions.  Theorem~\ref{thm:void-marginal} provides the
+formal skeleton of this insight.  A free rider whose contribution is void
+adds nothing to the coalition value, yet benefits from the collective
+representation.  However, our framework also reveals a limit to Olson's
+pessimism.  In ideatic space, the free rider is \emph{structurally
+invisible}: they neither help nor harm the coalition's depth.  The
+collective good---the coalition composition---is robust to the presence
+of void members.  The problem is not that free riders destroy value but
+that they fail to create it, leaving the coalition at a depth below its
+potential maximum.  Olson's solution---selective incentives to encourage
+participation---corresponds in our framework to mechanisms that convert
+void members into non-void contributors, thereby increasing the realized
+coalition value toward its theoretical bound.
+\end{remark}
+
+\begin{theorem}[Marginal Contribution Bounded by Depth (13.10)]
+\label{thm:marginal-bounded}
+Adding member $a$ to any coalition increases value by at most $\depth(a)$:
+\[
+  \operatorname{coalitionValue}(a :: C) \;\le\;
+  \operatorname{coalitionValue}(C) + \depth(a).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\operatorname{coalitionCompose}(a :: C) =
+\operatorname{coalitionCompose}(C) \compose a$, and
+$\depth(\operatorname{coalitionCompose}(C) \compose a)
+\le \depth(\operatorname{coalitionCompose}(C)) + \depth(a)$
+by subadditivity.
+\end{proof}
+
+No individual can contribute more than their own depth to a group.  The
+genius raises the group by at most their own complexity---the \emph{bounded
+marginal returns} of individual talent in collective settings.  This is the
+formal counterpart to the sociological observation that even extraordinary
+individuals (Marx, Darwin, Freud) shift the collective culture by a
+bounded amount proportional to their personal depth.
+
+\begin{theorem}[Marginal Contribution at Most Depth (13.11)]
+\label{thm:marginal-le-depth}
+The marginal contribution of $a$ is at most $\depth(a)$:
+\[
+  \operatorname{marginal}(a, C) \;\le\; \depth(a).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Since $\operatorname{coalitionValue}(a :: C) \le
+\operatorname{coalitionValue}(C) + \depth(a)$ by
+Theorem~\ref{thm:marginal-bounded}, the difference
+$\operatorname{coalitionValue}(a :: C) - \operatorname{coalitionValue}(C)
+\le \depth(a)$.
+\end{proof}
+
+An individual's marginal contribution to culture is bounded by their personal
+depth.  No initiate brings more to a secret society than they carry.  This
+constrains the ``great man'' theory of history: even the greatest individual's
+marginal impact is bounded above.
+
+\begin{example}[Wikipedia as Coalition Composition]
+\label{ex:wikipedia}
+Wikipedia's collaborative editing process provides a striking modern
+illustration of coalition composition.  Each editor contributes an idea---a
+paragraph of text, a citation, a structural reorganization, a factual
+correction---that is composed with the existing article.  The article at
+any given moment is $\operatorname{coalitionCompose}([e_1, e_2, \dots, e_n])$
+where $e_i$ is the $i$-th edit in the article's history.  The article's
+quality and comprehensiveness---its coalition value---is the depth of
+this composition.
+
+Several of our theorems find direct expression in Wikipedia's dynamics.
+Theorem~\ref{thm:singleton-value} shows that a single editor's article
+has exactly their own depth: one-person articles reflect one person's
+knowledge.  Theorem~\ref{thm:pair-subadd} shows that merging two stub
+articles produces an article no deeper than the sum of the stubs' depths.
+Theorem~\ref{thm:void-marginal} explains why many minor edits (fixing
+typos, adjusting formatting) do not substantially increase article depth:
+these are near-void contributions whose marginal value is negligible.
+And Theorem~\ref{thm:void-list} explains why articles created by bots
+that contribute no substantive content remain at zero depth regardless
+of their edit count.
+
+The Wikipedia model also highlights a phenomenon not fully captured by
+our current theorems: \emph{edit wars}, in which competing editors
+repeatedly overwrite each other's contributions.  In our framework, an
+edit war is a sequence of compositions and de-compositions (reversions)
+that leaves the coalition value oscillating rather than monotonically
+increasing.  The depth metric is indifferent to the social drama; it
+tracks only the net compositional state.\footnote{For a sociological
+analysis of Wikipedia's collaborative dynamics, see Yochai Benkler,
+\textit{The Wealth of Networks} (2006), ch.~3; and Aaron Halfaker et al.,
+``The Rise and Decline of an Open Collaboration System,''
+\textit{American Behavioral Scientist} 57:5 (2013), pp.\ 664--688.}
+\end{example}
+
+\begin{remark}[Emergent Properties and the Limits of Subadditivity]
+\label{rem:emergence}
+Subadditivity (Theorem~\ref{thm:pair-subadd}) states that the coalition
+value cannot \emph{exceed} the sum of individual depths.  But it says nothing
+about how close the coalition value comes to that bound.  In practice,
+coalition compositions exhibit a wide range of behaviors: some approach
+the additive bound closely (when contributions are orthogonal and
+non-redundant), while others fall far short (when contributions overlap or
+interfere).
+
+Durkheim's concept of \emph{emergence}---the idea that the collective
+consciousness is qualitatively different from, and irreducible to, the sum
+of individual consciousnesses---finds a precise location in our framework.
+Emergence, in our terms, is the phenomenon whereby
+$\operatorname{coalitionValue}(C) \ne \sum_{a \in C} \depth(a)$.  The
+\emph{gap} between the coalition value and the additive bound is the
+``emergence deficit''---the amount by which composition falls short of
+mere aggregation.  When this deficit is small, the coalition is ``nearly
+additive'' and emergence is weak.  When it is large, interactions between
+members substantially reshape the collective idea, and emergence is strong.
+The subadditivity theorem guarantees that emergence is always
+\emph{non-positive}: coalitions never produce more than the sum of their
+parts, though they may produce qualitatively different compositions that
+are, in a structural sense, ``more than'' the mere concatenation of
+individual ideas.
+\end{remark}
+
+% ----------------------------------------------------------------
+\section{Associativity and Merging}
+\label{sec:ch13-assoc}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Coalition Composition Unfold (13.12)]
+\label{thm:coal-unfold}
+$\operatorname{coalitionCompose}(a :: \text{rest}) =
+\operatorname{coalitionCompose}(\text{rest}) \compose a$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+This is definitional---the recursive case of \texttt{coalitionCompose}.
+\end{proof}
+
+Adding a new member to a coalition means composing their idea with the
+existing collective idea.  Initiation rites formalize this structural
+operation: the initiate's individual idea is composed with the group's
+collective representation to produce a new, slightly altered collective.
+
+\begin{theorem}[Three-Member Coalition (13.13)]
+\label{thm:three-member}
+The three-member coalition $[a, b, c]$ has composition
+$((\void \compose c) \compose b) \compose a$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By three applications of the recursive case.
+\end{proof}
+
+\begin{theorem}[Three-Member Simplified (13.14)]
+\label{thm:three-member-simp}
+The three-member coalition simplifies to $(c \compose b) \compose a$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\void \compose c = c$ by the void axiom, then unfold.
+\end{proof}
+
+The triad---Simmel's ``third''---introduces mediation.  The three-member
+coalition's collective idea involves nested composition: the mediator
+(middle member) connects the other two.  This is why Simmel considered the
+triad qualitatively different from the dyad: the triad has internal
+structure (nested composition) that the dyad lacks.  Formally, $[a, b]$
+is a flat composition $b \compose a$, while $[a, b, c]$ is a nested
+composition $(c \compose b) \compose a$---the nesting is the formal
+signature of mediation.
+
+\begin{example}[Jazz Improvisation as Coalition Composition]
+\label{ex:jazz}
+A jazz ensemble---say, the Miles Davis Quintet circa 1965, with Davis
+(trumpet), Wayne Shorter (saxophone), Herbie Hancock (piano), Ron Carter
+(bass), and Tony Williams (drums)---provides a vivid illustration of
+coalition composition in real time.  Each musician contributes an idea
+(a melodic line, a harmonic voicing, a rhythmic pattern) that is
+composed with the ongoing collective sound.  The ensemble's music at
+any moment is $\operatorname{coalitionCompose}([m_1, m_2, m_3, m_4, m_5])$
+where $m_i$ is the $i$-th musician's contribution.
+
+The triad theorem (Theorem~\ref{thm:three-member-simp}) is directly
+relevant: any three musicians in the quintet form a trio whose collective
+idea is a nested composition $(c \compose b) \compose a$.  The nesting
+matters: the rhythm section (bass and drums) provides the compositional
+foundation upon which the harmonic instrument (piano) layers, and the
+soloists (trumpet, saxophone) compose atop this pre-existing structure.
+The order of composition is not arbitrary---it reflects the functional
+hierarchy of the ensemble.
+
+Subadditivity (Theorem~\ref{thm:pair-subadd}) explains why even the
+greatest ensemble cannot exceed the sum of its members' individual
+virtuosity.  But the jazz ensemble also illustrates the \emph{emergence
+deficit} discussed in Remark~\ref{rem:emergence}: the ensemble's music is
+qualitatively different from a mere superposition of five solo
+performances.  Interaction reshapes each contribution, producing a
+coalition composition whose character cannot be predicted from individual
+depths alone.  The depth of ``Kind of Blue'' is bounded by but not equal to
+$\depth(\text{Davis}) + \depth(\text{Coltrane}) + \depth(\text{Evans}) +
+\depth(\text{Chambers}) + \depth(\text{Cobb})$.\footnote{For a
+musicological analysis of jazz ensemble interaction, see Ingrid Monson,
+\textit{Saying Something: Jazz Improvisation and Interaction} (1996);
+and Paul Berliner, \textit{Thinking in Jazz} (1994).}
+\end{example}
+
+% ----------------------------------------------------------------
+\section{Resonance in Coalitions}
+\label{sec:ch13-resonance}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Self-Resonance of Coalition Value (13.15)]
+\label{thm:coal-self-res}
+Every coalition's collective idea resonates with itself:
+\[
+  \operatorname{coalitionCompose}(C) \res \operatorname{coalitionCompose}(C).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By reflexivity of resonance.
+\end{proof}
+
+Every group's collective representation is self-consistent in the resonance
+sense.  A culture never fails to ``recognize itself.''  Durkheim's
+conscience collective is always internally coherent: the collective
+representation may be shallow or deep, simple or complex, but it never
+contradicts itself at the level of resonance.\footnote{This should not be
+confused with logical consistency.  Resonance is weaker than logical
+entailment: two ideas can resonate without being logically compatible.
+The point is that the collective idea always \emph{recognizes} itself,
+even if it contains contradictions by other metrics.}
+
+\begin{theorem}[Resonant Members Yield Resonant Coalitions (13.16)]
+\label{thm:resonant-singletons}
+If $a \res a'$, then $\operatorname{coalitionCompose}([a]) \res
+\operatorname{coalitionCompose}([a'])$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Singleton coalitions simplify to the member itself (after void composition),
+so the result follows from the hypothesis.
+\end{proof}
+
+If two individuals' ideas resonate---they ``get'' each other---their
+one-person ``cultures'' are compatible.  This is the micro-foundation of
+cultural affinity: interpersonal resonance at the individual level
+translates directly to inter-cultural resonance at the singleton-coalition
+level.
+
+\begin{theorem}[Coalition Value of Void List (13.17)]
+\label{thm:void-list}
+A coalition consisting entirely of $n$ voids has zero value:
+$\operatorname{coalitionValue}(\operatorname{replicate}(n, \void)) = 0$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $n$: each void member preserves the existing composition
+(Theorem~\ref{thm:void-member}), and the base case is the empty coalition
+with value zero.
+\end{proof}
+
+A group of non-contributors produces no cultural depth---``a meeting of empty
+minds.''  Bureaucracies without substance have zero cultural value regardless
+of how many members they have.  The formal futility of scaling a null
+organization: ten thousand voids compose to void.
+
+\begin{lstlisting}[caption={Void coalition zero value in Lean~4}]
+theorem void_coalition_zero_value : forall (n : ℕ),
+    coalitionValue (List.replicate n void) = 0
+  | 0     => by simp [coalitionValue, coalitionCompose, depth_void]
+  | n + 1 => by
+    simp [coalitionValue, coalitionCompose, List.replicate_succ, void_right]
+    exact void_coalition_zero_value n
+\end{lstlisting}
+
+\begin{example}[Monastic Communities as Coalitions]
+\label{ex:monastery}
+The Benedictine monastery offers a counterpoint to the jazz ensemble:
+a coalition designed to maximize collective depth through disciplined,
+rule-governed composition.  The Rule of St.~Benedict prescribes a daily
+schedule of prayer (\textit{opus Dei}), manual labor (\textit{labora}),
+and sacred reading (\textit{lectio divina}) that structures each monk's
+contribution to the communal life.  In our terms, each monk contributes
+an idea shaped by the Rule, and the monastery's collective
+representation---its spiritual culture---is the coalition composition
+of these disciplined contributions.
+
+Theorem~\ref{thm:void-list} is particularly illuminating here.  The
+monastic tradition has always recognized the danger of \emph{acedia}---the
+``noonday demon'' of spiritual torpor---which, in our framework,
+corresponds to a monk whose contribution has become void.  A monastery
+full of acedic monks has zero coalition value, regardless of its
+population.  The elaborate monastic disciplines of self-examination,
+confession, and spiritual direction are precisely mechanisms for detecting
+and correcting void contributions before they accumulate.
+
+The Benedictine emphasis on \textit{stabilitas loci}---the vow to remain
+in one monastery for life---also finds formal expression.  By keeping the
+coalition membership stable, the monastery ensures that each member's
+contribution is composed with a familiar collective representation,
+reducing the coordination overhead that plagues more fluid
+coalitions.\footnote{On monastic organization as a form of social
+engineering, see C.~H.~Lawrence, \textit{Medieval Monasticism} (3rd ed.,
+2001); and Terrence Kardong, \textit{Benedict's Rule: A Translation and
+Commentary} (1996).}
+\end{example}
+
+\begin{remark}[Connections to Chapter~\ref{ch:matching} and Matching Theory]
+\label{rem:matching-connection}
+The coalition theory developed in this chapter connects directly to the
+matching theory of Chapter~\ref{ch:matching}.  There, we analyzed how
+individual ideas are paired through the matching operation; here, we
+study how those matched individuals compose into groups.  The connection
+is precise: a coalition composition is a \emph{sequence} of pairwise
+compositions, folded from right to left.  Every property of pairwise
+composition (subadditivity, void identity, associativity) lifts to the
+coalition level through induction on the list structure.
+
+The matching-theoretic perspective suggests a natural refinement of
+coalition value: instead of measuring only the depth of the grand
+coalition's composition, one might also consider the depth profile of all
+possible sub-coalitions---the \emph{characteristic function} of the
+cooperative game.  Whether this richer structure yields additional
+anthropological insights (e.g., about the stability of kinship systems
+or the fission-fusion dynamics of band societies) remains an open question
+for future work.
+\end{remark}
+
+\begin{theorem}[Coalition Value Monotonicity Bound (13.18)]
+\label{thm:value-mono}
+Adding any member to a coalition changes the value by at most the member's
+depth:
+\[
+  \operatorname{coalitionValue}(a :: C) \;\le\;
+  \operatorname{coalitionValue}(C) + \depth(a).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+This is Theorem~\ref{thm:marginal-bounded} restated.
+\end{proof}
+
+Cultural change is incremental.  Adding one person to a society can shift its
+collective depth by at most that person's individual depth.  Revolutions
+require deep individuals---shallow newcomers are structurally bounded in
+their effect.  This is the formal counterpart to Kuhn's observation that
+scientific revolutions require individuals of exceptional depth (Copernicus,
+Newton, Einstein) to shift the collective paradigm.\footnote{Thomas Kuhn,
+\textit{The Structure of Scientific Revolutions} (1962).  Kuhn's
+``revolutionary scientist'' is, in our terms, an individual with
+exceptionally high $\depth(a)$, whose marginal contribution is correspondingly
+large---but still bounded.}
+
+% ----------------------------------------------------------------
+\section{The Anthropology of Collective Action}
+\label{sec:ch13-collective-action}
+% ----------------------------------------------------------------
+
+The theorems of this chapter, taken together, provide a formal grammar for
+the anthropological study of collective action.  We briefly survey how
+this grammar illuminates several major themes in the anthropological
+literature, drawing connections between the abstract algebra of coalition
+composition and the concrete ethnography of human cooperation.
+
+\subsection{Segmentary Lineage Systems}
+
+Evans-Pritchard's classic analysis of the Nuer of southern Sudan (1940)
+describes a \emph{segmentary lineage system} in which political coalitions
+form and dissolve along genealogical lines.\footnote{E.~E.~Evans-Pritchard,
+\textit{The Nuer} (Oxford, 1940).}  In the event of conflict, lineage
+segments unite at successively higher levels of genealogical inclusion:
+brothers unite against cousins, cousins against more distant kin, and
+so on, following the principle ``I against my brother, my brother and I
+against our cousin, our lineage against the world.''  In our framework,
+each level of segmentary inclusion corresponds to a coalition composition
+at a different scale.  The coalition value at each level is bounded by
+subadditivity (Theorem~\ref{thm:pair-subadd}), and the marginal
+contribution of each segment is bounded by its depth
+(Theorem~\ref{thm:marginal-le-depth}).  The segmentary system is thus
+a hierarchically nested sequence of coalition compositions, each
+satisfying the structural constraints we have proven.
+
+\subsection{Gift Exchange and Reciprocity}
+
+Malinowski's analysis of the Kula ring (1922) and Mauss's comparative
+theory of the gift (1925) both describe systems of reciprocal exchange
+in which the act of giving creates social bonds---coalitions formed
+through the exchange of culturally valued objects.\footnote{Bronisław
+Malinowski, \textit{Argonauts of the Western Pacific} (1922); Marcel
+Mauss, \textit{Essai sur le don} (1925).}  In Mauss's formulation, the
+gift carries a portion of the giver's \emph{hau} (spiritual force),
+which compels reciprocation.  In our terms, the gift is an idea with
+positive depth, and giving it is an act of composition: the receiver's
+cultural state is composed with the gift to produce a new state.  The
+obligation to reciprocate ensures that the exchange is bidirectional,
+producing a dyadic coalition (Theorem~\ref{thm:two-member-simp}) whose
+value is at most the sum of both parties' depths.
+
+\subsection{Collective Effervescence}
+
+Durkheim's concept of \emph{collective effervescence}---the heightened
+emotional energy generated by group ritual---maps onto our framework
+as follows.  During collective ritual (the corroboree, the pilgrimage,
+the political rally), individuals compose their ideas in rapid succession,
+producing a coalition composition of exceptional density.  The emotional
+intensity of the event reflects the rate of composition, not its ultimate
+depth: subadditivity (Theorem~\ref{thm:pair-subadd}) still constrains
+the final depth, but the subjective experience of rapid composition
+creates the impression of transcendence.  Durkheim's observation that
+participants feel themselves in the presence of a force ``greater than
+themselves'' corresponds to the perception that the coalition value
+exceeds any individual's depth---which it can, though it cannot exceed
+the sum.
+
+\subsection{Free Riding and Institutional Design}
+
+The formal analysis of void members (Theorems~\ref{thm:void-member}
+and~\ref{thm:void-marginal}) connects to a vast literature in
+institutional economics on the design of mechanisms to prevent free
+riding.  Elinor Ostrom's \textit{Governing the Commons} (1990) documents
+how communities around the world have developed institutional rules---
+monitoring, graduated sanctions, conflict-resolution mechanisms---to
+ensure that members contribute to collective goods rather than free-riding
+on others' contributions.\footnote{Elinor Ostrom, \textit{Governing the
+Commons} (Cambridge, 1990).  Ostrom received the Nobel Prize in Economics
+in 2009 for her work demonstrating that communities can self-organize to
+manage common-pool resources without either privatization or state
+regulation.}  In our framework, Ostrom's institutions are mechanisms for
+converting void members into non-void contributors, thereby increasing
+the coalition value.  The effectiveness of these institutions can be
+measured by the gap between the \emph{actual} coalition value and the
+\emph{counterfactual} value if all members contributed their full depth.
+
+\subsection{Digital Communities and Online Collaboration}
+
+The rise of digital platforms has created new forms of coalition
+composition at unprecedented scale.  Open-source software projects
+(Linux, Apache, Wikipedia) involve thousands of contributors whose
+individual ideas are composed through version control systems and
+collaborative editing interfaces.  The coalition value of these
+projects---measured by code complexity, article comprehensiveness, or
+feature richness---is the depth of the grand coalition's composition.
+Our theorems apply directly: the project's depth is bounded by the sum
+of all contributors' depths (subadditivity), non-contributing members
+(lurkers, inactive accounts) add nothing (void marginal contribution),
+and the project's depth grows at most linearly with the number of
+substantive contributors (monotonicity bound).
+
+These digital coalitions also exhibit phenomena that stretch our
+framework in productive directions.  The ``1\% rule'' of online
+communities---the empirical observation that roughly 1\% of users
+create content, 9\% edit or curate, and 90\% passively consume---is a
+natural consequence of Theorem~\ref{thm:void-list}: the 90\% of
+passive consumers are void members whose presence does not increase the
+coalition value.  Yet their presence may matter for other reasons
+(audience size, network effects, advertising revenue) not captured by
+the depth metric.\footnote{For the 1\% rule, see Ben McConnell and Jackie
+Huba, ``The 1\% Rule,'' \textit{Church of the Customer Blog} (2006);
+and Jakob Nielsen, ``Participation Inequality: Lurkers vs.\
+Contributors in Internet Communities'' (2006).}
+
+% ----------------------------------------------------------------
+\section{Conclusion}
+\label{sec:ch13-conclusion}
+% ----------------------------------------------------------------
+
+The cooperative game theory of ideatic space reveals a structural discipline
+in coalition formation.  The empty coalition has zero value
+(Theorem~\ref{thm:empty-zero}); singleton value equals individual depth
+(Theorem~\ref{thm:singleton-value}); dyadic value is subadditive
+(Theorem~\ref{thm:pair-subadd}); void members contribute nothing
+(Theorem~\ref{thm:void-marginal}); and coalitions of voids are culturally
+sterile (Theorem~\ref{thm:void-list}).
+
+These results formalize Durkheim's insight that solidarity is not mere
+aggregation but \emph{composition}---and composition is structurally
+constrained.  The next chapter applies these coalition-theoretic tools to a
+different institutional setting: the \emph{auction}, where ideas compete for
+interpretive priority through depth-based bidding, connecting to the
+anthropology of potlatch, prestige goods, and ritual economy.

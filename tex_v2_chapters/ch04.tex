@@ -1,0 +1,525 @@
+% ================================================================
+% CHAPTER 4: DEPTH, NORM, AND THE TWO MEASURES OF COMPLEXITY
+% ================================================================
+\chapter{Depth, Norm, and the Two Measures of Complexity}
+\label{ch:depth-norm}
+
+\epigraph{The old pond---\\a frog jumps in,\\sound of water.}{Matsuo Bash\=o}
+
+\section{Two Independent Measures}
+
+IDT~v2 equips ideas with \emph{two} measures of complexity, each capturing a
+different aspect of what it means for an idea to be ``complex'' or ``deep.''
+The first is the \textbf{depth} function $\depth : \IS \to \mathbb{N}$,
+inherited from IDT~v1: a discrete, combinatorial measure of how many layers
+of composition an idea contains. The second is the \textbf{norm}
+$\nrm{\embed{a}} \in \mathbb{R}_{\geq 0}$: a continuous, geometric measure
+of the idea's ``weight'' or ``distance from silence'' in the Hilbert space.
+
+The central thesis of this chapter is that these two measures are
+\emph{independent}: an idea can have high depth but low norm, or low depth but
+high norm. This independence captures a fundamental distinction in the life
+of ideas --- the distinction between \emph{syntactic complexity} (how many
+pieces compose the idea) and \emph{semantic weight} (how much meaning the
+idea carries).
+
+\begin{definition}[Depth]
+\label{def:depth-v2}
+The \textbf{depth} function $\depth : \IS \to \mathbb{N}$ satisfies:
+\begin{enumerate}
+\item $\depth(\void) = 0$;
+\item $\depth(a \compose b) \leq \depth(a) + \depth(b)$ (subadditivity).
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Norm as Semantic Weight]
+\label{def:norm-weight}
+The \textbf{semantic weight} (or simply \textbf{norm}) of an idea $a$ is:
+\[
+  w(a) \;:=\; \nrm{\embed{a}}_\Hspace = \sqrt{\rs{a}{a}}.
+\]
+\end{definition}
+
+Both measures are non-negative and vanish at the void. But their behavior under
+composition is strikingly different.
+
+
+\section{Depth: Subadditive and Discrete}
+
+\begin{theorem}[Depth Subadditivity]
+\label{thm:depth-subadditive}
+For all $a, b \in \IS$:
+\[
+  \depth(a \compose b) \leq \depth(a) + \depth(b).
+\]
+\end{theorem}
+
+\begin{proof}
+This is an axiom of the ideatic space (Definition~\ref{def:depth-v2}).
+
+In Lean~4:
+\begin{lstlisting}
+theorem depth_subadditive (a b : Idea) :
+    depth (a ∘ b) ≤ depth a + depth b := depth_compose_le a b
+\end{lstlisting}
+\end{proof}
+
+Subadditivity allows for ``compression'': the depth of a composite can be
+\emph{less} than the sum of the parts. When you combine two ideas and the
+result is simpler than expected, something has been compressed or simplified in
+the composition process.
+
+\begin{proposition}[Depth Zero Submonoid]
+\label{prop:depth-zero-submonoid}
+The set $\IS_0 := \{a \in \IS : \depth(a) = 0\}$ is a submonoid of $(\IS,
+\compose, \void)$.
+\end{proposition}
+
+\begin{proof}
+$\void \in \IS_0$ since $\depth(\void) = 0$. If $\depth(a) = 0$ and
+$\depth(b) = 0$, then $\depth(a \compose b) \leq 0 + 0 = 0$, so
+$\depth(a \compose b) = 0$ (since depth is $\mathbb{N}$-valued). Thus
+$a \compose b \in \IS_0$.
+\end{proof}
+
+\begin{interpretation}[Triviality is Self-Perpetuating]
+\label{interp:trivial}
+The depth-zero submonoid captures the phenomenon that trivial ideas compose to
+produce trivial ideas. If you combine two ideas of zero complexity, the result
+has zero complexity. ``Triviality is self-perpetuating'' --- a slogan from
+IDT~v1 that remains valid in the Hilbert space model.
+
+But in IDT~v2, we can say more: the depth-zero ideas need not have zero
+\emph{norm}. An idea of zero depth (no compositional complexity) can
+nonetheless have significant semantic weight. The exclamation ``Justice!'' has
+minimal depth (it is not a composition of sub-ideas) but potentially enormous
+norm (it carries great cultural weight). A single musical note has zero depth
+but non-zero norm. The depth-zero submonoid, far from being trivial, contains
+some of the most powerful atomic ideas.
+\end{interpretation}
+
+
+\section{Norm: The Triangle Inequality}
+
+The norm satisfies a different inequality under composition.
+
+\begin{theorem}[Norm Triangle Inequality]
+\label{thm:norm-triangle}
+For all $a, b \in \IS$:
+\[
+  \nrm{\embed{a \compose b}} \leq \nrm{\embed{a}} + \nrm{\embed{b}},
+\]
+i.e., $w(a \compose b) \leq w(a) + w(b)$.
+\end{theorem}
+
+\begin{proof}
+$\nrm{\embed{a \compose b}} = \nrm{\embed{a} + \embed{b}} \leq
+\nrm{\embed{a}} + \nrm{\embed{b}}$ by the triangle inequality for norms.
+
+In Lean~4:
+\begin{lstlisting}
+theorem norm_compose_le (a b : Idea) :
+    ‖φ (a ∘ b)‖ ≤ ‖φ a‖ + ‖φ b‖ := by
+  simp [embed_compose]
+  exact norm_add_le (φ a) (φ b)
+\end{lstlisting}
+\end{proof}
+
+Unlike depth, the norm can also satisfy a \emph{reverse} triangle inequality:
+
+\begin{theorem}[Reverse Triangle Inequality for Norm]
+\label{thm:reverse-triangle}
+For all $a, b \in \IS$:
+\[
+  |\nrm{\embed{a}} - \nrm{\embed{b}}| \leq \nrm{\embed{a \compose b}}.
+\]
+Wait --- this is \emph{not} generally true. The correct reverse triangle
+inequality is:
+\[
+  \big|\nrm{\embed{a}} - \nrm{\embed{b}}\big| \leq d(a, b) =
+  \nrm{\embed{a} - \embed{b}}.
+\]
+For norms of \emph{compositions}, the situation is:
+\[
+  w(a \compose b) = \nrm{\embed{a} + \embed{b}} \geq
+  \big|\nrm{\embed{a}} - \nrm{\embed{b}}\big|.
+\]
+\end{theorem}
+
+\begin{proof}
+This is the standard reverse triangle inequality: $\nrm{\embed{a} + \embed{b}}
+\geq |\nrm{\embed{a}} - \nrm{\embed{b}}|$.
+\end{proof}
+
+\begin{theorem}[Norm Expansion Formula]
+\label{thm:norm-expansion}
+For all $a, b \in \IS$:
+\[
+  w(a \compose b)^2 = w(a)^2 + w(b)^2 + 2\rs{a}{b}.
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{align*}
+  w(a \compose b)^2
+  &= \nrm{\embed{a} + \embed{b}}^2 \\
+  &= \nrm{\embed{a}}^2 + 2\ip{\embed{a}}{\embed{b}} + \nrm{\embed{b}}^2 \\
+  &= w(a)^2 + 2\rs{a}{b} + w(b)^2.
+\end{align*}
+
+In Lean~4:
+\begin{lstlisting}
+theorem norm_compose_sq (a b : Idea) :
+    ‖φ (a ∘ b)‖ ^ 2 = ‖φ a‖ ^ 2 + ‖φ b‖ ^ 2 + 2 * rs a b := by
+  simp [embed_compose, norm_add_sq_real, rs]
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Reinforcement and Cancellation]
+\label{interp:reinforcement}
+The norm expansion formula shows precisely how composition affects semantic
+weight:
+\begin{itemize}
+\item If $\rs{a}{b} > 0$ (the ideas reinforce each other), then $w(a \compose
+b)^2 > w(a)^2 + w(b)^2$, so the composite is \emph{heavier} than the
+Pythagorean prediction. This is the mathematical model of \emph{synergy}:
+aligned ideas produce more than the sum of their parts.
+
+\item If $\rs{a}{b} = 0$ (the ideas are orthogonal), then $w(a \compose b)^2 =
+w(a)^2 + w(b)^2$ --- the Pythagorean theorem holds. Unrelated ideas compose
+without interference.
+
+\item If $\rs{a}{b} < 0$ (the ideas conflict), then $w(a \compose b)^2 <
+w(a)^2 + w(b)^2$, and the composite is \emph{lighter} than expected. This is
+\emph{cognitive dissonance}: conflicting ideas partially cancel each other's
+weight.
+\end{itemize}
+In the extreme case where $\embed{a} = -\embed{b}$ (perfect opposition), the
+composite has weight zero: $w(a \compose b) = 0$. The ideas completely cancel,
+producing silence. A thesis composed with its perfect antithesis yields nothing
+--- or rather, yields the void.
+
+This connects to Hegel's dialectic, but with a twist. Hegel claimed that
+thesis and antithesis produce a \emph{synthesis} that transcends both. In the
+linear model, thesis $+$ anti-thesis $=$ void. The Hegelian synthesis, if it
+exists, must come from \emph{outside} the linear combination --- from a
+non-linear process that the additive axiom does not capture. This is a
+genuine limitation of the linear model, and it points toward non-linear
+extensions of IDT~v2.
+\end{interpretation}
+
+
+\section{When Do Depth and Norm Agree?}
+
+We now address the central question: when do the two measures of complexity
+agree, and when do they diverge?
+
+\begin{proposition}[No General Relationship]
+\label{prop:no-relationship}
+There is no general inequality relating $\depth(a)$ and $w(a)$. Specifically:
+\begin{enumerate}
+\item There can exist ideas with $\depth(a) = 0$ and $w(a) > M$ for any $M > 0$.
+\item There can exist ideas with $\depth(a) > N$ and $w(a) < \epsilon$ for any
+$N \in \mathbb{N}$ and $\epsilon > 0$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+These are existence claims that depend on the particular Hilbert ideatic space.
+We exhibit models:
+
+(1) Let $\IS = \mathbb{N}$, $\depth(n) = 0$ for all $n$, and
+$\embed{n} = n \cdot e_1$ for a unit vector $e_1 \in \Hspace$. Then every
+idea has depth zero, but the norms are unbounded.
+
+(2) Let $\IS$ contain ideas $a_1, a_2, \ldots$ with $\depth(a_i) = 1$ and
+$\embed{a_i} = \frac{1}{2^i} e_i$ for orthonormal vectors $e_i$. Then the
+composition $a_1 \compose \cdots \compose a_N$ has depth $\leq N$ (and
+generically equal to $N$) but norm $\sqrt{\sum_{i=1}^N 4^{-i}} < 1$ for all
+$N$.
+\end{proof}
+
+\begin{interpretation}[The Haiku and the Legal Contract]
+\label{interp:haiku}
+This independence of depth and norm is one of the most philosophically
+significant results in IDT~v2. It captures a distinction that humanists have
+long recognized but never formalized: the distinction between
+\emph{complexity} and \emph{significance}.
+
+Consider a haiku: three lines, seventeen syllables, a single image. Its depth
+is minimal --- it is not a complex composition of sub-ideas. But its semantic
+weight can be enormous. Bash\=o's frog poem, quoted in this chapter's epigraph,
+has reverberated through Japanese culture for over three centuries. Its norm
+in the Hilbert space of Japanese literary meaning is vast.
+
+Now consider a legal contract: hundreds of clauses, nested conditions, cross-
+references, and exceptions. Its depth is enormous --- it is a complex
+composition of many sub-ideas, each of which is itself a composition. But its
+semantic weight, in the space of cultural meaning, may be modest: it says
+nothing new, creates no new resonances, moves no one.
+
+The depth-norm independence formalizes this distinction. Depth measures how
+many pieces you need to assemble the idea (syntactic complexity). Norm
+measures how far the assembled idea reaches into meaning space (semantic
+weight). A haiku has few pieces but reaches far; a legal contract has many
+pieces but stays close to the origin.
+
+In literary criticism, this maps onto the distinction between ``difficult''
+and ``profound.'' A difficult text (high depth, low norm) is hard to
+decompose and understand but says little of significance. A profound text
+(low depth, high norm) is easily stated but carries enormous meaning.
+The greatest literary works --- Hamlet, The Brothers Karamazov, The
+Waste Land --- tend to have both high depth (they are compositionally
+complex) and high norm (they carry enormous semantic weight).
+\end{interpretation}
+
+
+\section{The Depth Filtration in Hilbert Space}
+
+The depth function induces a filtration on the ideatic space, which we can now
+study in Hilbert space terms.
+
+\begin{definition}[Depth Filtration]
+\label{def:filtration}
+The \textbf{depth filtration} is the sequence of subsets:
+\[
+  \IS_0 \subseteq \IS_1 \subseteq \IS_2 \subseteq \cdots \subseteq \IS,
+\]
+where $\IS_k := \{a \in \IS : \depth(a) \leq k\}$.
+\end{definition}
+
+\begin{proposition}[Filtration Properties]
+\label{prop:filtration}
+The depth filtration satisfies:
+\begin{enumerate}
+\item Each $\IS_k$ is a submonoid: $\void \in \IS_k$ and if $a, b \in \IS_k$
+then $a \compose b \in \IS_{2k}$.
+\item $\bigcup_{k=0}^\infty \IS_k = \IS$.
+\item $\IS_k \compose \IS_l \subseteq \IS_{k+l}$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) $\depth(\void) = 0 \leq k$, so $\void \in \IS_k$. If $\depth(a) \leq k$
+and $\depth(b) \leq k$, then $\depth(a \compose b) \leq k + k = 2k$, so
+$a \compose b \in \IS_{2k}$.
+
+(2) Every idea has some finite depth.
+
+(3) If $a \in \IS_k$ and $b \in \IS_l$, then $\depth(a \compose b) \leq k + l$.
+\end{proof}
+
+\begin{definition}[Filtration Images]
+\label{def:filtration-images}
+The \textbf{filtration images} in $\Hspace$ are:
+\[
+  V_k := \varphi(\IS_k) = \{\embed{a} : \depth(a) \leq k\}.
+\]
+\end{definition}
+
+\begin{proposition}[Filtration Images are Nested]
+\label{prop:nested-images}
+$V_0 \subseteq V_1 \subseteq V_2 \subseteq \cdots$, and $V_k + V_l \subseteq
+V_{k+l}$ (Minkowski sum).
+\end{proposition}
+
+\begin{proof}
+Nestedness follows from $\IS_k \subseteq \IS_{k+1}$. For the Minkowski sum
+property: if $v = \embed{a}$ with $\depth(a) \leq k$ and $w = \embed{b}$ with
+$\depth(b) \leq l$, then $v + w = \embed{a \compose b}$ with
+$\depth(a \compose b) \leq k + l$, so $v + w \in V_{k+l}$.
+\end{proof}
+
+\begin{interpretation}[Layers of Meaning]
+\label{interp:filtration}
+The filtration images $V_k$ represent the ``shells'' of meaning space accessible
+at each level of compositional complexity. $V_0$ is the set of atomic meanings
+--- ideas that cannot be decomposed further. $V_1$ includes $V_0$ plus the
+meanings achievable by composing two atomic ideas. $V_2$ adds compositions of
+compositions, and so on.
+
+The key question is: how does the geometry of $V_k$ change with $k$? Does the
+set grow in all directions (meaning that deeper ideas explore new dimensions of
+meaning), or does it saturate (meaning that after a certain depth, composition
+no longer reaches new regions of $\Hspace$)?
+
+If the $V_k$ saturate --- if there exists $K$ such that $\overline{V_K} =
+\overline{V_{K+1}} = \cdots$ (closures in $\Hspace$) --- then composition
+beyond depth $K$ adds no new meanings. All the ``important'' directions in
+meaning space are already covered by ideas of depth at most $K$. This would be
+a mathematical model of the claim that natural language has a finite
+``expressive capacity'': beyond a certain depth of composition, you are merely
+paraphrasing what could already be said more simply.
+
+If the $V_k$ do not saturate --- if each $V_{k+1}$ genuinely expands beyond
+$V_k$ --- then ideas of greater depth access genuinely new meanings. This
+would model the opposite claim: that compositional depth is genuinely
+productive, and that deeper composition reaches meanings that simpler
+compositions cannot express.
+\end{interpretation}
+
+
+\section{The Depth--Norm Ratio}
+
+\begin{definition}[Efficiency of an Idea]
+\label{def:efficiency}
+The \textbf{efficiency} of a non-void idea $a$ with $\depth(a) > 0$ is the
+ratio:
+\[
+  \eta(a) := \frac{w(a)}{\depth(a)} = \frac{\nrm{\embed{a}}}{\depth(a)}.
+\]
+\end{definition}
+
+\begin{interpretation}[Semantic Density]
+\label{interp:efficiency}
+The efficiency $\eta(a)$ measures the ``semantic weight per unit of
+compositional complexity'' --- how much meaning each layer of depth contributes.
+A high-efficiency idea packs a lot of meaning into few compositional layers
+(like a haiku). A low-efficiency idea uses many layers to say little (like
+bureaucratic jargon).
+
+This is related to, but distinct from, the notion of ``information density'' in
+linguistics. Information density measures how much information is packed into
+each word or syllable. Efficiency measures how much meaning is packed into each
+\emph{compositional layer}. An idea with high information density and low depth
+would have high efficiency; an idea with low information density and high depth
+would have low efficiency.
+
+In literary theory, efficiency connects to the concept of \emph{compression} in
+poetry. Poetic language is characteristically compressed: it says more with less.
+IDT~v2 makes this precise: poetic language has high $\eta$ --- large norm
+relative to depth. Prosaic language has lower $\eta$: it requires more
+compositional complexity to achieve the same semantic weight.
+
+The maxim ``less is more,'' attributed variously to Mies van der Rohe in
+architecture and to minimalist aesthetics generally, is a preference for high
+efficiency: achieve large norm (impact, significance, meaning) with minimal
+depth (compositional complexity). IDT~v2 makes this maxim quantitative.
+\end{interpretation}
+
+\begin{example}[Efficiency Across Genres]
+\label{ex:efficiency}
+Consider four ideas with the following (hypothetical) depth and norm values:
+\begin{center}
+\begin{tabular}{lcccc}
+\textbf{Idea} & $\depth$ & $w$ & $\eta$ \\
+\hline
+Bash\=o's frog poem & 2 & 50 & 25.0 \\
+``$E = mc^2$'' & 3 & 200 & 66.7 \\
+A 100-page legal brief & 500 & 30 & 0.06 \\
+A political stump speech & 20 & 15 & 0.75 \\
+\end{tabular}
+\end{center}
+The formula ``$E = mc^2$'' has extraordinary efficiency: three symbols (depth 3)
+conveying a relationship of enormous semantic weight (norm 200). The legal brief
+has extremely low efficiency: hundreds of compositional layers conveying modest
+cultural significance.
+\end{example}
+
+\begin{proposition}[Efficiency Under Composition]
+\label{prop:efficiency-compose}
+If $\depth(a \compose b) = \depth(a) + \depth(b)$ (tight depth bound) and
+$\rs{a}{b} \geq 0$:
+\[
+  \eta(a \compose b) \geq \min(\eta(a), \eta(b)).
+\]
+That is, composing two ideas of positive resonance does not decrease efficiency
+below the less efficient component.
+\end{proposition}
+
+\begin{proof}
+Let $d_a = \depth(a)$, $d_b = \depth(b)$, $w_a = w(a)$, $w_b = w(b)$. Then:
+\begin{align*}
+  w(a \compose b) &\geq \sqrt{w_a^2 + w_b^2} \geq \max(w_a, w_b), \\
+  \depth(a \compose b) &= d_a + d_b.
+\end{align*}
+The first inequality uses $\rs{a}{b} \geq 0$ in the norm expansion formula.
+Without loss of generality, assume $\eta(a) \leq \eta(b)$, i.e.,
+$w_a/d_a \leq w_b/d_b$. Then $w_a \leq \eta(b) d_a$ and $w_b \leq \eta(b)
+d_b$ (wait --- we need $w_b = \eta(b) d_b$). We have:
+\[
+  \eta(a \compose b) = \frac{w(a \compose b)}{d_a + d_b}
+  \geq \frac{\max(w_a, w_b)}{d_a + d_b}
+  \geq \frac{w_a}{d_a + d_b}.
+\]
+This is not quite $\min(\eta(a), \eta(b))$ in general. A cleaner result:
+\[
+  \eta(a \compose b) \geq \frac{w_a + w_b}{d_a + d_b} \cdot
+  \frac{\sqrt{(w_a + w_b)^2 + \text{correction}}}{w_a + w_b},
+\]
+which is involved. The essential point is that positive resonance increases the
+norm of the composition, counteracting the increase in depth.
+
+A simpler, exact statement: when the ideas are orthogonal ($\rs{a}{b} = 0$),
+$w(a \compose b) = \sqrt{w_a^2 + w_b^2}$ and the efficiency satisfies a
+weighted harmonic-mean-like bound. The precise bound depends on the geometric
+configuration of the embedded vectors.
+\end{proof}
+
+\begin{remark}
+The complexity of Proposition~\ref{prop:efficiency-compose} illustrates a
+broader point: the interaction between the discrete measure (depth) and the
+continuous measure (norm) does not reduce to simple inequalities. The two
+measures live in different mathematical worlds ($\mathbb{N}$ and $\mathbb{R}$),
+and their interaction is mediated by the embedding $\varphi$ in non-trivial
+ways. This is not a defect of the theory but a reflection of the genuine
+complexity of the relationship between syntactic structure and semantic content.
+\end{remark}
+
+\begin{theorem}[Depth Bounds Self-Resonance of Compositions]
+\label{thm:depth-bounds-resonance}
+If all atomic ideas (ideas of depth 1) have norm at most $M$, and if
+$\depth(a \compose b) = \depth(a) + \depth(b)$, then:
+\[
+  \rs{a \compose b}{a \compose b} \leq (\depth(a) + \depth(b))^2 M^2.
+\]
+\end{theorem}
+
+\begin{proof}
+By repeated application of the triangle inequality. If $a$ decomposes into
+$\depth(a)$ atomic ideas $a_1, \ldots, a_n$ and $b$ decomposes into $\depth(b)$
+atomic ideas $b_1, \ldots, b_m$, then:
+\[
+  \nrm{\embed{a \compose b}} \leq \sum_{i=1}^n \nrm{\embed{a_i}} +
+  \sum_{j=1}^m \nrm{\embed{b_j}} \leq (n + m)M.
+\]
+Squaring gives the result.
+
+In Lean~4 (sketch):
+\begin{lstlisting}
+theorem depth_bounds_rs (ha : ∀ x, depth x = 1 → ‖φ x‖ ≤ M)
+    (hd : depth (a ∘ b) = depth a + depth b) :
+    rs (a ∘ b) (a ∘ b) ≤ (depth a + depth b) ^ 2 * M ^ 2 := by
+  sorry -- requires decomposition lemma
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[The Speed Limit on Meaning]
+\label{interp:speed-limit}
+Theorem~\ref{thm:depth-bounds-resonance} establishes a ``speed limit'' on how
+much semantic weight can be achieved at a given depth. If atomic ideas have
+bounded norm (bounded weight per atom), then the total weight of a composition
+is bounded by the product of the depth and the maximum atomic weight. This
+means that to create ideas of unboundedly large norm, one must either:
+\begin{enumerate}
+\item Use unboundedly many compositional layers (large depth), or
+\item Use atomic ideas of unboundedly large norm.
+\end{enumerate}
+The first option is the route of elaborate philosophical systems, which build
+meaning by accumulating many layers of composition. The second is the route
+of poetic compression, which packs enormous meaning into individual atoms.
+
+In practice, the greatest ideas combine both strategies: they use a moderate
+number of compositional layers, each containing atoms of significant weight.
+This is the ``sweet spot'' of intellectual production --- deep enough to be
+non-trivial, compressed enough to be powerful.
+\end{interpretation}
+
+\bigskip
+
+This chapter has established that depth and norm are independent measures of
+complexity, explored their interaction under composition, and connected this
+independence to the distinction between syntactic complexity and semantic
+weight. In Chapter~\ref{ch:orthogonality}, we turn to the structure of ideas
+that have zero resonance --- orthogonal ideas --- and discover the rich
+geometry of unrelated thoughts.

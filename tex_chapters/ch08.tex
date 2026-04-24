@@ -1,0 +1,483 @@
+% =============================================================
+%  Chapter 8 — Lossy Reception and Oral Tradition
+%  Lean source: FormalAnthropology/IDT_Signal_Ch08.lean
+% =============================================================
+\chapter{Lossy Reception and Oral Tradition}
+\label{ch:lossy}
+
+\epigraph{%
+  ``The story becomes at each reproduction more concise, more schematized
+  \ldots\ Proper names drop out. Vivid details vanish.
+  What remains is a general form.''}%
+  {Frederic Bartlett, \textit{Remembering} (1932)}
+
+% ----------------------------------------------------------------
+\section{Introduction: The Thermodynamics of Storytelling}
+\label{sec:lossy-intro}
+
+In 1932, Frederic Bartlett conducted a series of serial reproduction
+experiments that became foundational for cognitive anthropology.  He asked a
+subject to read a Native American folk tale (``The War of the Ghosts''), then
+reproduce it from memory; the next subject read only the reproduction, and
+so on through a chain of ten or more retellings.  The results were dramatic:
+details dropped out, unfamiliar concepts were rationalized into familiar
+categories, and the story simplified with each retelling until it converged
+on a stable, culturally assimilated ``skeleton.''\footnote{Bartlett, F.~C.,
+\textit{Remembering: A Study in Experimental and Social Psychology}
+(Cambridge, 1932), ch.~5.  The experiment has been replicated hundreds of
+times with consistent results; see Mesoudi \& Whiten (2008) for a
+meta-analysis.}
+
+Oral tradition---the transmission of myths, genealogies, ritual
+instructions, and folk knowledge from person to person without writing---is
+the primordial form of cultural transmission.  Before the invention of
+writing (c.~3200 BCE in Sumer), \emph{all} culture was oral.  Even today,
+the vast majority of human cultural knowledge is transmitted orally: recipes,
+gossip, jokes, parenting advice, religious instruction.
+
+This chapter formalizes the defining feature of oral transmission:
+\emph{lossiness}.  A receiver who processes a signal through an oral
+channel---through memory, paraphrase, reinterpretation---can never produce
+output more complex than the input.  Depth can only decrease or remain
+constant; it cannot increase.  This is the ``second law of cultural
+thermodynamics.''\footnote{The analogy to thermodynamic entropy is
+imperfect but illuminating.  In thermodynamics, the second law states that
+entropy never decreases in an isolated system.  Here, the analog is that
+\emph{complexity} (depth) never increases through lossy reception.  The
+``entropy'' of cultural transmission is the \emph{loss} of depth.}
+
+We define three levels of receiver: a generic \emph{Receiver} (preserving
+void and distributing over composition), a \emph{LossyReceiver} (depth
+non-increasing), and a \emph{StrictlyLossy} receiver (depth strictly
+decreasing for complex ideas).  We prove that lossy reception composes,
+iterates, and ultimately converges: only shallow ideas survive the
+``telephone game.''
+
+
+% ================================================================
+\section{Core Structures}
+\label{sec:lossy-defs}
+
+\begin{definition}[Receiver]
+\label{def:receiver}
+A \emph{receiver} is an endomorphism $\varphi:\IS\to\IS$ satisfying:
+\begin{enumerate}
+  \item \emph{Void preservation:} $\varphi(\void) = \void$.
+  \item \emph{Distributivity:} $\varphi(a\compose b) = \varphi(a)\compose\varphi(b)$.
+\end{enumerate}
+\end{definition}
+
+A receiver is a ``cultural filter''---a formalized version of how a
+particular mind processes incoming signals.  The two axioms are natural:
+silence in yields silence out, and hearing a compound message is the same
+as hearing the parts and composing the results.
+
+\begin{lstlisting}[caption={The Receiver structure in Lean~4.}]
+structure Receiver (I : Type*) [IdeaticSpace I] where
+  process : I -> I
+  process_void :
+    process IdeaticSpace.void = IdeaticSpace.void
+  process_compose : forall (a b : I),
+    process (IdeaticSpace.compose a b) =
+    IdeaticSpace.compose (process a) (process b)
+\end{lstlisting}
+
+\begin{definition}[Lossy Receiver]
+\label{def:lossy-receiver}
+A \emph{lossy receiver} is a receiver $\varphi$ such that
+\[
+  \depth(\varphi(a)) \;\le\; \depth(a) \quad\text{for all } a\in\IS.
+\]
+Processing never increases depth.
+\end{definition}
+
+This is the defining property of oral transmission: you can never come out
+of a retelling with \emph{more} complexity than you went in with.  Written
+transmission is different (you can re-read, annotate, cross-reference), but
+oral transmission is inherently lossy.
+
+\begin{definition}[Strictly Lossy Receiver]
+\label{def:strictly-lossy}
+A \emph{strictly lossy receiver} is a lossy receiver $\varphi$ such that
+\[
+  \depth(a) > 1 \;\implies\;
+  \depth(\varphi(a)) < \depth(a).
+\]
+For complex ideas ($\depth > 1$), depth \emph{strictly} decreases.  Ideas of
+depth $\le 1$ may be preserved.
+\end{definition}
+
+This models the ``telephone game'': every retelling loses something, unless
+the message is already maximally simple.  Only atomic ideas survive
+perfect-fidelity transmission through a strictly lossy channel.
+
+\begin{lstlisting}[caption={Strictly lossy receiver in Lean~4.}]
+structure StrictlyLossy (I : Type*) [IdeaticSpace I]
+    extends LossyReceiver I where
+  strict_decay : forall (a : I),
+    IdeaticSpace.depth a > 1 ->
+    IdeaticSpace.depth
+      (toLossyReceiver.toReceiver.process a) <
+      IdeaticSpace.depth a
+\end{lstlisting}
+
+
+% ================================================================
+\section{Basic Properties of Lossy Reception}
+\label{sec:lossy-basic}
+
+\begin{theorem}[Lossy Void Preservation (8.1)]
+\label{thm:lossy-void-preservation}
+All receivers preserve silence: $\varphi(\void) = \void$.
+\end{theorem}
+
+No transmission channel creates content from nothing.  If you say nothing,
+the listener hears nothing.  This is the zeroth law of communication---prior
+to any thermodynamic considerations, it establishes the baseline: the null
+signal is universally transparent.
+
+\begin{theorem}[Lossy Depth Bound (8.2)]
+\label{thm:lossy-depth-bound}
+After lossy processing: $\depth(\varphi(a)) \le \depth(a)$.
+\end{theorem}
+
+An oral retelling is never more complex than the original.  This is the
+second law of cultural thermodynamics: complexity never increases through
+oral transmission.  The theorem is definitional---it \emph{is} the defining
+property of a lossy receiver---but stating it as a theorem emphasizes its
+central role.%
+\footnote{Contrast with \emph{written} transmission, which can \emph{increase}
+depth through annotation, commentary, and cross-reference.  The Talmud is
+deeper than the Torah; the scholastic summa is deeper than any single
+patristic text.  Writing breaks the second law of oral thermodynamics.}
+
+\begin{theorem}[Lossy Composition Bound (8.3)]
+\label{thm:lossy-compose-bound}
+Processing a composed idea through a lossy receiver:
+\[
+  \depth(\varphi(a\compose b)) \;\le\; \depth(a) + \depth(b).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By lossiness, $\depth(\varphi(a\compose b))\le\depth(a\compose b)$.  By
+subadditivity of composition depth, $\depth(a\compose b)\le\depth(a)+\depth(b)$.
+Chaining the inequalities yields the result.
+\end{proof}
+
+A story about two events, retold through oral tradition, has depth at most
+the sum of the two events' original depths---even before accounting for the
+receiver's lossiness.
+
+\begin{theorem}[Lossy Receiver Preserves Void Depth (8.4)]
+\label{thm:lossy-void-depth}
+$\depth(\varphi(\void)) = 0.$
+\end{theorem}
+
+Silence, when transmitted lossily, remains at depth zero.  Combined with
+Theorem~\ref{thm:lossy-void-preservation}, this says not just that void
+maps to void, but that the image has zero complexity---a stronger
+quantitative statement.
+
+
+% ================================================================
+\section{Iterated Lossy Reception}
+\label{sec:lossy-iterated}
+
+What happens when a signal passes through a \emph{chain} of lossy receivers?
+Bartlett's serial reproduction experiments provide the empirical motivation;
+this section provides the formal theory.
+
+\begin{definition}[Iterated Process]
+\label{def:iterate-process}
+The $n$-fold iteration of a receiver's process function:
+\[
+  \varphi^{(0)}(a) = a, \qquad
+  \varphi^{(n+1)}(a) = \varphi(\varphi^{(n)}(a)).
+\]
+\end{definition}
+
+\begin{lstlisting}[caption={Iterated process in Lean~4.}]
+def iterateProcess (R : Receiver I) : ℕ -> I -> I
+  | 0 => fun a => a
+  | n + 1 => fun a => R.process (iterateProcess R n a)
+\end{lstlisting}
+
+\begin{theorem}[Iterated Lossy Depth Bound (8.5)]
+\label{thm:iterated-lossy-depth}
+After $n$ applications of a lossy receiver:
+$\depth(\varphi^{(n)}(a)) \le \depth(a)$ for all $n$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $n$.  The base case ($n=0$) is trivial.  For the inductive
+step, apply the lossiness bound to the result of the $(n)$-th iteration,
+whose depth is $\le\depth(a)$ by the inductive hypothesis.
+\end{proof}
+
+Oral tradition through a chain of $n$ retellings can only lose depth, never
+gain it.  Whether the story passes through 3~or 300~people, it can only get
+simpler.  This is the formal backbone of Bartlett's experimental finding.
+
+\begin{theorem}[Iterated Void Stability (8.6)]
+\label{thm:iterated-void-stable}
+$\varphi^{(n)}(\void) = \void$ for all $n$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Induction on $n$: the base case is identity, and each step applies
+$\varphi(\void)=\void$.
+\end{proof}
+
+A chain of listeners hearing nothing produces nothing, no matter how long
+the chain.  Silence is the unique \emph{absorbing state} of every receiver.
+
+\begin{theorem}[Lossy Reception of Compositions (8.7)]
+\label{thm:lossy-distribute}
+$\varphi(a\compose b) = \varphi(a)\compose\varphi(b).$
+\end{theorem}
+
+Cultural filtering is ``linear'' in the algebraic sense: a receiver's
+reaction to a compound stimulus is the compound of their reactions to the
+parts.  This is the distributivity axiom of the Receiver structure, stated
+as a theorem for emphasis.
+
+In anthropological terms, it means that a listener's interpretation of a
+two-part story can be decomposed into their interpretation of part~1 composed
+with their interpretation of part~2.  There is no holistic ``Gestalt'' effect
+in lossy reception---only part-by-part processing.%
+\footnote{This is a strong structural assumption.  Real human cognition
+arguably does exhibit Gestalt effects.  The distributivity axiom is a
+simplification that enables clean formal results at the cost of ignoring
+non-decomposable cognitive processes.}
+
+
+% ================================================================
+\section{Strict Lossiness and Convergence}
+\label{sec:lossy-strict}
+
+\begin{theorem}[Strict Decay Bound (8.8)]
+\label{thm:strict-decay}
+For a strictly lossy receiver and any idea with $\depth(a)>1$:
+\[
+  \depth(\varphi(a)) < \depth(a).
+\]
+\end{theorem}
+
+In ``telephone game'' transmission, every complex message becomes strictly
+simpler.  This is not a bug---it's a feature.  Cultural evolution works by
+simplification.  The myths that survive thousands of years of oral
+transmission are the ones that have been \emph{simplified} to the point
+where no further simplification occurs.
+
+\begin{theorem}[Shallow Ideas Survive Lossy Reception (8.9)]
+\label{thm:shallow-survives}
+If $\depth(a)\le 1$, then $\depth(\varphi(a))\le 1$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By lossiness: $\depth(\varphi(a))\le\depth(a)\le 1$.
+\end{proof}
+
+Simple ideas---basic emotions, universal gestures, atomic symbols---survive
+any amount of lossy transmission.  This is why certain cultural universals
+persist: they're too simple to be degraded further.  The smile, the frown,
+the pointing gesture, the head-nod---all have depth $\le 1$ and are thus
+impervious to oral degradation.%
+\footnote{Ekman's (1971) cross-cultural studies of facial expression provide
+empirical support: the six ``basic emotions'' are recognized across cultures,
+arguably because they are too simple to be distorted by oral transmission.}
+
+\begin{theorem}[Zero-Depth Ideas Survive Lossy Reception (8.10)]
+\label{thm:zero-depth-survives}
+If $\depth(a) = 0$, then $\depth(\varphi(a)) = 0$.
+\end{theorem}
+
+Void-like ideas (pure silence, empty gestures) are immune to lossy
+transmission.  They are fixed points of every lossy receiver.
+
+
+% ================================================================
+\section{Composition of Receivers}
+\label{sec:lossy-composition}
+
+\begin{definition}[Composed Receivers]
+\label{def:compose-receivers}
+Given receivers $\varphi_1,\varphi_2$, their composition is
+$(\varphi_2\circ\varphi_1)(a) = \varphi_2(\varphi_1(a))$---the result of
+sequential reception.
+\end{definition}
+
+\begin{lstlisting}[caption={Receiver composition in Lean~4.}]
+def composeReceivers (R_1 R_2 : Receiver I) : Receiver I where
+  process := fun a => R_2.process (R_1.process a)
+  process_void := by
+    rw [R_1.process_void, R_2.process_void]
+  process_compose := by
+    intro a b
+    rw [R_1.process_compose, R_2.process_compose]
+\end{lstlisting}
+
+\begin{theorem}[Composition of Lossy Receivers is Lossy (8.11)]
+\label{thm:compose-lossy}
+If $\varphi_1$ and $\varphi_2$ are lossy, then
+$\varphi_2\circ\varphi_1$ is lossy:
+\[
+  \depth((\varphi_2\circ\varphi_1)(a)) \;\le\; \depth(a)
+  \quad\text{for all } a.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\depth(\varphi_2(\varphi_1(a)))\le\depth(\varphi_1(a))\le\depth(a)$
+by applying lossiness twice.
+\end{proof}
+
+A chain of imperfect oral transmitters is itself an imperfect transmitter.
+Lossiness is closed under composition---there's no way to ``recover'' lost
+depth by adding more lossy steps.  This is the impossibility of error
+correction in purely oral tradition.  Unlike digital communication (where
+redundancy enables error correction), oral channels have no mechanism for
+restoring lost depth.
+
+\begin{theorem}[Double Lossy is More Lossy (8.12)]
+\label{thm:double-lossy}
+$\depth((\varphi_2\circ\varphi_1)(a)) \le \depth(\varphi_1(a)).$
+\end{theorem}
+
+Two generations of oral transmission is worse (or equal) than one.  The
+second lossy step can only further reduce what the first step already
+degraded.  This is the formal version of the folk wisdom that stories ``get
+worse with each retelling.''
+
+
+% ================================================================
+\section{Resonance and Lossy Reception}
+\label{sec:lossy-resonance}
+
+\begin{theorem}[Receiver Preserves Self-Resonance (8.13)]
+\label{thm:receiver-self-resonance}
+$\varphi(a) \res \varphi(a)$ for all $a$.
+\end{theorem}
+
+Even lossy transmission produces internally consistent output.  A garbled
+retelling is garbled, but it still ``makes sense to itself.''  This is
+a consequence of the reflexivity of resonance, but it carries anthropological
+weight: oral traditions, however degraded, are never \emph{incoherent}.
+They simplify, regularize, and schematize, but they always remain
+self-consistent.
+
+\begin{theorem}[Lossy Compound Self-Resonance (8.14)]
+\label{thm:lossy-compound-resonance}
+$\varphi(a\compose b) \res \varphi(a\compose b).$
+\end{theorem}
+
+Even through lossy reception, the receiver's output from a compound signal
+is internally coherent.  The theorem is trivial (self-resonance is always
+true), but it anchors the stronger results of Chapter~\ref{ch:multireceiver},
+where we study how \emph{different} receivers' outputs relate to each other.
+
+\begin{theorem}[Void Iterate Always Resonates (8.15)]
+\label{thm:void-iterate-resonates}
+$\varphi^{(n)}(\void) \res \varphi^{(n)}(\void)$ for all $n$.
+\end{theorem}
+
+Chains of silence produce silence, which trivially resonates with itself.
+Combined with Theorem~\ref{thm:iterated-void-stable}, this says that
+void is not only a fixed point of iteration but a self-resonant one.
+
+
+% ================================================================
+\section{Advanced Properties}
+\label{sec:lossy-advanced}
+
+\begin{theorem}[Lossy Iterated Composition Bound (8.16)]
+\label{thm:lossy-composeN}
+$\depth(\varphi(\compN{a}{n})) \le n\cdot\depth(a).$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By lossiness, $\depth(\varphi(\compN{a}{n}))\le\depth(\compN{a}{n})$.
+By the composeN depth bound, $\depth(\compN{a}{n})\le n\cdot\depth(a)$.
+\end{proof}
+
+A repeated message (ritual chant, liturgical refrain) loses depth through
+lossy reception, bounded by the repetition count times original depth.  Even
+before lossiness takes its toll, the starting depth is only linearly bounded
+in repetition count.
+
+\begin{theorem}[Receiver Composition is Associative on Output (8.17)]
+\label{thm:receiver-assoc}
+$\varphi_3(\varphi_2(\varphi_1(a)))
+= (\varphi_3\circ\varphi_2\circ\varphi_1)(a).$
+\end{theorem}
+
+A three-generation transmission chain (grandparent $\to$ parent $\to$ child)
+produces the same result regardless of how we ``bracket'' the generations.
+This is the associativity of function composition, applied to the receiver
+setting.  It ensures that our model of multi-generational oral tradition is
+well-defined: the order of composition doesn't depend on arbitrary grouping.
+
+\begin{theorem}[Depth Monotonicity Through Chains (8.18)]
+\label{thm:chain-depth-monotone}
+For $m\le n$:
+$\depth(\varphi^{(n)}(a)) \le \depth(\varphi^{(m)}(a)).$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $n$.  If $m=n$, the result is trivial.  If $m<n$, apply
+lossiness at step $n$ to reduce to the case $n-1$, then apply the
+inductive hypothesis.
+\end{proof}
+
+At every point in a chain of oral transmission, the story is no more complex
+than it was at any earlier point.  There is no ``regeneration'' through
+purely lossy channels.  The depth sequence $\depth(\varphi^{(0)}(a)),
+\depth(\varphi^{(1)}(a)), \depth(\varphi^{(2)}(a)), \ldots$ is monotonically
+non-increasing.
+
+This is the formal version of a deep anthropological observation: myths
+don't get \emph{worse}; they get \emph{stable}.  Oral tradition doesn't
+``degrade''---it \emph{converges} to a fixed point determined by the
+transmission medium's lossiness.  The stories that survive are the ones
+simple enough to be transmitted without further loss.
+
+\begin{lstlisting}[caption={Chain depth monotonicity in Lean~4.}]
+theorem chain_depth_monotone
+    (R : LossyReceiver I) (a : I) (m n : ℕ)
+    (hmn : m <= n) :
+    IdeaticSpace.depth
+      (iterateProcess R.toReceiver n a) <=
+    IdeaticSpace.depth
+      (iterateProcess R.toReceiver m a)
+\end{lstlisting}
+
+
+% ================================================================
+\section{Conclusion}
+\label{sec:lossy-conclusion}
+
+This chapter established the formal theory of lossy reception, providing
+mathematical foundations for Bartlett's serial reproduction experiments and
+the broader study of oral tradition.
+
+The central results are:
+\begin{enumerate}
+  \item Lossy reception is closed under composition
+    (Theorem~\ref{thm:compose-lossy}): chains of oral transmitters are
+    themselves oral transmitters.
+  \item Depth is monotonically non-increasing through chains
+    (Theorem~\ref{thm:chain-depth-monotone}): stories only get simpler.
+  \item Shallow ideas survive (Theorem~\ref{thm:shallow-survives}):
+    cultural universals persist because they are too simple to degrade.
+\end{enumerate}
+
+The theory explains why oral traditions converge: not because storytellers
+are ``bad'' at their job, but because lossiness is a structural feature of
+the oral channel.  Written traditions escape this constraint by providing
+external memory, but oral traditions are bound by the second law of cultural
+thermodynamics.
+
+Chapter~\ref{ch:echo} takes this analysis inward: what happens when a
+community applies lossy reception \emph{to its own output}, creating an echo
+chamber?

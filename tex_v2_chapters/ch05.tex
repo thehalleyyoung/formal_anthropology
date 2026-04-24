@@ -1,0 +1,544 @@
+% ================================================================
+% CHAPTER 5: ORTHOGONALITY AND THE STRUCTURE OF UNRELATED IDEAS
+% ================================================================
+\chapter{Orthogonality and the Structure of Unrelated Ideas}
+\label{ch:orthogonality}
+
+\epigraph{The world is everything that is the case.}{Ludwig Wittgenstein,
+\textit{Tractatus Logico-Philosophicus}, 1}
+
+\section{What Does It Mean for Ideas to Be Unrelated?}
+
+In ordinary discourse, we say that two ideas are ``unrelated'' when they have
+nothing to do with each other: chess strategy and molecular biology, Medieval
+French poetry and semiconductor physics, the rules of cricket and the
+philosophy of Spinoza. But ``unrelated'' is an imprecise term. Do unrelated
+ideas merely fail to resonate, or do they have a stronger property?
+
+In the Hilbert space model, ``unrelated'' has a precise meaning:
+\emph{orthogonality}. Two ideas are orthogonal when their resonance is exactly
+zero. This is stronger than merely ``low'' resonance: it means that the ideas
+occupy genuinely independent dimensions of meaning space.
+
+\begin{definition}[Orthogonal Ideas]
+\label{def:orthogonal}
+Two ideas $a, b \in \IS$ are \textbf{orthogonal}, written $a \perp b$, if:
+\[
+  \rs{a}{b} = \ip{\embed{a}}{\embed{b}} = 0.
+\]
+\end{definition}
+
+\begin{definition}[Opposing Ideas]
+\label{def:opposing}
+Two ideas $a, b \in \IS$ are \textbf{opposing} if $\rs{a}{b} < 0$, and
+\textbf{perfectly opposing} if $\hat{r}(a, b) = -1$ (i.e., $\embed{a}$ and
+$\embed{b}$ are negative scalar multiples of each other).
+\end{definition}
+
+\begin{remark}[Orthogonality $\neq$ Opposition]
+\label{rmk:orth-vs-opp}
+This distinction is crucial and commonly confused. In ordinary language,
+``unrelated'' and ``opposed'' are sometimes treated as the same thing ---
+both are ``not agreeing.'' But in the geometry of meaning, they are radically
+different:
+\begin{itemize}
+\item Orthogonal ideas ($\rs{a}{b} = 0$) are independent: knowing one tells
+you nothing about the other. They compose without interference.
+\item Opposing ideas ($\rs{a}{b} < 0$) are actively in conflict: each
+\emph{diminishes} the other. They compose with cancellation.
+\end{itemize}
+``Capitalism'' and ``socialism'' are \emph{opposing} (negative resonance), not
+orthogonal. ``Capitalism'' and ``photosynthesis'' are \emph{orthogonal} (zero
+resonance), not opposing.
+\end{remark}
+
+
+\section{The Pythagorean Theorem of Ideas}
+
+The central theorem of this chapter is the Pythagorean theorem for orthogonal
+ideas: a result so fundamental that it deserves to be called the
+\emph{Pythagorean theorem of ideas}.
+
+\begin{theorem}[Pythagorean Theorem of Ideas]
+\label{thm:pythagoras}
+If $a \perp b$ (i.e., $\rs{a}{b} = 0$), then:
+\[
+  w(a \compose b)^2 = w(a)^2 + w(b)^2.
+\]
+In other words, $\nrm{\embed{a \compose b}}^2 = \nrm{\embed{a}}^2 +
+\nrm{\embed{b}}^2$.
+\end{theorem}
+
+\begin{proof}
+From Theorem~\ref{thm:norm-expansion} (Chapter~\ref{ch:depth-norm}):
+\[
+  w(a \compose b)^2 = w(a)^2 + w(b)^2 + 2\rs{a}{b} = w(a)^2 + w(b)^2 + 0
+  = w(a)^2 + w(b)^2.
+\]
+
+In Lean~4:
+\begin{lstlisting}
+theorem pythagoras_ideas (h : rs a b = 0) :
+    ‖φ (a ∘ b)‖ ^ 2 = ‖φ a‖ ^ 2 + ‖φ b‖ ^ 2 := by
+  simp [embed_compose, norm_add_sq_real, rs] at *
+  linarith
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Orthogonal Ideas Compose Without Interference]
+\label{interp:pythagoras}
+The Pythagorean theorem of ideas is a precise statement of a profound
+intuition: \emph{unrelated ideas compose without interference}. When two
+ideas occupy completely independent dimensions of meaning space, combining
+them produces a composite whose weight is determined by the Pythagorean
+formula --- exactly as one would expect from two independent contributions
+that neither reinforce nor cancel each other.
+
+This has important implications for intellectual life. When a scholar combines
+expertise in two orthogonal domains --- say, medieval history and computational
+linguistics --- the weight of their composite knowledge is the ``hypotenuse''
+of the two components. They are not more knowledgeable than a specialist in
+either field (along that field's axis), but their knowledge occupies a unique
+position in meaning space that neither specialist's knowledge can reach.
+
+The Pythagorean structure also explains why interdisciplinary work is
+simultaneously valuable and difficult. It is valuable because orthogonal
+combination reaches new regions of meaning space (the hypotenuse reaches
+further from the origin than either leg). It is difficult because the
+components are, by definition, unrelated: expertise in one domain provides no
+leverage for learning the other. There are no ``synergies'' between orthogonal
+ideas --- only independent contributions.
+
+Contrast this with the case of aligned ideas ($\rs{a}{b} > 0$), where
+composition produces synergy ($w(a \compose b)^2 > w(a)^2 + w(b)^2$), and the
+case of opposing ideas ($\rs{a}{b} < 0$), where composition produces
+cancellation ($w(a \compose b)^2 < w(a)^2 + w(b)^2$). Orthogonality is the
+neutral case: no synergy, no cancellation, just independence.
+\end{interpretation}
+
+
+\section{Generalized Pythagorean Theorem}
+
+The Pythagorean theorem extends to any finite collection of mutually orthogonal
+ideas.
+
+\begin{theorem}[Generalized Pythagorean Theorem]
+\label{thm:gen-pythagoras}
+If $a_1, a_2, \ldots, a_n \in \IS$ are pairwise orthogonal ($\rs{a_i}{a_j} = 0$
+for all $i \neq j$), then:
+\[
+  w(a_1 \compose a_2 \compose \cdots \compose a_n)^2
+  = \sum_{i=1}^n w(a_i)^2.
+\]
+\end{theorem}
+
+\begin{proof}
+By induction on $n$. The base case $n = 1$ is trivial. For the inductive step,
+let $c = a_1 \compose \cdots \compose a_{n-1}$. We need $\rs{c}{a_n} = 0$. By
+bilinearity:
+\[
+  \rs{c}{a_n} = \rs{a_1 \compose \cdots \compose a_{n-1}}{a_n}
+  = \sum_{i=1}^{n-1} \rs{a_i}{a_n} = 0,
+\]
+since each $\rs{a_i}{a_n} = 0$ by hypothesis. Then by the two-variable
+Pythagorean theorem:
+\[
+  w(c \compose a_n)^2 = w(c)^2 + w(a_n)^2
+  = \left(\sum_{i=1}^{n-1} w(a_i)^2\right) + w(a_n)^2
+  = \sum_{i=1}^n w(a_i)^2.
+\]
+
+In Lean~4:
+\begin{lstlisting}
+theorem gen_pythagoras (hs : ∀ i j, i ≠ j → rs (a i) (a j) = 0) :
+    ‖φ (composeList a n)‖ ^ 2 = ∑ i in range n, ‖φ (a i)‖ ^ 2 := by
+  induction n with
+  | zero => simp [composeList, embed_void, norm_zero]
+  | succ n ih => ...
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[The Dimensionality of Knowledge]
+\label{interp:dimensionality}
+The generalized Pythagorean theorem implies that the weight of a composition
+of mutually orthogonal ideas grows as $\sqrt{n}$ (if each idea has unit weight),
+not as $n$. This is a \emph{curse of dimensionality} for knowledge: adding a
+new orthogonal field to your expertise increases your total weight, but with
+diminishing returns. The marginal contribution of each new field decreases as
+$1/\sqrt{n}$.
+
+This may help explain why genuine polymaths are rare. The weight gain from
+mastering a second unrelated field (from $1$ to $\sqrt{2} \approx 1.41$) is
+substantial: a 41\% increase. But the weight gain from a tenth unrelated field
+(from $3$ to $\sqrt{10} \approx 3.16$) is only 5\%. Specialization offers
+better returns: deepening one's existing knowledge (increasing $w(a_1)$)
+increases the total weight by the full amount of the increase, with no
+diminishing returns.
+
+The exception is when the fields are \emph{not} orthogonal: when they have
+positive resonance, the synergy term $2\rs{a_i}{a_j}$ boosts the total weight
+beyond the Pythagorean prediction. This is why \emph{adjacent} fields combine
+more productively than \emph{distant} ones: the resonance terms provide
+additional weight that pure orthogonality cannot.
+\end{interpretation}
+
+
+\section{Orthogonal Decomposition of Ideas}
+
+Given any idea $a$ and a non-void idea $b$, we can decompose $a$'s embedding
+into components parallel and perpendicular to $b$.
+
+\begin{theorem}[Orthogonal Decomposition]
+\label{thm:orthogonal-decomposition}
+For any ideas $a, b \in \IS$ with $b \not\equiv_\varphi \void$:
+\[
+  \embed{a} = \underbrace{\frac{\rs{a}{b}}{\rs{b}{b}} \cdot
+  \embed{b}}_{\text{parallel component}} +
+  \underbrace{\left(\embed{a} - \frac{\rs{a}{b}}{\rs{b}{b}} \cdot
+  \embed{b}\right)}_{\text{perpendicular component}}.
+\]
+The parallel component has norm $\frac{|\rs{a}{b}|}{\sqrt{\rs{b}{b}}}$,
+and the two components are orthogonal.
+\end{theorem}
+
+\begin{proof}
+This is the standard orthogonal projection. Let $\alpha =
+\frac{\rs{a}{b}}{\rs{b}{b}} = \frac{\ip{\embed{a}}{\embed{b}}}
+{\nrm{\embed{b}}^2}$ and let $v_\parallel = \alpha \embed{b}$, $v_\perp =
+\embed{a} - \alpha \embed{b}$. Then $\embed{a} = v_\parallel + v_\perp$ and:
+\[
+  \ip{v_\parallel}{v_\perp} = \alpha \ip{\embed{b}}{\embed{a} - \alpha \embed{b}}
+  = \alpha \left(\ip{\embed{b}}{\embed{a}} - \alpha \nrm{\embed{b}}^2\right)
+  = \alpha \left(\rs{b}{a} - \frac{\rs{a}{b}}{\rs{b}{b}} \cdot \rs{b}{b}\right)
+  = 0.
+\]
+The norm of $v_\parallel$ is $|\alpha| \cdot \nrm{\embed{b}} =
+\frac{|\rs{a}{b}|}{\nrm{\embed{b}}}$.
+
+In Lean~4:
+\begin{lstlisting}
+theorem orthogonal_decomposition (hb : φ b ≠ 0) :
+    φ a = (rs a b / rs b b) • φ b +
+          (φ a - (rs a b / rs b b) • φ b) := by
+  ring
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Aspect and Novelty]
+\label{interp:aspect}
+The orthogonal decomposition of idea $a$ with respect to idea $b$ separates $a$
+into two components:
+
+\begin{enumerate}
+\item The \textbf{aspect of $a$ relative to $b$}: the part of $a$'s meaning
+that lies in the direction of $b$. This is the portion of $a$ that ``looks
+like'' $b$ --- that can be understood from $b$'s perspective.
+
+\item The \textbf{novelty of $a$ relative to $b$}: the part of $a$'s meaning
+that is orthogonal to $b$. This is the portion of $a$ that is genuinely new
+from $b$'s perspective --- that cannot be captured by $b$ at all.
+\end{enumerate}
+
+In hermeneutic terms, this decomposition formalizes Gadamer's notion of
+\emph{prejudice} (Vorurteil). When we encounter a new idea $a$, we inevitably
+understand it through the lens of our existing ideas (here represented by $b$).
+The ``parallel component'' is what we understand immediately: the aspect of $a$
+that resonates with what we already know. The ``perpendicular component'' is
+what is genuinely new: the aspect of $a$ that our existing knowledge cannot
+accommodate, and that requires genuine learning to grasp.
+
+Gadamer argued that prejudice is not merely a bias to be overcome but a
+\emph{necessary condition} for understanding: we can only understand the new
+by relating it to the old. The orthogonal decomposition makes this precise:
+the parallel component \emph{is} the understanding afforded by prejudice,
+and it is necessarily present (unless $a$ is completely orthogonal to our
+existing knowledge, in which case we literally cannot understand any of it).
+
+The ratio $\frac{|\rs{a}{b}|^2}{\rs{a}{a} \cdot \rs{b}{b}}$ --- the squared
+cosine similarity --- measures the fraction of $a$'s weight that is accessible
+from $b$'s standpoint. When this ratio is close to 1, almost all of $a$ is
+accessible (the ``prejudice'' captures almost everything). When it is close
+to 0, almost nothing is accessible (the idea is almost entirely novel).
+\end{interpretation}
+
+
+\section{Orthogonal Complements and Language Games}
+
+\begin{definition}[Orthogonal Complement]
+\label{def:orthogonal-complement}
+For a subset $S \subseteq \IS$, the \textbf{orthogonal complement} is:
+\[
+  S^\perp := \{a \in \IS : \rs{a}{s} = 0 \text{ for all } s \in S\}.
+\]
+\end{definition}
+
+\begin{proposition}[Properties of Orthogonal Complements]
+\label{prop:orth-comp}
+\begin{enumerate}
+\item $\void \in S^\perp$ for any $S$.
+\item If $a, b \in S^\perp$, then $a \compose b \in S^\perp$.
+\item $S^\perp$ is a submonoid of $(\IS, \compose, \void)$.
+\item $S \cap S^\perp \subseteq \{a : \embed{a} = 0\}$ (only void-synonymous
+ideas can be both in $S$ and $S^\perp$).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) $\rs{\void}{s} = 0$ for all $s$.
+
+(2) $\rs{a \compose b}{s} = \rs{a}{s} + \rs{b}{s} = 0 + 0 = 0$ by bilinearity.
+
+(3) Follows from (1) and (2).
+
+(4) If $a \in S \cap S^\perp$, then $a \in S$ and $\rs{a}{s} = 0$ for all
+$s \in S$. In particular, $\rs{a}{a} = 0$, so $\embed{a} = 0$.
+
+In Lean~4:
+\begin{lstlisting}
+theorem orth_comp_submonoid (S : Set Idea)
+    (ha : a ∈ S.orthComp) (hb : b ∈ S.orthComp) :
+    a ∘ b ∈ S.orthComp := by
+  intro s hs
+  simp [rs_compose_left, ha s hs, hb s hs]
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Wittgenstein's Language Games as Orthogonal Subspaces]
+\label{interp:language-games}
+In the \emph{Philosophical Investigations}, Wittgenstein introduced the concept
+of ``language games'' (Sprachspiele): distinct forms of linguistic activity,
+each with its own rules, vocabulary, and criteria of success. The language game
+of giving orders is different from the language game of telling jokes, which is
+different from the language game of doing physics.
+
+In IDT~v2, language games correspond to \emph{orthogonal subspaces} of the
+Hilbert space. The ideas belonging to one language game (say, chess strategy)
+form a subset $S_{\text{chess}}$ of $\IS$, and the span of their embeddings
+defines a subspace of $\Hspace$. If the chess-strategy subspace is orthogonal
+to the cooking-recipe subspace, then:
+
+\begin{enumerate}
+\item Ideas within each game resonate with each other but not with ideas in the
+other game.
+\item Composing an idea from each game produces a composite whose weight is
+the Pythagorean combination (no interaction term).
+\item Expertise in one game provides no leverage for the other (the parallel
+component of any chess idea in the cooking direction is zero).
+\end{enumerate}
+
+This is a formal model of Wittgenstein's insight that language games are, in a
+deep sense, \emph{independent}: mastery of one does not transfer to another.
+But the Hilbert space model goes further than Wittgenstein. It allows for
+language games that are \emph{partially} overlapping (non-zero but small
+resonance), \emph{aligned} (positive resonance), or \emph{opposed} (negative
+resonance). The discrete, all-or-nothing character of Wittgenstein's language
+games is replaced by a continuous spectrum of inter-game relationships.
+
+Moreover, the orthogonal complement $S^\perp$ gives us a precise notion of
+``everything that has nothing to do with $S$.'' The complement of the chess
+language game is the submonoid of ideas that are completely irrelevant to
+chess. This is a much larger set than the complement of any particular
+language game, since most ideas have nothing to do with chess.
+\end{interpretation}
+
+
+\section{The Hegelian Dialectic in Hilbert Space}
+
+We have carefully distinguished orthogonality (zero resonance) from opposition
+(negative resonance). Let us now develop the theory of opposition, connecting
+it to Hegel's dialectic.
+
+\begin{definition}[Dialectical Pair]
+\label{def:dialectical}
+Two non-void ideas $a, b \in \IS$ form a \textbf{dialectical pair} if
+$\rs{a}{b} < 0$ and $\embed{a}$, $\embed{b}$ span a two-dimensional subspace
+of $\Hspace$.
+\end{definition}
+
+\begin{theorem}[Weight of Dialectical Composition]
+\label{thm:dialectical-weight}
+If $(a, b)$ is a dialectical pair with $\hat{r}(a, b) = \cos\theta$ for
+$\theta \in (\pi/2, \pi]$, then:
+\[
+  w(a \compose b)^2 = w(a)^2 + w(b)^2 + 2w(a)w(b)\cos\theta.
+\]
+In particular:
+\begin{enumerate}
+\item $w(a \compose b) < \sqrt{w(a)^2 + w(b)^2}$ (less than the Pythagorean
+prediction);
+\item If $w(a) = w(b)$ and $\theta = \pi$ (perfect opposition), then
+$w(a \compose b) = 0$ (complete cancellation).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+This is the norm expansion formula (Theorem~\ref{thm:norm-expansion}) with the
+substitution $\rs{a}{b} = w(a)w(b)\cos\theta$.
+
+(1) Since $\cos\theta < 0$, we have $2w(a)w(b)\cos\theta < 0$, so
+$w(a \compose b)^2 < w(a)^2 + w(b)^2$.
+
+(2) If $w(a) = w(b)$ and $\theta = \pi$, then $\cos\pi = -1$ and:
+\[
+  w(a \compose b)^2 = w^2 + w^2 - 2w^2 = 0.
+\]
+\end{proof}
+
+\begin{interpretation}[Thesis, Antithesis, and the Void]
+\label{interp:hegel}
+Hegel's dialectic proceeds in three stages: thesis, antithesis, synthesis.
+The thesis proposes; the antithesis opposes; the synthesis transcends both by
+incorporating the ``truth'' of each into a higher unity.
+
+In the linear Hilbert space model, thesis and antithesis (a dialectical pair)
+compose to produce something with \emph{less} weight than either alone ---
+partial cancellation. In the extreme case of perfect opposition, the
+composition is the void: thesis $+$ antithesis $=$ silence.
+
+This seems to contradict Hegel: where is the synthesis? The answer is that
+\emph{the synthesis is not a linear operation}. Hegelian synthesis does not
+merely add thesis and antithesis; it \emph{sublates} (aufhebt) them --- lifting
+both to a higher level of understanding. In Hilbert space terms, the synthesis
+would be a vector that is not in the span of the thesis and antithesis, but in a
+genuinely new direction. The synthesis requires moving to a dimension that
+neither the thesis nor the antithesis occupied.
+
+This means that the Hilbert space model captures the \emph{destructive} phase
+of dialectic (cancellation) but not the \emph{creative} phase (synthesis). The
+creative phase requires a non-linear operation --- a ``jump'' to a new dimension
+--- that goes beyond the additive axiom. This is a precise mathematical diagnosis
+of the limitation of the linear model, and it points toward non-linear extensions.
+
+One possible extension: define synthesis as
+$\text{synth}(a, b) = a \compose b \compose c$, where $c$ is a new idea
+orthogonal to both $a$ and $b$ that provides the ``genuinely new'' content of
+the synthesis. In this model, every dialectical resolution requires the
+introduction of \emph{something new} from outside the dialectical pair ---
+an insight from an orthogonal domain that resolves the tension.
+\end{interpretation}
+
+\begin{example}[Orthogonal Domains of Knowledge]
+\label{ex:orthogonal-domains}
+Consider three domains of knowledge, each represented by a subspace of
+$\Hspace = \mathbb{R}^6$:
+\begin{align*}
+  \text{Mathematics} &: \text{span of } e_1, e_2 \\
+  \text{Poetry} &: \text{span of } e_3, e_4 \\
+  \text{Cooking} &: \text{span of } e_5, e_6
+\end{align*}
+These three domains are pairwise orthogonal: a mathematical idea has zero
+resonance with a culinary idea. Within each domain, ideas can resonate strongly
+(a theorem about prime numbers resonates with a theorem about algebraic
+structures), but across domains, there is no interaction.
+
+Now consider an idea that bridges two domains: ``the golden ratio in pastry''
+might have embedding $(1, 0, 0, 0, 0, 1)$, with non-zero components in both
+the Mathematics and Cooking subspaces. This bridging idea resonates with both
+mathematical and culinary ideas, and its existence breaks the strict
+orthogonality between the domains. The ``bridge'' opens a channel of resonance
+between previously unrelated fields.
+
+In the history of ideas, such bridges are rare and highly valued: the
+application of mathematical optimization to recipe design, the use of poetic
+metaphor in mathematical exposition, the deployment of game theory in literary
+analysis. IDT~v2 models these bridges as vectors with non-zero projections
+onto multiple orthogonal subspaces --- vectors that ``live in the cracks''
+between established domains.
+\end{example}
+
+\begin{example}[The Dialectic of Thesis and Antithesis]
+\label{ex:dialectic}
+Let $\Hspace = \mathbb{R}^3$ and consider:
+\begin{align*}
+  \embed{\text{thesis}} &= (3, 0, 0), \\
+  \embed{\text{antithesis}} &= (-3, 0, 0), \\
+  \embed{\text{synthesis}} &= (0, 0, 4).
+\end{align*}
+Then:
+\begin{itemize}
+\item $\rs{\text{thesis}}{\text{antithesis}} = -9 < 0$ (strong opposition);
+\item $\embed{\text{thesis} \compose \text{antithesis}} = (0, 0, 0)$ (complete
+cancellation --- the dialectical destruction);
+\item $\embed{\text{thesis} \compose \text{antithesis} \compose \text{synthesis}}
+= (0, 0, 4)$ (the synthesis provides all the content of the resulting idea);
+\item The synthesis is orthogonal to both thesis and antithesis: $\rs{\text{synthesis}}{\text{thesis}} = 0$, $\rs{\text{synthesis}}{\text{antithesis}} = 0$.
+\end{itemize}
+The synthesis does not ``combine'' thesis and antithesis --- it replaces the
+void left by their cancellation with something entirely new.
+\end{example}
+
+
+\section{Bessel's Inequality and the Richness of Meaning Space}
+
+We close this chapter with Bessel's inequality, which provides a fundamental
+bound on how an idea distributes its weight across a collection of orthogonal
+reference ideas.
+
+\begin{theorem}[Bessel's Inequality for Ideas]
+\label{thm:bessel}
+Let $e_1, \ldots, e_n \in \IS$ be ideas with pairwise orthogonal embeddings
+that are unit vectors ($\nrm{\embed{e_i}} = 1$ and $\rs{e_i}{e_j} = 0$ for
+$i \neq j$). Then for any idea $a \in \IS$:
+\[
+  \sum_{i=1}^n \rs{a}{e_i}^2 \leq \rs{a}{a} = w(a)^2.
+\]
+\end{theorem}
+
+\begin{proof}
+This is Bessel's inequality applied to the vector $\embed{a}$ and the
+orthonormal set $\{\embed{e_1}, \ldots, \embed{e_n}\}$.
+
+Define $v = \embed{a} - \sum_{i=1}^n \rs{a}{e_i} \embed{e_i}$. Then $v$ is
+orthogonal to each $\embed{e_i}$, and:
+\begin{align*}
+  0 \leq \nrm{v}^2
+  &= \ip{\embed{a} - \sum_i \rs{a}{e_i}\embed{e_i}}
+        {\embed{a} - \sum_i \rs{a}{e_i}\embed{e_i}} \\
+  &= w(a)^2 - 2\sum_i \rs{a}{e_i}^2 + \sum_i \rs{a}{e_i}^2 \\
+  &= w(a)^2 - \sum_i \rs{a}{e_i}^2.
+\end{align*}
+Rearranging: $\sum_i \rs{a}{e_i}^2 \leq w(a)^2$.
+\end{proof}
+
+\begin{interpretation}[The Weight Budget]
+\label{interp:bessel}
+Bessel's inequality states that the total ``resonance budget'' of an idea
+across any orthonormal basis of reference ideas is bounded by the idea's total
+weight. An idea of weight $w$ can distribute at most $w^2$ units of squared
+resonance across all reference directions. If it resonates strongly with some
+reference ideas, it must resonate weakly with others.
+
+This is a formal expression of the principle that \emph{you cannot agree with
+everyone equally}. An idea that resonates strongly with ``liberty'' and
+``equality'' has less resonance budget left for ``tradition'' and ``authority''
+(assuming these are orthogonal reference directions). The finite weight of any
+idea limits its capacity for universal agreement.
+
+In Durkheim's sociology, this connects to the tension between mechanical and
+organic solidarity. In a society with mechanical solidarity (where all
+individuals share the same ideas), every individual's idea vector is parallel
+to the collective's. Bessel's inequality is tight: all the weight is
+concentrated on one direction. In a society with organic solidarity (where
+individuals specialize), the idea vectors point in many different orthogonal
+directions. Bessel's inequality is loose: each individual's resonance with the
+collective is only a fraction of their total weight.
+
+The transition from mechanical to organic solidarity, in IDT~v2 terms, is a
+transition from a low-dimensional culture (all ideas aligned) to a
+high-dimensional culture (ideas spanning many orthogonal directions). The
+total ``cultural weight'' increases (many specialists contribute), but the
+individual resonance with the collective decreases (each specialist is only
+partially aligned with the whole).
+\end{interpretation}
+
+\bigskip
+
+This concludes Part~I of the book. We have established the Hilbert space
+foundations of IDT~v2: the embedding axioms
+(Chapter~\ref{ch:geometry}), resonance as inner product
+(Chapter~\ref{ch:resonance}), the metric of meaning (Chapter~\ref{ch:metric}),
+the independence of depth and norm (Chapter~\ref{ch:depth-norm}), and the
+structure of orthogonal ideas (this chapter). In Part~II, we turn to the
+\emph{game theory of meaning}: what happens when ideas are not merely objects
+to be contemplated, but strategic instruments deployed by agents who seek to
+influence each other?

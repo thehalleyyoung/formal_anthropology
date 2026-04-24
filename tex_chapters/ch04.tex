@@ -10,6 +10,69 @@ activated.''}{Dan Sperber, \textit{Explaining Culture}}
 
 % ── Introduction ──────────────────────────────────────────────────────
 
+The concept of activation---which ideas a signal ``turns on'' in a
+culturally constituted mind---lies at the intersection of several
+major intellectual traditions.  Sperber and Wilson's \emph{relevance
+theory}~\cite{sperber1995} articulates two foundational principles.
+The \emph{cognitive principle of relevance} holds that human cognition
+is geared toward the maximisation of relevance: cognitive systems
+automatically allocate attention to inputs that promise the greatest
+cognitive effect for the least processing effort.  The
+\emph{communicative principle of relevance} adds that every ostensive
+stimulus carries a presumption of its own optimal relevance---that the
+speaker has made it worth the hearer's effort to
+process.\footnote{Sperber and Wilson distinguish ``relevance'' from
+mere ``informativeness.''  A stimulus is relevant not because it
+carries a large quantity of information, but because it connects
+efficiently with the hearer's existing cognitive environment---what we
+formalise here as the repertoire.}  IDT's resonance relation gives
+these principles a precise algebraic form: $r \res s$ holds exactly
+when the signal~$s$ is relevant to the schema~$r$.
+
+Cognitive linguistics provides a complementary perspective.  Lakoff's
+\emph{Women, Fire, and Dangerous Things} (1987)~\cite{lakoff1987}
+demonstrated that human categorisation is not a matter of classical
+necessary-and-sufficient conditions but of radial categories organised
+around prototypes and linked by family resemblance.  The schemas that
+a signal activates are not an arbitrary set; they form a structured
+neighbourhood in conceptual space, held together by what Lakoff calls
+\emph{idealized cognitive models} (ICMs).  Fillmore's \emph{frame
+semantics}~\cite{fillmore1982} makes a parallel claim at the level of
+linguistic meaning: understanding a word requires activating an entire
+frame---a structured background of knowledge against which the word
+makes sense.\footnote{Fillmore's classic example: the word
+``\emph{bachelor}'' activates a frame that includes the institution of
+marriage, typical marital age, and social expectations.  Remove the
+frame, and the word loses its meaning.  In IDT terms, the frame is
+part of the repertoire, and the word resonates with it.}  The
+activated subset of a repertoire (Definition~\ref{def:activated-subset})
+is, in Fillmorean terms, the set of frames that a signal evokes.
+
+From experimental psychology, Kahneman's \emph{Thinking, Fast and
+Slow} (2011)~\cite{kahneman2011} documents the pervasive role of
+\emph{priming}---the phenomenon whereby exposure to one stimulus
+influences the response to a subsequent stimulus.  Subjects primed
+with words associated with old age walk more slowly; subjects primed
+with money-related images become more individualistic.  Kahneman
+locates priming in ``System~1,'' the fast, automatic, associative mode
+of thought.  IDT's activation framework provides an algebraic account
+of exactly these effects: the primer~$s_1$ reshapes the repertoire
+(via $\operatorname{interpret}(\Rep, s_1)$), and the subsequent
+signal~$s_2$ then activates schemas within this reshaped
+landscape.\footnote{The sequential interpretation associativity
+theorem (Theorem~\ref{thm:sequential-activation}) shows that this
+two-step process is equivalent to a single exposure to the compound
+signal $s_1 \compose s_2$.  Priming, in algebraic terms, is
+composition.}
+
+What IDT contributes to these diverse literatures is a unified formal
+language.  Sperber's relevance, Lakoff's ICMs, Fillmore's frames, and
+Kahneman's priming are all, at bottom, claims about \emph{which
+elements of a structured repertoire a signal activates}.  By
+axiomatising resonance and deriving activation as a consequence, IDT
+reveals the common algebraic skeleton beneath these superficially
+different theories.
+
 When a signal arrives at a mind, it does not activate the entire
 repertoire uniformly.  It selectively \emph{activates} those ideas with
 which it resonates---Sperber's (1996) relevance theory~\cite{sperber1996}
@@ -32,6 +95,42 @@ of the repertoire.
 (\S\ref{sec:ch4:double}), establish depth bounds
 (\S\ref{sec:ch4:depth-bounds}), and trace resonance chains
 (\S\ref{sec:ch4:chains}).
+
+\subsection*{Historical Context: From Associationism to Relevance Theory}
+
+The idea that mental contents activate one another has a long
+pedigree.  British associationism, from David Hume's \emph{Treatise of
+Human Nature} (1739) through David Hartley's \emph{Observations on
+Man} (1749), proposed that ideas are linked by resemblance, contiguity,
+and cause-and-effect, and that the activation of one idea
+automatically triggers associated ideas.  This philosophical tradition
+was given cognitive-scientific form by Collins and
+Loftus~\cite{collins1975}, whose \emph{spreading activation} model
+posited that concepts are stored in a semantic network and that
+activating one node sends activation spreading along weighted links to
+neighbouring nodes.  The model explained priming effects, category
+verification times, and typicality gradients.
+
+Anthropologists have long employed activation concepts, if not always
+under that name.  Malinowski's ``context of
+situation''~\cite{malinowski1923} was an early recognition that the
+meaning of an utterance depends on which aspects of the surrounding
+context are cognitively active for the participants.  Bateson's theory
+of ``frames''~\cite{bateson1972} proposed that metacommunicative
+signals (``this is play'') activate interpretive frames that transform
+the meaning of all subsequent signals.  Goffman~\cite{goffman1974}
+extended Bateson's frame analysis into a comprehensive sociology of
+everyday interaction, showing how \emph{frame shifts}---changes in
+which schemas are active---are the fundamental unit of social
+micro-dynamics.
+
+IDT inherits and formalises this lineage.  The resonance
+relation~$\res$ replaces the informal notion of ``associative link'';
+the activated subset replaces the vague concept of ``what is salient'';
+and the composition operation~$\compose$ replaces the hand-waving
+appeal to ``contextual influence.''  The theorems that follow make
+precise the claims that associationists, relevance theorists, and
+frame analysts have long advanced informally.
 
 % ── §1. Activation ───────────────────────────────────────────────────
 \section{Activation}
@@ -130,6 +229,88 @@ resonant symbols does not destroy their mutual activation.  Context
 preserves relevance.
 \end{remark}
 
+\begin{example}[The Cross as Multi-Activation Symbol]
+\label{ex:cross-multi-activation}
+The symbol of the cross provides a vivid illustration of how the same
+signal activates radically different schemas depending on the
+repertoire it encounters.  For a devout Catholic, the cross activates
+a dense cluster of christological schemas: the crucifixion narrative,
+the theology of redemption through suffering, the eucharistic
+sacrifice, Marian devotion at the foot of the cross, and the
+eschatological promise of resurrection.  These schemas are mutually
+resonant, forming what Lakoff would call an idealized cognitive model
+of salvific suffering.
+
+For a mathematician, the identical visual form activates an entirely
+disjoint set of schemas: Cartesian coordinate axes, the addition
+operator in elementary arithmetic, the cross product of vectors, or
+the symbol for the direct product of groups.  The resonance relation
+$r \res s$ holds for a different subset of the repertoire, and the
+activated interpretations accordingly diverge.
+
+For a Red Cross worker, the cross activates schemas of humanitarian
+aid, political neutrality, the Geneva Conventions, and emergency field
+medicine.  The symbol's meaning is neither theological nor
+mathematical but \emph{institutional}---it indexes a framework of
+international law and organisational practice.
+
+In each case, the signal is identical; what differs is the
+repertoire~$\Rep$ and hence the activated subset.  The composition
+preservation theorems (Theorems~\ref{thm:activation-compose-right}
+and~\ref{thm:activation-compose-left}) guarantee that adding
+contextual framing to the cross preserves these divergent activation
+patterns rather than collapsing them.
+\end{example}
+
+\begin{example}[Priming in Advertising]
+\label{ex:advertising-priming}
+Consider a television advertisement for a luxury automobile.  Before
+the car appears on screen, the viewer is shown a sequence of images:
+a private jet landing on a sun-drenched runway, a penthouse overlooking
+a glittering skyline, a well-dressed figure signing documents in a
+boardroom of polished mahogany.  These images are not accidental; they
+are primers.  Each image activates schemas of wealth, success,
+aspiration, and social status.  By the time the automobile appears,
+the viewer's repertoire has been reshaped: the schemas most recently
+activated are those associated with luxury and achievement.  The car
+is then interpreted not merely as a mode of transportation but as a
+signifier of the lifestyle depicted in the preceding images.
+
+The sequential interpretation associativity theorem
+(Theorem~\ref{thm:sequential-activation}) explains why this works:
+the priming sequence followed by the product reveal is algebraically
+equivalent to a single compound signal that fuses aspiration-imagery
+with automobile-imagery.  The advertiser's art lies in choosing primers
+whose composition with the product signal maximises the desired
+activation pattern.
+\end{example}
+
+\subsection*{Discussion: Activation as Cultural Attention}
+
+The activation framework developed so far formalises what
+anthropologists have long called \emph{cultural salience}---the
+culturally variable tendency to notice, attend to, and find meaningful
+certain features of the environment while ignoring others.  Mary
+Douglas, in \emph{Purity and Danger} (1966)~\cite{douglas1966},
+argued that every culture imposes a classification system that directs
+attention to particular boundaries (pure/impure, sacred/profane,
+inside/outside) and renders invisible everything that does not fit the
+classificatory grid.  In IDT terms, Douglas's cultural classifications
+are encoded in the repertoire~$\Rep$, and the boundaries she identifies
+are precisely the regions of high resonance density: signals that fall
+near a classificatory boundary activate many schemas simultaneously,
+producing the sense of heightened significance---or danger---that
+Douglas documented.
+
+Conversely, signals that fall outside all cultural categories activate
+nothing (the null activation theorem, Theorem~\ref{thm:null-activation})
+and are experienced as meaningless noise.  Douglas's famous ``matter
+out of place''---dirt as the by-product of classification---is, in
+formal terms, a signal whose activated subset is empty relative to the
+prevailing repertoire.  What counts as dirt, disorder, or anomaly is
+not an objective property of the signal but a consequence of the
+repertoire's resonance structure.
+
 % ── §2. Activation and Interpretation ────────────────────────────────
 \section{Activation and Interpretation Interaction}
 \label{sec:ch4:interaction}
@@ -184,6 +365,56 @@ See \texttt{null\_activation}.
 Total cognitive shutdown---when nothing in your repertoire is deemed
 relevant---produces zero interpretations.  This models culture shock or
 the ``deer in headlights'' response to incomprehensible stimuli.
+\end{remark}
+
+\begin{example}[Culture Shock as Null Activation]
+\label{ex:culture-shock}
+An American businessman arrives in a remote village in the Papua New
+Guinea highlands.  He is led to a clearing where men in elaborate
+feathered headdresses are engaged in a ceremonial exchange of pearl
+shells, pigs, and sweet potatoes, accompanied by stylised oratory,
+rhythmic stamping, and the blowing of bamboo flutes.  Nothing in his
+cognitive repertoire---business negotiation schemas, American social
+etiquette, Western aesthetic categories---resonates with what he
+observes.  The activation predicate $\sigma(r)$ returns
+$\mathtt{false}$ for every element $r \in \Rep$.  The result, by
+Theorem~\ref{thm:null-activation}, is an empty list of
+interpretations: complete cognitive blankness.
+
+This is the formal model of what Oberg (1960)~\cite{oberg1960} called
+\emph{culture shock}---not merely unfamiliarity but the total failure
+of one's interpretive apparatus.  The remedy, in IDT terms, is
+repertoire expansion: by acquiring new schemas (through language
+learning, participant observation, or explicit instruction), the
+traveller gradually populates $\Rep$ with elements that resonate with
+local signals, restoring the capacity for interpretation.
+\end{example}
+
+\begin{remark}[Connection to Artificial Intelligence: Attention Mechanisms]
+\label{rem:attention-ai}
+The activation framework bears a striking structural parallel with the
+\emph{attention mechanism} in transformer neural
+networks~\cite{vaswani2017}.  In a transformer, each input token is
+projected into query, key, and value vectors; the attention score
+between a query and a key determines how much the corresponding value
+contributes to the output.  In IDT, a signal~$s$ plays the role of
+the query, the repertoire elements~$r \in \Rep$ play the role of keys,
+and the interpretations $r \compose s$ play the role of values.  The
+resonance predicate $r \res s$ is a binary attention score:
+it selects which values contribute and which are suppressed.
+
+This analogy is more than metaphorical.  The activated interpretations
+definition (Definition~\ref{def:activated-interp}) is a discrete,
+binary version of the attention-weighted sum that transformers
+compute.  The null activation theorem
+(Theorem~\ref{thm:null-activation}) corresponds to the case where all
+attention scores are zero---the model produces no output.  The
+universal activation theorem
+(Theorem~\ref{thm:universal-activation}) corresponds to uniform
+attention---every key-value pair contributes equally.  Future work
+might extend IDT's binary resonance to graded resonance, bringing the
+formal framework even closer to the continuous attention scores used
+in neural architectures.
 \end{remark}
 
 % ── §3. Double Activation ────────────────────────────────────────────
@@ -255,6 +486,71 @@ By silence transparency applied to $\operatorname{interpret}(\Rep, s)$.
 See \texttt{post\_void}.
 \end{proof}
 
+\subsection*{Discussion: Sequential Activation and Ritual Design}
+
+The theorems of this section reveal that the careful ordering of
+ritual elements is not arbitrary but reflects the algebraic structure
+of composition.  Ritual designers---priests, shamans, liturgists,
+and, in the modern world, advertisers and political
+speechwriters---exploit sequential activation to shape the
+interpretive landscape of their audiences.  The sequential
+interpretation associativity theorem
+(Theorem~\ref{thm:sequential-activation}) shows that the effect of a
+ritual sequence can be analysed as a single compound signal, while
+the void priming theorem (Theorem~\ref{thm:void-priming}) and the
+post-void theorem (Theorem~\ref{thm:post-void}) establish that only
+\emph{substantive} primers---those carrying non-trivial content---alter
+the interpretive outcome.
+
+\begin{example}[The Seder as Sequential Activation]
+\label{ex:seder}
+The Jewish Passover Seder follows a precise fifteen-step sequence:
+\emph{Kadesh} (sanctification over wine), \emph{Urchatz} (hand
+washing), \emph{Karpas} (dipping greens in salt water),
+\emph{Yachatz} (breaking the middle matzah), \emph{Maggid}
+(narrating the Exodus), and so on through \emph{Nirtzah} (acceptance).
+Each step activates specific schemas---liberation, slavery, divine
+intervention, communal identity, agricultural renewal---that prime
+the participant for the next step.  The dipping of bitter herbs
+(\emph{Maror}) in \emph{charoset} activates schemas of suffering and
+sweetness simultaneously, and this compound activation primes the
+participant for the meal (\emph{Shulchan Orech}), which is then
+interpreted not merely as eating but as a re-enactment of the
+celebratory feast of the freed Israelites.
+
+The sequential associativity theorem tells us that this entire
+fifteen-step cascade is algebraically equivalent to a single compound
+signal $s_1 \compose s_2 \compose \cdots \compose s_{15}$.  But the
+pedagogical genius of the Seder lies in \emph{decomposing} this
+compound signal into steps, each of which is individually
+interpretable and each of which prepares the cognitive ground for its
+successor.
+\end{example}
+
+\begin{remark}[Connection to Pedagogy: Scaffolding]
+\label{rem:scaffolding}
+Vygotsky's concept of the \emph{zone of proximal development}
+(ZPD)~\cite{vygotsky1978} and the pedagogical technique of
+\emph{scaffolding} (Wood, Bruner, and Ross, 1976) describe the
+practice of providing learners with structured support that enables
+them to achieve tasks just beyond their current independent
+capability.  The void priming theorem
+(Theorem~\ref{thm:void-priming}) provides a formal criterion for
+effective scaffolding: a preliminary lesson that activates nothing
+new---that is, a void primer---adds no interpretive value.  Effective
+scaffolding requires \emph{non-void primers} that genuinely activate
+relevant schemas, reshaping the learner's repertoire so that the
+target material falls within the activated subset.
+
+The post-void theorem (Theorem~\ref{thm:post-void}) adds a
+complementary lesson: trailing silence---review sessions that merely
+repeat what has already been activated without introducing new
+content---likewise adds nothing to the interpretive outcome.  The
+implication for instructional design is that both the preamble and the
+coda of a lesson must carry substantive content; purely ceremonial
+framing is algebraically inert.
+\end{remark}
+
 % ── §4. Activation Depth Bounds ──────────────────────────────────────
 \section{Activation Depth Bounds}
 \label{sec:ch4:depth-bounds}
@@ -295,6 +591,48 @@ See \texttt{activated\_count\_bound}.
 \begin{remark}
 You cannot hallucinate more schemas than you actually have, no matter how
 stimulating the signal.
+\end{remark}
+
+\begin{example}[Selective Attention in Ethnography]
+\label{ex:ethnographic-attention}
+When Clifford Geertz observed the Balinese cockfight~\cite{geertz1973},
+his ethnographic training activated schemas that ordinary Balinese
+spectators---or casual Western tourists---lacked.  Where a tourist
+might activate only schemas of animal cruelty or gambling, Geertz's
+repertoire contained schemas of status rivalry, symbolic violence,
+Weberian stratification, and Benthamite ``deep play.''  His trained
+repertoire therefore produced a richer set of activated
+interpretations.  But Theorem~\ref{thm:activated-count} guarantees
+that even Geertz could not produce more interpretations than the
+cardinality of his repertoire: $|\operatorname{activatedInterpretations}
+(\Rep_{\text{Geertz}}, s_{\text{cockfight}}, \sigma)| \leq
+|\Rep_{\text{Geertz}}|$.  The ethnographer's advantage is not
+unbounded creativity but a \emph{larger and more finely differentiated
+repertoire} through which more signals resonate.
+\end{example}
+
+\begin{remark}[Depth Bounds and Information Overload]
+\label{rem:information-overload}
+The activated interpretation depth bound
+(Theorem~\ref{thm:activated-depth}) provides a formal explanation for
+why information overload, though experientially overwhelming, is
+\emph{cognitively bounded}.  In an age of constant digital
+stimulation---news feeds, social media notifications, algorithmic
+content streams---each individual signal can activate at most
+$|\Rep|$ schemas, and the depth of any resulting interpretation is
+bounded by $\operatorname{maxInterpDepth}(\Rep) + \depth(s)$.  The
+subjective experience of overload arises not from unbounded depth of
+processing but from the \emph{rapid succession} of signals, each
+making finite but non-negligible demands on interpretive resources.
+
+The so-called ``attention economy''---the competition among signals
+for limited cognitive bandwidth---is thus formally bounded by
+repertoire structure.  No amount of algorithmic optimisation can force
+a mind to produce interpretations deeper or more numerous than its
+repertoire permits.  The defense against information overload is not
+faster processing but \emph{repertoire curation}: the deliberate
+cultivation of schemas that resonate with signals one judges
+important, and the pruning of schemas that resonate with noise.
 \end{remark}
 
 % ── §5. Resonance Chains ─────────────────────────────────────────────
@@ -362,6 +700,68 @@ Apply depth-compose-le twice.  See \texttt{double\_signal\_depth\_bound}.
 Cultural complexity does not compound super-linearly through chains of
 interpretation.  A three-layer cultural transmission has bounded total
 complexity.
+\end{remark}
+
+\begin{example}[Propaganda as Activation Chain]
+\label{ex:propaganda}
+The propaganda apparatus of totalitarian regimes provides a dark but
+instructive illustration of activation chains.  Joseph Goebbels's
+communication strategy in Nazi Germany involved the careful sequencing
+of messages: initial signals activated schemas of national humiliation
+(the Treaty of Versailles, economic hardship), which primed the
+population for subsequent signals activating schemas of ethnic
+scapegoating, which in turn primed for signals activating schemas of
+militaristic renewal.  Each stage in the sequence depended on the
+activation patterns established by its predecessors.
+
+The activation composition theorem
+(Theorem~\ref{thm:activation-composition}) shows that this cascade of
+resonances propagates through compositional chains: if
+$\operatorname{activated}(r, s_1)$ and
+$\operatorname{activated}(s_1, s_2)$, then the compositions
+$r \compose s_1$ and $s_1 \compose s_2$ are themselves mutually
+activated.  But the double signal depth bound
+(Theorem~\ref{thm:double-signal-depth}) provides a crucial
+counterpoint: the total interpretive depth of such a chain is bounded
+by the sum of the individual depths, not their product.  Propaganda
+is dangerous, but its cognitive reach is formally limited by the
+structure of the repertoires it targets.
+\end{example}
+
+\begin{remark}[Open Questions]
+\label{rem:open-questions}
+The activation framework developed in this chapter treats resonance as
+a binary relation: a signal either resonates with a schema or it does
+not.  Several natural extensions suggest themselves.
+
+First, can activation be made \emph{quantitative} beyond the binary
+resonates/does-not-resonate dichotomy?  A graded resonance
+function $\rho(r, s) \in [0, 1]$ would allow modelling of
+\emph{partial activation} and \emph{weak relevance}---phenomena that
+are ubiquitous in everyday cognition.  A faint church bell in the
+distance partially activates religious schemas without fully engaging
+them; a foreign word that \emph{sounds like} a familiar word in one's
+own language triggers tentative, low-confidence activation.  Graded
+resonance connects naturally to fuzzy set theory~\cite{zadeh1965}
+and to the graded category membership documented in cognitive
+linguistics~\cite{rosch1975}.
+
+Second, the current framework treats the repertoire as static during
+a single activation event.  But activation itself may \emph{modify}
+the repertoire: schemas that are frequently activated may become more
+accessible (the ``frequency effect'' in psycholinguistics), while
+schemas that are never activated may atrophy (the ``use it or lose it''
+principle).  A dynamic activation theory would require enriching the
+algebraic structure with a feedback mechanism from activation to
+repertoire composition.
+
+Third, the interaction between activation and social structure remains
+largely unexplored.  When two minds with different repertoires are
+exposed to the same signal, their divergent activation patterns may
+generate communicative friction---or, under favourable conditions,
+productive misunderstanding that drives cultural innovation.
+Formalising this social dimension of activation is a task for future
+chapters.
 \end{remark}
 
 % ── Summary ──────────────────────────────────────────────────────────

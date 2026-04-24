@@ -1,0 +1,293 @@
+\documentclass[11pt,oneside]{book}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{epigraph}
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{axiom_def}[theorem]{Axiom}
+\newtheorem{game}[theorem]{Game}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{interpretation}[theorem]{Interpretation}
+\newtheorem{aside}[theorem]{Aside}
+
+% Lean code listings
+\lstdefinelanguage{Lean4}{
+  morekeywords={theorem,lemma,def,noncomputable,class,instance,where,
+    variable,open,namespace,section,end,import,structure,inductive,
+    match,with,fun,let,in,if,then,else,do,return,have,show,by,
+    exact,rfl,simp,linarith,nlinarith,ring,intro,apply,rw,unfold,
+    calc,sorry,Prop,Type,Sort,axiom,extends,deriving},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[s]{/-}{-/},
+  morestring=[b]",
+}
+
+\lstset{
+  language=Lean4,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red},
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  xleftmargin=1em,
+  xrightmargin=1em,
+}
+
+% Custom commands
+\newcommand{\rs}{\mathrm{rs}}
+\newcommand{\emerge}{\kappa}
+\newcommand{\compose}{\circ}
+\newcommand{\void}{\varepsilon}
+\newcommand{\IS}{\mathcal{I}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+
+\title{\Huge\bfseries The Math of Ideas\\[0.3em]
+\LARGE Volume II: Strategic Interaction\\[0.5em]
+\Large Games, Networks, and the Evolution of Meaning}
+\author{A Formal Treatment with Machine-Verified Proofs\\[0.3em]
+\normalsize\textit{Part of the series ``The Math of Ideas''}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\frontmatter
+
+\chapter*{Preface: A Reply to Wittgenstein and the Game Theorists}
+
+This book is a reply to two traditions that have, for too long, talked past
+each other.
+
+To the \emph{game theorists}: you have built a magnificent edifice of
+strategic reasoning, but you treat the objects of exchange as given---goods,
+money, utility. When agents exchange \emph{ideas}, the payoff structure is
+fundamentally different. The combination of two ideas produces something
+genuinely new: an \emph{emergence} that is irreducible to the parts. This
+book shows that emergence transforms every classical game-theoretic result:
+equilibria shift, cooperation surpluses appear, and order effects create
+asymmetries that have no classical counterpart.
+
+To the followers of \emph{Wittgenstein}: you were right that ``meaning is use''
+(\emph{Philosophical Investigations} \S43), that language games are the
+foundation of meaning, and that the private language argument shows meaning
+to be inherently social. But you stopped too soon. This book shows that
+Wittgenstein's deepest insights---the beetle in the box, the rule-following
+paradox, the impossibility of a private language---are not merely philosophical
+arguments but \emph{mathematical theorems}, provable from eight axioms about how
+ideas compose and resonate. The beetle \emph{must} drop out of the box. Private
+languages \emph{must} collapse to silence. And the reason is emergence.
+
+The predecessor volume, \emph{Idea Diffusion Theory}, established the
+mathematical framework: the ideatic space $(\IS, \compose, \void, \rs)$ with
+its eight axioms, the emergence term $\emerge(a,b,c) := \rs(a \compose b, c) -
+\rs(a,c) - \rs(b,c)$, and a rich theory of composition, transmission, and
+interpretation. This sequel assumes those foundations and develops the
+game-theoretic consequences.
+
+Every theorem has been verified in Lean 4 with zero \texttt{sorry} axioms.
+
+\tableofcontents
+
+\mainmatter
+
+%==========================================================================
+% PROLOGUE: RECALLING THE FOUNDATIONS
+%==========================================================================
+
+\chapter*{Prologue: The Ideatic Space in Brief}
+\addcontentsline{toc}{chapter}{Prologue: The Ideatic Space in Brief}
+
+\textit{This chapter recalls the essential definitions and results from
+\emph{Idea Diffusion Theory} that are needed for the game-theoretic
+development. Readers who have read the predecessor volume may skim this
+chapter; those who have not should read it carefully.}
+
+\section*{The Eight Axioms}
+
+We work with an \emph{ideatic space} $(\IS, \compose, \void, \rs)$ where
+$\IS$ is a set of ideas, $\compose : \IS \times \IS \to \IS$ is composition,
+$\void \in \IS$ is the void idea (silence), and $\rs : \IS \times \IS \to \R$
+is the \emph{resonance function}. The axioms are:
+
+\begin{enumerate}
+\item \textbf{Associativity}: $(a \compose b) \compose c = a \compose (b \compose c)$.
+\item \textbf{Left identity}: $\void \compose a = a$.
+\item \textbf{Right identity}: $a \compose \void = a$.
+\item \textbf{Void resonance (right)}: $\rs(a, \void) = 0$.
+\item \textbf{Void resonance (left)}: $\rs(\void, a) = 0$.
+\item \textbf{Self-coherence}: $\rs(a, a) \geq 0$, with $\rs(a,a) = 0 \iff a = \void$.
+\item \textbf{Emergence bound}: $\emerge(a,b,c)^2 \leq \rs(a \compose b, a \compose b) \cdot \rs(c,c)$.
+\item \textbf{Enrichment}: $\rs(a \compose b, a \compose b) \geq \rs(a, a)$.
+\end{enumerate}
+
+\section*{Key Definitions}
+
+The \emph{emergence term} is a derived quantity:
+\[
+\emerge(a, b, c) := \rs(a \compose b, c) - \rs(a, c) - \rs(b, c).
+\]
+The \emph{weight} of an idea is $w(a) := \rs(a, a)$.
+Two ideas are \emph{orthogonal} if $\rs(a, b) = 0$ and $\rs(b, a) = 0$.
+An agent is \emph{left-linear} if $\emerge(a, b, c) = 0$ for all $b, c$,
+meaning their contributions never produce emergence.
+
+\section*{Key Results from IDT}
+
+The following results, proved in the predecessor volume, will be used freely:
+
+\begin{itemize}
+\item \textbf{Cocycle condition}: $\emerge(a \compose b, c, d) = \emerge(a, b \compose c, d) - \emerge(a, b, d) + \emerge(b, c, d)$.
+\item \textbf{Decomposition}: $\rs(a \compose b, c) = \rs(a, c) + \rs(b, c) + \emerge(a, b, c)$.
+\item \textbf{Void emergence}: $\emerge(\void, a, b) = \emerge(a, \void, b) = \emerge(a, b, \void) = 0$.
+\item \textbf{Weight ratchet}: $w(a \compose b) \geq w(a)$ for all $a, b$.
+\item \textbf{Non-degeneracy}: $w(a) > 0$ for all $a \neq \void$.
+\end{itemize}
+
+These are not assumptions---they are theorems derived from the eight axioms.
+The proofs appear in \emph{Idea Diffusion Theory} and in the Lean 4 files.
+
+\vspace{1em}
+\noindent\textit{With these tools in hand, we turn to the strategic question:
+How should you choose what to say?}
+
+%==========================================================================
+\part{The Structure of Meaning Games}
+%==========================================================================
+
+\input{tex_v2_chapters/mg_ch1_7}
+
+%==========================================================================
+\part{Dynamic and Evolutionary Games}
+%==========================================================================
+
+\input{tex_v2_chapters/mg_ch8_14}
+
+%==========================================================================
+\part{Advanced Topics and Open Problems}
+%==========================================================================
+
+\input{tex_v2_chapters/mg_ch15_21}
+
+%==========================================================================
+\part{Deep Structures and Grand Unification}
+%==========================================================================
+
+\input{tex_v2_chapters/mg_deep}
+
+%==========================================================================
+% END MATTER
+%==========================================================================
+
+\chapter*{Appendix: Complete Lean 4 Formalization}
+
+All game-theoretic results in this book are verified in Lean 4.
+The relevant files include:
+
+\begin{itemize}
+\item \texttt{IDT\_v3\_SignalGames.lean} --- 208 theorems. Nash equilibrium,
+babbling equilibria, costly signaling, revelation, strategic silence,
+signaling chains, grand unification.
+
+\item \texttt{IDT\_v3\_Wittgenstein.lean} --- 183 theorems. Language games,
+rule-following, private language, family resemblance, hinge propositions,
+Tractatus vs.\ Investigations, showing vs.\ saying, philosophical therapy.
+
+\item \texttt{IDT\_v3\_DeepGames.lean} --- 72 theorems. Transparency,
+order sensitivity, attribution impossibility, weight ratchet, coalitions,
+fundamental synthesis.
+
+\item \texttt{IDT\_v3\_Interpretation.lean} --- 230 theorems. Gadamer,
+Ricoeur, Schleiermacher, Benjamin, Heidegger, Derrida, hermeneutic circle.
+
+\item \texttt{IDT\_v3\_Semiotics.lean} --- 158 theorems. Eco, Barthes,
+Derrida, Jakobson, Greimas.
+
+\item \texttt{IDT\_v3\_PowerStructure.lean} --- 152 theorems. Bourdieu,
+Gramsci, Foucault, Althusser, hegemony, ideology, propaganda, resistance.
+
+\item \texttt{IDT\_v3\_Cooperation.lean} --- 26 theorems. Coalition value,
+cooperation surplus, Shapley values.
+
+\item \texttt{IDT\_v3\_Evolution.lean} --- 24 theorems. Fitness, invasion,
+Red Queen, memetic drift.
+
+\item \texttt{IDT\_v3\_Poetics.lean} --- 103 theorems. Condensation,
+defamiliarization, meter, rhyme.
+
+\item \texttt{IDT\_v3\_Emergence.lean} --- 199 theorems. Cocycle algebra,
+curvature, stability, differential calculus.
+
+\item \texttt{IDT\_v3\_Networks.lean} --- 120 theorems. Network topology,
+diffusion dynamics, cascades.
+\end{itemize}
+
+\noindent\textbf{Total: 1,827 theorems across 18 files, all compiling with zero
+\texttt{sorry} axioms.}
+
+\chapter*{Bibliography}
+
+\begin{enumerate}[label={[\arabic*]}]
+\item Aristotle, \emph{Rhetoric}.
+\item Austin, J.L., \emph{How to Do Things with Words}, Oxford, 1962.
+\item Bakhtin, M.M., \emph{The Dialogic Imagination}, University of Texas Press, 1981.
+\item Barthes, R., \emph{S/Z}, Hill and Wang, 1974.
+\item Barthes, R., ``The Death of the Author,'' 1967.
+\item Bourdieu, P., \emph{Distinction: A Social Critique of the Judgement of Taste}, Harvard, 1984.
+\item Crawford, V.\ and Sobel, J., ``Strategic Information Transmission,''
+\emph{Econometrica} 50(6), 1982.
+\item Dawkins, R., \emph{The Selfish Gene}, Oxford, 1976.
+\item Derrida, J., \emph{Of Grammatology}, Johns Hopkins, 1976.
+\item Eco, U., \emph{The Open Work}, Harvard, 1989.
+\item Foucault, M., \emph{The Order of Things}, Vintage, 1970.
+\item Freire, P., \emph{Pedagogy of the Oppressed}, Continuum, 1970.
+\item Gadamer, H.-G., \emph{Truth and Method}, Continuum, 1975.
+\item Gramsci, A., \emph{Selections from the Prison Notebooks}, International, 1971.
+\item Greimas, A.J., \emph{Structural Semantics}, Nebraska, 1983.
+\item Grice, H.P., ``Logic and Conversation,'' in \emph{Syntax and Semantics 3}, 1975.
+\item Harsanyi, J., ``Games with Incomplete Information,'' \emph{Management Science} 14, 1967--68.
+\item Hegel, G.W.F., \emph{Phenomenology of Spirit}, Oxford, 1807/1977.
+\item Heidegger, M., \emph{Being and Time}, Harper \& Row, 1962.
+\item Husserl, E., \emph{Logical Investigations}, Routledge, 1900/2001.
+\item Jakobson, R., ``Closing Statement: Linguistics and Poetics,'' in \emph{Style in Language}, 1960.
+\item Lewis, D., \emph{Convention}, Harvard, 1969.
+\item McKee, R., \emph{Story}, ReganBooks, 1997.
+\item Merleau-Ponty, M., \emph{Phenomenology of Perception}, Routledge, 1945/2012.
+\item Myerson, R., \emph{Game Theory: Analysis of Conflict}, Harvard, 1991.
+\item Nash, J., ``Non-Cooperative Games,'' \emph{Annals of Mathematics} 54(2), 1951.
+\item Osborne, M.\ and Rubinstein, A., \emph{A Course in Game Theory}, MIT Press, 1994.
+\item Peirce, C.S., \emph{Collected Papers}, Harvard, 1931--1958.
+\item Ricoeur, P., \emph{Interpretation Theory}, TCU Press, 1976.
+\item de Saussure, F., \emph{Course in General Linguistics}, Open Court, 1916/1986.
+\item Schelling, T., \emph{The Strategy of Conflict}, Harvard, 1960.
+\item Schleiermacher, F., \emph{Hermeneutics and Criticism}, Cambridge, 1998.
+\item Shannon, C.E., ``A Mathematical Theory of Communication,'' \emph{Bell System Technical Journal}, 1948.
+\item Shklovsky, V., ``Art as Technique,'' 1917.
+\item Spence, M., ``Job Market Signaling,'' \emph{QJE} 87(3), 1973.
+\item von Neumann, J.\ and Morgenstern, O., \emph{Theory of Games and Economic Behavior}, Princeton, 1944.
+\item Wittgenstein, L., \emph{Philosophical Investigations}, Blackwell, 1953.
+\item Wittgenstein, L., \emph{Tractatus Logico-Philosophicus}, Routledge, 1921/1922.
+\end{enumerate}
+
+\end{document}

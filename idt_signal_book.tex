@@ -1,0 +1,344 @@
+\documentclass[11pt,twoside]{book}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{enumerate}
+\usepackage{hyperref}
+\usepackage{cleveref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{epigraph}
+% \usepackage{microtype}  % requires scalable fonts
+
+\geometry{
+  papersize={7in,10in},
+  margin=1in,
+  inner=1.2in,
+  outer=0.8in
+}
+
+% ── Theorem environments ──────────────────────────────────────────────
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{remark}[theorem]{Remark}
+
+\theoremstyle{remark}
+\newtheorem*{notation}{Notation}
+\newtheorem*{convention}{Convention}
+
+% ── Lean 4 code listings ─────────────────────────────────────────────
+\lstdefinelanguage{Lean4}{
+  morekeywords={theorem,lemma,def,structure,class,instance,namespace,
+    section,end,open,import,variable,where,by,have,let,show,calc,
+    match,with,if,then,else,do,return,fun,forall,exists,Prop,Type,
+    sorry,exact,apply,intro,rw,simp,linarith,omega,induction,cases,
+    constructor,refine,obtain,rcases,ext,congr,rfl,trivial,
+    noncomputable,axiom,opaque,set_option,attribute},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[s]{/-}{-/},
+  morestring=[b]",
+  literate=
+    {→}{{$\to$}}1
+    {←}{{$\leftarrow$}}1
+    {↔}{{$\leftrightarrow$}}1
+    {∀}{{$\forall$}}1
+    {∃}{{$\exists$}}1
+    {λ}{{$\lambda$}}1
+    {≤}{{$\leq$}}1
+    {≥}{{$\geq$}}1
+    {≠}{{$\neq$}}1
+    {∧}{{$\wedge$}}1
+    {∨}{{$\vee$}}1
+    {¬}{{$\neg$}}1
+    {∘}{{$\circ$}}1
+    {⊆}{{$\subseteq$}}1
+    {ℕ}{{$\mathbb{N}$}}1
+    {ℤ}{{$\mathbb{Z}$}}1
+    {ℝ}{{$\mathbb{R}$}}1
+}
+
+\lstset{
+  language=Lean4,
+  basicstyle=\small\ttfamily,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red!70!black},
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  numbers=left,
+  numberstyle=\tiny\color{gray},
+  xleftmargin=2em,
+  framexleftmargin=1.5em,
+  captionpos=b,
+  aboveskip=1em,
+  belowskip=1em
+}
+
+% ── Headers ───────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE]{\small\itshape\nouppercase{\leftmark}}
+\fancyhead[RO]{\small\itshape\nouppercase{\rightmark}}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% ── Custom commands ───────────────────────────────────────────────────
+\newcommand{\IS}{\mathcal{I}}          % Ideatic space
+\newcommand{\compose}{\circ}           % Composition operator
+\newcommand{\void}{\mathbf{0}}         % Void element
+\newcommand{\depth}{\operatorname{d}}  % Depth function
+\newcommand{\res}{\sim}                % Resonance relation
+\newcommand{\interp}[2]{#1 \compose #2}  % Interpretation
+\newcommand{\Rep}{\mathcal{R}}         % Repertoire
+\newcommand{\Sig}{\mathcal{S}}         % Signal space
+\newcommand{\Pay}{\pi}                 % Payoff
+
+% ── Title ─────────────────────────────────────────────────────────────
+\title{
+  \vspace{-2cm}
+  {\LARGE\textsc{Signalling Games in}}\\[0.3cm]
+  {\Huge\textbf{Ideatic Diffusion Theory}}\\[0.5cm]
+  {\large\textit{A Formal Theory of Meaning, Interpretation, and Strategic Communication}}\\[1cm]
+  {\normalsize With 364 Machine-Verified Theorems in Lean 4}
+}
+\author{
+  \textsc{Halley Young}\\[0.3cm]
+  \small\textit{University of Pennsylvania}
+}
+\date{\today}
+
+% ══════════════════════════════════════════════════════════════════════
+\begin{document}
+
+\frontmatter
+\maketitle
+
+% ── Epigraph ──────────────────────────────────────────────────────────
+\newpage
+\thispagestyle{empty}
+\vspace*{3cm}
+\begin{center}
+\textit{``The limits of my language mean the limits of my world.''}\\[0.3cm]
+--- Ludwig Wittgenstein, \textit{Tractatus Logico-Philosophicus} (5.6)
+\vspace{2cm}
+
+\textit{``A sign is something which stands to somebody for something\\
+in some respect or capacity.''}\\[0.3cm]
+--- Charles Sanders Peirce, \textit{Collected Papers} (2.228)
+\vspace{2cm}
+
+\textit{``Culture is public because meaning is.''}\\[0.3cm]
+--- Clifford Geertz, \textit{The Interpretation of Cultures}
+\end{center}
+
+% ── Preface ───────────────────────────────────────────────────────────
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+This book develops a formal theory of signalling games within the framework
+of Ideatic Diffusion Theory (IDT). Where classical game theory treats
+signals as tokens in an abstract communication channel, we treat them
+as \emph{ideas}---elements of an ideatic space equipped with composition,
+depth, and resonance. The central insight is that \emph{interpretation
+is composition}: when a receiver with background idea $r$ encounters
+signal $s$, they do not simply ``decode'' it but rather \emph{compose}
+it with their existing understanding, producing the interpretation
+$r \compose s$.
+
+This compositional view of interpretation has profound consequences for
+game theory. Payoffs depend not on the signal itself but on what
+receivers \emph{make of it}---how it composes with their existing repertoire
+of ideas. A signal that is profound to one receiver may be trivial to
+another, not because the signal differs but because their repertoires do.
+This is the formal kernel of hermeneutic theory: meaning is not in the
+text but in the encounter between text and reader.
+
+The book is organized in four parts. Part~I (\Cref{ch:hermeneutic,ch:signalling,ch:costly,ch:activation,ch:misinterp})
+establishes the interpretation framework: repertoires, signalling problems,
+costly signalling, resonance activation, and misinterpretation. Part~II
+(\Cref{ch:equilibrium,ch:persuasion,ch:lossy,ch:echo,ch:multireceiver})
+develops equilibrium theory, persuasion bounds, information loss, echo
+chambers, and multi-receiver signalling. Part~III
+(\Cref{ch:marketplace,ch:matching,ch:coalition,ch:auction,ch:curation})
+studies populations: competition, matching, coalitions, auctions, and
+repertoire curation. Part~IV
+(\Cref{ch:cooperative,ch:bargaining,ch:network,ch:social,ch:synthesis})
+addresses cooperation, bargaining, network diffusion, social choice,
+and offers a synthesis.
+
+Every theorem in this book has been formally verified in Lean~4,
+building on the \texttt{IDT\_Foundations} library. There are no
+\texttt{sorry} axioms. The 364 machine-checked theorems constitute,
+to our knowledge, the first comprehensive formal treatment of signalling
+games in an algebraic theory of ideas.
+
+\vspace{1cm}
+\noindent\textit{Philadelphia, 2026}
+
+% ── Table of Contents ─────────────────────────────────────────────────
+\tableofcontents
+
+% ══════════════════════════════════════════════════════════════════════
+\mainmatter
+
+% ── Part I: The Interpretation Framework ──────────────────────────────
+\part{The Interpretation Framework}
+\label{part:interpretation}
+
+\input{tex_chapters/ch01}
+\input{tex_chapters/ch02}
+\input{tex_chapters/ch03}
+\input{tex_chapters/ch04}
+\input{tex_chapters/ch05}
+
+% ── Part II: Equilibrium and Dynamics ─────────────────────────────────
+\part{Equilibrium and Dynamics}
+\label{part:equilibrium}
+
+\input{tex_chapters/ch06}
+\input{tex_chapters/ch07}
+\input{tex_chapters/ch08}
+\input{tex_chapters/ch09}
+\input{tex_chapters/ch10}
+
+% ── Part III: Populations and Markets ─────────────────────────────────
+\part{Populations and Markets}
+\label{part:populations}
+
+\input{tex_chapters/ch11}
+\input{tex_chapters/ch12}
+\input{tex_chapters/ch13}
+\input{tex_chapters/ch14}
+\input{tex_chapters/ch15}
+
+% ── Part IV: Cooperation, Networks, and Synthesis ─────────────────────
+\part{Cooperation, Networks, and Synthesis}
+\label{part:synthesis}
+
+\input{tex_chapters/ch16}
+\input{tex_chapters/ch17}
+\input{tex_chapters/ch18}
+\input{tex_chapters/ch19}
+\input{tex_chapters/ch20}
+
+% ══════════════════════════════════════════════════════════════════════
+\backmatter
+
+% ── Bibliography ──────────────────────────────────────────────────────
+\begin{thebibliography}{99}
+
+\bibitem{austin1962} Austin, J.L. (1962). \textit{How to Do Things with Words}. Oxford University Press.
+
+\bibitem{bartlett1932} Bartlett, F.C. (1932). \textit{Remembering: A Study in Experimental and Social Psychology}. Cambridge University Press.
+
+\bibitem{bateson1972} Bateson, G. (1972). \textit{Steps to an Ecology of Mind}. University of Chicago Press.
+
+\bibitem{bourdieu1984} Bourdieu, P. (1984). \textit{Distinction: A Social Critique of the Judgement of Taste}. Harvard University Press.
+
+\bibitem{bourdieu1991} Bourdieu, P. (1991). \textit{Language and Symbolic Power}. Harvard University Press.
+
+\bibitem{crawford1982} Crawford, V.P. \& Sobel, J. (1982). Strategic information transmission. \textit{Econometrica}, 50(6), 1431--1451.
+
+\bibitem{dawkins1976} Dawkins, R. (1976). \textit{The Selfish Gene}. Oxford University Press.
+
+\bibitem{derrida1967} Derrida, J. (1967). \textit{Of Grammatology}. Johns Hopkins University Press.
+
+\bibitem{durkheim1893} Durkheim, \'E. (1893). \textit{The Division of Labor in Society}. Free Press.
+
+\bibitem{durkheim1912} Durkheim, \'E. (1912). \textit{The Elementary Forms of Religious Life}. Free Press.
+
+\bibitem{eco1976} Eco, U. (1976). \textit{A Theory of Semiotics}. Indiana University Press.
+
+\bibitem{foucault1972} Foucault, M. (1972). \textit{The Archaeology of Knowledge}. Pantheon Books.
+
+\bibitem{gadamer1960} Gadamer, H.-G. (1960). \textit{Truth and Method}. Continuum.
+
+\bibitem{geertz1973} Geertz, C. (1973). \textit{The Interpretation of Cultures}. Basic Books.
+
+\bibitem{goffman1959} Goffman, E. (1959). \textit{The Presentation of Self in Everyday Life}. Anchor Books.
+
+\bibitem{gramsci1971} Gramsci, A. (1971). \textit{Selections from the Prison Notebooks}. International Publishers.
+
+\bibitem{habermas1984} Habermas, J. (1984). \textit{The Theory of Communicative Action}. Beacon Press.
+
+\bibitem{keats1817} Keats, J. (1817). Letter to George and Tom Keats, 21 December 1817.
+
+\bibitem{levistrauss1962} L\'evi-Strauss, C. (1962). \textit{The Savage Mind}. University of Chicago Press.
+
+\bibitem{levistrauss1969} L\'evi-Strauss, C. (1969). \textit{The Elementary Structures of Kinship}. Beacon Press.
+
+\bibitem{lewis1969} Lewis, D. (1969). \textit{Convention: A Philosophical Study}. Harvard University Press.
+
+\bibitem{mauss1925} Mauss, M. (1925). \textit{The Gift}. Norton.
+
+\bibitem{nash1950} Nash, J. (1950). Equilibrium points in $n$-person games. \textit{PNAS}, 36(1), 48--49.
+
+\bibitem{peirce1931} Peirce, C.S. (1931--1958). \textit{Collected Papers}. Harvard University Press.
+
+\bibitem{rappaport1999} Rappaport, R.A. (1999). \textit{Ritual and Religion in the Making of Humanity}. Cambridge University Press.
+
+\bibitem{ricoeur1976} Ricoeur, P. (1976). \textit{Interpretation Theory: Discourse and the Surplus of Meaning}. Texas Christian University Press.
+
+\bibitem{saussure1916} Saussure, F. de (1916). \textit{Course in General Linguistics}. Open Court.
+
+\bibitem{schelling1960} Schelling, T.C. (1960). \textit{The Strategy of Conflict}. Harvard University Press.
+
+\bibitem{searle1969} Searle, J.R. (1969). \textit{Speech Acts}. Cambridge University Press.
+
+\bibitem{simmel1908} Simmel, G. (1908). \textit{Soziologie}. Duncker \& Humblot.
+
+\bibitem{sosis2003} Sosis, R. (2003). Why aren't we all Hutterites? Costly signaling theory and religious behavior. \textit{Human Nature}, 14(2), 91--127.
+
+\bibitem{spence1973} Spence, M. (1973). Job market signaling. \textit{QJE}, 87(3), 355--374.
+
+\bibitem{sperber1996} Sperber, D. (1996). \textit{Explaining Culture: A Naturalistic Approach}. Blackwell.
+
+\bibitem{sperberw1986} Sperber, D. \& Wilson, D. (1986). \textit{Relevance: Communication and Cognition}. Blackwell.
+
+\bibitem{turner1969} Turner, V. (1969). \textit{The Ritual Process: Structure and Anti-Structure}. Aldine.
+
+\bibitem{veblen1899} Veblen, T. (1899). \textit{The Theory of the Leisure Class}. Macmillan.
+
+\bibitem{vygotsky1978} Vygotsky, L.S. (1978). \textit{Mind in Society}. Harvard University Press.
+
+\bibitem{wittgenstein1953} Wittgenstein, L. (1953). \textit{Philosophical Investigations}. Blackwell.
+
+\bibitem{zahavi1975} Zahavi, A. (1975). Mate selection---a selection for a handicap. \textit{Journal of Theoretical Biology}, 53(1), 205--214.
+
+\end{thebibliography}
+
+% ── Index placeholder ─────────────────────────────────────────────────
+\chapter*{Index of Theorems}
+\addcontentsline{toc}{chapter}{Index of Theorems}
+
+The following theorems are formally verified in Lean~4 with zero
+\texttt{sorry} axioms. Each theorem name links to the corresponding
+Lean source file in the \texttt{FormalAnthropology/} directory.
+
+\begin{small}
+\begin{enumerate}
+\item[\textbf{Ch.~1}] \texttt{total\_hermeneutic\_bound}, \texttt{max\_interp\_depth\_bound}, \texttt{silence\_is\_transparent}, \texttt{blank\_receiver}, \texttt{negative\_capability}, \texttt{durkheimian\_consensus}, \texttt{mythical\_transformation}, \texttt{turners\_communitas}, \texttt{bartletts\_serial\_reproduction}, \texttt{telephone\_depth}, \texttt{resonant\_transmission\_lines}, \texttt{void\_is\_unpersuasive}, \texttt{interpretation\_conserves\_count}, \texttt{durkheims\_division\_of\_labor}, \texttt{silence\_preserves\_depthSum}, \texttt{three\_stage\_telephone}
+
+\item[\textbf{Ch.~2--5}] See \texttt{IDT\_Signal\_Ch02--05.lean}
+\item[\textbf{Ch.~6--10}] See \texttt{IDT\_Signal\_Ch06--10.lean}
+\item[\textbf{Ch.~11--15}] See \texttt{IDT\_Signal\_Ch11--15.lean}
+\item[\textbf{Ch.~16--20}] See \texttt{IDT\_Signal\_Ch16--20.lean}
+\end{enumerate}
+\end{small}
+
+\end{document}

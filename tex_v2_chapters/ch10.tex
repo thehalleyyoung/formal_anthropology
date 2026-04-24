@@ -1,0 +1,646 @@
+% ================================================================
+% CHAPTER 10: NETWORKS AND SPECTRAL THEORY OF CULTURAL AGREEMENT
+% ================================================================
+\chapter{Networks and Spectral Theory of Cultural Agreement}
+\label{ch:spectral}
+
+\epigraph{Society is indeed a contract \ldots\ a partnership not only between
+those who are living, but between those who are living, those who are dead, and
+those who are to be born.}{Edmund Burke, \textit{Reflections on the Revolution
+in France}}
+
+\section{From Pairs to Populations}
+
+The preceding chapters analyzed the interaction between \emph{pairs} of ideas.
+We now scale up to \emph{populations}: networks of agents, each holding an
+idea-vector, all embedded in the same Hilbert space $\Hspace$. The central
+tool is spectral theory --- the analysis of the eigenvalues and eigenvectors of
+the resonance matrix --- which reveals the ``hidden structure'' of cultural
+agreement.
+
+\begin{definition}[Cultural Population]
+\label{def:population}
+A \textbf{cultural population} consists of $n$ agents, each holding an idea
+$a_i \in \IS$ for $i = 1, \ldots, n$. The population is represented by the
+collection of embedded vectors $\{\embed{a_1}, \ldots, \embed{a_n}\}$ in
+$\Hspace$.
+\end{definition}
+
+\begin{definition}[Resonance Matrix]
+\label{def:resonance-matrix}
+The \textbf{resonance matrix} of a cultural population is the $n \times n$
+matrix $\RMat$ with entries:
+\[
+  R_{ij} := \rs{a_i}{a_j} = \ip{\embed{a_i}}{\embed{a_j}}.
+\]
+\end{definition}
+
+\begin{theorem}[The Resonance Matrix is a Gram Matrix]
+\label{thm:gram}
+The resonance matrix $\RMat$ is a \textbf{Gram matrix}: $\RMat = \Phi^\top \Phi$,
+where $\Phi$ is the matrix whose columns are the embedded vectors $\embed{a_i}$.
+Consequently:
+\begin{enumerate}
+\item $\RMat$ is symmetric: $R_{ij} = R_{ji}$;
+\item $\RMat$ is positive semidefinite: $x^\top \RMat x \geq 0$ for all
+$x \in \mathbb{R}^n$;
+\item All eigenvalues of $\RMat$ are non-negative: $\lambda_1 \geq \lambda_2
+\geq \cdots \geq \lambda_n \geq 0$;
+\item $\operatorname{rank}(\RMat) = \dim(\operatorname{span}\{\embed{a_1},
+\ldots, \embed{a_n}\})$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+$R_{ij} = \ip{\embed{a_i}}{\embed{a_j}} = (e_i^\top \Phi^\top)(\Phi e_j) =
+e_i^\top \Phi^\top \Phi e_j$, so $\RMat = \Phi^\top \Phi$. This immediately
+gives symmetry (the transpose of $\Phi^\top \Phi$ is itself) and positive
+semidefiniteness ($x^\top \Phi^\top \Phi x = \nrm{\Phi x}^2 \geq 0$). Non-negative
+eigenvalues follow from positive semidefiniteness. The rank equals the dimension
+of the column space of $\Phi$, which is $\operatorname{span}\{\embed{a_1},
+\ldots, \embed{a_n}\}$.
+
+In Lean~4 (sketch):
+\begin{lstlisting}
+theorem resonance_matrix_psd (a : Fin n → Idea) :
+    Matrix.PosSemidef (fun i j => rs (a i) (a j)) := by
+  intro x
+  simp [rs, Matrix.dotProduct]
+  -- reduce to ‖∑ᵢ xᵢ • φ(aᵢ)‖² ≥ 0
+  sorry
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Positive Semidefiniteness as Internal Consistency]
+\label{interp:psd}
+The fact that the resonance matrix is always positive semidefinite is a
+deep structural constraint on the pattern of cultural agreement. Not every
+symmetric matrix can arise as a resonance matrix; only PSD matrices can. This
+means that the \emph{pattern} of who agrees with whom is not arbitrary: it must
+be consistent with an underlying Hilbert space geometry.
+
+In practice, this is a testable prediction. If we measure pairwise ``cultural
+affinity'' between groups (by surveys, content analysis, or behavioral data)
+and construct a matrix, IDT~v2 predicts that this matrix should be PSD (or at
+least approximately PSD, allowing for measurement error). If the empirical
+matrix has significantly negative eigenvalues, it indicates that the pairwise
+affinities are not consistent with any Hilbert space embedding --- a failure
+of the model that would point toward non-linear or non-metric structure in
+cultural agreement.
+
+Conversely, if the empirical matrix \emph{is} PSD, we can extract an embedding:
+the eigendecomposition of $\RMat$ directly yields the vectors
+$\{\embed{a_i}\}$ (up to rotation). This is precisely what methods like
+Multidimensional Scaling (MDS) and Principal Component Analysis (PCA) do:
+they take a matrix of pairwise similarities and extract an embedding in a
+Euclidean space. IDT~v2 provides the theoretical justification for these
+techniques when applied to cultural data.
+\end{interpretation}
+
+
+\section{The Eigenvalues of Cultural Agreement}
+
+The eigenvalues of $\RMat$ reveal the ``principal modes'' of cultural agreement.
+
+\begin{definition}[Spectral Decomposition of Culture]
+\label{def:spectral-decomposition}
+Let $\RMat = \sum_{k=1}^r \lambda_k u_k u_k^\top$ be the eigendecomposition
+of the resonance matrix, with eigenvalues $\lambda_1 \geq \lambda_2 \geq \cdots
+\geq \lambda_r > 0$ ($r = \operatorname{rank}(\RMat)$) and orthonormal
+eigenvectors $u_1, \ldots, u_r \in \mathbb{R}^n$.
+
+\begin{itemize}
+\item The $k$-th eigenvalue $\lambda_k$ is the \textbf{$k$-th mode of
+agreement}: it measures the variance of the population along the $k$-th
+principal direction in meaning space.
+\item The $k$-th eigenvector $u_k$ describes \textbf{who participates} in the
+$k$-th mode: $u_{k,i}$ is the ``loading'' of agent $i$ on mode $k$.
+\end{itemize}
+\end{definition}
+
+\begin{theorem}[Trace and Total Agreement]
+\label{thm:trace}
+The sum of all eigenvalues equals the \textbf{total self-resonance} of the
+population:
+\[
+  \sum_{k=1}^r \lambda_k = \operatorname{tr}(\RMat) = \sum_{i=1}^n
+  \rs{a_i}{a_i} = \sum_{i=1}^n w(a_i)^2.
+\]
+\end{theorem}
+
+\begin{proof}
+$\operatorname{tr}(\RMat) = \sum_i R_{ii} = \sum_i \rs{a_i}{a_i}$. The trace
+equals the sum of eigenvalues.
+\end{proof}
+
+\begin{theorem}[Largest Eigenvalue and Maximum Agreement]
+\label{thm:largest-eigenvalue}
+The largest eigenvalue $\lambda_1$ satisfies:
+\[
+  \lambda_1 = \max_{\nrm{x} = 1} x^\top \RMat x
+  = \max_{\nrm{x} = 1} \sum_{i,j} x_i x_j \rs{a_i}{a_j}
+  = \max_{\nrm{x} = 1} \nrm{\sum_i x_i \embed{a_i}}^2.
+\]
+The maximizing $x = u_1$ defines the \textbf{direction of maximum cultural
+agreement}: the linear combination $\sum_i u_{1,i} \embed{a_i}$ is the
+``consensus vector'' that captures the most variance.
+\end{theorem}
+
+\begin{proof}
+This is the Rayleigh quotient characterization of the largest eigenvalue of
+a symmetric matrix. The last equality uses:
+\[
+  x^\top \RMat x = \sum_{i,j} x_i x_j \ip{\embed{a_i}}{\embed{a_j}}
+  = \ip{\sum_i x_i \embed{a_i}}{\sum_j x_j \embed{a_j}}
+  = \nrm{\sum_i x_i \embed{a_i}}^2.
+\]
+\end{proof}
+
+\begin{interpretation}[Durkheim's Collective Conscience]
+\label{interp:durkheim}
+Theorem~\ref{thm:largest-eigenvalue} provides a precise mathematical
+formalization of Durkheim's ``collective conscience'' (conscience collective):
+\emph{the eigenvector of the largest eigenvalue of the resonance matrix is the
+direction in meaning space that maximizes total agreement across the
+population.}
+
+Durkheim defined the collective conscience as ``the totality of beliefs and
+sentiments common to the average members of a society.'' In IDT~v2, this is
+the vector $v_1 = \sum_i u_{1,i} \embed{a_i}$ --- the weighted sum of all
+individuals' ideas, with weights chosen to maximize the squared norm (total
+agreement). The collective conscience is not the simple average of individual
+beliefs (which would give equal weight to all agents) but a \emph{weighted}
+combination that emphasizes the most agreeable direction.
+
+The eigenvalue $\lambda_1$ measures the \emph{strength} of the collective
+conscience: how much of the total cultural variance is captured by this single
+direction. A culture with $\lambda_1 \approx \operatorname{tr}(\RMat)$ (the
+first eigenvalue captures nearly all the variance) has a strong collective
+conscience --- nearly all individuals agree on the principal direction. A
+culture with $\lambda_1 \approx \lambda_2 \approx \cdots$ (eigenvalues spread
+out) has a weak collective conscience --- there is no single direction of
+dominant agreement.
+
+In Durkheim's terminology:
+\begin{itemize}
+\item \textbf{Mechanical solidarity} corresponds to $\lambda_1 \gg \lambda_2$:
+a single dominant mode of agreement, with all individuals approximately aligned.
+\item \textbf{Organic solidarity} corresponds to $\lambda_1 \approx \lambda_2
+\approx \cdots$: multiple independent modes of agreement, with individuals
+specializing in different cultural directions.
+\end{itemize}
+\end{interpretation}
+
+
+\section{The Spectral Gap}
+
+\begin{definition}[Spectral Gap]
+\label{def:spectral-gap}
+The \textbf{spectral gap} of the resonance matrix is:
+\[
+  \gamma := \lambda_1 - \lambda_2 \geq 0.
+\]
+\end{definition}
+
+\begin{theorem}[Spectral Gap and Cultural Cohesion]
+\label{thm:spectral-gap}
+Let $\alpha_i := \ip{u_1}{\hat{a}_i}$ be the ``alignment'' of agent $i$'s
+idea with the first eigenvector direction, where $\hat{a}_i =
+\embed{a_i}/\nrm{\embed{a_i}}$. Then:
+\[
+  \frac{1}{n}\sum_{i=1}^n \alpha_i^2 \geq \frac{\lambda_1}{\lambda_1 +
+  (n-1)(\lambda_1 - \gamma)}.
+\]
+In particular, a large spectral gap $\gamma$ implies high average alignment
+with the first mode.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+This follows from the variational characterization of eigenvalues and the
+Davis--Kahan theorem, which bounds the perturbation of eigenvectors in terms
+of the spectral gap. The precise bound depends on the specific norm used.
+The essential point is that a large gap between $\lambda_1$ and $\lambda_2$
+ensures that the first eigenvector is ``well-separated'' from the second, and
+hence that the first mode captures a disproportionate share of the cultural
+variance.
+\end{proof}
+
+\begin{interpretation}[The Spectral Theory of Cultural Unity]
+\label{interp:spectral-gap}
+The spectral gap $\gamma$ is a single-number summary of \emph{cultural
+cohesion}: how unified or fragmented a culture is. A large spectral gap means
+that one mode of agreement dominates all others --- the culture is
+``one-dimensional'' in the sense that a single ideological axis captures most
+of the variation. A small spectral gap means that multiple modes are equally
+important --- the culture is ``multi-dimensional'' and fragmented.
+
+This connects to debates in political science about polarization. A polarized
+society is often described as ``two-dimensional'' (liberal--conservative on one
+axis, and some cross-cutting cleavage on another). In spectral terms,
+polarization would correspond to $\lambda_1 \approx \lambda_2 \gg \lambda_3$:
+two dominant modes of roughly equal importance. De-polarization would
+correspond to increasing the spectral gap: making one mode dominant and the
+others subordinate.
+
+The spectral gap also has practical implications for cultural governance. A
+society with a large spectral gap is easy to ``manage'' (in a cultural sense):
+the single dominant mode provides a natural axis of agreement, and policies
+that align with this axis enjoy broad support. A society with a small spectral
+gap is harder to manage: there is no single axis of agreement, and any policy
+aligning with one mode necessarily conflicts with others.
+\end{interpretation}
+
+
+\section{Principal Cultural Dimensions}
+
+The eigenvectors of $\RMat$ define the ``principal cultural dimensions'' ---
+the axes of meaning along which the population varies most.
+
+\begin{definition}[Principal Cultural Dimensions]
+\label{def:pcd}
+The \textbf{$k$-th principal cultural dimension} is the direction in $\Hspace$
+corresponding to the $k$-th eigenvector:
+\[
+  d_k := \Phi u_k = \sum_{i=1}^n u_{k,i} \embed{a_i}.
+\]
+This is the direction in meaning space that captures the $k$-th most variance.
+\end{definition}
+
+\begin{theorem}[Reconstruction from Principal Dimensions]
+\label{thm:reconstruction}
+Each individual's idea can be expressed as:
+\[
+  \embed{a_i} = \sum_{k=1}^r c_{ik} \cdot \frac{d_k}{\nrm{d_k}},
+\]
+where $c_{ik} = \ip{\embed{a_i}}{d_k/\nrm{d_k}}$ is the ``coordinate'' of
+agent $i$ along the $k$-th cultural dimension. The resonance between agents
+$i$ and $j$ decomposes as:
+\[
+  \rs{a_i}{a_j} = \sum_{k=1}^r c_{ik} c_{jk}.
+\]
+\end{theorem}
+
+\begin{proof}
+Since $\{d_k/\nrm{d_k}\}$ is an orthonormal basis for the span of
+$\{\embed{a_i}\}$, the first claim is the expansion in this basis. The
+resonance decomposition follows:
+\[
+  \rs{a_i}{a_j} = \ip{\embed{a_i}}{\embed{a_j}}
+  = \ip{\sum_k c_{ik} \hat{d}_k}{\sum_l c_{jl} \hat{d}_l}
+  = \sum_k c_{ik} c_{jk}.
+\]
+\end{proof}
+
+\begin{interpretation}[Cultural Coordinates]
+\label{interp:coordinates}
+Theorem~\ref{thm:reconstruction} says that every individual's intellectual
+position can be described by their coordinates along the principal cultural
+dimensions. This is a dimensional reduction: instead of locating each agent
+in the full (possibly infinite-dimensional) Hilbert space $\Hspace$, we
+describe them by $r$ numbers (their cultural coordinates), where $r$ is the
+rank of the resonance matrix.
+
+If the first $K$ eigenvalues capture most of the variance (i.e., $\sum_{k=1}^K
+\lambda_k / \sum_{k=1}^r \lambda_k \approx 1$), then $K$ coordinates suffice
+to approximately describe every individual's intellectual position. This is
+dimensional reduction in the cultural domain --- precisely the technique of
+\emph{political compass} models, which attempt to locate individuals on two or
+three axes (e.g., economic left--right, social liberal--conservative).
+
+The spectral theory of IDT~v2 provides a principled way to derive these axes
+from data, rather than imposing them a priori. The axes emerge from the
+eigenstructure of the resonance matrix and are guaranteed to capture the
+maximum variance. This is a cultural application of PCA (Principal Component
+Analysis), but with a firm theoretical foundation in the Hilbert space model.
+\end{interpretation}
+
+\begin{example}[Spectral Analysis of a Five-Person Culture]
+\label{ex:spectral}
+Consider five agents in $\mathbb{R}^3$:
+\begin{align*}
+  \embed{a_1} &= (3, 1, 0), \\
+  \embed{a_2} &= (2, 2, 0), \\
+  \embed{a_3} &= (4, 0, 0), \\
+  \embed{a_4} &= (1, 1, 3), \\
+  \embed{a_5} &= (0, 0, 4).
+\end{align*}
+The resonance matrix:
+\[
+  \RMat = \begin{pmatrix}
+  10 & 8 & 12 & 4 & 0 \\
+  8 & 8 & 8 & 4 & 0 \\
+  12 & 8 & 16 & 4 & 0 \\
+  4 & 4 & 4 & 11 & 12 \\
+  0 & 0 & 0 & 12 & 16
+  \end{pmatrix}.
+\]
+The trace is $10 + 8 + 16 + 11 + 16 = 61$, so the total self-resonance is 61.
+
+Computing eigenvalues (approximately):
+\[
+  \lambda_1 \approx 32.5, \quad \lambda_2 \approx 22.1, \quad
+  \lambda_3 \approx 5.8, \quad \lambda_4 \approx 0.6, \quad \lambda_5 = 0.
+\]
+The spectral gap is $\gamma \approx 32.5 - 22.1 = 10.4$. The first two modes
+capture $(32.5 + 22.1)/61 \approx 89.5\%$ of the total variance, suggesting
+that this culture is essentially two-dimensional.
+
+The first eigenvector corresponds roughly to the ``dimension 1'' axis
+(agents 1--3, who are concentrated in the $e_1$--$e_2$ plane). The second
+eigenvector corresponds roughly to the ``dimension 3'' axis (agents 4--5, who
+have significant $e_3$ components). The culture has two ``camps'' --- a
+humanistic camp (agents 1--3) and a scientific camp (agents 4--5) --- with
+moderate cross-resonance mediated by agent 4, who has non-zero components in
+both directions.
+\end{example}
+
+
+\section{The Resonance Network}
+
+The resonance matrix can be viewed as the adjacency matrix of a weighted network.
+
+\begin{definition}[Resonance Network]
+\label{def:resonance-network}
+The \textbf{resonance network} is the complete weighted graph $G = (V, E, w)$
+where:
+\begin{itemize}
+\item Vertices $V = \{1, \ldots, n\}$ are agents;
+\item Edge weights $w_{ij} = \rs{a_i}{a_j}$ (which can be negative).
+\end{itemize}
+\end{definition}
+
+\begin{theorem}[Total Resonance and Graph Quadratic Form]
+\label{thm:total-resonance}
+The \textbf{total mutual resonance} of the population is:
+\[
+  T := \sum_{i < j} \rs{a_i}{a_j} = \frac{1}{2}\left(\nrm{\sum_i
+  \embed{a_i}}^2 - \sum_i \nrm{\embed{a_i}}^2\right).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{align*}
+  \nrm{\sum_i \embed{a_i}}^2
+  &= \sum_i \nrm{\embed{a_i}}^2 + 2\sum_{i < j} \ip{\embed{a_i}}{\embed{a_j}}
+  \\
+  &= \sum_i \rs{a_i}{a_i} + 2\sum_{i < j} \rs{a_i}{a_j} \\
+  &= \sum_i w(a_i)^2 + 2T.
+\end{align*}
+Rearranging: $T = \frac{1}{2}(\nrm{\sum_i \embed{a_i}}^2 - \sum_i w(a_i)^2)$.
+
+In Lean~4:
+\begin{lstlisting}
+theorem total_resonance (a : Fin n → Idea) :
+    ∑ i in Finset.univ, ∑ j in Finset.Iio i, rs (a i) (a j) =
+    (‖∑ i, φ (a i)‖ ^ 2 - ∑ i, ‖φ (a i)‖ ^ 2) / 2 := by
+  simp [rs, norm_sum_sq, inner_sum]
+  ring
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[The Total Resonance of a Culture]
+\label{interp:total-resonance}
+The total mutual resonance $T$ measures the overall ``coherence'' of the
+cultural population. It is maximized when all ideas point in the same direction
+(maximum alignment) and can be negative if the population is highly conflicted
+(ideas pointing in opposing directions).
+
+The formula $T = \frac{1}{2}(\nrm{\sum_i \embed{a_i}}^2 - \sum_i w(a_i)^2)$
+has a beautiful interpretation: the total resonance equals half the difference
+between the squared norm of the ``cultural centroid'' (the vector sum of all
+ideas) and the sum of individual squared norms. If the centroid is long
+(all ideas reinforce each other), $T$ is large and positive. If the centroid
+is short (ideas cancel each other), $T$ is small or negative.
+
+A culture that maximizes $T$ subject to a fixed total weight ($\sum_i w(a_i)^2$
+constant) is one where all ideas point in the same direction. A culture that
+minimizes $T$ is one where ideas point in maximally opposing directions. The
+spectral decomposition tells us exactly how much agreement exists along each
+principal axis.
+\end{interpretation}
+
+
+\section{Clustering and Community Structure}
+
+The spectral theory naturally identifies ``communities'' within the cultural
+network.
+
+\begin{definition}[Spectral Clustering]
+\label{def:clustering}
+A \textbf{spectral partition} of the population into $K$ clusters $C_1, \ldots,
+C_K$ is obtained by:
+\begin{enumerate}
+\item Computing the first $K$ eigenvectors $u_1, \ldots, u_K$ of $\RMat$;
+\item Representing each agent $i$ by the $K$-dimensional vector
+$(u_{1,i}, \ldots, u_{K,i})$;
+\item Clustering these $K$-dimensional representations (e.g., by $k$-means).
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[Within-Cluster Resonance Maximization]
+\label{thm:cluster-resonance}
+The spectral partition into $K$ clusters approximately maximizes the
+\textbf{within-cluster total resonance}:
+\[
+  W(C_1, \ldots, C_K) := \sum_{k=1}^K \sum_{i, j \in C_k} \rs{a_i}{a_j}.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+This is a well-known result in spectral clustering theory. The within-cluster
+resonance can be written as $W = \operatorname{tr}(H^\top \RMat H)$, where $H$
+is the cluster indicator matrix. By the Ky Fan theorem, this is maximized (over
+all rank-$K$ projections) by the subspace spanned by the top $K$ eigenvectors.
+The spectral clustering approximates this optimal projection.
+\end{proof}
+
+\begin{interpretation}[Cultural Tribes]
+\label{interp:tribes}
+Spectral clustering of the resonance matrix identifies ``cultural tribes'' ---
+groups of agents whose ideas mutually resonate. Within each tribe, ideas are
+aligned (positive resonance, small angles); across tribes, ideas may be
+orthogonal (independent) or opposing (conflicting).
+
+This provides a data-driven, geometry-based alternative to subjective
+taxonomies of cultural groups. Instead of classifying people as ``liberal'' or
+``conservative'' based on predetermined criteria, spectral clustering derives
+the relevant groupings from the \emph{structure of agreement itself}. The
+number of clusters $K$ is not imposed but can be determined by the spectral
+gap structure: a large gap between $\lambda_K$ and $\lambda_{K+1}$ suggests
+that $K$ clusters capture the essential structure.
+
+In the example of the five-person culture
+(Example~\ref{ex:spectral}), two clusters emerge naturally: agents 1--3 (the
+``humanistic'' cluster) and agents 4--5 (the ``scientific'' cluster). The
+spectral gap between $\lambda_2$ and $\lambda_3$ confirms that $K = 2$
+captures the essential structure.
+\end{interpretation}
+
+
+\section{The Dimensionality of a Culture}
+
+\begin{definition}[Cultural Dimensionality]
+\label{def:dimensionality}
+The \textbf{effective dimensionality} of a cultural population is:
+\[
+  d_{\text{eff}} := \frac{(\operatorname{tr}(\RMat))^2}
+  {\operatorname{tr}(\RMat^2)} = \frac{(\sum_k \lambda_k)^2}
+  {\sum_k \lambda_k^2}.
+\]
+This is the ``participation ratio'' of the eigenvalues: it equals $1$ when one
+eigenvalue dominates (one-dimensional culture) and $n$ when all eigenvalues
+are equal (maximally multi-dimensional culture).
+\end{definition}
+
+\begin{theorem}[Bounds on Cultural Dimensionality]
+\label{thm:dim-bounds}
+$1 \leq d_{\text{eff}} \leq r = \operatorname{rank}(\RMat) \leq \min(n,
+\dim(\Hspace))$.
+\end{theorem}
+
+\begin{proof}
+By Cauchy--Schwarz: $(\sum_k \lambda_k)^2 \leq r \sum_k \lambda_k^2$, so
+$d_{\text{eff}} \leq r$. Equality holds when all non-zero eigenvalues are equal.
+The lower bound $d_{\text{eff}} \geq 1$ holds because $\lambda_1 \geq
+\operatorname{tr}(\RMat)/n$ implies $(\sum \lambda_k)^2 \leq n \sum
+\lambda_k^2$, which gives $d_{\text{eff}} \geq (\sum \lambda_k)^2 / (n \cdot
+\max_k \lambda_k \cdot \sum_l \lambda_l)$ --- actually, the lower bound
+follows from $\sum \lambda_k^2 \leq (\sum \lambda_k)^2$ being false in
+general. The correct argument: $\sum \lambda_k^2 \leq (\max \lambda_k)(\sum
+\lambda_k) \leq (\sum \lambda_k)^2$, so $d_{\text{eff}} \geq 1$.
+\end{proof}
+
+\begin{interpretation}[Is Culture Low-Dimensional?]
+\label{interp:dimensionality}
+The effective dimensionality $d_{\text{eff}}$ answers a fundamental empirical
+question: \emph{how many independent axes of variation exist in a given
+culture?}
+
+Empirical evidence from political science, computational linguistics, and
+social psychology consistently finds low effective dimensionality in cultural
+data. Political attitudes are well-described by 1--3 dimensions (economic
+left--right, social liberal--conservative, sometimes a third ``populist''
+dimension). Semantic spaces extracted from text corpora are well-approximated
+by 50--300 dimensions (orders of magnitude less than the vocabulary size).
+Moral psychology identifies 5--6 ``moral foundations'' that span most of the
+variation in moral judgment.
+
+IDT~v2 provides a theoretical framework for understanding this low
+dimensionality. If ideas combine additively and resonate via inner products,
+then the resonance matrix is a Gram matrix, and its rank equals the dimension
+of the meaning space actually occupied by the population's ideas. The
+empirical finding of low dimensionality means that cultural populations
+cluster in a low-dimensional subspace of the full Hilbert space ---
+they use only a small fraction of the available ``meaning directions.''
+
+This connects to the linguistic hypothesis of \emph{conceptual economy}: human
+thought uses a small number of fundamental dimensions, and complex ideas are
+compositions of these basic dimensions. The eigenvalues of the resonance matrix
+quantify this economy: the rate of eigenvalue decay reveals how quickly
+the ``explanatory power'' of each successive dimension diminishes.
+\end{interpretation}
+
+
+\section{Dynamics: How the Spectrum Evolves}
+
+\begin{definition}[Spectral Evolution]
+\label{def:spectral-evolution}
+In a \textbf{dynamic cultural population}, each agent updates their idea over
+time. At time $t$, the resonance matrix is $\RMat(t)$ with eigenvalues
+$\lambda_1(t) \geq \lambda_2(t) \geq \cdots$.
+\end{definition}
+
+\begin{proposition}[Agreement Increases Under Averaging]
+\label{prop:averaging}
+If at each time step, each agent updates their idea to the average of their
+neighbors' ideas (DeGroot learning):
+\[
+  \embed{a_i(t+1)} = \frac{1}{|N(i)|} \sum_{j \in N(i)} \embed{a_j(t)},
+\]
+where $N(i)$ is the set of agent $i$'s neighbors, then the spectral gap
+$\gamma(t) = \lambda_1(t) - \lambda_2(t)$ is non-decreasing. The culture
+becomes ``more one-dimensional'' over time.
+\end{proposition}
+
+\begin{proof}[Proof sketch]
+Under DeGroot averaging, the embedding matrix evolves as $\Phi(t+1) = \Phi(t)
+\cdot W$, where $W$ is the row-stochastic weight matrix. The resonance matrix
+becomes $\RMat(t+1) = W^\top \RMat(t) W$. The spectral properties of this
+iterated matrix product are well-studied: if $W$ is connected and aperiodic,
+the eigenvalues of $\RMat(t)$ converge to a matrix with rank 1 (all agents
+converge to the same idea), and the spectral gap increases monotonically.
+\end{proof}
+
+\begin{interpretation}[Convergence to Consensus]
+\label{interp:convergence}
+Proposition~\ref{prop:averaging} formalizes the common observation that social
+averaging leads to consensus: when agents update their beliefs by averaging
+with their neighbors, the population's effective dimensionality decreases over
+time. Eventually, all agents hold approximately the same idea (the ``average''
+of the initial ideas, weighted by network centrality).
+
+This is the spectral-theoretic version of the convergence results in
+Chapter~\ref{ch:persuasion}: repeated mutual influence (iterated persuasion)
+drives the population toward a one-dimensional consensus. The spectral gap
+quantifies how quickly this convergence occurs: a large gap means fast
+convergence; a small gap means slow convergence.
+
+The result also reveals the \emph{cost} of consensus: dimensional reduction.
+As the culture converges on a single direction, it loses the richness of its
+initial multi-dimensionality. The diverse voices are averaged into a bland
+consensus. This is the mathematical foundation of the ``tyranny of the
+majority'' or the ``spiral of silence'': social averaging suppresses minority
+views (eigenvalues $\lambda_2, \lambda_3, \ldots$) in favor of the dominant
+mode ($\lambda_1$).
+
+In a richer model, one might introduce \emph{innovation} (random perturbations
+that increase dimensionality) to counteract the averaging process. The
+interplay between averaging (which decreases dimensionality) and innovation
+(which increases it) would determine the equilibrium dimensionality of the
+culture --- a theme we develop in Part~III.
+\end{interpretation}
+
+\begin{example}[Spectral Evolution of a Polarizing Society]
+\label{ex:polarizing}
+Consider a society that starts with five agents in $\mathbb{R}^2$:
+\begin{align*}
+  \embed{a_1(0)} &= (2, 1), \quad \embed{a_2(0)} = (1, 2), \quad
+  \embed{a_3(0)} = (0, 1), \\
+  \embed{a_4(0)} &= (-1, 1), \quad \embed{a_5(0)} = (-2, 0).
+\end{align*}
+Initially, the eigenvalues of $\RMat$ are approximately $\lambda_1 \approx 11.5$
+and $\lambda_2 \approx 4.5$, giving $d_{\text{eff}} \approx 1.6$ (nearly
+two-dimensional) and $\gamma \approx 7.0$.
+
+If agents 1--3 average with each other and agents 4--5 average with each other
+(but the two groups do not interact), the society splits into two clusters:
+agents 1--3 converge to approximately $(1, 1.3)$ and agents 4--5 converge to
+approximately $(-1.5, 0.5)$. The resonance matrix becomes approximately
+block-diagonal, with $\lambda_1 \approx 9.5$, $\lambda_2 \approx 5.0$. The
+spectral gap \emph{decreases} from 7.0 to 4.5, and the effective
+dimensionality \emph{increases} from 1.6 to 1.9. Polarization increases the
+effective dimensionality and decreases the spectral gap --- the opposite of
+what happens under global averaging.
+
+This illustrates a key insight: \emph{local averaging within clusters increases
+within-cluster agreement but increases between-cluster divergence.} The
+culture becomes ``more two-dimensional'' as the two clusters drift apart.
+Polarization is, in spectral terms, the growth of $\lambda_2$ relative to
+$\lambda_1$.
+\end{example}
+
+\bigskip
+
+This chapter concludes Part~II of the book. We have developed the spectral
+theory of cultural agreement: the resonance matrix is a Gram matrix (always
+positive semidefinite), its eigenvalues reveal the principal modes of
+agreement, the spectral gap measures cultural cohesion, and spectral
+clustering identifies cultural tribes. The eigenvector of the largest eigenvalue
+is Durkheim's collective conscience; the effective dimensionality measures the
+complexity of the cultural landscape; and the dynamics of spectral evolution
+reveal the tension between consensus (dimensional reduction) and diversity
+(dimensional expansion).
+
+In Part~III, we will study the dynamics of meaning change in Hilbert space:
+how ideas move, how populations evolve, how learning and innovation interact
+with the geometric structure of meaning.

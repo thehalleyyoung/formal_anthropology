@@ -1,0 +1,202 @@
+% ================================================================
+% THE MATH OF IDEAS, Volume V-B:
+% Deep Power, Knowledge, and Ethics —
+% Paradoxes and Impossibilities
+% ================================================================
+\documentclass[11pt,openany]{book}
+
+% --- Geometry ---
+\usepackage[margin=1in]{geometry}
+
+% --- Fonts and encoding ---
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% --- Math ---
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+
+% --- Graphics and colors ---
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+
+% --- Cross-referencing ---
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=OliveGreen,urlcolor=BrickRed]{hyperref}
+\usepackage{cleveref}
+
+% --- Code listings for Lean ---
+\usepackage{listings}
+\lstdefinelanguage{Lean4}{
+  morekeywords={theorem,lemma,def,class,structure,instance,where,
+    variable,import,open,namespace,end,section,
+    by,exact,intro,induction,cases,rfl,simp,omega,calc,have,show,
+    apply,rw,push_neg,with,generalizing,let,match,if,then,else,
+    return,do,for,in,private,noncomputable,set_option,unfold,linarith,
+    nlinarith,ring,refine,constructor},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[n]{/-}{-/},
+  morestring=[b]",
+  literate={→}{{$\to$}}1 {←}{{$\leftarrow$}}1 {↦}{{$\mapsto$}}1
+           {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {λ}{{$\lambda$}}1
+           {≤}{{$\leq$}}1 {≥}{{$\geq$}}1 {≠}{{$\neq$}}1
+           {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1 {¬}{{$\neg$}}1
+           {∈}{{$\in$}}1 {∉}{{$\notin$}}1 {⊆}{{$\subseteq$}}1
+           {ℕ}{{$\mathbb{N}$}}1 {ℤ}{{$\mathbb{Z}$}}1 {ℝ}{{$\mathbb{R}$}}1
+           {∘}{{$\circ$}}1 {×}{{$\times$}}1
+}
+\lstset{
+  language=Lean4,
+  basicstyle=\small\ttfamily,
+  keywordstyle=\color{MidnightBlue}\bfseries,
+  commentstyle=\color{OliveGreen}\itshape,
+  stringstyle=\color{BrickRed},
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  numbers=none,
+  xleftmargin=1em,
+  xrightmargin=1em,
+  aboveskip=1em,
+  belowskip=1em,
+}
+
+% --- Epigraphs ---
+\usepackage{epigraph}
+\setlength{\epigraphwidth}{0.7\textwidth}
+
+% --- Theorem environments ---
+\theoremstyle{definition}
+\newtheorem{axiom}{Axiom}[chapter]
+\newtheorem{definition}[axiom]{Definition}
+
+\theoremstyle{plain}
+\newtheorem{theorem}[axiom]{Theorem}
+\newtheorem{proposition}[axiom]{Proposition}
+\newtheorem{lemma}[axiom]{Lemma}
+\newtheorem{corollary}[axiom]{Corollary}
+
+\theoremstyle{remark}
+\newtheorem{remark}[axiom]{Remark}
+\newtheorem{example}[axiom]{Example}
+\newtheorem{interpretation}[axiom]{Interpretation}
+\newtheorem{paradox}[axiom]{Paradox}
+
+% --- Custom commands ---
+\newcommand{\IS}{\mathcal{I}}
+\newcommand{\compose}{\circ}
+\newcommand{\void}{\mathbf{0}}
+\newcommand{\res}{\sim}
+\newcommand{\depth}{\operatorname{d}}
+\newcommand{\transmit}{\tau}
+\newcommand{\compN}[2]{#1^{\langle #2 \rangle}}
+\newcommand{\Filt}[1]{\mathcal{F}_{#1}}
+\newcommand{\orbit}[2]{#1^{[#2]}}
+\newcommand{\wt}{\operatorname{wt}}
+\newcommand{\emrg}{\kappa}
+
+\newcommand{\lean}[1]{\lstinline[language=Lean4]{#1}}
+
+% --- Title ---
+\title{%
+  \vspace{-2cm}
+  {\LARGE\scshape The Math of Ideas}\\[0.3cm]
+  {\Large Volume V-B}\\[0.5cm]
+  {\huge\bfseries Deep Power, Knowledge, and Ethics}\\[0.3cm]
+  {\Large Paradoxes and Impossibilities}\\[1cm]
+  {\large Counter-Intuitive Theorems from Ideatic Diffusion Theory,\\
+  with Machine-Verified Proofs in Lean~4}
+}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+
+% --- Preface ---
+\chapter*{Preface: The Inseparability of Power, Knowledge, and Ethics}
+\addcontentsline{toc}{chapter}{Preface}
+
+\epigraph{Where there is power, there is resistance.}{Michel Foucault, \textit{The History of Sexuality}}
+
+This book is a collection of impossibility theorems.
+
+Not political impossibilities or ethical dilemmas, but \emph{genuine mathematical impossibilities}: formally verified proofs that certain configurations of power, knowledge, and morality cannot exist.  Each of the 42 theorems in this volume has been machine-verified in Lean~4 with zero \texttt{sorry} axioms.  There is no question of their validity.  The question is: \emph{what do they tell us about the world?}
+
+The predecessor volume, \emph{The Math of Ideas, Volume~V: Power, Knowledge, and Ethics}, developed the basic formalizations of hegemony, propaganda, epistemic injustice, and moral reasoning within Ideatic Space.  This sequel goes deeper, proving results that are genuinely counter-intuitive --- results that would have surprised Foucault, Gramsci, Arendt, Rawls, and Spivak.
+
+Here is a sampling:
+
+\begin{itemize}
+\item \textbf{Hegemony IS supererogation.} The political power a hegemon gains by absorbing a subordinate is \emph{mathematically identical} to the moral enrichment of going beyond duty.  Gramsci and Kant are computing the same quantity (Chapter~1).
+
+\item \textbf{Censorship always amplifies.}  Composing censorship with an idea \emph{increases} total weight.  The censor becomes heavier by the act of censoring.  This is the Streisand Effect as a theorem (Chapter~6).
+
+\item \textbf{Resistance feeds the hegemon.}  Opposing power by composing resistance with hegemony \emph{increases} the hegemon's weight.  Every act of resistance makes the structure it opposes more present (Chapter~7).
+
+\item \textbf{Justice requires non-commutativity.}  If the order of testimony never mattered, meaning curvature would vanish everywhere.  Commutativity is provably unjust (Chapter~11).
+
+\item \textbf{Evil needs no evil intent.}  Two individually positive ideas can compose with negative emergence, producing less resonance than expected.  The banality of evil is a theorem (Chapter~13).
+
+\item \textbf{Existence implies the full trinity.}  Every non-void idea simultaneously possesses positive political weight, moral standing, and epistemic capacity --- all equal to each other (Chapter~15).
+\end{itemize}
+
+\noindent\textbf{How to read this book.} Each chapter presents 2--4 theorems organized around a central paradox.  For each theorem we give: the \textbf{naive expectation}, the \textbf{actual result}, a \textbf{natural-language proof}, the \textbf{Lean code}, and a \textbf{``Why This Is Surprising''} interpretation connecting the result to real-world political and ethical phenomena.  The chapters may be read in any order, though the Grand Synthesis (Chapter~15) draws on all previous results.
+
+\bigskip
+
+\noindent\textbf{Prerequisites.}  We assume familiarity with the Ideatic Space axioms from Volume~I and the power/epistemology/ethics framework from Volume~V.
+
+\bigskip
+
+\noindent\textbf{Notation.}  We write $a \compose b$ for composition, $\void$ for the void idea, $\operatorname{rs}(a,b)$ for resonance, $\wt(a) = \operatorname{rs}(a,a)$ for weight, and $\emrg(a,b,c)$ for emergence.
+
+% --- Prologue ---
+\chapter*{Prologue: The Ideatic Space and Its Political Vocabulary}
+\addcontentsline{toc}{chapter}{Prologue}
+
+We work in an \emph{Ideatic Space} $(\IS, \compose, \void, \operatorname{rs})$ satisfying eight axioms:
+
+\begin{enumerate}
+\item \textbf{Associativity}: $(a \compose b) \compose c = a \compose (b \compose c)$.
+\item \textbf{Left identity}: $\void \compose a = a$.
+\item \textbf{Right identity}: $a \compose \void = a$.
+\item \textbf{Void resonance (right)}: $\operatorname{rs}(a, \void) = 0$.
+\item \textbf{Void resonance (left)}: $\operatorname{rs}(\void, a) = 0$.
+\item \textbf{Self-coherence}: $\operatorname{rs}(a, a) \geq 0$, with equality iff $a = \void$.
+\item \textbf{Emergence bound}: $\emrg(a,b,c)^2 \leq \wt(a \compose b) \cdot \wt(c)$.
+\item \textbf{Enrichment}: $\wt(a \compose b) \geq \wt(a)$.
+\end{enumerate}
+
+Over this structure we define the political, epistemic, and ethical vocabulary:
+
+\begin{itemize}
+\item \textbf{Symbolic capital / Moral weight / Doxastic capacity}: $\wt(a) = \operatorname{rs}(a,a)$.  All three are self-resonance under different names.
+\item \textbf{Hegemonic influence}: $\wt(h \compose a) - \wt(h)$.
+\item \textbf{Cooperation surplus}: $\wt(a \compose b) - \wt(a) - \wt(b)$.
+\item \textbf{Propaganda effect / Moral responsibility}: $\emrg(p, a, t) = \operatorname{rs}(p \compose a, t) - \operatorname{rs}(p, t) - \operatorname{rs}(a, t)$.
+\item \textbf{Credibility shift / Ideological distortion}: $\operatorname{rs}(\text{prejudice} \compose \text{speaker}, \text{hearer}) - \operatorname{rs}(\text{speaker}, \text{hearer})$.
+\item \textbf{Meaning curvature}: $\operatorname{rs}(a \compose b, c) - \operatorname{rs}(b \compose a, c)$.
+\end{itemize}
+
+With these tools, we enter the paradoxes.
+
+% --- Part I ---
+\part{Paradoxes of Power}
+
+\input{tex_v2_chapters/vol5b_ch1_5}
+
+% --- Part II ---
+\part{Paradoxes of Knowledge}
+
+\input{tex_v2_chapters/vol5b_ch6_10}
+
+% --- Part III ---
+\part{Paradoxes of Ethics}
+
+\input{tex_v2_chapters/vol5b_ch11_15}
+
+\end{document}

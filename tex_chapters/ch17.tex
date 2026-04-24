@@ -1,0 +1,837 @@
+% ============================================================
+%  Chapter 17 — Bargaining Over Composition Order
+% ============================================================
+\chapter{Bargaining Over Composition Order}
+\label{ch:bargaining}
+
+\begin{quote}
+\textit{``The definition of the situation is itself the first move in the game.''}\\
+--- Victor Turner, \textit{The Ritual Process} (1969)
+\end{quote}
+
+\vspace{1em}
+
+\section{Introduction}
+
+Composition in ideatic space is associative but \emph{not} commutative.
+In general, $\compose(a, b) \neq \compose(b, a)$: who speaks first shapes
+the meaning of the entire exchange.  This fundamental asymmetry is the
+engine of power in signalling games.  The ability to set the agenda---to
+determine what is discussed first, which frame is laid down before the other
+party responds---is, as Victor Turner recognized, a primary form of social
+control.\footnote{Turner's analysis of ritual process emphasizes that the
+\emph{order} of ritual stages determines the transformation undergone by
+participants.  The liminal phase must precede reaggregation; reversing the
+order produces a different---often incoherent---ritual.}
+
+In political discourse, this is the problem of \emph{agenda-setting power}.
+In legal reasoning, it is the question of which precedent is applied first.
+In Hegelian dialectics, it is the difference between thesis-antithesis and
+antithesis-thesis: the reversal produces a different synthesis.
+
+This chapter formalizes the bargaining problem that arises from
+non-commutativity.  We introduce the \texttt{compositionOrder} pair, the
+\texttt{orderInvariant} predicate, and the \texttt{OrderPair} structure,
+then prove eighteen theorems characterizing when order matters, when it
+doesn't, and what structural properties hold regardless of ordering.
+
+The key insight is that while the \emph{content} of composition depends on
+order, certain \emph{structural} properties---depth bounds, self-resonance,
+and the behavior of void---are order-invariant.  This creates a formal
+analogy to fair bargaining: the pie may be divided differently depending on
+who moves first, but the total size of the pie is bounded the same way
+regardless.
+
+\subsection{Axiomatic Bargaining and the Composition Problem}
+
+The mathematical study of bargaining begins with John Nash's landmark
+1950 paper, which showed that under four axioms---Pareto efficiency,
+symmetry, invariance to affine transformations, and independence of
+irrelevant alternatives---there exists a unique bargaining solution, the
+\emph{Nash bargaining solution}.\footnote{John F.\ Nash, ``The Bargaining
+Problem,'' \textit{Econometrica} 18, no.\ 2 (1950): 155--162.}  Nash's
+framework assumes that the bargaining set is fixed and symmetric.  But in
+ideatic composition, the bargaining problem is more fundamental: the parties
+must agree not merely on a division of surplus but on the \emph{order in
+which their contributions are composed}.  Because $\compose(a,b) \neq
+\compose(b,a)$ in general, the choice of ordering is itself a strategic
+variable, not a parameter.
+
+Ariel Rubinstein's alternating-offers model (1982) extended Nash's static
+framework into a dynamic setting, showing that when parties take turns
+making proposals, the equilibrium outcome converges to the Nash solution as
+the discount factor approaches unity.\footnote{Ariel Rubinstein, ``Perfect
+Equilibrium in a Bargaining Model,'' \textit{Econometrica} 50, no.\ 1
+(1982): 97--109.}  In our framework, Rubinstein's alternating offers
+correspond directly to alternating composition orders: if $A$ proposes
+$\compose(a,b)$ and $B$ proposes $\compose(b,a)$, the bargaining process is
+a negotiation over which composition is realized.  The key distinction is
+that in Rubinstein's model, the proposals converge to a common outcome; in
+non-commutative composition, there may be no convergence---the two orderings
+may yield genuinely different ideas.
+
+\subsection{Agenda-Setting, Power, and Framing}
+
+Political scientists have long recognized that controlling the
+\emph{agenda}---the sequence in which issues are considered---is a primary
+form of political power.  William Riker's theory of
+\emph{heresthetics}\footnote{William H.\ Riker, \textit{The Art of
+Political Manipulation} (1986).} identifies agenda manipulation as one of
+three fundamental political strategies: you win not by persuading voters
+to change their preferences, but by changing which alternatives they
+consider and in what order.  John Kingdon's theory of ``policy
+windows''\footnote{John W.\ Kingdon, \textit{Agendas, Alternatives, and
+Public Policies}, 2nd ed.\ (2003).} similarly emphasizes that the timing
+and sequencing of political proposals determines which policies are adopted.
+
+Steven Lukes's three-dimensional theory of power provides a deeper
+framework.\footnote{Steven Lukes, \textit{Power: A Radical View}, 2nd ed.\
+(2005).}  The \emph{first dimension} is overt decision-making power; the
+\emph{second} is the power to set the agenda, determining which issues are
+even considered; the \emph{third} is the power to shape desires and
+perceptions, so that dominated parties do not even recognize the
+alternatives foreclosed by the agenda.  In IDT terms, the first dimension
+corresponds to choosing $a$ versus $b$; the second to choosing
+$\compose(a,b)$ versus $\compose(b,a)$; and the third to the ability to
+make agents unaware that $\compose(b,a)$ is even a possibility.
+
+Kahneman and Tversky's prospect theory\footnote{Daniel Kahneman and Amos
+Tversky, ``Prospect Theory: An Analysis of Decision Under Risk,''
+\textit{Econometrica} 47, no.\ 2 (1979): 263--291.} demonstrated that the
+\emph{framing} of a decision problem---whether outcomes are presented as
+gains or losses relative to a reference point---systematically alters
+choices.  Framing is a form of composition ordering: to frame a policy as
+``preventing losses'' rather than ``forgoing gains'' is to compose the
+evaluative frame \emph{before} the policy content, producing
+$\compose(\text{loss-frame}, \text{policy})$ rather than
+$\compose(\text{gain-frame}, \text{policy})$.  Our formalism shows that
+these two compositions are, in general, genuinely different ideas---not
+merely psychologically different presentations of the same idea.
+
+The concept of the ``Overton window''---the range of policies considered
+politically acceptable at a given time---can also be understood as a
+constraint on composition order.  The window determines which ideas can
+serve as the \emph{first} component in a policy composition: only ideas
+within the window are available as opening frames.  Shifting the Overton
+window is thus equivalent to expanding the set of permissible first-movers
+in the bargaining over composition order.
+
+\subsection{Historical Parallels}
+
+The Treaty of Westphalia (1648) offers a paradigmatic illustration.  The
+Catholic and Protestant powers negotiated not merely over territorial
+boundaries but over which \emph{framework} would serve as the basis for
+the emerging state system.  The principle \textit{cuius regio, eius
+religio} was itself a meta-bargain: the sovereign's religious identity
+would be composed first, and the subjects' beliefs would follow.  In modern
+terms, the Westphalian settlement resolved a composition-order dispute by
+establishing a fixed ordering rule.
+
+Similarly, the Camp David Accords (1978) required Anwar Sadat and Menachem
+Begin to negotiate not just territorial concessions but the \emph{sequence}
+in which issues would be addressed.  Jimmy Carter's genius as mediator lay
+in restructuring the agenda: by separating the Sinai question from the
+Palestinian question and addressing them in a specific order, he changed
+the composition of the negotiation itself.\footnote{William B.\ Quandt,
+\textit{Camp David: Peacemaking and Politics} (1986).}
+
+In legislative settings, the power to determine the order of business---the
+``rules of the game''---is often more consequential than any individual
+vote.  The Speaker of the House, the Senate Majority Leader, and committee
+chairs all derive power primarily from their ability to set the
+\emph{sequence} in which proposals are composed.  Our formalization gives
+this intuition mathematical content: the composition order determines the
+outcome, and the agenda-setter controls the composition order.
+
+\section{Core Definitions}
+\label{sec:ch17-defs}
+
+\begin{definition}[Composition Order Pair]
+\label{def:compositionOrder}
+The \emph{composition order pair} of $a, b \in \IS$ is
+\[
+  \texttt{compositionOrder}(a, b) \;:=\;
+  \bigl(\compose(a, b),\; \compose(b, a)\bigr) \;\in\; \IS \times \IS.
+\]
+This captures both possible sequencings of a bilateral exchange: ``I go
+first'' versus ``you go first.''
+\end{definition}
+
+\begin{lstlisting}[caption={Composition order pair in Lean}]
+def compositionOrder (a b : I) : I * I :=
+  (IdeaticSpace.compose a b, IdeaticSpace.compose b a)
+\end{lstlisting}
+
+\begin{definition}[Order Invariance]
+\label{def:orderInvariant}
+Two ideas $a, b$ are \emph{order-invariant} when composition commutes:
+\[
+  \texttt{orderInvariant}(a, b) \;:\Longleftrightarrow\;
+  \compose(a, b) = \compose(b, a).
+\]
+This is a strong condition: most idea-compositions are \emph{not}
+order-invariant.  When it holds, there is no agenda-setting advantage.
+\end{definition}
+
+\begin{lstlisting}[caption={Order invariance in Lean}]
+def orderInvariant (a b : I) : Prop :=
+  IdeaticSpace.compose a b = IdeaticSpace.compose b a
+\end{lstlisting}
+
+\begin{definition}[Order Pair Structure]
+\label{def:OrderPair}
+An \emph{order pair} packages two ideas with both their compositions
+and proofs that the compositions are correctly formed:
+\[
+  \texttt{OrderPair} = \bigl(l, r, f, s \;\mid\;
+    f = \compose(l, r),\; s = \compose(r, l)\bigr).
+\]
+\end{definition}
+
+\begin{lstlisting}[caption={Order pair structure in Lean}]
+structure OrderPair (I : Type*) [IdeaticSpace I] where
+  left : I
+  right : I
+  first : I
+  second : I
+  ab_eq : first = IdeaticSpace.compose left right
+  ba_eq : second = IdeaticSpace.compose right left
+\end{lstlisting}
+
+% ============================================================
+\section{Illustrative Examples}
+\label{sec:ch17-examples}
+
+Before proceeding to the theorems, we present several extended examples that
+illustrate how composition-order bargaining manifests across diverse human
+institutions.
+
+\begin{example}[The Treaty of Westphalia]
+\label{ex:westphalia}
+The Peace of Westphalia (1648) illustrates how composition order shapes
+political outcomes. The Catholic and Protestant powers each sought to
+establish their theological framework as the ``first mover'' in the
+emerging international order. The principle \textit{cuius regio, eius
+religio}---the ruler determines the religion---was itself a bargain over
+composition order: the sovereign's religious identity is composed first,
+and the subjects' beliefs follow. In IDT terms, the sovereign's idea $a$
+is composed before the population's idea $b$, yielding $\compose(a, b)$
+rather than $\compose(b, a)$---a fundamentally different political
+theology.\footnote{The Westphalian system is analyzed through a
+game-theoretic lens in Daniel Philpott, \textit{Revolutions in
+Sovereignty} (2001).}
+
+Had the composition been reversed---the subjects' beliefs composed before
+the sovereign's---the result would have been a form of popular religious
+sovereignty, akin to congregationalism.  The entire trajectory of European
+political development turned on which ordering was institutionalized.
+The Westphalian bargain was, at its core, a bargain over $\compose(a,b)$
+versus $\compose(b,a)$.
+\end{example}
+
+\begin{example}[Robert's Rules of Order]
+\label{ex:roberts_rules}
+Parliamentary procedure, codified in Henry M.\ Robert's
+\textit{Rules of Order} (1876), is a systematic framework for resolving
+composition-order disputes in deliberative assemblies.  The rules specify
+an elaborate protocol for determining which proposals are considered first:
+the ``order of business'' determines the composition sequence.
+
+A \emph{motion to amend} creates a composition-order problem: should the
+original motion $a$ be composed with the amendment $b$ to yield
+$\compose(a, b)$, or should the amended version $\compose(b, a)$ be
+considered as the base text?  Robert's Rules resolve this by stipulating
+that amendments are composed \emph{after} the main motion---the main
+motion provides the frame, and the amendment modifies it.  The
+\emph{motion to substitute} reverses this ordering entirely: it proposes
+to replace $a$ with $b$, effectively switching from $\compose(a, b)$ to
+$\compose(b, a)$.
+
+The procedural complexity of parliamentary law---subsidiary motions,
+privileged motions, incidental motions---can be understood as a
+sophisticated mechanism for managing the exponential growth of possible
+composition orderings as the number of proposals increases.  With $n$
+proposals, there are $n!$ possible orderings, and the rules of order
+serve to reduce this combinatorial explosion to a manageable sequence.
+\end{example}
+
+\begin{example}[Media Agenda-Setting: McCombs and Shaw]
+\label{ex:media_agenda}
+Maxwell McCombs and Donald Shaw's agenda-setting theory (1972)\footnote{Maxwell
+E.\ McCombs and Donald L.\ Shaw, ``The Agenda-Setting Function of Mass
+Media,'' \textit{Public Opinion Quarterly} 36, no.\ 2 (1972): 176--187.}
+demonstrated that the media do not tell people \emph{what} to think, but
+rather \emph{what to think about}.  In IDT terms, the media's power lies
+not in choosing $a$ over $b$, but in choosing $\compose(a, b)$ over
+$\compose(b, a)$: by presenting issue $a$ before issue $b$, the media
+establish $a$ as the interpretive frame through which $b$ is subsequently
+understood.
+
+Consider a news cycle in which economic data $a$ is presented before a
+political scandal $b$.  The public receives $\compose(a, b)$: the scandal
+is interpreted through an economic lens.  If the order is reversed---the
+scandal is presented first, followed by the economic data---the public
+receives $\compose(b, a)$: the economy is interpreted through the lens of
+political corruption.  These are, in general, genuinely different public
+ideas, not merely different presentations of the same information.
+
+The rise of algorithmic news feeds has intensified this phenomenon.  Each
+user's feed presents information in a personalized order, producing
+personalized compositions $\compose(a_i, b_i)$ that may differ
+dramatically across individuals.  The ``filter bubble'' is, formally, a
+personalized composition ordering.
+\end{example}
+
+\begin{example}[Socratic Dialogue as Composition-Order Bargaining]
+\label{ex:socratic}
+In the Platonic dialogues, Socrates consistently positions himself as the
+\emph{questioner}, compelling his interlocutors to state their theses
+first.  This is a strategic choice of composition order: by ensuring that
+the interlocutor's idea $b$ is composed before Socrates's own idea $a$,
+Socrates obtains $\compose(a, b)$---his philosophical framework applied
+\emph{to} the interlocutor's claim---rather than $\compose(b, a)$, which
+would be the interlocutor's framework applied to Socrates's claim.
+
+The \emph{elenchus}---Socrates's method of cross-examination---is a
+systematic technique for ensuring that the composition order favors the
+questioner.  By asking questions, Socrates forces his interlocutor to
+provide the raw material (the first component), which Socrates then
+composes with his own dialectical frame (the second component).  The result
+is that the interlocutor's thesis is always interpreted \emph{within}
+Socrates's framework, never the reverse.
+
+This observation has implications for modern pedagogical theory.  The
+``Socratic method'' widely used in legal education is effective precisely
+because it enforces a composition order in which the student's initial
+response is composed with the professor's analytical frame, producing a
+synthesis that the student experiences as self-generated discovery.
+\end{example}
+
+% ============================================================
+\section{Void and Order Invariance}
+\label{sec:ch17-void}
+
+Void---silence, non-contribution---is the universal commuter.  It has no
+agenda-setting power because it contributes nothing.
+
+\begin{theorem}[Void is Order-Invariant---Left (17.1)]
+\label{thm:void_order_invariant}
+For all $a \in \IS$, $\texttt{orderInvariant}(\void, a)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+$\compose(\void, a) = a = \compose(a, \void)$ by the identity laws.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Silence has no agenda-setting power.  Whether you speak into silence or
+silence follows your speech, the result is the same---just your speech.
+In political theory, a party that brings nothing to the table cannot
+influence the agenda.
+
+\begin{theorem}[Self-Composition is Order-Invariant (17.2)]
+\label{thm:self_order_invariant}
+For all $a \in \IS$, $\texttt{orderInvariant}(a, a)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+$\compose(a, a) = \compose(a, a)$ trivially.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Internal dialogue with yourself has no ordering problem---you always agree
+with yourself on what comes first.  This is the psychological ground truth
+that anchors the theory: self-composition is always order-invariant.
+
+\begin{theorem}[Order Invariance of Void Pair (17.8)]
+\label{thm:void_void_invariant}
+$\texttt{orderInvariant}(\void, \void)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Immediate from both identity laws. \hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Two silences are the same regardless of which comes first.  The degenerate
+case anchors the extremal behavior of the theory.
+
+\begin{theorem}[Void is Universally Order-Invariant (17.12)]
+\label{thm:void_universal_order_invariant}
+For all $a \in \IS$, $\texttt{orderInvariant}(a, \void)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+$\compose(a, \void) = a = \compose(\void, a)$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The absence of contribution never creates ordering conflicts.  Void is
+universally transparent to reordering, a formal counterpart to the
+observation that silence is the one ``move'' in a game that is costless
+in either position.\footnote{In mechanism design, a ``null action'' is
+typically assumed to be costless and position-independent. Void formalizes
+this assumption within IDT.}
+
+\begin{theorem}[Void Annihilates Order Difference (17.18)]
+\label{thm:void_annihilates_order}
+For all $a \in \IS$,
+\[
+  (\texttt{compositionOrder}(a, \void))_1 =
+  (\texttt{compositionOrder}(a, \void))_2.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Both components reduce to $a$ by the identity laws.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A player who contributes nothing has no bargaining power over ordering---there
+is nothing to order.  The composition order pair collapses to a diagonal
+element when one party contributes void.
+
+% ============================================================
+\section{Structural Order Theorems}
+\label{sec:ch17-structural}
+
+\begin{theorem}[Order Invariance is Symmetric (17.11)]
+\label{thm:order_invariant_symm}
+If $\texttt{orderInvariant}(a, b)$, then $\texttt{orderInvariant}(b, a)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+If $\compose(a,b) = \compose(b,a)$, then symmetry of equality gives
+$\compose(b,a) = \compose(a,b)$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+If swapping $A$ and $B$'s contributions doesn't matter, then swapping $B$
+and $A$'s doesn't matter either.  This ensures that order invariance is a
+symmetric relation---a necessary condition for it to serve as a formal model
+of ``fair exchange.''
+
+\begin{theorem}[Composition Order First Component (17.4)]
+\label{thm:order_fst}
+$(\texttt{compositionOrder}(a, b))_1 = \compose(a, b)$.
+\end{theorem}
+
+\begin{theorem}[Composition Order Second Component (17.5)]
+\label{thm:order_snd}
+$(\texttt{compositionOrder}(a, b))_2 = \compose(b, a)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Both are definitional equalities.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+These projection lemmas are technical necessities, extracting the ``$a$-goes-first''
+and ``$b$-goes-first'' orderings from the pair.  They establish the interface
+between the order pair abstraction and the underlying composition operation.
+
+\begin{theorem}[Composition Order Swap is Involution (17.17)]
+\label{thm:order_swap_involution}
+\[
+  \texttt{compositionOrder}(b, a) =
+  \bigl((\texttt{compositionOrder}(a, b))_2,\;
+  (\texttt{compositionOrder}(a, b))_1\bigr).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Expanding definitions: $\texttt{compositionOrder}(b,a) = (\compose(b,a),
+\compose(a,b))$, which equals the swap of $(\compose(a,b), \compose(b,a))$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The dialectical reversal of a reversal returns to the thesis.  Swapping who
+goes first twice recovers the original ordering.  This involution property
+ensures that the bargaining structure has no higher-order ordering ambiguities.
+
+\begin{theorem}[Order Pair Construction (17.14)]
+\label{thm:order_pair_exists}
+For any $a, b \in \IS$, there exists an \texttt{OrderPair} with
+$\text{left} = a$ and $\text{right} = b$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Construct the pair with $\text{first} = \compose(a,b)$,
+$\text{second} = \compose(b,a)$, and the proofs are \texttt{rfl}.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Every bilateral exchange can be formally analyzed by examining both possible
+orderings.  The \texttt{OrderPair} structure packages this analysis into a
+single object, facilitating the systematic study of agenda-setting effects.
+
+% ============================================================
+\section{Power, Framing, and the First-Mover Advantage}
+\label{sec:ch17-power}
+
+The preceding structural theorems reveal a striking dichotomy in
+composition-order bargaining: the \emph{existence} of an order pair is
+guaranteed for any two ideas, yet the \emph{content} of its two components
+may diverge arbitrarily.  This section explores the consequences of this
+dichotomy for theories of power, framing, and strategic interaction.
+
+\subsection{The First-Mover Advantage in Formal Terms}
+
+In game theory, the \emph{first-mover advantage} refers to the strategic
+benefit accruing to the player who acts first in a sequential game.  In
+composition-order bargaining, the first-mover advantage is the difference
+between $\compose(a, b)$ and $\compose(b, a)$.  When $a$ ``goes first,''
+the resulting idea $\compose(a, b)$ is \emph{$a$-framed}: $a$ provides the
+interpretive scaffolding onto which $b$ is composed.
+
+The magnitude of the first-mover advantage can be measured by the
+``distance'' between the two orderings.  While IDT does not assume a metric
+on $\IS$, the resonance relation provides a qualitative measure: when
+$\text{resonates}(\compose(a,b), \compose(b,a))$, the first-mover advantage
+is ``small'' in the sense that both orderings are at least mutually
+coherent.  When the two orderings fail to resonate, the first-mover
+advantage is ``large''---the outcomes are so different as to be
+incoherent with each other.
+
+Theorem~\ref{thm:resonant_orders} establishes that when the input ideas
+resonate, the outputs always resonate.  This provides a formal foundation
+for the folk intuition that bargaining between like-minded parties is
+``easier'' than bargaining between adversaries: when the parties share a
+common frame (resonance), the composition order matters less.
+
+\subsection{Framing as Composition-Order Selection}
+
+The framing literature in behavioral economics identifies two types of
+framing effects: \emph{valence framing} (gain vs.\ loss frames) and
+\emph{emphasis framing} (which aspects of an issue are highlighted).  Both
+can be modeled as composition-order choices.
+
+In valence framing, the same objective outcome $x$ is presented either as
+$\compose(\text{gain-frame}, x)$ or $\compose(\text{loss-frame}, x)$.
+Kahneman and Tversky's experiments show that these compositions are treated
+as different ideas by human cognizers---formally vindicating our axiom that
+composition is non-commutative.
+
+In emphasis framing, the question is not which frame to apply but
+\emph{when} to apply it.  Presenting a policy's costs before its benefits
+yields $\compose(\text{cost}, \text{benefit})$; the reverse yields
+$\compose(\text{benefit}, \text{cost})$.  Empirical research consistently
+shows that information presented first has disproportionate influence on
+final judgments---a primacy effect that is precisely the content-level
+manifestation of composition non-commutativity.
+
+\begin{remark}[Connection to Mechanism Design]
+\label{rem:mechanism-design}
+In mechanism design and implementation theory, the ``designer'' chooses
+a game form (mechanism) to implement a desired social choice function.
+Composition-order bargaining can be viewed as a special case: the
+mechanism designer selects an ordering rule $\sigma: \{a,b\} \to
+\{(a,b), (b,a)\}$ that determines which composition is realized.
+Theorems~\ref{thm:void_order_invariant}--\ref{thm:void_annihilates_order}
+show that void is the unique idea for which the mechanism designer's
+choice is irrelevant.  For all other ideas, the designer's ordering
+rule has non-trivial consequences---a result reminiscent of the
+Gibbard--Satterthwaite theorem's impossibility of
+strategy-proofness.\footnote{The connection to Gibbard--Satterthwaite
+is suggestive rather than formal.  A full investigation of
+composition-order mechanism design is left to future work.}
+\end{remark}
+
+\begin{remark}[The Impossibility of Order-Free Composition]
+\label{rem:order-free-impossibility}
+One might hope for a ``canonical'' composition that is independent of
+order---perhaps the set $\{\compose(a,b), \compose(b,a)\}$, or some
+average of the two.  But this approach fails for a fundamental reason:
+the resulting object is no longer an element of ideatic space $\IS$, but
+rather a subset or a distribution over $\IS$.  Order-free composition
+requires moving to a higher-order structure---the power set $\mathcal{P}(\IS)$
+or the space of distributions over $\IS$.  This observation motivates the
+social-choice constructions in Chapter~\ref{ch:social-choice}, where
+aggregation rules are introduced precisely to combine multiple compositions
+into a single shared idea.
+\end{remark}
+
+\begin{remark}[Connections to Gift Exchange and Social Choice]
+\label{rem:cross-chapter}
+Composition-order bargaining connects directly to the gift-exchange
+dynamics of Chapter~\ref{ch:gift-exchange} and the social-choice
+mechanisms of Chapter~\ref{ch:social-choice}.  In gift exchange, the
+sequential nature of reciprocity creates a natural composition ordering:
+the first gift $a$ is composed before the reciprocal gift $b$, and the
+social meaning of the exchange $\compose(a, b)$ differs from the meaning
+of the reverse sequence $\compose(b, a)$.  The obligation to reciprocate
+is, formally, a constraint on composition order.  In social choice, the
+aggregation of multiple agents' ideas requires resolving the composition
+ordering for all pairs simultaneously---a far more complex problem that
+generalizes bilateral bargaining to the $n$-party case.
+\end{remark}
+
+% ============================================================
+\section{Depth and Resonance Under Reordering}
+\label{sec:ch17-depth}
+
+While the \emph{content} of a composition depends on order, its
+\emph{depth bounds} are symmetric: subadditivity holds for both orderings.
+
+\begin{theorem}[Both Orders Have Same Depth Bound (17.3)]
+\label{thm:both_orders_depth_bound}
+For all $a, b \in \IS$,
+\begin{align*}
+  \depth(\compose(a, b)) &\leq \depth(a) + \depth(b), \\
+  \depth(\compose(b, a)) &\leq \depth(a) + \depth(b).
+\end{align*}
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The first inequality is subadditivity.  The second follows from
+$\depth(\compose(b,a)) \leq \depth(b) + \depth(a) = \depth(a) + \depth(b)$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The ``cost'' of an exchange, measured by depth, is bounded the same way
+regardless of who goes first.  Subadditivity is symmetric.  This means that
+while ordering affects the \emph{content} of the outcome, it does not affect
+the \emph{resource constraints}---a crucial fairness property.
+
+\begin{theorem}[Depth Bound Under Reordering (17.10)]
+\label{thm:depth_reorder_bound}
+$\depth(\compose(b, a)) \leq \depth(a) + \depth(b)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+From subadditivity with reordering of the bound.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The maximum information capacity of an exchange is invariant under
+reordering.  In information-theoretic terms, the channel capacity is
+bounded by the sum of the endpoint depths, regardless of direction.
+
+\begin{theorem}[Depth Zero Invariance Under Order (17.16)]
+\label{thm:depth_zero_both_orders}
+If $\depth(a) = 0$ and $\depth(b) = 0$, then
+$\depth(\compose(a,b)) = 0$ and $\depth(\compose(b,a)) = 0$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Apply depth-zero closure in both orders.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Trivial exchanges are trivial regardless of who goes first.  You can't
+create depth by reordering banalities---a critical-theory insight with
+mathematical teeth.
+
+\begin{theorem}[Both Orders Self-Resonate (17.6)]
+\label{thm:both_orders_self_resonate}
+$\text{resonates}(\compose(a,b), \compose(a,b))$ and
+$\text{resonates}(\compose(b,a), \compose(b,a))$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Self-resonance is universal.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Any completed exchange achieves internal coherence regardless of who spoke
+first.  This is the minimal hermeneutic property: every outcome is
+self-consistent.
+
+\begin{theorem}[Resonant Inputs Give Resonant Orders (17.7)]
+\label{thm:resonant_orders}
+If $\text{resonates}(a, b)$, then
+$\text{resonates}\bigl(\compose(a, b),\; \compose(b, a)\bigr)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+From \texttt{resonance\_compose} applied to the pairs $(a,b)$ and
+$(b,a)$, using the symmetry of resonance.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+This is Turner's ritual-process theorem.  When ritual actors are in
+resonance---in Turner's terminology, when they share \emph{communitas}---reordering
+the ritual stages produces ceremonies that still ``rhyme'' with each other.
+The spirit of the ritual is preserved even if the sequence changes.
+Formally, resonant inputs produce resonant orderings, ensuring that the
+bargaining problem between culturally aligned agents has a coherent
+solution space.\footnote{Turner introduced the concept of \emph{communitas}
+to describe the intense fellow-feeling that arises in liminal ritual stages.
+Our resonance relation formalizes this as a structural property of ideatic space.}
+
+\medskip
+
+\noindent\textbf{Extended discussion of Theorem~\ref{thm:resonant_orders}.}\quad
+The resonance-preservation result is the most consequential theorem in this
+section for social theory.  It establishes that cultural alignment between
+agents is \emph{robust} to composition-order variation: if two agents are
+``on the same wavelength'' (resonant), then the two possible orderings of
+their exchange are themselves on the same wavelength.  This has three
+important implications.
+
+First, it provides a formal criterion for when bargaining over composition
+order is \emph{low-stakes}: if the parties resonate, both orderings produce
+coherent outcomes, so the distributional consequences of order choice are
+bounded.  This aligns with the empirical observation that negotiations
+between allies (resonant parties) focus on substance rather than procedure.
+
+Second, it explains why \emph{communitas}---the feeling of deep social
+connection---facilitates ritual flexibility.  Turner observed that
+communities experiencing strong communitas can improvise ritual sequences
+without losing the ritual's transformative power.  Theorem~\ref{thm:resonant_orders}
+provides the algebraic explanation: resonance between ritual elements
+ensures that reordering preserves coherence.
+
+Third, the contrapositive is equally revealing: if two orderings
+$\compose(a,b)$ and $\compose(b,a)$ fail to resonate, then the inputs
+$a$ and $b$ must themselves fail to resonate.  Incoherent bargaining
+outcomes diagnose incoherent input ideas---a formal version of the
+negotiator's maxim that ``if the process breaks down, the parties were
+never really aligned.''
+
+% ============================================================
+\section{Associativity and Multi-Party Bargaining}
+\label{sec:ch17-multi}
+
+\begin{theorem}[Associativity Resolves Three-Party Brackets (17.9)]
+\label{thm:three_party_bracket_invariance}
+$\compose(\compose(a,b), c) = \compose(a, \compose(b,c))$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The associativity axiom of ideatic composition.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+In three-party negotiation, whether $(A,B)$ form a coalition first and then
+bargain with $C$, or $A$ bargains with a pre-formed $(B,C)$ coalition, the
+final composite meaning is identical.  Associativity is the great equalizer:
+it eliminates the ``coalition formation order'' as a source of bargaining
+advantage, even as the \emph{within-pair} ordering remains significant.
+
+\begin{theorem}[Triple Depth Bound---Both Bracketings (17.13)]
+\label{thm:triple_depth_bound}
+$\depth(\compose(\compose(a,b), c)) \leq \depth(a) + \depth(b) + \depth(c)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Cascade two applications of subadditivity.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Three-way collaboration has bounded complexity no matter how sub-teams are
+formed.  The depth bound generalizes linearly, providing a universal
+resource constraint on multi-party cooperation.
+
+\begin{theorem}[Resonance Between Reordered Triples (17.15)]
+\label{thm:triple_reorder_resonance}
+If $\text{resonates}(a, b)$ and $\text{resonates}(b, c)$, then
+\[
+  \text{resonates}\bigl(\compose(\compose(a,b), c),\;
+  \compose(a, \compose(b,c))\bigr).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By associativity, both sides are equal, so self-resonance applies.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+When all ritual participants share communitas, rearranging the ritual order
+produces ceremonies that deeply resonate.  The resonance between re-bracketed
+triples is not merely an analogy to Turner's theory---it is its formal
+content.
+
+% ============================================================
+
+\noindent\textbf{Extended discussion of Theorem~\ref{thm:three_party_bracket_invariance}.}\quad
+The associativity result for three-party bracketing has deep implications
+for coalition theory.  In real-world multi-party negotiations---such as
+the formation of coalition governments in parliamentary democracies---the
+question of \emph{which sub-coalitions form first} is a major strategic
+concern.  Associativity tells us that while the \emph{within-pair} ordering
+matters (who speaks first within a dyad), the \emph{between-pair} bracketing
+does not: whether Labor and the Greens form a coalition first and then
+negotiate with the Liberals, or Labor negotiates with a pre-formed
+Green-Liberal alliance, the final composite position is the same.
+
+This result provides formal support for the observation in coalition theory
+that the ``order of coalition formation'' matters less than the ``order of
+proposal within each coalition.''  The bracketing structure drops out;
+the sequencing within each bilateral exchange does not.  This is a
+non-trivial constraint on the strategy space of multi-party bargaining:
+parties should focus on their bilateral ordering advantages rather than
+on the meta-strategic question of which coalitions form when.
+
+The depth bound for triples (Theorem~\ref{thm:triple_depth_bound})
+extends this analysis to resource constraints: the total complexity of a
+three-party exchange is bounded by the sum of individual complexities,
+regardless of bracketing.  This linearity is essential for scalability:
+it means that the resource cost of multi-party bargaining grows
+additively, not multiplicatively, ensuring that large-scale negotiations
+remain tractable.
+
+\section{Conclusion}
+\label{sec:ch17-concl}
+
+This chapter has established eighteen theorems characterizing the
+bargaining problem that arises from the non-commutativity of ideatic
+composition.
+
+The central tension is clear: while \emph{content} depends on order
+(who speaks first matters), \emph{structural properties}---depth bounds,
+self-resonance, void transparency---do not.  This creates a formal
+separation between the distributional question (``who gets the better
+outcome?'') and the efficiency question (``how much total meaning is
+produced?'').
+
+The key results are:
+\begin{itemize}
+  \item Void has no agenda-setting power
+    (Theorems~\ref{thm:void_order_invariant}--\ref{thm:void_annihilates_order}).
+  \item Depth bounds are order-invariant
+    (Theorems~\ref{thm:both_orders_depth_bound}--\ref{thm:depth_zero_both_orders}).
+  \item Resonant agents produce resonant orderings
+    (Theorem~\ref{thm:resonant_orders}).
+  \item Associativity resolves multi-party bracketing
+    (Theorem~\ref{thm:three_party_bracket_invariance}).
+\end{itemize}
+
+Turner's ritual process reveals that transformative social experiences
+require a specific ordering of stages.  Our formalization shows that this
+ordering dependence is a fundamental feature of ideatic composition, not
+an artifact of particular rituals.  In the next chapter, we turn from
+bilateral bargaining to the problem of diffusion through networks.

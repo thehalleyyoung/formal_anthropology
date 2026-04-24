@@ -1,0 +1,420 @@
+% =============================================================
+%  Chapter 7 — Persuasion Bounds and Propaganda
+%  Lean source: FormalAnthropology/IDT_Signal_Ch07.lean
+% =============================================================
+\chapter{Persuasion Bounds and Propaganda}
+\label{ch:persuasion}
+
+\epigraph{%
+  ``The ideas of the ruling class are in every epoch the ruling ideas:
+  i.e., the class which is the ruling material force of society is at the
+  same time its ruling intellectual force.''}%
+  {Karl Marx, \textit{The German Ideology} (1846)}
+
+% ----------------------------------------------------------------
+\section{Introduction: The Algebra of ``Hearts and Minds''}
+\label{sec:pers-intro}
+
+Every propagandist, preacher, and politician confronts the same constraint,
+whether they know it or not: \emph{you cannot add more complexity to someone's
+worldview than the complexity of your message allows}.  A bumper sticker
+cannot produce a Ph.D.-level understanding; a three-word slogan cannot
+install a twenty-variable causal model.  Conversely, a complex treatise
+cannot simplify a mind below its current depth---complexity is added, not
+subtracted, by composition.
+
+Antonio Gramsci grasped this intuitively when he argued that hegemony requires
+not just force but \emph{cultural production}---the sustained manufacture of
+complex ideological structures capable of reshaping the depth of popular
+consciousness.\footnote{Gramsci, \textit{Prison Notebooks}, Q.~12 (1932).
+The concept of ``cultural hegemony'' names exactly the problem that this
+chapter formalizes: how much ideological depth can a ruling class actually
+install in a population?}  Michel Foucault extended the insight: power
+operates not by loud commands but by quiet restructuring of the categories
+through which subjects perceive the world---what he called
+\emph{power/knowledge}.\footnote{Foucault, \textit{Discipline and Punish}
+(1975); \textit{The History of Sexuality}, vol.~1 (1976).}
+
+This chapter provides the mathematical backbone for these intuitions.  We
+define \emph{marginal depth}---how much a signal adds to a receiver's
+interpretive complexity---and prove that it is bounded above by the signal's
+own depth (the \emph{fundamental persuasion bound}).  We then show that
+chaining messages is \emph{subadditive}: the total persuasive capacity of
+a compound message is at most the sum of its parts.  Repetition helps, but
+only linearly---never exponentially.  Even totalitarian propaganda, with
+unlimited repetition, faces a linear ceiling.
+
+These results have sharp implications for anthropological theory.  They
+explain why ``hearts and minds'' campaigns fail not because of insufficient
+repetition, but because of the fundamental \emph{subadditivity} of ideatic
+composition.  You cannot shout your way to depth.
+
+
+% ================================================================
+\section{Core Definitions}
+\label{sec:pers-defs}
+
+\begin{definition}[Marginal Depth]
+\label{def:marginal-depth}
+The \emph{marginal depth} of signal $s$ for receiver $r$ is the increase
+in depth caused by composition:
+\[
+  \mathrm{marginalDepth}(r,s) \;=\; \depth(r\compose s) - \depth(r),
+\]
+where $-$ denotes truncated (natural number) subtraction.
+\end{definition}
+
+The marginal depth of a sermon to a parishioner is how much \emph{more}
+complex their worldview becomes after hearing it, relative to what they
+had before.  It is inherently receiver-dependent: the same lecture may add
+five ``layers'' to a novice and zero to an expert.
+
+\begin{definition}[Persuasion Bound]
+\label{def:persuasion-bound}
+The \emph{persuasion bound} of a signal $s$ is its own depth:
+\[
+  \mathrm{persuasionBound}(s) \;=\; \depth(s).
+\]
+This is an \emph{absolute} ceiling, independent of the receiver.
+\end{definition}
+
+\begin{lstlisting}[caption={Marginal depth and persuasion bound in Lean~4.}]
+def marginalDepth (r s : I) : ℕ :=
+  IdeaticSpace.depth (IdeaticSpace.compose r s) -
+    IdeaticSpace.depth r
+
+def persuasionBound (s : I) : ℕ := IdeaticSpace.depth s
+\end{lstlisting}
+
+
+% ================================================================
+\section{The Fundamental Persuasion Bound}
+\label{sec:pers-fundamental}
+
+\begin{theorem}[Marginal Depth Bound (7.1) --- The Fundamental Theorem of Propaganda]
+\label{thm:marginal-depth-bound}
+For all receivers $r$ and signals $s$:
+\[
+  \mathrm{marginalDepth}(r,s) \;\le\; \mathrm{persuasionBound}(s)
+  \;=\; \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By subadditivity of composition depth: $\depth(r\compose s)\le \depth(r)+\depth(s)$.
+Subtracting $\depth(r)$ from both sides gives $\mathrm{marginalDepth}(r,s)\le\depth(s)$.
+\end{proof}
+
+No matter how receptive the audience, a message cannot add more complexity
+than it intrinsically contains.  A bumper sticker cannot produce a
+Ph.D.-level understanding.  This is the \textbf{fundamental theorem of
+propaganda theory}: persuasive capacity is bounded by signal depth.
+
+The result vindicates Gramsci's insistence that effective hegemony requires
+\emph{organic intellectuals}---agents capable of producing signals of
+sufficient depth to restructure popular consciousness.  Simple slogans
+(low depth) have low persuasion bounds.  Only sustained, complex cultural
+production can deeply transform a worldview.
+
+\begin{theorem}[Void Has Zero Marginal Depth (7.2)]
+\label{thm:void-marginal-depth}
+$\mathrm{marginalDepth}(r, \void) = 0$ for all $r$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$r\compose\void = r$ by the right-identity axiom, so $\depth(r\compose\void)
+- \depth(r) = 0$.
+\end{proof}
+
+Silence cannot persuade.  Quaker silence, Buddhist \emph{noble silence}, and
+the minute of silence for the dead change nothing about the listener's
+depth.  They are powerful \emph{socially}---as markers of solidarity, grief,
+or contemplation---but informationally null.%
+\footnote{This creates a sharp distinction between the \emph{social} and
+\emph{informational} functions of silence, a distinction that Foucault's
+analysis of ``incitement to discourse'' (\textit{History of Sexuality},
+vol.~1) explores from the opposite direction.}
+
+\begin{theorem}[Void Has Zero Persuasion Bound (7.3)]
+\label{thm:void-persuasion-bound}
+$\mathrm{persuasionBound}(\void) = 0.$
+\end{theorem}
+
+Independent of the receiver, the null message has zero persuasive capacity.
+This is a property of the signal itself, not of any particular audience.
+
+\begin{theorem}[Persuasion Bound Nonnegativity (7.4)]
+\label{thm:persuasion-nonneg}
+$\mathrm{persuasionBound}(s) \ge 0$ for all $s$.
+\end{theorem}
+
+Trivially true for natural numbers, but conceptually important: there are
+no ``anti-signals'' that reduce the maximum possible effect below zero.
+Every signal has non-negative persuasive potential.
+
+
+% ================================================================
+\section{Deeper Signals Are More Persuasive}
+\label{sec:pers-monotonicity}
+
+\begin{theorem}[Monotonicity of Persuasion Bound (7.5)]
+\label{thm:persuasion-mono}
+If $\depth(s_1) \le \depth(s_2)$, then
+$\mathrm{persuasionBound}(s_1) \le \mathrm{persuasionBound}(s_2)$.
+\end{theorem}
+
+A complex ritual has \emph{more potential} to transform a participant's
+worldview than a simple one.  This doesn't mean it \emph{will}---marginal
+depth depends on the receiver---but it \emph{can}.  Complexity is a
+\emph{necessary} (not sufficient) condition for deep persuasion.
+
+This result gives formal content to Foucault's concept of
+\emph{power/knowledge}: the capacity to restructure categories of thought
+(persuasion) scales with the complexity of the discursive apparatus
+(signal depth).  Simple commands have low persuasion bounds; complex
+disciplinary regimes have high ones.
+
+\begin{theorem}[Self-Composition Persuasion Bound (7.6)]
+\label{thm:self-compose-persuasion}
+$\mathrm{persuasionBound}(s\compose s) \le 2\cdot\mathrm{persuasionBound}(s).$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\depth(s\compose s)\le \depth(s)+\depth(s) = 2\depth(s)$ by subadditivity.
+\end{proof}
+
+Repeating a message doubles the \emph{maximum possible} effect, but the
+\emph{actual} effect depends on the receiver.  Propaganda works by
+repetition, but with diminishing returns.
+
+\begin{theorem}[ComposeN Persuasion Bound (7.7)]
+\label{thm:composeN-persuasion}
+$\mathrm{persuasionBound}(\compN{s}{n}) \le n\cdot\mathrm{persuasionBound}(s).$
+\end{theorem}
+
+Even with unlimited repetition, persuasive capacity grows at most
+linearly---never exponentially.  This is why totalitarian propaganda,
+despite its volume, has bounded effectiveness.  The 20th century
+demonstrated this repeatedly: neither Nazi Germany nor the Soviet Union
+achieved total ideological control despite saturation-level messaging.%
+\footnote{Hannah Arendt's \textit{Origins of Totalitarianism} (1951)
+documents both the ambition and the failure of totalitarian propaganda
+to achieve total depth penetration.}
+
+\begin{lstlisting}[caption={ComposeN persuasion bound in Lean~4.}]
+theorem composeN_persuasion_bound (s : I) (n : ℕ) :
+    persuasionBound (composeN s n) <=
+      n * persuasionBound s
+\end{lstlisting}
+
+
+% ================================================================
+\section{Subadditivity: Chaining Doesn't Multiply}
+\label{sec:pers-subadditivity}
+
+\begin{theorem}[Persuasion Subadditivity (7.8)]
+\label{thm:persuasion-subadditivity}
+\[
+  \mathrm{persuasionBound}(s_1\compose s_2)
+  \;\le\;
+  \mathrm{persuasionBound}(s_1) + \mathrm{persuasionBound}(s_2).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Direct from the subadditivity of depth under composition:
+$\depth(s_1\compose s_2)\le\depth(s_1)+\depth(s_2)$.
+\end{proof}
+
+A two-part message cannot be more persuasive than the sum of its parts.
+This rules out ``synergistic propaganda''---the idea that combining
+messages could produce super-additive persuasion.  It is the formal
+foundation of bounded rationality in cultural transmission.
+
+The subadditivity theorem has immediate policy implications.  If a state
+seeks to increase persuasive capacity, it must increase the \emph{depth} of
+its messages, not merely their \emph{number}.  Quantity is strictly
+dominated by quality as a persuasion strategy.
+
+\begin{theorem}[Three-Message Persuasion Bound (7.9)]
+\label{thm:three-message-bound}
+\[
+  \mathrm{persuasionBound}\bigl((s_1\compose s_2)\compose s_3\bigr)
+  \;\le\;
+  \mathrm{persuasionBound}(s_1) +
+  \mathrm{persuasionBound}(s_2) +
+  \mathrm{persuasionBound}(s_3).
+\]
+\end{theorem}
+
+Multi-act rituals (liturgy with readings, sermon, and communion) have bounded
+total impact $\le$ the sum of individual act complexities.  The extension to
+$n$~messages follows by induction.
+
+\begin{theorem}[Marginal Depth of Void Receiver (7.10)]
+\label{thm:marginal-void-receiver}
+$\mathrm{marginalDepth}(\void, s) = \depth(s).$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\void\compose s = s$ by left-identity, and $\depth(\void)=0$, so
+$\depth(s) - 0 = \depth(s)$.
+\end{proof}
+
+The ``blank slate'' receiver (\emph{tabula rasa}) absorbs every signal
+fully.  This is the formal version of Locke's epistemology---and its
+anthropological critique: no real human is a blank slate, so no real human
+absorbs a signal fully.  The void receiver is a theoretical limit, never
+achieved in practice.
+
+
+% ================================================================
+\section{Persuasion Through Chains}
+\label{sec:pers-chains}
+
+What happens when a signal passes through an intermediary?  A teacher
+receives a text, processes it through their own background, and transmits
+the result to a student.  How much depth can this chain deliver?
+
+\begin{theorem}[Chain Persuasion Bound (7.11)]
+\label{thm:chain-persuasion}
+$\mathrm{marginalDepth}(r, r_1\compose s) \le \depth(r_1) + \depth(s).$
+\end{theorem}
+
+A teacher cannot transmit more depth than their own understanding plus the
+source material's complexity.  Great teaching requires both deep knowledge
+\emph{and} rich source texts.  This formalizes what every graduate student
+knows intuitively: a mediocre advisor with a brilliant text, or a brilliant
+advisor with a mediocre text, both produce bounded results.
+
+\begin{theorem}[Marginal Depth of Self-Composition (7.12)]
+\label{thm:marginal-self}
+$\mathrm{marginalDepth}(r, r) \le \depth(r).$
+\end{theorem}
+
+Reflecting on your own ideas (self-composition) cannot add more than your
+existing complexity.  Introspection has bounded returns.  This result
+anticipates Chapter~\ref{ch:echo}'s analysis of echo chambers: if
+self-reflection is bounded, then \emph{iterated} self-reflection is
+bounded too.
+
+\begin{theorem}[Marginal Depth Triangle Inequality (7.13)]
+\label{thm:marginal-triangle}
+$\mathrm{marginalDepth}(r, s_1\compose s_2) \le \depth(s_1) + \depth(s_2).$
+\end{theorem}
+
+The marginal impact of a compound message is bounded by the sum of its
+parts' complexities.  No synergy, no multiplication---just addition.  This
+is the triangle inequality for marginal depth, and it gives the persuasion
+space a quasi-metric structure.
+
+
+% ================================================================
+\section{Propaganda Effectiveness Bounds}
+\label{sec:pers-propaganda}
+
+We now turn to the specific problem of propaganda: what happens when the
+same message is repeated many times?
+
+\begin{theorem}[Bounded Propaganda Effectiveness (7.14)]
+\label{thm:bounded-propaganda}
+After composing receiver $r$ with $n$ repetitions of signal $s$:
+\[
+  \depth\bigl(r\compose\compN{s}{n}\bigr)
+  \;\le\;
+  \depth(r) + n\cdot\depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Combine the subadditivity of composition depth with the bound
+$\depth(\compN{s}{n})\le n\cdot\depth(s)$ from the composeN depth theorem.
+\end{proof}
+
+Propaganda saturation---hearing the same message $n$ times---increases
+depth at most linearly.  No amount of repetition can produce exponential
+radicalization.  This is why ``deprogramming'' is possible: the damage is
+bounded, and bounded damage can be reversed.%
+\footnote{The bounded-propaganda theorem provides a formal counterargument
+to the popular ``brainwashing'' hypothesis.  See Lifton,
+\textit{Thought Reform and the Psychology of Totalism} (1961), for the
+empirical evidence that even extreme indoctrination has bounded effects.}
+
+\begin{theorem}[Resonant Propaganda (7.15)]
+\label{thm:resonant-propaganda}
+If $s_1\res s_2$, then $r\compose s_1 \res r\compose s_2$ for all~$r$.
+\end{theorem}
+
+Competing narratives that ``resonate'' with the same cultural themes produce
+resonant (structurally similar) effects on receivers.  When Fox News and
+MSNBC draw on the same patriotic imagery, they produce resonant---not
+identical---reactions in their audiences.  The content differs; the
+\emph{structure} of the interpretive effect is preserved.
+
+\begin{theorem}[Double Propagandist Bound (7.16)]
+\label{thm:double-propagandist}
+$\mathrm{marginalDepth}(r, s_1\compose s_2) \le
+\mathrm{persuasionBound}(s_1) + \mathrm{persuasionBound}(s_2).$
+\end{theorem}
+
+Allied propaganda campaigns---joint military-religious messaging,
+corporate-governmental public relations---cannot exceed the sum of their
+individual complexities.  Coalition propaganda doesn't synergize; it merely
+adds.
+
+\begin{theorem}[Atomic Signal Minimal Persuasion (7.17)]
+\label{thm:atomic-persuasion}
+If $s$ is atomic, then $\mathrm{persuasionBound}(s) \le 1$.
+\end{theorem}
+
+Single words, simple gestures, basic symbols---all have persuasion bound at
+most~1.  To deeply transform a worldview, you need \emph{structured}
+complexity, not atomic simplicity.  A thumbs-up cannot substitute for a
+treatise.%
+\footnote{This result formalizes the linguistic insight that single lexemes
+have bounded semantic impact.  The power of language lies in
+\emph{compositional} complexity, not lexical richness.}
+
+\begin{theorem}[Iterated Propaganda Marginal Decay (7.18)]
+\label{thm:iterated-propaganda}
+$\mathrm{marginalDepth}(r, \compN{s}{n}) \le n\cdot\mathrm{persuasionBound}(s).$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the composition depth bound and the composeN depth bound:
+$\depth(r\compose\compN{s}{n})\le\depth(r)+n\cdot\depth(s)$,
+so $\mathrm{marginalDepth}\le n\cdot\depth(s)$.
+\end{proof}
+
+The $k$-th repetition of propaganda is no more effective than the first---the
+bound is uniform.  Each repetition has the same ceiling on marginal depth,
+but the \emph{actual} marginal depth can only decrease in realistic models.
+This formalizes the ``diminishing returns'' of propaganda.
+
+\begin{lstlisting}[caption={Iterated propaganda bound in Lean~4.}]
+theorem iterated_propaganda_bound (r s : I) (n : ℕ) :
+    marginalDepth r (composeN s n) <=
+      n * persuasionBound s
+\end{lstlisting}
+
+
+% ================================================================
+\section{Conclusion}
+\label{sec:pers-conclusion}
+
+This chapter established the fundamental limits of persuasion within IDT\@.
+The central result---the marginal depth bound
+(Theorem~\ref{thm:marginal-depth-bound})---states that no signal can add
+more complexity than it contains.  The subadditivity theorem
+(\ref{thm:persuasion-subadditivity}) rules out synergistic propaganda, and
+the bounded propaganda theorem (\ref{thm:bounded-propaganda}) caps the
+effect of repetition at linear growth.
+
+Together, these results provide formal foundations for Gramsci's theory of
+cultural hegemony (persuasion requires complex cultural production),
+Foucault's power/knowledge (persuasive capacity scales with discursive
+depth), and the empirical observation that totalitarian propaganda has
+bounded effectiveness.
+
+Chapter~\ref{ch:lossy} turns from the \emph{sender's} constraints to the
+\emph{receiver's}: what happens when the reception process itself is lossy?

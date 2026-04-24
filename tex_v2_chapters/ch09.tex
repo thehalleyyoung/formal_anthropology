@@ -1,0 +1,475 @@
+% ================================================================
+% CHAPTER 9: PERSUASION AS PROJECTION
+% ================================================================
+\chapter{Persuasion as Projection}
+\label{ch:persuasion}
+
+\epigraph{The ideas of the ruling class are in every epoch the ruling ideas.}
+{Karl Marx, \textit{The German Ideology}}
+
+\section{The Geometry of Influence}
+
+Persuasion is the act of changing someone's mind --- of moving their idea-vector
+in meaning space so that it more closely aligns with the persuader's own. In the
+Hilbert space model, persuasion has a strikingly clean geometric interpretation:
+it is \emph{orthogonal projection}.
+
+When a sender sends signal $s$ to a receiver with prior $r$, the receiver's
+updated belief is $r' = r \compose s$, which in the Hilbert space is
+$\embed{r'} = \embed{r} + \embed{s}$. The ``persuasive effect'' of $s$ on $r$
+is the change in $r$'s belief: $\embed{r'} - \embed{r} = \embed{s}$. But not
+all of this change is ``effective'' persuasion. The component of $\embed{s}$
+parallel to $\embed{r}$ merely reinforces the receiver's existing belief; the
+component orthogonal to $\embed{r}$ introduces genuinely new content.
+
+\begin{definition}[Persuasion Decomposition]
+\label{def:persuasion-decomposition}
+The \textbf{persuasion decomposition} of signal $s$ relative to receiver prior
+$r$ (with $\embed{r} \neq 0$) is:
+\[
+  \embed{s} = \underbrace{\frac{\rs{s}{r}}{\rs{r}{r}} \embed{r}}_{
+  \text{reinforcement component}} +
+  \underbrace{\left(\embed{s} - \frac{\rs{s}{r}}{\rs{r}{r}}
+  \embed{r}\right)}_{\text{novelty component}}.
+\]
+The \textbf{reinforcement component} $\proj{\hat{r}}{s}$ is the orthogonal
+projection of $\embed{s}$ onto the direction of $\embed{r}$. The
+\textbf{novelty component} is the remainder.
+\end{definition}
+
+\begin{theorem}[Persuasion Components]
+\label{thm:persuasion-components}
+Let $\alpha_\parallel := \frac{\rs{s}{r}}{\sqrt{\rs{r}{r}}}$ (the signed length
+of the reinforcement component) and $\alpha_\perp := \sqrt{\rs{s}{s} -
+\frac{\rs{s}{r}^2}{\rs{r}{r}}}$ (the length of the novelty component). Then:
+\begin{enumerate}
+\item $\nrm{\embed{s}}^2 = \alpha_\parallel^2 + \alpha_\perp^2$ (Pythagorean
+decomposition of signal weight);
+\item The reinforcement component has norm $|\alpha_\parallel|$;
+\item The novelty component has norm $\alpha_\perp$;
+\item $\alpha_\parallel > 0$ iff $\rs{s}{r} > 0$ (the signal reinforces the
+prior);
+\item $\alpha_\parallel < 0$ iff $\rs{s}{r} < 0$ (the signal undermines the
+prior).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+This is the standard decomposition theorem for orthogonal projections. The
+Pythagorean identity follows because the reinforcement and novelty components
+are orthogonal:
+\[
+  \nrm{\embed{s}}^2 = \nrm{\alpha_\parallel \hat{r} + v_\perp}^2
+  = \alpha_\parallel^2 + \nrm{v_\perp}^2 = \alpha_\parallel^2 + \alpha_\perp^2.
+\]
+
+In Lean~4:
+\begin{lstlisting}
+theorem persuasion_pythagoras (hr : φ r ≠ 0) :
+    ‖φ s‖ ^ 2 = (rs s r / ‖φ r‖) ^ 2 +
+    ‖φ s - (rs s r / rs r r) • φ r‖ ^ 2 := by
+  have := norm_sq_eq_inner (φ s)
+  simp [rs, proj_orthogonal_sq]
+  ring
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[The Dual Nature of Persuasion]
+\label{interp:dual-persuasion}
+The persuasion decomposition reveals that every act of persuasion has two
+distinct components:
+
+\begin{enumerate}
+\item \textbf{Reinforcement}: the part of the signal that ``preaches to the
+choir'' --- aligning with what the receiver already believes. This component
+increases the receiver's conviction in their existing direction without changing
+that direction. It is ``effective'' in the sense that the receiver readily
+absorbs it, but ``ineffective'' in the sense that it produces no genuine change
+of mind.
+
+\item \textbf{Novelty}: the part of the signal that introduces genuinely new
+content --- ideas that the receiver did not previously hold. This component
+changes the \emph{direction} of the receiver's belief vector (not just its
+magnitude) and thus constitutes genuine persuasion. But it is ``foreign'' to
+the receiver and may be resisted precisely because it does not resonate with
+their prior.
+\end{enumerate}
+
+The tension between reinforcement and novelty is the central paradox of
+persuasion. Effective persuaders must balance the two: enough reinforcement
+to be credible and palatable to the receiver, but enough novelty to actually
+change their mind. Too much reinforcement (all $\alpha_\parallel$, no
+$\alpha_\perp$) is mere flattery; too much novelty (all $\alpha_\perp$, no
+$\alpha_\parallel$) is incomprehensible. The optimal balance depends on the
+receiver's ``openness to novelty'' --- a parameter that the basic model does
+not capture but that extensions could incorporate.
+
+In the rhetoric of Aristotle, the reinforcement component corresponds to
+\emph{ethos} (the speaker's credibility, established by aligning with the
+audience's values) and the novelty component corresponds to \emph{logos} (the
+logical content of the argument). A skilled orator establishes ethos before
+deploying logos --- in geometric terms, they project onto the audience's
+direction before introducing orthogonal content.
+\end{interpretation}
+
+
+\section{The Effect of Persuasion on the Receiver}
+
+\begin{theorem}[Post-Persuasion Direction Change]
+\label{thm:direction-change}
+After receiving signal $s$, the receiver's belief direction changes from
+$\hat{r} = \embed{r}/\nrm{\embed{r}}$ to:
+\[
+  \hat{r}' = \frac{\embed{r} + \embed{s}}{\nrm{\embed{r} + \embed{s}}}.
+\]
+The angular change $\Delta\theta := \cosangle{r}{r \compose s}$ satisfies:
+\[
+  \cos(\Delta\theta) = \frac{\rs{r}{r} + \rs{r}{s}}{w(r) \cdot w(r \compose s)}
+  = \frac{w(r) + \alpha_\parallel}{\sqrt{(w(r) + \alpha_\parallel)^2 +
+  \alpha_\perp^2}},
+\]
+where $w(r) = \nrm{\embed{r}}$.
+\end{theorem}
+
+\begin{proof}
+\begin{align*}
+  \cos(\Delta\theta)
+  &= \frac{\ip{\embed{r}}{\embed{r} + \embed{s}}}
+          {\nrm{\embed{r}} \cdot \nrm{\embed{r} + \embed{s}}} \\
+  &= \frac{\nrm{\embed{r}}^2 + \ip{\embed{r}}{\embed{s}}}
+          {\nrm{\embed{r}} \cdot \nrm{\embed{r} + \embed{s}}} \\
+  &= \frac{w(r)^2 + w(r) \alpha_\parallel}
+          {w(r) \cdot \nrm{\embed{r} + \embed{s}}} \\
+  &= \frac{w(r) + \alpha_\parallel}{\nrm{\embed{r} + \embed{s}}}.
+\end{align*}
+Using $\nrm{\embed{r} + \embed{s}}^2 = (w(r) + \alpha_\parallel)^2 +
+\alpha_\perp^2$ (since the reinforcement component adds to $w(r)$ along the
+$\hat{r}$ direction, and the novelty component is perpendicular), we get the
+stated formula.
+\end{proof}
+
+\begin{corollary}[Small Novelty Approximation]
+\label{cor:small-novelty}
+When the novelty component is small relative to the reinforced prior
+($\alpha_\perp \ll w(r) + \alpha_\parallel$):
+\[
+  \Delta\theta \approx \frac{\alpha_\perp}{w(r) + \alpha_\parallel}.
+\]
+The angular change is proportional to the novelty and inversely proportional
+to the reinforced prior.
+\end{corollary}
+
+\begin{proof}
+For small $x$, $\arccos(1/(1 + x^2)^{1/2}) \approx x$. Set $x =
+\alpha_\perp / (w(r) + \alpha_\parallel)$.
+\end{proof}
+
+\begin{interpretation}[The Persuasion Paradox]
+\label{interp:persuasion-paradox}
+Corollary~\ref{cor:small-novelty} reveals a fundamental paradox of persuasion:
+\emph{the stronger the receiver's prior, the harder they are to persuade}. The
+angular change $\Delta\theta \approx \alpha_\perp / (w(r) + \alpha_\parallel)$
+is inversely proportional to $w(r)$ --- the weight of the receiver's prior.
+People with strong convictions (large $w(r)$) are hard to budge; people with
+weak convictions (small $w(r)$) are easy to move.
+
+This is geometrically intuitive: a short vector is easily deflected by adding
+another vector; a long vector barely changes direction when the same vector is
+added. The ``momentum'' of a long vector overwhelms the ``push'' of the
+persuasive signal.
+
+But the paradox deepens. The formula also shows that \emph{reinforcement makes
+the receiver harder to persuade in the future}. The term $\alpha_\parallel$
+appears in the denominator: the more the current signal reinforces the receiver's
+prior, the less any subsequent novelty will change their direction. Repeated
+reinforcement --- echo chambers, propaganda, ideological indoctrination ---
+makes the receiver's prior stronger and stronger, making them increasingly
+resistant to any future novelty.
+
+This is a \emph{positive feedback loop}: reinforcement increases resistance to
+novelty, which makes the receiver more likely to seek out reinforcement (since
+novel ideas have smaller impact and thus lower payoff), which further increases
+resistance. The geometric structure of the Hilbert space naturally produces
+the kind of ``ideological entrenchment'' observed in polarized societies.
+
+In Gramsci's framework, this positive feedback loop is the mechanism of
+\emph{hegemony}: the dominant ideology reinforces itself through repeated
+transmission, making each individual's belief vector longer and more resistant
+to alternative ideas. Challenging hegemony requires not just presenting
+alternative ideas (novelty component) but first \emph{weakening} the
+receiver's prior (reducing $w(r)$) --- a process Gramsci called the ``war of
+position.''
+\end{interpretation}
+
+
+\section{Projections and Subspace Persuasion}
+
+When we think of persuasion not as a single signal but as a \emph{subspace} of
+available signals, the theory becomes even richer.
+
+\begin{definition}[Subspace Persuasion]
+\label{def:subspace-persuasion}
+A \textbf{persuasion campaign} is a closed subspace $W \subseteq \Hspace$
+representing the set of meanings available to the persuader. The
+\textbf{optimal persuasive signal} from $W$ for a receiver with prior $r$ is
+the element of $W$ that maximizes the persuader's payoff.
+\end{definition}
+
+\begin{theorem}[Optimal Signal from a Subspace]
+\label{thm:optimal-subspace}
+If the persuader can choose any signal with $\embed{s} \in W$ (no norm
+constraint), the sender's payoff $\payoff{S}{} = \rs{s}{s} + \rs{s}{r}$ is
+unbounded above (just take $\embed{s} = t \cdot P_W(\embed{r}) / \nrm{P_W(\embed{r})}$ for $t \to \infty$).
+
+With a norm constraint $\nrm{\embed{s}} \leq M$, the optimal signal is:
+\[
+  \embed{s^*} = M \cdot \frac{P_W(\embed{r})}{\nrm{P_W(\embed{r})}},
+\]
+where $P_W$ is the orthogonal projection onto $W$. That is, the optimal signal
+points in the direction of the projection of the receiver's prior onto the
+persuader's subspace.
+\end{theorem}
+
+\begin{proof}
+With norm constraint $M$, the sender's payoff is $M^2 + \ip{\embed{s}}{\embed{r}}$
+where $\embed{s} \in W$ with $\nrm{\embed{s}} = M$. We maximize
+$\ip{\embed{s}}{\embed{r}}$ over $\embed{s} \in W$ with $\nrm{\embed{s}} = M$.
+
+By Cauchy--Schwarz restricted to $W$: $\ip{\embed{s}}{\embed{r}} =
+\ip{\embed{s}}{P_W(\embed{r}) + P_{W^\perp}(\embed{r})} =
+\ip{\embed{s}}{P_W(\embed{r})}$ (since $\embed{s} \perp W^\perp$). This is
+maximized when $\embed{s} = M \cdot P_W(\embed{r}) / \nrm{P_W(\embed{r})}$.
+
+In Lean~4 (sketch):
+\begin{lstlisting}
+theorem optimal_signal_subspace (W : Submodule ℝ H)
+    (hM : ‖s‖ = M) (hs : s ∈ W) :
+    inner s (φ r) ≤ M * ‖orthogonalProjection W (φ r)‖ := by
+  sorry -- follows from Cauchy-Schwarz restricted to W
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Persuasion as Selective Emphasis]
+\label{interp:selective}
+The optimal subspace signal theorem has a profound implication for the practice
+of persuasion: \emph{the most effective persuasion targets the aspects of the
+receiver's beliefs that overlap with the persuader's available messages}.
+
+The persuader does not try to maximize the absolute resonance of their signal
+with the receiver. Instead, they identify the component of the receiver's
+belief that lies within their own ``message space'' $W$, and they amplify that
+component. This is the geometry behind ``selective emphasis'' in rhetoric:
+effective persuaders don't fabricate new common ground; they \emph{identify
+and amplify existing common ground}.
+
+In political communication, this model explains the practice of ``targeted
+messaging.'' A political campaign with a limited set of messages (the subspace
+$W$) identifies which of its messages resonate most with each voter segment
+(computing $P_W(\embed{r})$ for different $r$) and emphasizes those messages
+for those segments. The geometry guarantees that this strategy is optimal.
+
+The model also reveals the fundamental limitation of subspace persuasion: if the
+receiver's prior has no component in $W$ (i.e., $P_W(\embed{r}) = 0$, meaning
+the receiver's beliefs are entirely orthogonal to the persuader's message
+space), then no signal from $W$ can produce positive cross-resonance. The
+persuader is ``speaking a different language'' and cannot be effective. This is
+the geometric counterpart of the observation that highly specialized propaganda
+(say, economic arguments) is ineffective on people whose beliefs are organized
+around entirely different dimensions (say, cultural identity).
+\end{interpretation}
+
+
+\section{Iterated Persuasion and Convergence}
+
+What happens when persuasion is applied repeatedly?
+
+\begin{definition}[Iterated Persuasion]
+\label{def:iterated}
+In \textbf{iterated persuasion}, the sender repeatedly sends signal $s$ to the
+receiver, who updates their belief each round:
+\begin{align*}
+  r_0 &= r \quad \text{(initial prior)}, \\
+  r_{n+1} &= r_n \compose s \quad \text{(update)}.
+\end{align*}
+In the Hilbert space: $\embed{r_n} = \embed{r} + n \embed{s}$.
+\end{definition}
+
+\begin{theorem}[Direction Convergence Under Iterated Persuasion]
+\label{thm:iterated-convergence}
+If $\embed{s} \neq 0$, the direction of the receiver's belief converges to the
+direction of the signal:
+\[
+  \lim_{n \to \infty} \hat{r}_n = \lim_{n \to \infty}
+  \frac{\embed{r} + n\embed{s}}{\nrm{\embed{r} + n\embed{s}}}
+  = \frac{\embed{s}}{\nrm{\embed{s}}} = \hat{s}.
+\]
+The convergence rate is $O(1/n)$.
+\end{theorem}
+
+\begin{proof}
+\[
+  \hat{r}_n = \frac{\embed{r} + n\embed{s}}{\nrm{\embed{r} + n\embed{s}}}
+  = \frac{\embed{r}/n + \embed{s}}{\nrm{\embed{r}/n + \embed{s}}}
+  \xrightarrow{n \to \infty} \frac{\embed{s}}{\nrm{\embed{s}}}.
+\]
+
+In Lean~4:
+\begin{lstlisting}
+theorem iterated_persuasion_conv (hs : φ s ≠ 0) :
+    Filter.Tendsto (fun n => (φ r + n • φ s) / ‖φ r + n • φ s‖)
+      Filter.atTop (nhds (φ s / ‖φ s‖)) := by
+  sorry -- standard analysis argument
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[The Inevitability of Propaganda]
+\label{interp:propaganda}
+Theorem~\ref{thm:iterated-convergence} is a mathematical model of propaganda:
+\emph{repeated exposure to the same message eventually aligns the receiver's
+beliefs with the message, regardless of the receiver's initial beliefs}.
+
+The convergence is unconditional --- it holds for \emph{any} initial prior $r$
+and \emph{any} signal $s$ (as long as $s$ is non-void). The receiver's initial
+beliefs are irrelevant in the limit; only the signal direction matters. This is
+a formalization of the propaganda principle attributed to Joseph Goebbels:
+``A lie told once remains a lie, but a lie told a thousand times becomes the
+truth.''
+
+But the convergence rate is $O(1/n)$ --- slow, polynomial, not exponential.
+A receiver with a strong prior ($w(r) \gg w(s)$) takes many rounds to be
+persuaded. This quantifies the ``resistance'' of strong beliefs: you can always
+be persuaded eventually, but the stronger your initial conviction, the longer it
+takes.
+
+The model also reveals the strategic importance of being the \emph{only}
+signal source. If the receiver is exposed to multiple signals from different
+directions, the convergence may not occur (the signals may cancel each other
+out). Effective propaganda requires not just repetition of one's own message
+but \emph{suppression of competing messages} --- a geometric prediction that
+accords with the historical practice of censorship in authoritarian regimes.
+\end{interpretation}
+
+\begin{theorem}[Competing Persuaders]
+\label{thm:competing}
+If the receiver is simultaneously exposed to signals $s_1$ and $s_2$ each
+round (updating as $r_{n+1} = r_n \compose s_1 \compose s_2$), then:
+\[
+  \embed{r_n} = \embed{r} + n(\embed{s_1} + \embed{s_2}),
+\]
+and the receiver's belief converges to the direction of $\embed{s_1} +
+\embed{s_2}$ --- the \emph{resultant} of the two signals.
+\end{theorem}
+
+\begin{proof}
+$\embed{r_n} = \embed{r} + n\embed{s_1 \compose s_2} = \embed{r} +
+n(\embed{s_1} + \embed{s_2})$. By the same argument as
+Theorem~\ref{thm:iterated-convergence}, $\hat{r}_n \to (\embed{s_1} +
+\embed{s_2}) / \nrm{\embed{s_1} + \embed{s_2}}$.
+\end{proof}
+
+\begin{interpretation}[The Marketplace of Ideas]
+\label{interp:marketplace}
+When multiple persuaders compete, the receiver's belief converges to the
+\emph{vector sum} of the competing signals. This is a mathematical model of
+the ``marketplace of ideas'': in a free society with multiple voices, public
+opinion converges to the resultant of all the voices.
+
+The resultant favors voices with larger norms (louder voices have more
+influence on the direction) and is sensitive to the angles between voices
+(reinforcing voices produce a larger resultant than conflicting ones). This
+is a more nuanced picture than the naive ``marketplace'' metaphor suggests:
+the outcome is not simply the ``best idea winning'' but a geometric resultant
+that depends on the relative weights and directions of all participants.
+
+If the two signals are perfectly opposed ($\embed{s_1} = -\embed{s_2}$), their
+resultant is the zero vector: the competing signals cancel, and the receiver's
+belief does not converge at all. Their direction remains at $\hat{r}$ forever,
+undisturbed by the balanced opposition. This is a model of how balanced media
+coverage can paradoxically leave public opinion \emph{unmoved}: when two
+equally weighted opposing messages cancel, the net effect is zero.
+
+If one signal is much larger than the other ($\nrm{\embed{s_1}} \gg
+\nrm{\embed{s_2}}$), the resultant is approximately in the direction of $s_1$:
+the larger signal dominates. This is the geometric foundation of \emph{soft
+power}: in a marketplace of ideas, the voice with the most weight (best
+production values, widest distribution, most prestigious source) dominates not
+by suppressing other voices but by outweighing them vectorially.
+\end{interpretation}
+
+
+\section{Gramsci's Hegemony in Hilbert Space}
+
+We close this chapter with a formalization of Gramsci's concept of cultural
+hegemony.
+
+\begin{definition}[Cultural Hegemony]
+\label{def:hegemony}
+An idea $h \in \IS$ is \textbf{hegemonic} over a population of ideas
+$\{a_1, \ldots, a_n\}$ if:
+\[
+  \rs{h}{a_i} > 0 \quad \text{for all } i,
+\]
+and
+\[
+  \nrm{\embed{h}} \geq \nrm{\embed{a_i}} \quad \text{for all } i.
+\]
+That is, $h$ has positive resonance with every idea in the population and has
+at least as much weight as any of them.
+\end{definition}
+
+\begin{theorem}[Hegemonic Stability]
+\label{thm:hegemonic-stability}
+If $h$ is hegemonic over $\{a_1, \ldots, a_n\}$, then for each $i$:
+\[
+  \payoff{h}{h, a_i} = \rs{h}{h} + \rs{h}{a_i} > \rs{h}{h} > 0.
+\]
+The hegemonic idea benefits positively from every interaction and benefits more
+than any individual counter-idea.
+\end{theorem}
+
+\begin{proof}
+$\payoff{h}{h, a_i} = \rs{h}{h} + \rs{h}{a_i} > \rs{h}{h}$ since
+$\rs{h}{a_i} > 0$. And $\payoff{h}{} - \payoff{a_i}{} = \rs{h}{h} -
+\rs{a_i}{a_i} \geq 0$ by the norm dominance condition.
+\end{proof}
+
+\begin{interpretation}[The Geometry of Hegemony]
+\label{interp:hegemony}
+Hegemony in IDT~v2 has a precise geometric meaning: a hegemonic idea is a
+vector of large norm that has positive inner product with every idea in the
+population. Geometrically, it is a vector that lies in the ``positive orthant''
+relative to all population vectors --- it projects favorably onto every cultural
+direction simultaneously.
+
+Such vectors exist only when the population's ideas do not span too large
+an angular range. If the population includes ideas at angles greater than
+$\pi/2$ from each other (partial conflict), no single vector can have positive
+inner product with all of them. Hegemony is therefore possible only in
+populations with a certain degree of pre-existing ideological coherence ---
+a mathematical version of Gramsci's observation that hegemony requires the
+``consent'' (here, positive resonance) of the governed.
+
+The norm dominance condition ensures that the hegemonic idea ``outweighs'' every
+competing idea, guaranteeing a higher payoff in every pairwise interaction.
+This is not merely a matter of truth or persuasive power but of sheer cultural
+\emph{weight}: the hegemonic idea is the one that has accumulated the most
+norm through historical processes of repetition, institutionalization, and
+cultural embedding.
+
+Breaking hegemony requires either (1) introducing an idea that has negative
+resonance with $h$ (challenging the hegemony head-on, at the cost of conflict
+with the entire population), (2) rotating the population's idea vectors so
+that $h$ no longer has positive resonance with all of them (a ``war of
+position'' that gradually changes cultural terrain), or (3) introducing a new
+dimension of meaning that $h$ does not occupy (an ``outside'' perspective that
+creates a new axis of evaluation). All three strategies have historical
+precedents, and IDT~v2 can model each geometrically.
+\end{interpretation}
+
+\bigskip
+
+Persuasion as projection reveals the deep geometry of influence: reinforcement
+vs.\ novelty, the paradox of strong priors, the inevitability of repeated
+propaganda, and the conditions for hegemony. In Chapter~\ref{ch:spectral}, we
+scale from pairwise interactions to entire networks, using spectral theory to
+uncover the principal modes of cultural agreement in populations of ideas.

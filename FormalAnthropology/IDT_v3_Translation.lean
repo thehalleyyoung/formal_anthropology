@@ -1444,4 +1444,1622 @@ theorem selfDisagreement (φ : I → I) (a : I) :
 
 end MultiTarget
 
+/-! ## §31. Jakobson's Three Types of Translation
+
+Roman Jakobson (1959) identified three fundamental types of translation:
+1. **Intralingual** — rewording within the same language
+2. **Interlingual** — translation between languages
+3. **Intersemiotic** — transmutation between sign systems
+
+In IDT, all three are endofunctions on the ideatic space, but they
+differ in what they preserve. Intralingual preserves self-resonance,
+interlingual preserves compositional structure, and intersemiotic
+may change both. -/
+
+section JakobsonTypes
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Jakobson's intralingual translation: rewording preserves self-resonance.
+    "Saying the same thing in different words within one language." -/
+def intralingual (φ : I → I) : Prop :=
+  ∀ a, rs (φ a) (φ a) = rs a a
+
+/-- Jakobson's interlingual translation: preserves resonance structure.
+    This is simply faithfulness — the standard notion. -/
+def interlingual (φ : I → I) : Prop := faithful φ
+
+/-- Jakobson's intersemiotic translation: transmutation between sign
+    systems. Only preserves void and compositional structure, but
+    may change resonance values entirely. -/
+def intersemiotic (φ : I → I) : Prop :=
+  voidPreserving φ ∧ compositional φ
+
+/-- Every interlingual translation is intralingual: preserving all
+    resonances entails preserving self-resonance. -/
+theorem interlingual_is_intralingual (φ : I → I) (h : interlingual φ) :
+    intralingual φ :=
+  fun a => h a a
+
+/-- Intersemiotic translation is literally "literal" (in our sense). -/
+theorem intersemiotic_is_literal (φ : I → I) (h : intersemiotic φ) :
+    literal φ := h
+
+/-- Identity is intralingual. -/
+theorem id_intralingual : intralingual (id : I → I) := fun _ => rfl
+
+/-- Identity is interlingual. -/
+theorem id_interlingual : interlingual (id : I → I) := id_faithful
+
+/-- Identity is intersemiotic. -/
+theorem id_intersemiotic : intersemiotic (id : I → I) :=
+  ⟨id_voidPreserving, id_compositional⟩
+
+/-- Intralingual translations have zero weight change. -/
+theorem intralingual_zero_weightChange (φ : I → I) (h : intralingual φ)
+    (a : I) : weightChange φ a = 0 := by
+  unfold weightChange; rw [h a]; ring
+
+/-- Composition of intralingual translations is intralingual. -/
+theorem intralingual_comp (φ ψ : I → I) (hφ : intralingual φ)
+    (hψ : intralingual ψ) : intralingual (ψ ∘ φ) := by
+  intro a; simp [Function.comp]; rw [hψ (φ a), hφ a]
+
+/-- Composition of interlingual translations is interlingual. -/
+theorem interlingual_comp (φ ψ : I → I) (hφ : interlingual φ)
+    (hψ : interlingual ψ) : interlingual (ψ ∘ φ) :=
+  faithful_comp ψ φ hψ hφ
+
+/-- Composition of intersemiotic translations is intersemiotic. -/
+theorem intersemiotic_comp (φ ψ : I → I) (hφ : intersemiotic φ)
+    (hψ : intersemiotic ψ) : intersemiotic (ψ ∘ φ) :=
+  literal_comp ψ φ hψ hφ
+
+/-- An intersemiotic translation has zero emergence gap.
+    Jakobson: transmutation preserves compositional structure. -/
+theorem intersemiotic_zero_emergence (φ : I → I) (h : intersemiotic φ)
+    (a b c : I) : translationEmergence φ a b c = 0 :=
+  compositional_zero_emergence φ h.2 a b c
+
+/-- An interlingual + compositional translation is always domesticating.
+    Jakobson: a fully structure-preserving interlingual translation is domesticating. -/
+theorem interlingual_compositional_domesticating (φ : I → I)
+    (_h : interlingual φ) (hc : compositional φ)
+    (a b c : I) : domesticating φ a b c := by
+  exact compositional_domesticating φ hc a b c
+
+end JakobsonTypes
+
+/-! ## §32. Steiner's Hermeneutic Motion
+
+George Steiner (After Babel, 1975) described translation as a
+fourfold hermeneutic motion:
+1. **Trust** — the translator trusts the source has meaning
+2. **Aggression** — the translator extracts meaning
+3. **Incorporation** — the translator absorbs meaning into the target
+4. **Restitution** — the translator compensates for what was taken
+
+We formalize each phase as a property of the translation map. -/
+
+section SteinerMotion
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Steiner's trust: the translator believes the source has
+    non-trivial resonance structure. A non-void source. -/
+def steinerTrust (a : I) : Prop := a ≠ void
+
+/-- Steiner's aggression: the translator's operation extracts
+    resonance — self-resonance of the result is at least the source's.
+    The translation "takes" from the source. -/
+def steinerAggression (φ : I → I) (a : I) : Prop :=
+  rs (φ a) (φ a) ≥ rs a a
+
+/-- Steiner's incorporation: the translated idea resonates with the
+    target culture c. The extraction is "absorbed" into the target. -/
+def steinerIncorporation (φ : I → I) (a c : I) : Prop :=
+  rs (φ a) c ≥ rs a c
+
+/-- Steiner's restitution: the translator compensates — the total
+    "weight" doesn't increase beyond what can be justified.
+    Formalized: weight change is non-negative but bounded by emergence. -/
+def steinerRestitution (φ : I → I) (a : I) : Prop :=
+  weightChange φ a ≥ 0
+
+/-- A non-void idea satisfies Steiner's trust. -/
+theorem steiner_trust_of_ne_void (a : I) (h : a ≠ void) :
+    steinerTrust a := h
+
+/-- Faithful translations satisfy aggression (with equality). -/
+theorem faithful_aggression (φ : I → I) (h : faithful φ) (a : I) :
+    steinerAggression φ a := by
+  unfold steinerAggression; rw [h a a]
+
+/-- Identity satisfies aggression. -/
+theorem id_aggression (a : I) :
+    steinerAggression (id : I → I) a := le_refl _
+
+/-- Identity satisfies restitution. -/
+theorem id_restitution (a : I) :
+    steinerRestitution (id : I → I) a := by
+  unfold steinerRestitution weightChange; simp
+
+/-- Faithful translations satisfy restitution (weight change = 0). -/
+theorem faithful_restitution (φ : I → I) (h : faithful φ) (a : I) :
+    steinerRestitution φ a := by
+  unfold steinerRestitution; rw [faithful_zero_weightChange φ h a]
+
+/-- The hermeneutic motion is complete when trust, aggression, and
+    restitution all hold. -/
+def completeHermeneuticMotion (φ : I → I) (a : I) : Prop :=
+  steinerTrust a ∧ steinerAggression φ a ∧ steinerRestitution φ a
+
+/-- Identity performs a complete hermeneutic motion on any non-void idea. -/
+theorem id_complete_motion (a : I) (h : a ≠ void) :
+    completeHermeneuticMotion (id : I → I) a :=
+  ⟨h, id_aggression a, id_restitution a⟩
+
+/-- Faithful translations perform complete hermeneutic motion on non-void ideas. -/
+theorem faithful_complete_motion (φ : I → I) (hf : faithful φ) (a : I)
+    (h : a ≠ void) : completeHermeneuticMotion φ a :=
+  ⟨h, faithful_aggression φ hf a, faithful_restitution φ hf a⟩
+
+end SteinerMotion
+
+/-! ## §33. Berman's Twelve Deforming Tendencies
+
+Antoine Berman (1985) identified twelve "deforming tendencies" in
+translation — systematic ways translations distort the source text.
+We formalize several key tendencies as measurable properties of
+translation maps. -/
+
+section BermanTendencies
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Berman's rationalization: the translation imposes more compositional
+    order than the source. Measured by reduction in emergence magnitude. -/
+noncomputable def rationalizationDegree (φ : I → I) (a b c : I) : ℝ :=
+  |emergence a b c| - |emergence (φ a) (φ b) c|
+
+/-- Berman's clarification: the translation makes explicit what was
+    implicit. Measured by increase in resonance with observer c. -/
+noncomputable def clarificationDegree (φ : I → I) (a c : I) : ℝ :=
+  rs (φ a) c - rs a c
+
+/-- Berman's expansion: the translation is "wordier" — higher
+    self-resonance (more "weight"). -/
+noncomputable def expansionDegree (φ : I → I) (a : I) : ℝ :=
+  rs (φ a) (φ a) - rs a a
+
+/-- Expansion degree equals weight change. -/
+theorem expansion_eq_weight (φ : I → I) (a : I) :
+    expansionDegree φ a = weightChange φ a := rfl
+
+/-- Berman's ennoblement: the translation "elevates" style —
+    increases resonance with a cultural ideal c.
+    Same as clarification but for a prestige observer. -/
+noncomputable def ennoblementDegree (φ : I → I) (a prestige : I) : ℝ :=
+  clarificationDegree φ a prestige
+
+/-- Berman's destruction of rhythms: the translation changes the
+    self-resonance pattern of repeated composition. -/
+noncomputable def rhythmDestruction (φ : I → I) (a : I) : ℝ :=
+  rs (compose (φ a) (φ a)) (compose (φ a) (φ a)) -
+  rs (compose a a) (compose a a)
+
+/-- Identity has zero rationalization. -/
+theorem id_zero_rationalization (a b c : I) :
+    rationalizationDegree (id : I → I) a b c = 0 := by
+  unfold rationalizationDegree; simp
+
+/-- Identity has zero clarification. -/
+theorem id_zero_clarification (a c : I) :
+    clarificationDegree (id : I → I) a c = 0 := by
+  unfold clarificationDegree; simp
+
+/-- Identity has zero expansion. -/
+theorem id_zero_expansion (a : I) :
+    expansionDegree (id : I → I) a = 0 := by
+  unfold expansionDegree; simp
+
+/-- Faithful translations have zero expansion. -/
+theorem faithful_zero_expansion (φ : I → I) (h : faithful φ) (a : I) :
+    expansionDegree φ a = 0 := by
+  unfold expansionDegree; rw [h a a]; ring
+
+/-- Berman's qualitative impoverishment: the loss of texture,
+    measured by decrease in self-resonance. -/
+noncomputable def qualitativeImpoverishment (φ : I → I) (a : I) : ℝ :=
+  rs a a - rs (φ a) (φ a)
+
+/-- Qualitative impoverishment is the negation of expansion. -/
+theorem impoverishment_neg_expansion (φ : I → I) (a : I) :
+    qualitativeImpoverishment φ a = -expansionDegree φ a := by
+  unfold qualitativeImpoverishment expansionDegree; ring
+
+/-- Identity has zero impoverishment. -/
+theorem id_zero_impoverishment (a : I) :
+    qualitativeImpoverishment (id : I → I) a = 0 := by
+  unfold qualitativeImpoverishment; simp
+
+/-- Berman's quantitative impoverishment: the destruction of
+    compositional patterns. Measured by how much compositionality fails. -/
+noncomputable def quantitativeImpoverishment (φ : I → I) (a b c : I) : ℝ :=
+  |translationEmergence φ a b c|
+
+/-- Compositional translations have zero quantitative impoverishment. -/
+theorem compositional_zero_quant_impoverishment (φ : I → I) (h : compositional φ)
+    (a b c : I) : quantitativeImpoverishment φ a b c = 0 := by
+  unfold quantitativeImpoverishment
+  rw [compositional_zero_emergence φ h a b c]; simp
+
+/-- Berman's effacement of superimposition: the destruction of
+    layered meaning, measured by change in emergence between translated pairs. -/
+noncomputable def superimpositionEffacement (φ : I → I) (a b c : I) : ℝ :=
+  emergence a b c - emergence (φ a) (φ b) c
+
+/-- Author-oriented + compositional translations have zero superimposition effacement.
+    When φ preserves resonance FROM its output (author-oriented), and preserves
+    compositional structure, the layered meaning is preserved. -/
+theorem authorOriented_zero_effacement (φ : I → I) (ha : authorOriented φ)
+    (hc : compositional φ) (a b c : I) :
+    superimpositionEffacement φ a b c = 0 := by
+  unfold superimpositionEffacement emergence
+  -- Goal involves compose(φ a)(φ b). Rewrite using compositionality.
+  have h1 : rs (compose (φ a) (φ b)) c = rs (φ (compose a b)) c := by
+    congr 1; exact (hc a b).symm
+  rw [h1, ha (compose a b) c, ha a c, ha b c]; ring
+
+/-- Identity has zero superimposition effacement. -/
+theorem id_zero_effacement (a b c : I) :
+    superimpositionEffacement (id : I → I) a b c = 0 := by
+  unfold superimpositionEffacement; simp
+
+end BermanTendencies
+
+/-! ## §34. Toury's Descriptive Translation Studies — Norms
+
+Gideon Toury's (1995) descriptive translation studies centers on
+"norms" — the regularities that govern translation behavior in a
+culture. We formalize:
+- **Initial norm**: source vs. target orientation
+- **Preliminary norms**: what gets translated
+- **Operational norms**: how translation decisions are made -/
+
+section TouryNorms
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Toury's adequacy: a translation is adequate (source-oriented) to
+    the degree it preserves source resonance structure. Faithful
+    translations are maximally adequate. -/
+noncomputable def touryAdequacy (φ : I → I) (a b : I) : ℝ :=
+  -(|translationFidelity φ a b|)
+
+/-- Faithful translations have maximum adequacy (zero loss). -/
+theorem faithful_max_adequacy (φ : I → I) (h : faithful φ) (a b : I) :
+    touryAdequacy φ a b = 0 := by
+  unfold touryAdequacy; rw [faithful_zero_fidelity φ h a b]; simp
+
+/-- Toury's acceptability: a translation is acceptable (target-oriented)
+    to the degree it achieves resonance with a target-culture norm c. -/
+noncomputable def touryAcceptability (φ : I → I) (a norm : I) : ℝ :=
+  rs (φ a) norm
+
+/-- Identity acceptability = source's resonance with the norm. -/
+theorem id_acceptability (a norm : I) :
+    touryAcceptability (id : I → I) a norm = rs a norm := rfl
+
+/-- Toury's initial norm tension: the trade-off between adequacy
+    and acceptability. The sum measures the translator's position. -/
+noncomputable def initialNormTension (φ : I → I) (a b norm : I) : ℝ :=
+  touryAdequacy φ a b + touryAcceptability φ a norm
+
+/-- Toury's operational norm: compositionality constraint.
+    Operational norms govern segmentation — we model as the degree
+    to which translation respects compositional boundaries. -/
+noncomputable def operationalNormViolation (φ : I → I) (a b c : I) : ℝ :=
+  |translationEmergence φ a b c|
+
+/-- Compositional translations satisfy operational norms perfectly. -/
+theorem compositional_operational (φ : I → I) (h : compositional φ)
+    (a b c : I) : operationalNormViolation φ a b c = 0 := by
+  unfold operationalNormViolation
+  rw [compositional_zero_emergence φ h a b c]; simp
+
+/-- Toury's law of growing standardization: repeated translation
+    chains tend toward the "standard" (identity).
+    Faithful chains have zero deviation from standard. -/
+theorem standardization_faithful (φ ψ : I → I) (hφ : faithful φ)
+    (hψ : faithful ψ) (a b : I) :
+    touryAdequacy (ψ ∘ φ) a b = 0 := by
+  unfold touryAdequacy
+  rw [faithful_zero_fidelity (ψ ∘ φ) (faithful_comp ψ φ hψ hφ) a b]; simp
+
+end TouryNorms
+
+/-! ## §35. Lefevere's Refraction and Patronage
+
+André Lefevere (1992) argued that translation is "refraction" —
+ideas are bent through the lens of ideology, poetics, and patronage.
+Translation is never transparent; it is always mediated by power
+structures. -/
+
+section LefevereRefraction
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Lefevere's refraction: translation through an ideological lens.
+    The lens L "bends" the resonance of a. -/
+noncomputable def refraction (lens a : I) : I :=
+  compose lens a
+
+/-- Refraction through void = no refraction. -/
+theorem refraction_void_lens (a : I) :
+    refraction (void : I) a = a := by
+  unfold refraction; simp
+
+/-- Refraction of void = the lens itself.
+    Lefevere: even silence is ideologically charged. -/
+theorem refraction_void_source (lens : I) :
+    refraction lens (void : I) = lens := by
+  unfold refraction; simp
+
+/-- The refraction gap: how much the lens changes resonance with c. -/
+noncomputable def refractionGap (lens a c : I) : ℝ :=
+  rs (refraction lens a) c - rs a c
+
+/-- Void lens has zero refraction gap. -/
+theorem void_refraction_gap (a c : I) :
+    refractionGap (void : I) a c = 0 := by
+  unfold refractionGap refraction; simp
+
+/-- Refraction gap decomposes into emergence + lens contribution.
+    Lefevere: the ideological distortion is emergence + direct influence. -/
+theorem refraction_gap_eq (lens a c : I) :
+    refractionGap lens a c = emergence lens a c + rs lens c := by
+  unfold refractionGap refraction emergence; ring
+
+/-- Lefevere's patronage: the patron P determines which translations
+    are produced. A patron-approved translation achieves high resonance
+    with the patron's interests. -/
+noncomputable def patronageAlignment (φ : I → I) (a patron : I) : ℝ :=
+  rs (φ a) patron
+
+/-- Identity patronage = source's own alignment with the patron. -/
+theorem id_patronage (a patron : I) :
+    patronageAlignment (id : I → I) a patron = rs a patron := rfl
+
+/-- Double refraction: two ideological lenses composed.
+    Lefevere: power structures are layered. -/
+noncomputable def doubleRefraction (lens1 lens2 a : I) : I :=
+  refraction lens1 (refraction lens2 a)
+
+/-- Double refraction is triple composition. -/
+theorem double_refraction_eq (lens1 lens2 a : I) :
+    doubleRefraction lens1 lens2 a = compose lens1 (compose lens2 a) := rfl
+
+/-- Refraction is associative: composing lenses then refracting = sequential refraction. -/
+theorem refraction_assoc (lens1 lens2 a : I) :
+    refraction (compose lens1 lens2) a = doubleRefraction lens1 lens2 a := by
+  simp [refraction, doubleRefraction, compose_assoc']
+
+end LefevereRefraction
+
+/-! ## §36. Bassnett and Lefevere's Cultural Turn
+
+Susan Bassnett and André Lefevere (1990) proposed the "cultural turn"
+in translation studies: translation is not merely linguistic transfer
+but a form of cultural negotiation. The target culture's norms shape
+what is translatable. -/
+
+section CulturalTurn
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Cultural distance: how much resonance changes when both ideas
+    are embedded in a cultural context C. -/
+noncomputable def culturalDistance (C a b : I) : ℝ :=
+  rs (compose C a) (compose C b) - rs a b
+
+/-- Void culture imposes zero cultural distance. -/
+theorem void_cultural_distance (a b : I) :
+    culturalDistance (void : I) a b = 0 := by
+  unfold culturalDistance; simp
+
+/-- Cultural distance with void pair: embedding void in culture C
+    vs. resonance of void with b. -/
+theorem cultural_distance_void_left (C b : I) :
+    culturalDistance C (void : I) b = rs C (compose C b) - rs (void : I) b := by
+  unfold culturalDistance; simp
+
+/-- Cultural embedding: how translation operates within a culture.
+    The "cultural translation" of a through culture C toward audience d. -/
+noncomputable def culturalEmbedding (C a d : I) : ℝ :=
+  rs (compose C a) d
+
+/-- Void culture embedding is just resonance. -/
+theorem void_cultural_embedding (a d : I) :
+    culturalEmbedding (void : I) a d = rs a d := by
+  unfold culturalEmbedding; simp
+
+/-- Cultural embedding of void: only the culture resonates. -/
+theorem cultural_embedding_void (C d : I) :
+    culturalEmbedding C (void : I) d = rs C d := by
+  unfold culturalEmbedding; simp
+
+/-- The cultural negotiation gap: how much a differs from b when
+    both are embedded in the same culture. -/
+noncomputable def culturalNegotiationGap (C a b d : I) : ℝ :=
+  culturalEmbedding C a d - culturalEmbedding C b d
+
+/-- Cultural negotiation gap is antisymmetric. -/
+theorem cultural_negotiation_antisymm (C a b d : I) :
+    culturalNegotiationGap C a b d = -culturalNegotiationGap C b a d := by
+  unfold culturalNegotiationGap; ring
+
+/-- Negotiation gap vanishes for identical ideas. -/
+theorem cultural_negotiation_self (C a d : I) :
+    culturalNegotiationGap C a a d = 0 := by
+  unfold culturalNegotiationGap; ring
+
+end CulturalTurn
+
+/-! ## §37. Post-Colonial Translation Theory
+
+Tejaswini Niranjana (Siting Translation, 1992) and Gayatri Spivak
+argue that translation is never neutral — it is always embedded in
+power relations. Colonial translation "domesticates" the Other;
+post-colonial translation resists this by preserving alterity. -/
+
+section PostColonialTranslation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Colonial translation: the colonizer's lens L forces the source
+    into the colonizer's framework. This is refraction through
+    the colonial gaze. -/
+noncomputable def colonialTranslation (colonialLens source : I) : I :=
+  compose colonialLens source
+
+/-- Niranjana's asymmetry of colonial translation: the colonial lens
+    adds its own resonance on top of the source. The gap measures
+    epistemic violence. -/
+noncomputable def epistemicViolence (colonialLens source observer : I) : ℝ :=
+  rs (colonialTranslation colonialLens source) observer - rs source observer
+
+/-- Epistemic violence is zero when the colonial lens is void
+    (i.e., transparent, non-colonial). -/
+theorem epistemic_violence_void (source observer : I) :
+    epistemicViolence (void : I) source observer = 0 := by
+  unfold epistemicViolence colonialTranslation; simp
+
+/-- Epistemic violence decomposes into emergence + direct lens effect.
+    Spivak: the violence is both structural (emergence) and direct. -/
+theorem epistemic_violence_decompose (L source observer : I) :
+    epistemicViolence L source observer = emergence L source observer + rs L observer := by
+  unfold epistemicViolence colonialTranslation emergence; ring
+
+/-- Post-colonial resistance: a translation that counteracts the colonial
+    lens by minimizing resonance with the colonial norm. -/
+noncomputable def resistanceDegree (φ : I → I) (a colonialNorm : I) : ℝ :=
+  rs a colonialNorm - rs (φ a) colonialNorm
+
+/-- Identity has zero resistance (it doesn't change anything). -/
+theorem id_zero_resistance (a colonialNorm : I) :
+    resistanceDegree (id : I → I) a colonialNorm = 0 := by
+  unfold resistanceDegree; simp
+
+/-- Spivak's "strategic essentialism": using the colonizer's own
+    categories to resist. Modeled as composing source WITH the colonial
+    lens, then measuring how it reshapes the lens's own resonance. -/
+noncomputable def strategicEssentialism (source colonialLens : I) : ℝ :=
+  rs (compose source colonialLens) colonialLens - rs colonialLens colonialLens
+
+/-- Strategic essentialism with void source: silence doesn't resist. -/
+theorem strategic_essentialism_void (colonialLens : I) :
+    strategicEssentialism (void : I) colonialLens = 0 := by
+  unfold strategicEssentialism; simp
+
+/-- Niranjana's double bind: the translator is caught between
+    preserving source authenticity and making it intelligible.
+    The measure is the gap between fidelity to source and to target. -/
+noncomputable def doubleBind (φ : I → I) (a source target : I) : ℝ :=
+  |rs (φ a) source - rs a source| + |rs (φ a) target - rs a target|
+
+/-- Identity has zero double bind. -/
+theorem id_zero_doubleBind (a source target : I) :
+    doubleBind (id : I → I) a source target = 0 := by
+  unfold doubleBind; simp
+
+end PostColonialTranslation
+
+/-! ## §38. Machine Translation — Formal Limits
+
+Formalizing the inherent limitations of machine translation:
+optimizing for one criterion creates blind spots for others.
+This extends §22 with deeper structural results. -/
+
+section MachineTranslationLimits
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- An MT system is loss-minimizing for a pair (a,b) under observer c
+    if the absolute relevance gap is zero. -/
+def mtLossMinimal (φ : I → I) (a c : I) : Prop :=
+  rs (φ a) c = rs a c
+
+/-- Loss-minimal for void observer is trivially true. -/
+theorem mt_loss_void (φ : I → I) (a : I) :
+    mtLossMinimal φ a (void : I) := by
+  unfold mtLossMinimal; simp [rs_void_right']
+
+/-- Loss-minimality for c is exactly dynamic equivalence at c. -/
+theorem mt_loss_eq_dynamic (φ : I → I) (c : I) :
+    (∀ a, mtLossMinimal φ a c) ↔ dynamicEquivalence φ c :=
+  Iff.rfl
+
+/-- Composition preserves loss-minimality. -/
+theorem mt_loss_comp (φ ψ : I → I) (a c : I)
+    (hφ : mtLossMinimal φ a c) (hψ : mtLossMinimal ψ (φ a) c) :
+    mtLossMinimal (ψ ∘ φ) a c := by
+  unfold mtLossMinimal at *; simp [Function.comp]; linarith
+
+/-- The MT emergence gap: how much emergence is missed by the MT system.
+    Measures what no loss function can capture about compositional meaning. -/
+noncomputable def mtEmergenceGap (φ : I → I) (a b c : I) : ℝ :=
+  emergence a b c - emergence (φ a) (φ b) c
+
+/-- Author-oriented + compositional MT has zero emergence gap. -/
+theorem faithful_mt_zero_gap (φ : I → I) (ha : authorOriented φ) (hc : compositional φ)
+    (a b c : I) : mtEmergenceGap φ a b c = 0 :=
+  authorOriented_zero_effacement φ ha hc a b c
+
+/-- The MT fidelity-fluency trade-off: faithful translation may not
+    be compositional, and vice versa. We formalize: if both hold, identity. -/
+theorem mt_fidelity_fluency_id (φ : I → I)
+    (hf : faithful φ) (hc : compositional φ) (hv : voidPreserving φ) :
+    formalEquivalence φ :=
+  ⟨hf, hc⟩
+
+end MachineTranslationLimits
+
+/-! ## §39. Multimodal Translation
+
+Translation between modalities: text → image, speech → writing,
+music → dance. Each modality is a different "section" of the ideatic
+space with its own resonance patterns. We model modalities as
+projection maps. -/
+
+section MultimodalTranslation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- A modality is a projection: applying it twice is the same as once.
+    "Once you're in visual mode, re-visualizing doesn't change anything." -/
+def isModality (π : I → I) : Prop := ∀ a, π (π a) = π a
+
+/-- Identity is trivially a modality. -/
+theorem id_isModality : isModality (id : I → I) := fun _ => rfl
+
+/-- The cross-modal gap: how much resonance changes when one idea
+    is projected to a different modality. -/
+noncomputable def crossModalGap (π : I → I) (a b : I) : ℝ :=
+  rs (π a) b - rs a b
+
+/-- Identity has zero cross-modal gap. -/
+theorem id_zero_crossModalGap (a b : I) :
+    crossModalGap (id : I → I) a b = 0 := by
+  unfold crossModalGap; simp
+
+/-- Modal self-distortion: how much a modality changes self-resonance. -/
+noncomputable def modalSelfDistortion (π : I → I) (a : I) : ℝ :=
+  rs (π a) (π a) - rs a a
+
+/-- Intralingual modalities have zero self-distortion. -/
+theorem intralingual_modal_distortion (π : I → I) (h : intralingual π)
+    (a : I) : modalSelfDistortion π a = 0 := by
+  unfold modalSelfDistortion; rw [h a]; ring
+
+/-- Cross-modal emergence: the emergence that arises from composing
+    ideas from different modalities. -/
+noncomputable def crossModalEmergence (π₁ π₂ : I → I) (a b c : I) : ℝ :=
+  emergence (π₁ a) (π₂ b) c
+
+/-- Same-modality emergence reduces to standard emergence on projected ideas. -/
+theorem same_modal_emergence (π : I → I) (a b c : I) :
+    crossModalEmergence π π a b c = emergence (π a) (π b) c := rfl
+
+/-- Void modality produces zero cross-modal emergence with void observer. -/
+theorem void_crossModalEmergence (π : I → I) (hv : voidPreserving π)
+    (b c : I) :
+    crossModalEmergence π id (void : I) b c = emergence (void : I) b c := by
+  unfold crossModalEmergence; rw [hv]; rfl
+
+/-- Multimodal composition: composing across modalities. -/
+noncomputable def multimodalCompose (π₁ π₂ : I → I) (a b : I) : I :=
+  compose (π₁ a) (π₂ b)
+
+/-- Multimodal composition with identities is standard composition. -/
+theorem multimodal_id (a b : I) :
+    multimodalCompose (id : I → I) (id : I → I) a b = compose a b := rfl
+
+/-- Multimodal composition with void left. -/
+theorem multimodal_void_left (π₁ π₂ : I → I) (hv : voidPreserving π₁)
+    (b : I) : multimodalCompose π₁ π₂ (void : I) b = π₂ b := by
+  unfold multimodalCompose; rw [hv]; simp
+
+end MultimodalTranslation
+
+/-! ## §40. Translation Universals
+
+Baker (1993) and Laviosa-Braithwaite (1998) proposed "translation
+universals" — features that are common to ALL translations regardless
+of language pair:
+1. **Simplification**: translations are simpler than originals
+2. **Explicitation**: translations make implicit information explicit
+3. **Normalization**: translations gravitate toward conventional patterns
+4. **Leveling-out**: translations are more homogeneous than originals -/
+
+section TranslationUniversals
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Simplification: the translation reduces self-resonance (weight).
+    Simpler ideas have less "resonance mass." -/
+def simplifying (φ : I → I) (a : I) : Prop :=
+  rs (φ a) (φ a) ≤ rs a a
+
+/-- Identity is not simplifying (unless trivial). More precisely,
+    identity is exactly weight-preserving, hence weakly simplifying. -/
+theorem id_weakly_simplifying (a : I) :
+    simplifying (id : I → I) a := le_refl _
+
+/-- Explicitation: the translation increases resonance with a specific
+    "explicit meaning" observer e. -/
+def explicitating (φ : I → I) (a e : I) : Prop :=
+  rs (φ a) e ≥ rs a e
+
+/-- Identity is weakly explicitating. -/
+theorem id_weakly_explicitating (a e : I) :
+    explicitating (id : I → I) a e := le_refl _
+
+/-- Normalization: the translation makes the idea more "standard" —
+    closer to a norm n in resonance. -/
+def normalizing (φ : I → I) (a n : I) : Prop :=
+  |rs (φ a) n - rs n n| ≤ |rs a n - rs n n|
+
+/-- Identity is trivially normalizing. -/
+theorem id_normalizing (a n : I) :
+    normalizing (id : I → I) a n := le_refl _
+
+/-- Leveling out: two different ideas become more alike under translation.
+    Measured by their resonance getting closer to each other. -/
+def levelingOut (φ : I → I) (a b c : I) : Prop :=
+  |rs (φ a) c - rs (φ b) c| ≤ |rs a c - rs b c|
+
+/-- Identity trivially levels out. -/
+theorem id_levelingOut (a b c : I) :
+    levelingOut (id : I → I) a b c := le_refl _
+
+/-- A faithful translation levels out trivially (exact preservation). -/
+theorem faithful_levelingOut (φ : I → I) (h : faithful φ) (a b c : I)
+    (hc : φ c = c) : levelingOut φ a b c := by
+  unfold levelingOut
+  have h1 := h a c; rw [hc] at h1
+  have h2 := h b c; rw [hc] at h2
+  rw [h1, h2]
+
+/-- A simplifying, explicitating translation is a "typical" translation
+    in Baker's sense. -/
+def bakerTypical (φ : I → I) (a e : I) : Prop :=
+  simplifying φ a ∧ explicitating φ a e
+
+/-- Identity is Baker-typical (weakly). -/
+theorem id_bakerTypical (a e : I) :
+    bakerTypical (id : I → I) a e :=
+  ⟨id_weakly_simplifying a, id_weakly_explicitating a e⟩
+
+end TranslationUniversals
+
+/-! ## §41. Translation Group Structure
+
+The set of faithful translations forms a group under composition
+(with identity as unit). More generally, we study the algebraic
+structure of translation maps. -/
+
+section TranslationGroup
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- The composition of two faithful maps is faithful. (Closure) -/
+theorem faithful_group_closure (φ ψ : I → I) (hφ : faithful φ)
+    (hψ : faithful ψ) : faithful (ψ ∘ φ) :=
+  faithful_comp ψ φ hψ hφ
+
+/-- Identity is faithful. (Identity element) -/
+theorem faithful_group_id : faithful (id : I → I) := id_faithful
+
+/-- Faithful translations associate under composition. -/
+theorem faithful_group_assoc (φ ψ χ : I → I) :
+    (χ ∘ ψ) ∘ φ = χ ∘ (ψ ∘ φ) := by
+  ext x; simp [Function.comp]
+
+/-- The compositional translations also form a monoid. -/
+theorem compositional_monoid_closure (φ ψ : I → I) (hφ : compositional φ)
+    (hψ : compositional ψ) : compositional (ψ ∘ φ) :=
+  compositional_comp ψ φ hψ hφ
+
+/-- Compositional monoid identity. -/
+theorem compositional_monoid_id : compositional (id : I → I) :=
+  id_compositional
+
+/-- The void-preserving translations form a monoid. -/
+theorem voidPres_monoid_closure (φ ψ : I → I) (hφ : voidPreserving φ)
+    (hψ : voidPreserving ψ) : voidPreserving (ψ ∘ φ) := by
+  show (ψ ∘ φ) void = void
+  change ψ (φ void) = void
+  rw [hφ, hψ]
+
+/-- Void-preserving monoid identity. -/
+theorem voidPres_monoid_id : voidPreserving (id : I → I) :=
+  id_voidPreserving
+
+end TranslationGroup
+
+/-! ## §42. Translation Invariants
+
+A translation invariant is a quantity that remains unchanged under
+all faithful translations. We study which resonance-derived quantities
+are invariants. -/
+
+section TranslationInvariants
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Self-resonance is a translation invariant under faithful maps. -/
+theorem selfRS_invariant (φ : I → I) (h : faithful φ) (a : I) :
+    rs (φ a) (φ a) = rs a a := h a a
+
+/-- Pairwise resonance is a translation invariant under faithful maps. -/
+theorem pairRS_invariant (φ : I → I) (h : faithful φ) (a b : I) :
+    rs (φ a) (φ b) = rs a b := h a b
+
+/-- Emergence between pairs is invariant under faithful translation
+    (when the observer is also in the image). -/
+theorem emergence_invariant_faithful (φ : I → I) (h : faithful φ)
+    (hc : compositional φ) (a b c : I) :
+    emergence (φ a) (φ b) (φ c) = emergence a b c := by
+  unfold emergence
+  rw [← hc a b, h (compose a b) c, h a c, h b c]
+
+/-- The resonance gap (asymmetry) is preserved by faithful translation. -/
+theorem asymmetry_invariant (φ : I → I) (h : faithful φ) (a b : I) :
+    rs (φ a) (φ b) - rs (φ b) (φ a) = rs a b - rs b a := by
+  rw [h a b, h b a]
+
+/-- Translation fidelity composition: the triangle inequality of distortion.
+    For chains φ → ψ, total distortion = sum of distortions. -/
+theorem fidelity_triangle (φ ψ : I → I) (a b : I) :
+    translationFidelity (ψ ∘ φ) a b =
+    translationFidelity ψ (φ a) (φ b) + translationFidelity φ a b := by
+  unfold translationFidelity; simp only [Function.comp]; ring
+
+/-- The semantic charge is preserved by faithful + compositional translations. -/
+theorem charge_invariant (φ : I → I) (hf : faithful φ) (hc : compositional φ)
+    (a : I) : semanticCharge (φ a) = semanticCharge a := by
+  unfold semanticCharge
+  exact emergence_invariant_faithful φ hf hc a a a
+
+end TranslationInvariants
+
+/-! ## §43. Translation Kernel
+
+The kernel of a translation φ is the set of ideas that become void
+under φ. This measures what the translation "annihilates." -/
+
+section TranslationKernel
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- An idea is in the kernel of φ if it maps to void. -/
+def inKernel (φ : I → I) (a : I) : Prop := φ a = void
+
+/-- Void is always in the kernel of a void-preserving translation. -/
+theorem void_in_kernel (φ : I → I) (hφ : voidPreserving φ) :
+    inKernel φ (void : I) := hφ
+
+/-- Kernel elements have zero self-resonance after translation. -/
+theorem kernel_zero_selfRS (φ : I → I) (a : I) (h : inKernel φ a) :
+    rs (φ a) (φ a) = 0 := by
+  rw [h]; exact rs_void_void
+
+/-- Kernel elements are "invisible" after translation: they have
+    zero resonance with everything. -/
+theorem kernel_invisible_left (φ : I → I) (a b : I) (h : inKernel φ a) :
+    rs (φ a) b = 0 := by
+  rw [h]; exact rs_void_left' b
+
+/-- Kernel elements are invisible from the right too. -/
+theorem kernel_invisible_right (φ : I → I) (a b : I) (h : inKernel φ a) :
+    rs b (φ a) = 0 := by
+  rw [h]; exact rs_void_right' b
+
+/-- The kernel of a faithful translation is trivial: only void maps to void.
+    A faithful translation annihilates nothing. -/
+theorem faithful_trivial_kernel (φ : I → I) (h : faithful φ) (a : I)
+    (hk : inKernel φ a) : a = void := by
+  apply rs_nondegen'
+  have h1 := h a a
+  rw [hk] at h1
+  rw [rs_void_void] at h1
+  linarith
+
+/-- If a is in the kernel, composing a with anything maps to void
+    under a compositional φ: the kernel is an ideal. -/
+theorem kernel_compose_left (φ : I → I) (hc : compositional φ) (a b : I)
+    (h : inKernel φ a) : φ (compose a b) = compose void (φ b) := by
+  rw [hc a b, h]
+
+/-- Kernel is closed under left-composition for compositional maps. -/
+theorem kernel_left_absorb (φ : I → I) (hc : compositional φ) (a b : I)
+    (h : inKernel φ a) : φ (compose a b) = φ b := by
+  rw [kernel_compose_left φ hc a b h]; simp
+
+/-- Two kernel elements compose to a kernel element (for compositional,
+    void-preserving translations). -/
+theorem kernel_compose_closed (φ : I → I) (hc : compositional φ)
+    (hv : voidPreserving φ) (a b : I)
+    (ha : inKernel φ a) (hb : inKernel φ b) :
+    inKernel φ (compose a b) := by
+  unfold inKernel at *
+  rw [hc a b, ha, hb]; simp
+
+end TranslationKernel
+
+/-! ## §44. Translation Orbit and Stabilizer
+
+For a fixed idea a, the orbit of a under a family of translations
+reveals the "space of possible translations." The stabilizer is the
+set of translations that leave a unchanged. -/
+
+section OrbitStabilizer
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- The orbit resonance: how the translated versions of a resonate with b. -/
+noncomputable def orbitResonance (φ : I → I) (a b : I) : ℝ :=
+  rs (φ a) b
+
+/-- Orbit resonance of identity is just resonance. -/
+theorem orbit_id (a b : I) :
+    orbitResonance (id : I → I) a b = rs a b := rfl
+
+/-- A stabilizer element fixes a. -/
+def isStabilizer (φ : I → I) (a : I) : Prop := φ a = a
+
+/-- Identity is in every stabilizer. -/
+theorem id_in_stabilizer (a : I) :
+    isStabilizer (id : I → I) a := rfl
+
+/-- Stabilizer elements compose: if φ and ψ fix a, so does ψ ∘ φ. -/
+theorem stabilizer_comp (φ ψ : I → I) (a : I)
+    (hφ : isStabilizer φ a) (hψ : isStabilizer ψ a) :
+    isStabilizer (ψ ∘ φ) a := by
+  unfold isStabilizer at *; simp [Function.comp, hφ, hψ]
+
+/-- Stabilizer elements preserve self-resonance of the fixed idea. -/
+theorem stabilizer_selfRS (φ : I → I) (a : I) (h : isStabilizer φ a) :
+    rs (φ a) (φ a) = rs a a := by rw [h]
+
+/-- Stabilizer elements have zero fidelity on the fixed idea. -/
+theorem stabilizer_zero_fidelity (φ : I → I) (a : I) (h : isStabilizer φ a) :
+    translationFidelity φ a a = 0 := by
+  unfold translationFidelity; rw [h]; ring
+
+/-- The orbit distance: how far the translation moves a in resonance space. -/
+noncomputable def orbitDistance (φ : I → I) (a : I) : ℝ :=
+  rs a a + rs (φ a) (φ a) - 2 * rs a (φ a)
+
+/-- Stabilizer elements have zero orbit distance. -/
+theorem stabilizer_zero_distance (φ : I → I) (a : I) (h : isStabilizer φ a) :
+    orbitDistance φ a = 0 := by
+  unfold orbitDistance; rw [h]; ring
+
+/-- Identity has zero orbit distance. -/
+theorem id_zero_orbit (a : I) :
+    orbitDistance (id : I → I) a = 0 := by
+  unfold orbitDistance; simp; ring
+
+end OrbitStabilizer
+
+/-! ## §45. Schleiermacher Revisited — The Translator's Invisibility
+
+Venuti (1995) extended Schleiermacher: the translator is "invisible"
+when domesticating (the translation reads as if originally in the
+target language) and "visible" when foreignizing. We formalize
+translator visibility via resonance. -/
+
+section TranslatorVisibility
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Translator visibility: how much the translator's presence is
+    detectable. Measured by the gap between translated and original
+    self-resonance. -/
+noncomputable def translatorVisibility (φ : I → I) (a : I) : ℝ :=
+  |rs (φ a) (φ a) - rs a a|
+
+/-- Identity translator is invisible. -/
+theorem id_invisible (a : I) :
+    translatorVisibility (id : I → I) a = 0 := by
+  unfold translatorVisibility; simp
+
+/-- Faithful translators are invisible. -/
+theorem faithful_invisible (φ : I → I) (h : faithful φ) (a : I) :
+    translatorVisibility φ a = 0 := by
+  unfold translatorVisibility; rw [h a a]; simp
+
+/-- Intralingual translations are invisible (they preserve self-resonance). -/
+theorem intralingual_invisible (φ : I → I) (h : intralingual φ) (a : I) :
+    translatorVisibility φ a = 0 := by
+  unfold translatorVisibility; rw [h a]; simp
+
+/-- The visibility-fidelity connection: visibility equals |expansion degree|. -/
+theorem visibility_eq_expansion (φ : I → I) (a : I) :
+    translatorVisibility φ a = |expansionDegree φ a| := rfl
+
+end TranslatorVisibility
+
+/-! ## §46. Abductive Inference Chains
+
+Extending §28: chains of abductive interpretation model how a text
+passes through multiple translators, each adding their own
+interpretive layer. -/
+
+section AbductiveChains
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Sequential abduction: two translators read the same source. -/
+noncomputable def dualAbduction (t₁ t₂ source : I) : I :=
+  compose (abductiveReading t₁ source) (abductiveReading t₂ source)
+
+/-- Dual abduction with void first translator. -/
+theorem dual_abduction_void_first (t₂ source : I) :
+    dualAbduction (void : I) t₂ source =
+    compose source (compose t₂ source) := by
+  unfold dualAbduction abductiveReading; simp
+
+/-- Dual abduction with void second translator. -/
+theorem dual_abduction_void_second (t₁ source : I) :
+    dualAbduction t₁ (void : I) source =
+    compose (compose t₁ source) source := by
+  unfold dualAbduction abductiveReading; simp
+
+/-- Cascaded translation: translator 2 reads what translator 1 produced. -/
+noncomputable def cascadedTranslation (t₁ t₂ f₁ f₂ source : I) : I :=
+  abductiveTranslation t₂ f₂ (abductiveTranslation t₁ f₁ source)
+
+/-- Cascaded translation with all-void is identity. -/
+theorem cascaded_all_void :
+    cascadedTranslation (void : I) (void : I) (void : I) (void : I) (void : I) = (void : I) := by
+  unfold cascadedTranslation abductiveTranslation abductiveReading reencode; simp
+
+end AbductiveChains
+
+/-! ## §47. Translation Distance and Metric-Like Properties
+
+We study the "distance" between two translations — how much they
+differ on average. This gives a pseudo-metric on the space of
+translations. -/
+
+section TranslationDistance
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Pointwise translation distance: how far apart φ and ψ move
+    an idea a, as measured by an observer c. -/
+noncomputable def translationPointDist (φ ψ : I → I) (a c : I) : ℝ :=
+  rs (φ a) c - rs (ψ a) c
+
+/-- Translation distance is antisymmetric. -/
+theorem translationPointDist_antisymm (φ ψ : I → I) (a c : I) :
+    translationPointDist φ ψ a c = -translationPointDist ψ φ a c := by
+  unfold translationPointDist; ring
+
+/-- Translation distance of a map with itself is zero. -/
+theorem translationPointDist_self (φ : I → I) (a c : I) :
+    translationPointDist φ φ a c = 0 := by
+  unfold translationPointDist; ring
+
+/-- Translation distance triangle decomposition: φ→χ = φ→ψ + ψ→χ. -/
+theorem translationPointDist_triangle (φ ψ χ : I → I) (a c : I) :
+    translationPointDist φ χ a c =
+    translationPointDist φ ψ a c + translationPointDist ψ χ a c := by
+  unfold translationPointDist; ring
+
+/-- Distance from identity measures "how much translation moves a." -/
+theorem dist_from_id (φ : I → I) (a c : I) :
+    translationPointDist φ id a c = rs (φ a) c - rs a c := rfl
+
+/-- Translation distance with void observer is always zero. -/
+theorem translationPointDist_void_observer (φ ψ : I → I) (a : I) :
+    translationPointDist φ ψ a (void : I) = 0 := by
+  unfold translationPointDist; simp [rs_void_right']
+
+end TranslationDistance
+
+/-! ## §48. Translation and Emergence Preservation
+
+Deep structural results on how translation interacts with the
+fundamental emergence structure of the ideatic space. -/
+
+section EmergencePreservation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Emergence preservation degree: how much of the original emergence
+    is retained under translation. -/
+noncomputable def emergencePreservation (φ : I → I) (a b c : I) : ℝ :=
+  emergence (φ a) (φ b) (φ c) - emergence a b c
+
+/-- Identity perfectly preserves emergence. -/
+theorem id_emergence_preservation (a b c : I) :
+    emergencePreservation (id : I → I) a b c = 0 := by
+  unfold emergencePreservation; simp
+
+/-- Faithful + compositional translations preserve emergence. -/
+theorem faithful_comp_emergence (φ : I → I) (hf : faithful φ)
+    (hc : compositional φ) (a b c : I) :
+    emergencePreservation φ a b c = 0 := by
+  unfold emergencePreservation
+  rw [emergence_invariant_faithful φ hf hc a b c]; ring
+
+/-- The emergence cocycle is preserved by faithful + compositional maps. -/
+theorem cocycle_preserved (φ : I → I) (hf : faithful φ) (hc : compositional φ)
+    (a b c d : I) :
+    emergence (φ a) (φ b) (φ d) + emergence (compose (φ a) (φ b)) (φ c) (φ d) =
+    emergence (φ b) (φ c) (φ d) + emergence (φ a) (compose (φ b) (φ c)) (φ d) := by
+  have h1 := cocycle_condition (φ a) (φ b) (φ c) (φ d)
+  exact h1
+
+/-- Void-preservation ensures emergence with void is maintained. -/
+theorem void_emergence_preserved (φ : I → I) (hv : voidPreserving φ)
+    (b c : I) : emergence (φ (void : I)) (φ b) c = emergence (void : I) (φ b) c := by
+  rw [hv]
+
+end EmergencePreservation
+
+/-! ## §49. Translation Equivalence Classes
+
+Two translations are "resonance-equivalent" if they produce ideas
+with the same resonance profile. This is weaker than pointwise
+equality. -/
+
+section TranslationEquivClasses
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- Pointwise resonance equivalence: φ and ψ produce ideas that
+    resonate identically with everything. -/
+def pointwiseEquiv (φ ψ : I → I) (a : I) : Prop :=
+  ∀ c, rs (φ a) c = rs (ψ a) c
+
+/-- Pointwise equivalence at void is trivial for void-preserving maps. -/
+theorem pointwiseEquiv_void (φ ψ : I → I) (hφ : voidPreserving φ)
+    (hψ : voidPreserving ψ) : pointwiseEquiv φ ψ (void : I) := by
+  intro c; rw [hφ, hψ]
+
+/-- Identity is pointwise equivalent to itself. -/
+theorem pointwiseEquiv_refl (φ : I → I) (a : I) :
+    pointwiseEquiv φ φ a := fun _ => rfl
+
+/-- Pointwise equivalence is symmetric. -/
+theorem pointwiseEquiv_symm (φ ψ : I → I) (a : I) (h : pointwiseEquiv φ ψ a) :
+    pointwiseEquiv ψ φ a :=
+  fun c => (h c).symm
+
+/-- Pointwise equivalence is transitive. -/
+theorem pointwiseEquiv_trans (φ ψ χ : I → I) (a : I)
+    (h1 : pointwiseEquiv φ ψ a) (h2 : pointwiseEquiv ψ χ a) :
+    pointwiseEquiv φ χ a :=
+  fun c => (h1 c).trans (h2 c)
+
+/-- Pointwise equivalent translations have the same relevance gap. -/
+theorem pointwiseEquiv_relevanceGap (φ ψ : I → I) (a c : I)
+    (h : pointwiseEquiv φ ψ a) : relevanceGap φ a c = relevanceGap ψ a c := by
+  unfold relevanceGap; rw [h c]
+
+end TranslationEquivClasses
+
+/-! ## §50. Translation and Order Sensitivity
+
+How does translation interact with the order sensitivity of ideas?
+Order sensitivity measures non-commutativity; translation can
+increase or decrease it. -/
+
+section TranslationOrder
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- The order sensitivity shift: how much translation changes the
+    non-commutativity of a pair. -/
+noncomputable def orderSensitivityShift (φ : I → I) (a b c : I) : ℝ :=
+  orderSensitivity (φ a) (φ b) c - orderSensitivity a b c
+
+/-- Identity has zero order sensitivity shift. -/
+theorem id_zero_orderShift (a b c : I) :
+    orderSensitivityShift (id : I → I) a b c = 0 := by
+  unfold orderSensitivityShift; simp
+
+/-- Order sensitivity shift is antisymmetric in a, b. -/
+theorem orderShift_swap (φ : I → I) (a b c : I) :
+    orderSensitivityShift φ a b c = -orderSensitivityShift φ b a c := by
+  unfold orderSensitivityShift orderSensitivity; ring
+
+/-- Author-oriented + compositional translations preserve order sensitivity. -/
+theorem authorOriented_comp_orderSensitivity (φ : I → I) (ha : authorOriented φ)
+    (hc : compositional φ) (a b c : I) :
+    orderSensitivityShift φ a b c = 0 := by
+  unfold orderSensitivityShift orderSensitivity
+  have h1 : rs (compose (φ a) (φ b)) c = rs (compose a b) c := by
+    have := (hc a b).symm
+    rw [show compose (φ a) (φ b) = φ (compose a b) from this.symm ▸ rfl]
+    exact ha (compose a b) c
+  have h2 : rs (compose (φ b) (φ a)) c = rs (compose b a) c := by
+    have := (hc b a).symm
+    rw [show compose (φ b) (φ a) = φ (compose b a) from this.symm ▸ rfl]
+    exact ha (compose b a) c
+  linarith
+
+/-- The meaning curvature shift under translation. -/
+noncomputable def curvatureShift (φ : I → I) (a b c : I) : ℝ :=
+  meaningCurvature (φ a) (φ b) c - meaningCurvature a b c
+
+/-- Identity has zero curvature shift. -/
+theorem id_zero_curvatureShift (a b c : I) :
+    curvatureShift (id : I → I) a b c = 0 := by
+  unfold curvatureShift; simp
+
+/-- Curvature shift equals order sensitivity shift (by definition). -/
+theorem curvatureShift_eq_orderShift (φ : I → I) (a b c : I) :
+    curvatureShift φ a b c = orderSensitivityShift φ a b c := by
+  unfold curvatureShift orderSensitivityShift meaningCurvature orderSensitivity emergence
+  ring
+
+end TranslationOrder
+
+/-! ## §51. Deep Mathematics: Translation as Homomorphism
+
+A translation that is both faithful and compositional is a
+homomorphism of ideatic spaces. We derive consequences. -/
+
+section TranslationHomomorphism
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- A translation homomorphism preserves all algebraic and
+    resonance structure. -/
+def isHomomorphism (φ : I → I) : Prop :=
+  faithful φ ∧ compositional φ ∧ voidPreserving φ
+
+/-- Identity is a homomorphism. -/
+theorem id_isHomomorphism : isHomomorphism (id : I → I) :=
+  ⟨id_faithful, id_compositional, id_voidPreserving⟩
+
+/-- Homomorphisms compose. -/
+theorem homomorphism_comp (φ ψ : I → I) (hφ : isHomomorphism φ)
+    (hψ : isHomomorphism ψ) : isHomomorphism (ψ ∘ φ) :=
+  ⟨faithful_comp ψ φ hψ.1 hφ.1,
+   compositional_comp ψ φ hψ.2.1 hφ.2.1,
+   voidPres_monoid_closure φ ψ hφ.2.2 hψ.2.2⟩
+
+/-- Homomorphisms preserve emergence exactly. -/
+theorem homomorphism_emergence (φ : I → I) (h : isHomomorphism φ)
+    (a b c : I) : emergence (φ a) (φ b) (φ c) = emergence a b c :=
+  emergence_invariant_faithful φ h.1 h.2.1 a b c
+
+/-- Homomorphisms preserve the cocycle condition. -/
+theorem homomorphism_cocycle (φ : I → I) (h : isHomomorphism φ)
+    (a b c d : I) :
+    emergence (φ a) (φ b) (φ d) + emergence (compose (φ a) (φ b)) (φ c) (φ d) =
+    emergence (φ b) (φ c) (φ d) + emergence (φ a) (compose (φ b) (φ c)) (φ d) :=
+  cocycle_preserved φ h.1 h.2.1 a b c d
+
+/-- Homomorphisms preserve semantic charge. -/
+theorem homomorphism_charge (φ : I → I) (h : isHomomorphism φ) (a : I) :
+    semanticCharge (φ a) = semanticCharge a :=
+  charge_invariant φ h.1 h.2.1 a
+
+/-- Homomorphisms preserve iterated composition. -/
+theorem homomorphism_composeN (φ : I → I) (h : isHomomorphism φ) (a : I) :
+    ∀ n, φ (composeN a n) = composeN (φ a) n :=
+  calque_composeN φ h.2.1 h.2.2 a
+
+/-- Homomorphisms preserve non-voidness. -/
+theorem homomorphism_ne_void (φ : I → I) (h : isHomomorphism φ) (a : I)
+    (ha : a ≠ void) : φ a ≠ void := by
+  intro heq
+  have := faithful_trivial_kernel φ h.1 a heq
+  exact ha this
+
+/-- Homomorphisms preserve self-resonance positivity. -/
+theorem homomorphism_selfRS_pos (φ : I → I) (h : isHomomorphism φ)
+    (a : I) (ha : a ≠ void) : rs (φ a) (φ a) > 0 := by
+  rw [h.1 a a]; exact rs_self_pos a ha
+
+end TranslationHomomorphism
+
+/-! ## §52. Translation Quotient — What's Left After Translation
+
+The "quotient" of translation: what remains of the source after
+the translation has done its work. Connects to Benjamin's "afterlife"
+of the text. -/
+
+section TranslationQuotient
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- The afterlife of an idea under translation: the composition of
+    the original with its translation. Benjamin: the original lives
+    on THROUGH its translations. -/
+noncomputable def afterlife (φ : I → I) (a : I) : I :=
+  compose a (φ a)
+
+/-- Afterlife of void is void (for void-preserving translations). -/
+theorem afterlife_void (φ : I → I) (hv : voidPreserving φ) :
+    afterlife φ (void : I) = (void : I) := by
+  unfold afterlife; rw [hv]; simp
+
+/-- The afterlife self-resonance is at least the original's.
+    Benjamin: translation enriches, never diminishes. -/
+theorem afterlife_enriches (φ : I → I) (a : I) :
+    rs (afterlife φ a) (afterlife φ a) ≥ rs a a := by
+  unfold afterlife; exact compose_enriches' a (φ a)
+
+/-- The afterlife under identity is just repetition. -/
+theorem afterlife_id (a : I) :
+    afterlife (id : I → I) a = compose a a := rfl
+
+/-- The translation surplus: how much the afterlife exceeds the original. -/
+noncomputable def translationSurplus (φ : I → I) (a : I) : ℝ :=
+  rs (afterlife φ a) (afterlife φ a) - rs a a
+
+/-- Translation surplus is non-negative. -/
+theorem surplus_nonneg (φ : I → I) (a : I) :
+    translationSurplus φ a ≥ 0 := by
+  unfold translationSurplus
+  linarith [afterlife_enriches φ a]
+
+/-- Void has zero surplus. -/
+theorem surplus_void (φ : I → I) (hv : voidPreserving φ) :
+    translationSurplus φ (void : I) = 0 := by
+  unfold translationSurplus afterlife; rw [hv]; simp
+
+end TranslationQuotient
+
+/-! ## §53. Dialectical Translation — Thesis/Antithesis/Synthesis
+
+Hegelian dialectical translation: the source (thesis) meets the
+target language (antithesis) and produces a new text (synthesis)
+that transcends both. -/
+
+section DialecticalTranslation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- The dialectical product of translation: composing source with
+    its translation. The "synthesis" of original and translation. -/
+noncomputable def dialecticalProduct (φ : I → I) (a : I) : I :=
+  compose a (φ a)
+
+/-- The dialectical tension in translation: how much the synthesis
+    exceeds the sum of thesis (a) and antithesis (φ a). -/
+noncomputable def dialecticalTranslationTension (φ : I → I) (a c : I) : ℝ :=
+  emergence a (φ a) c
+
+/-- Identity dialectical tension is self-emergence. -/
+theorem id_dialectical_tension (a c : I) :
+    dialecticalTranslationTension (id : I → I) a c = emergence a a c := rfl
+
+/-- Dialectical tension with void source is zero. -/
+theorem dialectical_void_source (φ : I → I) (hv : voidPreserving φ) (c : I) :
+    dialecticalTranslationTension φ (void : I) c = 0 := by
+  unfold dialecticalTranslationTension; rw [hv]
+  exact emergence_void_left (void : I) c
+
+/-- Dialectical tension against void observer is zero. -/
+theorem dialectical_void_observer (φ : I → I) (a : I) :
+    dialecticalTranslationTension φ a (void : I) = 0 := by
+  unfold dialecticalTranslationTension; exact emergence_against_void a (φ a)
+
+/-- The aufhebung measure: total dialectical enrichment.
+    How much the synthesis exceeds the thesis in self-resonance. -/
+noncomputable def aufhebung (φ : I → I) (a : I) : ℝ :=
+  rs (dialecticalProduct φ a) (dialecticalProduct φ a) - rs a a
+
+/-- The aufhebung is non-negative: the synthesis is always at least
+    as "present" as the thesis. Hegel's sublation enriches. -/
+theorem aufhebung_nonneg (φ : I → I) (a : I) :
+    aufhebung φ a ≥ 0 := by
+  unfold aufhebung dialecticalProduct
+  linarith [compose_enriches' a (φ a)]
+
+end DialecticalTranslation
+
+/-! ## §54. Translation and Polysemy
+
+Polysemous ideas (those with multiple resonance patterns) pose
+special challenges for translation. We study how translation
+interacts with polysemy. -/
+
+section TranslationPolysemy
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- The polysemy gap: how much translation changes the polysemous
+    nature of an idea. Measured by change in resonance asymmetry
+    between two observers. -/
+noncomputable def polysemyGap (φ : I → I) (a c d : I) : ℝ :=
+  (rs (φ a) c - rs (φ a) d) - (rs a c - rs a d)
+
+/-- Identity has zero polysemy gap. -/
+theorem id_zero_polysemyGap (a c d : I) :
+    polysemyGap (id : I → I) a c d = 0 := by
+  unfold polysemyGap; simp
+
+/-- Polysemy gap is antisymmetric in the observers. -/
+theorem polysemyGap_antisymm (φ : I → I) (a c d : I) :
+    polysemyGap φ a c d = -polysemyGap φ a d c := by
+  unfold polysemyGap; ring
+
+/-- The sense disambiguation measure: how much translation reduces
+    polysemous ambiguity relative to two observers. -/
+noncomputable def senseDisambiguation (φ : I → I) (a c d : I) : ℝ :=
+  |rs a c - rs a d| - |rs (φ a) c - rs (φ a) d|
+
+/-- Identity has zero disambiguation. -/
+theorem id_zero_disambiguation (a c d : I) :
+    senseDisambiguation (id : I → I) a c d = 0 := by
+  unfold senseDisambiguation; simp
+
+end TranslationPolysemy
+
+/-! ## §55. Translation Networks and Relay Translation
+
+In practice, translation often proceeds through relay languages:
+A → B → C where B is an intermediary. We study the properties
+of relay networks. -/
+
+section RelayTranslation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- The relay error: how much additional distortion the intermediary
+    step introduces beyond what direct translation would give. -/
+noncomputable def relayError (φ_AB φ_BC φ_AC : I → I) (a b : I) : ℝ :=
+  translationFidelity (φ_BC ∘ φ_AB) a b - translationFidelity φ_AC a b
+
+/-- If the relay goes through faithful intermediary, relay error
+    equals the difference of the two translations' fidelities. -/
+theorem relay_faithful_mid (φ_AB φ_BC φ_AC : I → I)
+    (hAB : faithful φ_AB) (a b : I) :
+    relayError φ_AB φ_BC φ_AC a b =
+    translationFidelity φ_BC (φ_AB a) (φ_AB b) - translationFidelity φ_AC a b := by
+  unfold relayError
+  rw [fidelity_triangle φ_AB φ_BC a b, faithful_zero_fidelity φ_AB hAB a b]
+  ring
+
+/-- If all legs are faithful, relay error is zero. -/
+theorem relay_faithful_zero (φ_AB φ_BC φ_AC : I → I)
+    (hAB : faithful φ_AB) (hBC : faithful φ_BC) (hAC : faithful φ_AC)
+    (a b : I) : relayError φ_AB φ_BC φ_AC a b = 0 := by
+  unfold relayError
+  have h1 : translationFidelity (φ_BC ∘ φ_AB) a b = 0 :=
+    faithful_zero_fidelity _ (faithful_comp φ_BC φ_AB hBC hAB) a b
+  have h2 : translationFidelity φ_AC a b = 0 :=
+    faithful_zero_fidelity _ hAC a b
+  linarith
+
+/-- Relay self-composition: using the same translation as relay.
+    The error measures how much φ² deviates from φ. -/
+noncomputable def selfRelayError (φ : I → I) (a b : I) : ℝ :=
+  translationFidelity (φ ∘ φ) a b - translationFidelity φ a b
+
+/-- Faithful translations have zero self-relay error. -/
+theorem faithful_selfRelay (φ : I → I) (h : faithful φ) (a b : I) :
+    selfRelayError φ a b = 0 := by
+  unfold selfRelayError
+  have h1 : translationFidelity (φ ∘ φ) a b = 0 :=
+    faithful_zero_fidelity _ (faithful_comp φ φ h h) a b
+  have h2 : translationFidelity φ a b = 0 :=
+    faithful_zero_fidelity _ h a b
+  linarith
+
+end RelayTranslation
+
+/-! ## §56. Translation Entropy Bounds
+
+Information-theoretic bounds on translation quality. The emergence
+bounded axiom gives us Cauchy-Schwarz-like bounds on translation
+distortion. -/
+
+section TranslationBounds
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- The translation emergence is bounded: its square is non-negative,
+    giving us a trivial but foundational bound. -/
+theorem translation_emergence_sq_nonneg (φ : I → I) (a b c : I) :
+    (translationEmergence φ a b c) ^ 2 ≥ 0 :=
+  sq_nonneg _
+
+/-- Self-distortion is bounded for void (it's zero). -/
+theorem selfDistortion_void (φ : I → I) (hv : voidPreserving φ) :
+    selfDistortion φ (void : I) = 0 := by
+  unfold selfDistortion; rw [hv]; ring
+
+/-- Weight change is bounded below by the negative of the original weight.
+    You can't lose more weight than you have. -/
+theorem weightChange_lower_bound (φ : I → I) (a : I) :
+    weightChange φ a ≥ -(rs a a) := by
+  unfold weightChange
+  linarith [rs_self_nonneg' (φ a)]
+
+end TranslationBounds
+
+/-! ## §57. Translation Conjugation
+
+Two translations are conjugate if one can be obtained from the other
+by pre- and post-composition with a third. This captures the idea that
+"essentially the same translation" can look different in different
+coordinates. -/
+
+section TranslationConjugation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- φ and ψ are conjugate via χ: ψ = χ ∘ φ ∘ χ⁻¹ (informally).
+    Since we don't have inverses in general, we use a weaker form:
+    ψ is obtained from φ by sandwiching with χ and ρ. -/
+def isConjugate (φ ψ χ ρ : I → I) : Prop :=
+  ∀ a, ψ a = χ (φ (ρ a))
+
+/-- Conjugation is reflexive (φ is conjugate to itself via id). -/
+theorem conjugate_refl (φ : I → I) :
+    isConjugate φ φ id id := fun _ => rfl
+
+/-- Conjugation of faithful maps via faithful maps is faithful. -/
+theorem conjugate_faithful (φ ψ χ ρ : I → I)
+    (hconj : isConjugate φ ψ χ ρ) (hφ : faithful φ)
+    (hχ : faithful χ) (hρ : faithful ρ) : faithful ψ := by
+  intro a b
+  rw [hconj a, hconj b]
+  rw [hχ (φ (ρ a)) (φ (ρ b))]
+  rw [hφ (ρ a) (ρ b)]
+  rw [hρ a b]
+
+end TranslationConjugation
+
+/-! ## §58. Translation and Semantic Charge Dynamics
+
+How does translation affect the "self-amplification" properties of ideas?
+Semantic charge measures whether an idea grows or decays under repetition;
+translation can change this dynamics. -/
+
+section ChargeTranslation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- The charge shift: how much translation changes semantic charge. -/
+noncomputable def chargeShift (φ : I → I) (a : I) : ℝ :=
+  semanticCharge (φ a) - semanticCharge a
+
+/-- Identity has zero charge shift. -/
+theorem id_zero_chargeShift (a : I) :
+    chargeShift (id : I → I) a = 0 := by
+  unfold chargeShift; simp
+
+/-- Homomorphisms have zero charge shift. -/
+theorem homomorphism_zero_chargeShift (φ : I → I) (h : isHomomorphism φ)
+    (a : I) : chargeShift φ a = 0 := by
+  unfold chargeShift; rw [homomorphism_charge φ h a]; ring
+
+/-- The dialectical tension shift: how translation changes the
+    dialectical potential of an idea. -/
+noncomputable def dialecticalShift (φ : I → I) (a c : I) : ℝ :=
+  dialecticalTension (φ a) (φ a) - dialecticalTension a a
+
+/-- Identity has zero dialectical shift. -/
+theorem id_zero_dialecticalShift (a c : I) :
+    dialecticalShift (id : I → I) a c = 0 := by
+  unfold dialecticalShift; simp
+
+end ChargeTranslation
+
+/-! ## §59. Eco's "Saying Almost the Same Thing"
+
+Umberto Eco (2003) argued that translation is always "saying almost
+the same thing" — perfect translation is impossible, but good
+translation is possible through negotiation. We formalize the
+"almost" as bounded distortion. -/
+
+section EcoNegotiation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- An ε-faithful translation: resonance distortion bounded by ε.
+    Eco's "almost the same thing" formalized. -/
+def epsilonFaithful (φ : I → I) (a b : I) (ε : ℝ) : Prop :=
+  |translationFidelity φ a b| ≤ ε
+
+/-- A faithful translation is 0-faithful. -/
+theorem faithful_epsilon_zero (φ : I → I) (h : faithful φ) (a b : I) :
+    epsilonFaithful φ a b 0 := by
+  unfold epsilonFaithful; rw [faithful_zero_fidelity φ h a b]; simp
+
+/-- Identity is 0-faithful. -/
+theorem id_epsilon_zero (a b : I) :
+    epsilonFaithful (id : I → I) a b 0 := by
+  unfold epsilonFaithful translationFidelity; simp
+
+/-- ε-faithfulness is monotone in ε. -/
+theorem epsilon_mono (φ : I → I) (a b : I) (ε₁ ε₂ : ℝ) (h : ε₁ ≤ ε₂)
+    (hf : epsilonFaithful φ a b ε₁) : epsilonFaithful φ a b ε₂ := by
+  unfold epsilonFaithful at *; linarith
+
+/-- The negotiation margin: how much room the translator has.
+    Eco: every translation is a negotiation between fidelity and readability. -/
+noncomputable def negotiationMargin (φ : I → I) (a b : I) (budget : ℝ) : ℝ :=
+  budget - |translationFidelity φ a b|
+
+/-- Faithful translations use zero budget. -/
+theorem faithful_full_margin (φ : I → I) (h : faithful φ) (a b : I)
+    (budget : ℝ) : negotiationMargin φ a b budget = budget := by
+  unfold negotiationMargin; rw [faithful_zero_fidelity φ h a b]; simp
+
+end EcoNegotiation
+
+/-! ## §60. Catford's Translation Shifts
+
+J. C. Catford (1965) categorized translation shifts:
+level shifts (between phonology, grammar, lexis) and category shifts.
+We model these as different "projections" of the resonance structure. -/
+
+section CatfordShifts
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- A level shift: the translation operates at a different level of
+    linguistic structure. Modeled as translating then embedding in a level. -/
+noncomputable def levelShift (φ : I → I) (level : I → I) (a : I) : I :=
+  level (φ a)
+
+/-- Level shift with identity level is just translation. -/
+theorem levelShift_id_level (φ : I → I) (a : I) :
+    levelShift φ id a = φ a := rfl
+
+/-- Level shift with identity translation is just level projection. -/
+theorem levelShift_id_trans (level : I → I) (a : I) :
+    levelShift id level a = level a := rfl
+
+/-- A category shift: the translation changes the grammatical category.
+    Modeled as the gap between translation at two different levels. -/
+noncomputable def categoryShift (φ : I → I) (l₁ l₂ : I → I) (a c : I) : ℝ :=
+  rs (levelShift φ l₁ a) c - rs (levelShift φ l₂ a) c
+
+/-- Category shift with identical levels is zero. -/
+theorem categoryShift_same (φ : I → I) (l : I → I) (a c : I) :
+    categoryShift φ l l a c = 0 := by
+  unfold categoryShift; ring
+
+/-- Category shift is antisymmetric in levels. -/
+theorem categoryShift_antisymm (φ : I → I) (l₁ l₂ : I → I) (a c : I) :
+    categoryShift φ l₁ l₂ a c = -categoryShift φ l₂ l₁ a c := by
+  unfold categoryShift; ring
+
+end CatfordShifts
+
 end IDT3

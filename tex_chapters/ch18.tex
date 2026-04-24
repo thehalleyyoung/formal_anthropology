@@ -1,0 +1,881 @@
+% ============================================================
+%  Chapter 18 — Network Diffusion and Cultural Epidemiology
+% ============================================================
+\chapter{Network Diffusion and Cultural Epidemiology}
+\label{ch:network}
+
+\begin{quote}
+\textit{``Culture is the precipitate of cognition and communication.''}\\
+--- Dan Sperber, \textit{Explaining Culture} (1996)
+\end{quote}
+
+\vspace{1em}
+
+\section{Introduction}
+
+Dan Sperber's epidemiological approach to culture proposes that cultural
+representations spread like epidemics: ideas pass from mind to mind,
+transformed at each step by the cognitive environment of the host.  Frederic
+Bartlett's serial reproduction experiments (1932) demonstrated this
+empirically: a story retold through a chain of narrators mutates
+systematically, with each retelling imposing the reteller's own cognitive
+schemata on the material.\footnote{Bartlett's landmark study
+\textit{Remembering} (1932) showed that the Kwakiutl folk tale ``The War of
+the Ghosts'' was progressively rationalized, shortened, and
+conventionalized as it passed through chains of English undergraduates.}
+
+In Ideatic Diffusion Theory, each relay hop is a composition: the relayer
+composes the incoming signal with their own interpretive frame.  A chain of
+$n$ relayers produces
+\[
+  \compose\bigl(r_n, \compose(r_{n-1}, \ldots \compose(r_1, s) \ldots)\bigr).
+\]
+This chapter formalizes the mathematics of cultural diffusion through
+networks, establishing eighteen theorems on relay chains, depth bounds,
+resonance preservation, chain concatenation, and the transparency of void
+relayers.
+
+The central insight is that network diffusion is \emph{compositional}:
+the output of a multi-hop relay is fully determined by the sequence of
+relayers and the initial signal, and the structural properties of the
+output---depth, resonance, void-transparency---follow from the algebraic
+properties of composition.  This provides a rigorous foundation for
+Sperber's cultural epidemiology, for meme theory in Dawkins's sense, and for
+the ``telephone game'' as a formal model of cultural transmission.
+
+\subsection{Network Science and Cultural Diffusion}
+
+The mathematical study of networks has undergone a revolution since the
+late 1990s.  Duncan Watts and Steven Strogatz's 1998 paper on
+\emph{small-world networks}\footnote{Duncan J.\ Watts and Steven H.\
+Strogatz, ``Collective Dynamics of `Small-World' Networks,'' \textit{Nature}
+393 (1998): 440--442.} demonstrated that many real-world networks---neural
+networks, power grids, social networks---exhibit a characteristic
+combination of high local clustering and short global path lengths.  In a
+small-world network, relay chains are surprisingly short: even in networks
+with millions of nodes, most pairs are connected by chains of six or fewer
+intermediaries.  For cultural diffusion, this means that ideas can traverse
+an entire population through remarkably few relay hops, each of which is a
+composition in our framework.
+
+Albert-L\'aszl\'o Barab\'asi and R\'eka Albert's 1999 discovery of
+\emph{scale-free networks}\footnote{Albert-L\'aszl\'o Barab\'asi and R\'eka
+Albert, ``Emergence of Scaling in Random Networks,'' \textit{Science} 286,
+no.\ 5439 (1999): 509--512.} revealed that many networks are dominated by a
+small number of highly connected ``hub'' nodes.  In cultural diffusion,
+hubs correspond to influential relayers---media outlets, thought leaders,
+viral content creators---whose cognitive frames are composed with the
+signals of millions.  A hub relayer $h$ with connections to $n$ receivers
+produces $n$ distinct compositions $\compose(h, s_i)$, each filtered through
+$h$'s interpretive frame.  The scale-free structure ensures that a small
+number of such hubs dominate the diffusion dynamics.
+
+Mark Granovetter's seminal 1973 paper on the ``strength of weak
+ties''\footnote{Mark S.\ Granovetter, ``The Strength of Weak Ties,''
+\textit{American Journal of Sociology} 78, no.\ 6 (1973): 1360--1380.}
+identified a paradox: weak social connections (acquaintances rather than
+close friends) are often more important for information diffusion than
+strong ones, because weak ties serve as bridges between otherwise
+disconnected clusters.  In relay-chain terms, weak ties are relayers whose
+cognitive frames differ significantly from those of their local cluster,
+enabling the signal to ``jump'' to a new region of ideatic space.
+
+\subsection{From Memes to Epidemiology}
+
+Richard Dawkins introduced the concept of the \emph{meme}---a unit of
+cultural transmission analogous to the gene---in \textit{The Selfish
+Gene} (1976).\footnote{Richard Dawkins, \textit{The Selfish Gene} (1976),
+ch.\ 11.}  Daniel Dennett elaborated the concept in \textit{Darwin's
+Dangerous Idea} (1995), arguing that memes are subject to genuine
+Darwinian selection: they vary, are differentially transmitted, and are
+inherited (with modification) by new hosts.  In IDT, a meme is an idea
+$m \in \IS$ whose relay chain exhibits high fidelity: the composition
+$\compose(r, m)$ remains ``close to'' $m$ for a wide range of relayers $r$.
+High-fidelity memes are precisely those ideas that are approximately
+order-invariant with respect to typical relayers.
+
+Robert Boyd and Peter Richerson's formal models of cultural
+transmission\footnote{Robert Boyd and Peter J.\ Richerson, \textit{Culture
+and the Evolutionary Process} (1985).} distinguished several modes of
+cultural learning: \emph{vertical} (parent to child), \emph{horizontal}
+(peer to peer), and \emph{oblique} (non-parental adults to children).  Each
+mode corresponds to a different relay-chain topology.  Vertical transmission
+produces long, narrow chains (high depth, low branching); horizontal
+transmission produces wide, shallow chains (low depth, high branching);
+and oblique transmission produces intermediate structures.  The theorems
+in this chapter apply to all three topologies, since they depend only on
+the algebraic properties of composition, not on the network structure.
+
+Dan Sperber's ``epidemiology of representations'' deepens the analogy
+between cultural and biological contagion.\footnote{Dan Sperber,
+\textit{Explaining Culture: A Naturalistic Approach} (1996).}  Unlike
+Dawkins's meme theory, which treats cultural items as replicators, Sperber
+emphasizes that cultural representations are \emph{transformed} at each
+transmission event.  There is no faithful copying; there is only
+composition.  This is precisely the insight formalized by the relay chain:
+each relay hop is a composition $\compose(r_i, \text{acc})$, not a copy
+operation.  The ``mutation'' that Sperber identifies in cultural
+transmission is the difference between $\text{acc}$ and
+$\compose(r_i, \text{acc})$---the interpretive contribution of the relayer.
+
+\subsection{Modern Diffusion Phenomena and Formal Limitations}
+
+Malcolm Gladwell's \textit{The Tipping Point} (2000) popularized the idea
+that social epidemics undergo phase transitions: small changes in the
+``stickiness'' of a message, the influence of key connectors, or the
+``power of context'' can trigger cascading diffusion.  While Gladwell's
+framework is more journalistic than formal, the underlying intuition finds
+partial support in our theorems.  The depth bounds
+(Section~\ref{sec:ch18-depth}) show that relay chains cannot create
+unbounded complexity, while the resonance results
+(Section~\ref{sec:ch18-resonance}) show that diffusion through homogeneous
+networks preserves signal coherence.  However, our framework also
+identifies limitations of the tipping-point metaphor: the linear depth
+bounds suggest that cultural ``explosions'' are constrained by the
+cognitive resources of the relay chain, not merely by network topology.
+
+The SIR (Susceptible-Infected-Recovered) model from mathematical
+epidemiology\footnote{W.\ O.\ Kermack and A.\ G.\ McKendrick, ``A
+Contribution to the Mathematical Theory of Epidemics,'' \textit{Proceedings
+of the Royal Society A} 115, no.\ 772 (1927): 700--721.} provides another
+formal parallel.  In the SIR model, individuals transition from susceptible
+to infected to recovered, and the epidemic spreads through contact between
+susceptible and infected individuals.  In cultural epidemiology, the
+``infection'' event is a composition: a susceptible mind $s$ encounters an
+idea-carrying relayer $r$, producing the composition $\compose(r, s)$.
+The ``recovered'' state corresponds to an idea that has been fully
+integrated and is no longer being actively transmitted.  Our relay-chain
+formalism captures the SIR model's transmission dynamics while adding the
+algebraic structure of composition.
+
+\section{Core Definitions}
+\label{sec:ch18-defs}
+
+\begin{definition}[Relay Chain]
+\label{def:relayChain}
+Let $\text{relayers} = [r_1, r_2, \ldots, r_n]$ be a list of relayer ideas
+and $s \in \IS$ be a signal.  The \emph{relay chain} is the left-fold:
+\[
+  \texttt{relayChain}(\text{relayers}, s) \;:=\;
+  \text{foldl}\bigl(\lambda\;\text{acc}\;r.\;\compose(r, \text{acc}),\;
+  s,\; \text{relayers}\bigr).
+\]
+Each relayer composes the accumulated signal with their own frame,
+left-to-right.
+\end{definition}
+
+\begin{lstlisting}[caption={Relay chain in Lean}]
+def relayChain (relayers : List I) (signal : I) : I :=
+  relayers.foldl (fun acc r => IdeaticSpace.compose r acc) signal
+\end{lstlisting}
+
+The fold semantics mean that $r_1$ processes the raw signal first, producing
+$\compose(r_1, s)$; then $r_2$ processes $r_1$'s output, producing
+$\compose(r_2, \compose(r_1, s))$; and so on.  Each relay hop adds a layer
+of interpretive composition.
+
+\begin{definition}[Chain Depth]
+\label{def:chainDepth}
+The \emph{chain depth} is the depth of the relay chain's output:
+\[
+  \texttt{chainDepth}(\text{relayers}, s) := \depth\bigl(\texttt{relayChain}(\text{relayers}, s)\bigr).
+\]
+\end{definition}
+
+\begin{definition}[Network Path]
+\label{def:NetworkPath}
+A \emph{network path} packages a list of relayers and a signal into a
+single structure.  Its output is the relay chain:
+\[
+  \texttt{NetworkPath.output}(p) := \texttt{relayChain}(p.\text{relayers}, p.\text{signal}).
+\]
+\end{definition}
+
+\begin{lstlisting}[caption={Network path structure in Lean}]
+structure NetworkPath (I : Type*) [IdeaticSpace I] where
+  relayers : List I
+  signal : I
+
+def NetworkPath.output (p : NetworkPath I) : I :=
+  relayChain p.relayers p.signal
+\end{lstlisting}
+
+% ============================================================
+\section{Illustrative Examples}
+\label{sec:ch18-examples}
+
+Before developing the theorems of cultural diffusion, we present extended
+examples that ground the formalism in empirical research on transmission
+chains.
+
+\begin{example}[Bartlett's Serial Reproduction Experiments]
+\label{ex:bartlett}
+Frederic Bartlett's \textit{Remembering} (1932) remains the foundational
+empirical study of cultural transmission chains.  In his serial
+reproduction experiments, Bartlett asked a participant to read an unfamiliar
+folk tale---the Kwakiutl story ``The War of the Ghosts''---and then
+reproduce it from memory.  This reproduction was given to a second
+participant, who reproduced it in turn, and so on through a chain of ten or
+more participants.
+
+In IDT terms, each participant $r_i$ acts as a relayer, composing the
+incoming story $s_{i-1}$ with their own cognitive schemas to produce a new
+story $s_i = \compose(r_i, s_{i-1})$.  Bartlett observed several systematic
+transformations: the story became shorter (depth reduction), unfamiliar
+elements were replaced by familiar ones (assimilation to the relayer's
+schemas), and the narrative structure was rationalized according to Western
+story conventions (imposition of the relayer's cultural frame).
+
+The relay-chain model $\texttt{relayChain}([r_1, \ldots, r_n], s)$
+captures these dynamics precisely.  Each relayer's composition introduces
+their cognitive biases, and the cumulative effect is a progressive
+transformation of the original signal.  Bartlett called this
+``effort after meaning''---the relayer's active contribution to the
+composition, formalized here as the relayer's idea $r_i$.
+\end{example}
+
+\begin{example}[Viral Memes: The Ice Bucket Challenge]
+\label{ex:ice-bucket}
+The ALS Ice Bucket Challenge of 2014 spread to an estimated 17 million
+participants worldwide within weeks, raising over \$115 million for ALS
+research.  From the perspective of cultural epidemiology, the challenge
+is a near-ideal case of a high-fidelity relay chain.
+
+The ``meme'' $m$ consisted of a simple behavioral script: pour ice water
+over yourself, film it, nominate three friends, donate.  Each participant
+$r_i$ relayed the challenge by performing the script and posting a video,
+producing $\compose(r_i, m)$.  The challenge's viral success depended on
+two formal properties.  First, \emph{approximate order invariance}: the
+core script was sufficiently simple that $\compose(r_i, m)$ was
+recognizably similar to $m$ for most relayers $r_i$.  Second,
+\emph{resonance clustering} (Theorem~\ref{thm:resonant_relayers_resonant_output}):
+participants within the same social network shared cognitive schemas
+(resonance), ensuring that their relay outputs were similar to each other.
+
+The mutations that did occur---celebrity elaborations, parodies, refusals
+to participate---illustrate the non-identity of $\compose(r_i, m)$ and $m$.
+Each relayer's composition added their distinctive contribution, even as
+the core signal was preserved.
+\end{example}
+
+\begin{example}[Ryan and Gross: Hybrid Corn Diffusion]
+\label{ex:hybrid-corn}
+Bryce Ryan and Neal Gross's 1943 study of hybrid corn adoption in Greene
+County, Iowa,\footnote{Bryce Ryan and Neal C.\ Gross, ``The Diffusion of
+Hybrid Seed Corn in Two Iowa Communities,'' \textit{Rural Sociology} 8,
+no.\ 1 (1943): 15--24.} is the foundational empirical study in the
+diffusion of innovations literature.  They found that adoption followed
+an S-shaped curve: a slow initial phase, followed by rapid adoption, and
+finally saturation.
+
+In relay-chain terms, the innovation $s$ (hybrid corn) diffused through a
+network of farmers $[r_1, r_2, \ldots, r_n]$.  The early adopters composed
+the innovation with their own farming experience, producing
+$\compose(r_i, s)$---a personalized understanding of the technology.  These
+compositions were then relayed to neighbors, who composed them with their
+own schemas.  The S-curve arises because the relay chain's depth bounds
+(Theorem~\ref{thm:single_relay_depth}) ensure that each hop adds bounded
+complexity, while the resonance clustering
+(Theorem~\ref{thm:resonant_relayers_resonant_output}) ensures that farmers
+in the same community produce similar adaptations, facilitating social
+proof and further adoption.
+\end{example}
+
+\begin{example}[Rumor Transmission in Organizations]
+\label{ex:rumor}
+Gordon Allport and Leo Postman's classic study of rumor
+transmission\footnote{Gordon W.\ Allport and Leo Postman, \textit{The
+Psychology of Rumor} (1947).} identified three processes: \emph{leveling}
+(shortening), \emph{sharpening} (selective emphasis), and
+\emph{assimilation} (distortion toward the relayer's expectations).  Each
+process corresponds to a specific aspect of the composition
+$\compose(r_i, s_{i-1})$: leveling reduces depth, sharpening amplifies
+salient features of the relayer's frame, and assimilation replaces
+unfamiliar elements with the relayer's own schemas.
+
+In organizational networks, rumors traverse hierarchical relay chains.
+A rumor $s$ originating at the executive level passes through middle
+managers $[r_1, r_2, \ldots, r_k]$ before reaching front-line employees.
+Each managerial relay hop composes the rumor with the manager's
+institutional perspective, producing increasingly ``managed'' versions of
+the original signal.  The void-transparency results
+(Theorems~\ref{thm:void_relayer_transparent}--\ref{thm:void_chain_identity})
+formalize the idealized case in which a manager transmits the message
+without alteration---a ``transparent'' relay that is, in practice,
+exceedingly rare.
+\end{example}
+
+\section{Fundamental Transmission Theorems}
+\label{sec:ch18-fundamental}
+
+\begin{theorem}[Empty Chain Preserves Signal (18.1)]
+\label{thm:empty_chain_preserves}
+For all $s \in \IS$,
+\[
+  \texttt{relayChain}([\,], s) = s.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The fold over an empty list returns the initial accumulator $s$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Direct transmission without intermediaries preserves the original message
+perfectly.  This is the idealized limit of communication: zero-hop
+transmission is lossless.  In information theory, this corresponds to a
+noiseless channel; in cultural epidemiology, it represents the (impossible)
+case of unmediated cultural transmission.
+
+\begin{theorem}[Singleton Chain = Single Composition (18.2)]
+\label{thm:singleton_chain}
+For all $r, s \in \IS$,
+\[
+  \texttt{relayChain}([r], s) = \compose(r, s).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+One iteration of the fold: $\compose(r, s)$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A single retelling is one act of interpretive composition.  The reteller
+composes the signal with their own frame, producing a new idea that carries
+traces of both the original and the reteller's cognitive environment.
+In Bartlett's terms, this is one round of ``serial reproduction.''
+
+\begin{theorem}[Two-Relayer Chain (18.3)]
+\label{thm:two_relayer_chain}
+\[
+  \texttt{relayChain}([r_1, r_2], s) = \compose(r_2, \compose(r_1, s)).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Two iterations of the fold.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The ``telephone game'' with two players: the second player interprets the
+first player's interpretation, not the original signal.  This captures the
+fundamental structure of multi-hop cultural transmission: each intermediary
+processes the \emph{already-processed} signal, not the original.\footnote{In
+organizational communication theory, this is the source of the ``serial
+transmission effect'': messages degrade as they pass through chains of
+intermediaries, each of whom introduces their own cognitive biases.}
+
+% ============================================================
+\section{Void Transparency and Signal Fidelity}
+\label{sec:ch18-void}
+
+Void relayers are ``transparent''---they pass the signal through without
+modification.  This models passive carriers who do not transform the message.
+
+\begin{theorem}[Void Relayer is Transparent (18.4)]
+\label{thm:void_relayer_transparent}
+Appending a void relayer to the end of a chain does not change the output:
+\[
+  \texttt{relayChain}(\text{relayers} \mathop{++} [\void], s) =
+  \texttt{relayChain}(\text{relayers}, s).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The fold over the appended void computes $\compose(\void, \text{acc}) =
+\text{acc}$ by the left-identity law.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A cognitively ``empty'' relay node transmits faithfully.  In Sperber's
+framework, this models a carrier who lacks the cognitive schemas to
+transform the representation---a perfect mirror for the incoming signal.
+
+\begin{theorem}[Prepending Void Relayer is No-Op (18.15)]
+\label{thm:void_prepend_chain}
+\[
+  \texttt{relayChain}(\void :: \text{relayers}, s) =
+  \texttt{relayChain}(\text{relayers}, s).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The first fold step computes $\compose(\void, s) = s$, so the remaining
+fold proceeds from the same accumulator.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+An empty preamble carries no information.  Starting a chain of retellers
+with a ``silent'' relayer does not affect the final output.
+
+\begin{theorem}[Void Signal Through Single Relay (18.5)]
+\label{thm:void_signal_single_relay}
+\[
+  \texttt{relayChain}([r], \void) = r.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+$\compose(r, \void) = r$ by right-identity.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+An empty message gets filled with the relayer's own content.  When there is
+no signal, only interpretation remains---the relayer projects their own
+frame onto the void.  This formalizes the constructivist insight that in the
+absence of external stimuli, the interpreter's own schemas dominate.
+
+\begin{theorem}[Void Chain is Identity (18.12)]
+\label{thm:void_chain_identity}
+For all $n \in \mathbb{N}$ and $s \in \IS$,
+\[
+  \texttt{relayChain}(\underbrace{[\void, \void, \ldots, \void]}_{n}, s) = s.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By induction on $n$.  Base case: empty chain preserves $s$.  Inductive step:
+the last void relayer is transparent (Theorem~\ref{thm:void_relayer_transparent}).
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A chain of ``empty'' cognitive environments transmits perfectly.  This is
+the idealized limit of faithful transmission: if every intermediary is
+cognitively passive, the signal arrives unchanged.  Of course, this limit is
+never achieved in practice---every mind adds something to the message.
+
+% ============================================================
+\section{Depth Bounds on Relay Chains}
+\label{sec:ch18-depth}
+
+Subadditivity cascades through relay chains, providing upper bounds on the
+depth of the transmitted signal.
+
+\begin{theorem}[Chain Depth Bound---Single Relayer (18.6)]
+\label{thm:single_relay_depth}
+\[
+  \texttt{chainDepth}([r], s) \leq \depth(r) + \depth(s).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By definition, $\texttt{chainDepth}([r], s) = \depth(\compose(r, s))$,
+and subadditivity gives $\depth(\compose(r,s)) \leq \depth(r) + \depth(s)$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A single retelling adds at most the reteller's own complexity to the story.
+In Bartlett's experiments, the distortions introduced by a single reteller
+are bounded by the reteller's cognitive capacity.
+
+\begin{theorem}[Chain Output Depth Bound---Two Relayers (18.16)]
+\label{thm:two_relay_depth_bound}
+\[
+  \texttt{chainDepth}([r_1, r_2], s) \leq
+  \depth(r_1) + \depth(r_2) + \depth(s).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Apply subadditivity twice: first to $r_2$ and $\compose(r_1, s)$, then to
+$r_1$ and $s$.  Combine by transitivity.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Two successive retellings add at most the combined complexity of both
+retellers to the original story's depth.  The bound is \emph{linear} in the
+number of relayers and their individual depths---a tight constraint on the
+``inflation'' of cultural representations during transmission.
+
+\begin{theorem}[Depth Zero Signal Relay (18.17)]
+\label{thm:depth_zero_relay}
+If $\depth(r) = 0$ and $\depth(s) = 0$, then $\texttt{chainDepth}([r], s) = 0$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Depth-zero closure under composition.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Empty content through an empty channel yields nothing.  This is the
+information-theoretic ground truth: zero-depth inputs produce zero-depth
+output, regardless of the network topology.
+
+\begin{theorem}[Empty Chain Depth Preservation (18.9)]
+\label{thm:empty_chain_depth}
+$\texttt{chainDepth}([\,], s) = \depth(s)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The relay chain over an empty list is the signal itself.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Without intermediaries, complexity is unchanged.  Direct communication
+preserves not just the signal content but also its structural complexity.
+
+% ============================================================
+\section{Resonance in Networks}
+\label{sec:ch18-resonance}
+
+Resonance---the compatibility relation between ideas---interacts with
+network diffusion in natural ways.
+
+\begin{theorem}[Resonant Relayers Produce Resonant Output (18.7)]
+\label{thm:resonant_relayers_resonant_output}
+If $\text{resonates}(r_1, r_2)$, then for all $s$,
+\[
+  \text{resonates}\bigl(\texttt{relayChain}([r_1], s),\;
+  \texttt{relayChain}([r_2], s)\bigr).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Reduces to $\text{resonates}(\compose(r_1, s), \compose(r_2, s))$,
+which follows from \texttt{resonance\_compose\_right}.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Similar cognitive environments produce similar transformations of the same
+input.  In cultural epidemiology, this explains why cultural variants
+\emph{cluster}: when relayers share cognitive schemas (resonance), their
+outputs remain in the same neighborhood of ideatic space.\footnote{Sperber's
+``epidemiology of representations'' predicts that cultural attractors emerge
+when many minds share similar cognitive biases.  Theorem~\ref{thm:resonant_relayers_resonant_output}
+provides the formal mechanism for this clustering.}
+
+\begin{theorem}[Resonant Signals Through Same Relayer (18.8)]
+\label{thm:resonant_signals_same_relay}
+If $\text{resonates}(s_1, s_2)$, then for all $r$,
+\[
+  \text{resonates}\bigl(\texttt{relayChain}([r], s_1),\;
+  \texttt{relayChain}([r], s_2)\bigr).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+From \texttt{resonance\_compose} applied to $(r, r, s_1, s_2)$ with
+self-resonance of $r$ and the hypothesis.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Similar memes stay similar even after cultural transmission through the same
+social environment.  A single relayer preserves the resonance between its
+inputs, ensuring that initially similar signals remain similar after
+processing.
+
+\begin{theorem}[Two Chains Resonance (18.14)]
+\label{thm:two_chains_resonance}
+If $\text{resonates}(r_1, r_2)$ and $\text{resonates}(s_1, s_2)$, then
+\[
+  \text{resonates}\bigl(\texttt{relayChain}([r_1], s_1),\;
+  \texttt{relayChain}([r_2], s_2)\bigr).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Direct from \texttt{resonance\_compose} applied to $(r_1, r_2, s_1, s_2)$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The diffusion of innovations through similar social environments produces
+similar cultural adaptations.  When both the relayers and the signals are in
+resonance, the outputs are in resonance---a strong stability result for
+cultural transmission through homogeneous networks.
+
+\begin{theorem}[Network Path Self-Resonance (18.11)]
+\label{thm:path_self_resonance}
+Every network path output resonates with itself.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Self-resonance is universal.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Any completed transmission, however distorted, achieves internal
+self-consistency.  The accumulated composition of relayer transformations
+may diverge arbitrarily from the original signal, but the final output is
+always coherent with itself.
+
+% ============================================================
+\section{From Bartlett to TikTok: Transmission Chains Across Media}
+\label{sec:ch18-bartlett-tiktok}
+
+The relay-chain formalism applies not only to face-to-face oral
+transmission (Bartlett's paradigm) but to every medium through which ideas
+propagate.  As media technologies evolve, the \emph{structure} of the relay
+chain changes while its \emph{algebraic properties} remain constant.
+
+\subsection{Oral Transmission: The Telephone Game}
+
+The children's ``telephone game'' (known as ``Chinese whispers'' in British
+English) is the simplest empirical instantiation of a relay chain.  A
+whispered message $s$ passes through a sequence of children
+$[r_1, r_2, \ldots, r_n]$, emerging at the end as
+$\texttt{relayChain}([r_1, \ldots, r_n], s)$.  The game's humor derives
+from the dramatic divergence between input and output---a divergence that
+our depth bounds show is \emph{constrained but non-zero}.
+
+What makes the telephone game theoretically important is that it
+eliminates all confounding variables: the medium is uniform (whispered
+speech), the relay structure is linear (no branching), and the relayers
+share a common cultural environment (same classroom).  Under these
+controlled conditions, the mutations introduced by each relay hop are
+purely compositional: each child composes the incoming signal with their
+own auditory and semantic schemas.
+
+\subsection{Print and Manuscript Transmission}
+
+The medieval manuscript tradition provides a natural long-timescale
+analogue of serial reproduction.  Each scribe $r_i$ copying a manuscript
+$s_{i-1}$ introduces characteristic errors---omissions, additions,
+transpositions, and glosses---that are precisely the compositional
+contributions $\compose(r_i, s_{i-1}) - s_{i-1}$ (where the ``subtraction''
+is metaphorical).  The field of textual criticism, from Karl Lachmann's
+stemmatic method to computational phylogenetics, is essentially the study
+of relay chains in manuscript networks.\footnote{The application of
+phylogenetic methods to textual criticism is surveyed in Christopher J.\
+Howe and Heather F.\ Windram, ``Phylomemetics: Evolutionary Analysis
+Beyond the Gene,'' \textit{PLoS Biology} 9, no.\ 5 (2011).}
+
+\subsection{Digital Transmission: Social Media Cascades}
+
+On platforms like Twitter (now X) and TikTok, the relay chain acquires
+a tree structure: a single post $s$ is ``retweeted'' or ``dueted'' by
+multiple relayers simultaneously, each of whom adds their own commentary.
+A retweet with comment is $\compose(r_i, s)$; a ``quote tweet'' with
+extensive commentary may produce $\compose(r_i, s)$ with high relayer
+depth.  TikTok ``duets'' are particularly interesting because they
+literally place the relayer's video alongside the original, making the
+composition $\compose(r_i, s)$ visible as a spatial juxtaposition.
+
+The resonance-clustering theorems
+(Section~\ref{sec:ch18-resonance}) predict that relay outputs will cluster
+by community: relayers within the same algorithmic ``bubble'' share
+cognitive schemas (resonance), producing similar compositions.  This
+explains the empirical observation that viral content mutates along
+community lines, with distinct ``strains'' emerging in different
+subcommunities---a pattern precisely analogous to the evolution of
+biological pathogens in geographically separated host populations.
+
+\begin{remark}[The Telephone Game as Scientific Methodology]
+\label{rem:telephone-methodology}
+The ``serial reproduction'' paradigm pioneered by Bartlett has become a
+standard experimental methodology in cultural evolution research.  Modern
+implementations use controlled transmission chains to study the evolution
+of language,\footnote{Simon Kirby, Hannah Cornish, and Kenny Smith,
+``Cumulative Cultural Evolution in the Laboratory: An Experimental Approach
+to the Origins of Structure in Human Language,'' \textit{Proceedings of the
+National Academy of Sciences} 105, no.\ 31 (2008): 10681--10686.}
+visual art, music, and even technology.  In each case, the experimental
+design instantiates a relay chain $\texttt{relayChain}([r_1, \ldots, r_n], s)$
+under controlled conditions, enabling researchers to isolate the
+compositional contribution of each relay hop.  Our formalism provides the
+algebraic framework within which these experimental results can be
+unified and compared.
+\end{remark}
+
+\begin{remark}[Network Topology and Diffusion Speed]
+\label{rem:topology-speed}
+The topology of the relay network determines the \emph{speed} and
+\emph{pattern} of cultural diffusion, even though the \emph{algebraic
+properties} of each relay hop are topology-independent.  In a
+small-world network (Watts and Strogatz), the average path length
+scales as $\log n$, meaning that ideas can reach any node in
+$O(\log n)$ relay hops.  In a scale-free network (Barab\'asi and Albert),
+the hub structure means that most relay chains pass through a small
+number of high-degree nodes, whose compositional contributions dominate
+the final output.  In a lattice network, diffusion is slow and local,
+with each relay hop advancing the signal by one spatial step.  The
+depth bounds of Section~\ref{sec:ch18-depth} apply to all three
+topologies, providing topology-independent upper bounds on the complexity
+of the transmitted signal.
+\end{remark}
+
+\begin{remark}[Connection to Marketplace Competition]
+\label{rem:marketplace-connection}
+The network diffusion formalism connects to the marketplace competition
+of Chapter~\ref{ch:marketplace} in a natural way.  In the marketplace
+model, ideas compete for adoption; in the network diffusion model, ideas
+spread through relay chains.  The two models are complementary: marketplace
+competition determines \emph{which} ideas enter the relay chain (the
+signal $s$), while network diffusion determines \emph{how} those ideas
+are transformed as they spread (the relay chain $\texttt{relayChain}(
+\text{relayers}, s)$).  The depth bounds and resonance results of this
+chapter provide constraints on the outcomes of marketplace competition:
+even a ``winning'' idea will be transformed by the relay chain through
+which it diffuses, and the extent of that transformation is bounded by
+the algebraic properties proved here.
+\end{remark}
+
+% ============================================================
+\section{Network Topology and Chain Composition}
+\label{sec:ch18-topology}
+
+\begin{theorem}[Chain Concatenation is Sequential Relay (18.10)]
+\label{thm:chain_concat}
+\[
+  \texttt{relayChain}(\text{relayers}_1 \mathop{++} \text{relayers}_2, s) =
+  \texttt{relayChain}\bigl(\text{relayers}_2,\;
+  \texttt{relayChain}(\text{relayers}_1, s)\bigr).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+From the associativity of \texttt{foldl} over list concatenation.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Two segments of a communication network compose into a single longer path.
+This is the fundamental composition law for information networks: the output
+of the first segment becomes the input to the second.  In graph-theoretic
+terms, path concatenation in the relay network corresponds to functional
+composition of relay transformations---a monoidal structure on the space
+of network paths.\footnote{This is the \emph{functoriality} of the relay
+chain: it respects the monoidal structure of list concatenation.}
+
+\begin{theorem}[Chain Append Equivalence (18.18)]
+\label{thm:chain_append}
+\[
+  \texttt{relayChain}(\text{relayers} \mathop{++} [r], s) =
+  \compose\bigl(r,\; \texttt{relayChain}(\text{relayers}, s)\bigr).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Special case of chain concatenation with a singleton second chain.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Adding a node at the end of a path is equivalent to that node processing
+the path's accumulated output.  This provides the inductive step for
+analyzing chains of arbitrary length: each new relayer simply composes with
+the running total.
+
+\begin{theorem}[Relay Preserves Relayer Count (18.13)]
+\label{thm:relay_preserves_relayer_count}
+$|\texttt{NetworkPath.mk}(\text{relayers}, s).\text{relayers}| = |\text{relayers}|$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Definitional equality: the structure stores the relayer list unchanged.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The relay chain function doesn't alter the number of relayers.  The network
+topology is preserved during diffusion---only the \emph{content} of the
+signal changes, not the \emph{structure} of the network.
+
+% ============================================================
+
+\noindent\textbf{Extended discussion of Theorem~\ref{thm:chain_concat}.}\quad
+The chain-concatenation theorem is the structural backbone of network
+diffusion theory.  It establishes that the relay chain respects the monoidal
+structure of list concatenation: composing two segments of a relay network
+is equivalent to running the first segment and then feeding its output into
+the second.  This is a \emph{functoriality} result: the relay-chain
+function is a monoid homomorphism from $(\text{List}(\IS), {+\!+}, [\,])$
+to $(\IS \to \IS, \circ, \text{id})$.
+
+The practical consequence is that large relay networks can be analyzed by
+decomposition.  A continental-scale diffusion network can be partitioned
+into regional sub-networks, each analyzed independently; the
+concatenation theorem guarantees that assembling the regional analyses
+yields the correct global result.  This modularity principle is essential
+for scaling the formalism to real-world networks with millions of nodes.
+
+In graph-theoretic terms, the theorem states that path composition in the
+relay graph corresponds to function composition in the space of ideatic
+transformations.  This is the formal content of the intuition that
+``information flows along paths'': the transformation effected by a path
+is the composition of the transformations effected by its constituent
+edges.
+
+\medskip
+
+\noindent\textbf{Extended discussion of Theorem~\ref{thm:void_chain_identity}.}\quad
+The void-chain identity theorem---that a chain of void relayers preserves
+the signal perfectly---is the formal expression of a foundational
+idealization in communication theory: the \emph{noiseless channel}.
+Shannon's noiseless coding theorem (1948) established that information can
+be transmitted perfectly through a noiseless channel; our theorem
+establishes that a chain of void relayers \emph{is} a noiseless channel in
+ideatic space.
+
+The practical significance is as a limiting case.  No real relay chain
+consists of void relayers---every intermediary adds \emph{something} to
+the signal.  But the void chain provides the baseline against which
+real chains can be measured.  The ``distortion'' introduced by a real
+relay chain $[r_1, \ldots, r_n]$ is the difference between
+$\texttt{relayChain}([r_1, \ldots, r_n], s)$ and
+$\texttt{relayChain}([\void, \ldots, \void], s) = s$.  This
+difference---the cumulative compositional contribution of the
+relayers---is the formal analogue of ``noise'' in Shannon's theory.
+
+\section{Conclusion}
+\label{sec:ch18-concl}
+
+This chapter has established eighteen theorems formalizing cultural
+diffusion through networks within the framework of Ideatic Diffusion Theory.
+The key results are:
+
+\begin{itemize}
+  \item \textbf{Compositional structure:} Network diffusion is sequential
+    composition (Theorems~\ref{thm:singleton_chain}--\ref{thm:two_relayer_chain}).
+  \item \textbf{Void transparency:} Passive relayers preserve signals
+    (Theorems~\ref{thm:void_relayer_transparent}--\ref{thm:void_chain_identity}).
+  \item \textbf{Depth bounds:} Chain depth grows at most linearly
+    (Theorems~\ref{thm:single_relay_depth}--\ref{thm:two_relay_depth_bound}).
+  \item \textbf{Resonance clustering:} Similar relayers and signals produce
+    similar outputs (Theorems~\ref{thm:resonant_relayers_resonant_output}--\ref{thm:two_chains_resonance}).
+  \item \textbf{Network composition:} Chain concatenation = sequential relay
+    (Theorem~\ref{thm:chain_concat}).
+\end{itemize}
+
+Sperber's cultural epidemiology proposed that culture is ``the precipitate
+of cognition and communication.''  Our formalization shows that this
+precipitate obeys precise algebraic laws: the relay chain is a homomorphism
+from the monoid of relayer lists to the monoid of ideatic transformations.
+Depth bounds constrain the ``mutation rate'' of cultural representations,
+and resonance clustering explains the emergence of cultural attractors.
+
+In the next chapter, we turn from the diffusion of ideas to their
+aggregation: the social-choice problem of combining multiple interpretations
+into a single shared meaning.

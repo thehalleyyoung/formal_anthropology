@@ -1,0 +1,400 @@
+% ================================================================
+% Volume V-B, Chapters 1--5
+% Paradoxes of Power
+% ================================================================
+
+
+% ================================================================
+\chapter{The Isomorphism of Domination and Virtue}
+% ================================================================
+
+\epigraph{The history of all hitherto existing society is the history of class struggles.}{Karl Marx and Friedrich Engels, \textit{The Communist Manifesto}}
+
+\section{The Naive Expectation}
+
+Political domination and moral virtue seem like opposites.  When a hegemon absorbs a subordinate culture, we call it oppression.  When a moral agent goes beyond the call of duty, we call it saintliness.  Gramsci's hegemonic influence and Kant's supererogation inhabit different philosophical worlds --- one is critique, the other is commendation.
+
+The naive expectation: the mathematics of domination should look nothing like the mathematics of virtue.
+
+The reality is devastating.
+
+\section{Hegemony IS Supererogation (Theorem 1)}
+
+\begin{theorem}[Hegemony--Supererogation Identity]
+\label{thm:hegemony-supererogation}
+For any hegemon $h$ and subordinate $a$ in Ideatic Space:
+\[
+\text{hegemonicInfluence}(h, a) = \text{supererogation}(h, a).
+\]
+The political power gained by absorption is \emph{identical} to the moral enrichment of going beyond duty.
+\end{theorem}
+
+\begin{proof}
+Both quantities are defined as $\wt(h \compose a) - \wt(h)$: hegemonic influence measures the weight gain from absorbing a subordinate, and supererogation measures the weight gain from going beyond one's baseline moral weight.  Since moral weight \emph{is} self-resonance, and symbolic capital \emph{is} self-resonance, these are literally the same subtraction.
+\end{proof}
+
+\begin{lstlisting}
+theorem hegemony_is_supererogation (h a : I) :
+    hegemonicInfluence h a = supererogation h a := by
+  unfold hegemonicInfluence supererogation moralWeight
+  ring
+\end{lstlisting}
+
+\begin{interpretation}[\textbf{Why This Is Surprising}]
+This is not an analogy.  It is an identity.  The mathematical object that Gramsci calls ``hegemonic influence'' and the mathematical object that Kantian ethics calls ``supererogation'' are \emph{the same real number}.  The distinction between oppression and virtue is not mathematical --- it is \emph{interpretive}.
+
+Consider a corporation absorbing a startup: the weight gain from the acquisition is structurally identical to the moral enrichment of a philanthropist who takes on additional obligations.  The mathematics cannot tell whether we should celebrate or condemn.  This means every critique of hegemony is simultaneously a description of a virtue, and every praise of supererogation is simultaneously a description of domination.  The ethical valence lives entirely outside the mathematics.
+\end{interpretation}
+
+
+\section{Propaganda IS Moral Responsibility (Theorem 2)}
+
+\begin{theorem}[Propaganda--Responsibility Identity]
+\label{thm:propaganda-responsibility}
+For any propagandist $p$, audience $a$, and target $t$:
+\[
+\text{propagandaEffect}(p, a, t) = \text{moralResponsibility}(p, a, t).
+\]
+\end{theorem}
+
+\begin{proof}
+Both are defined as the emergence $\emrg(p, a, t) = \operatorname{rs}(p \compose a, t) - \operatorname{rs}(p, t) - \operatorname{rs}(a, t)$.  Propaganda measures the \emph{shift in resonance} caused by composing the propagandist's message with the audience, as seen by a target.  Moral responsibility measures the \emph{change attributable} to the agent for the audience's transformed state.  These are the same subtraction.
+\end{proof}
+
+\begin{lstlisting}
+theorem propaganda_is_responsibility (propagandist audience target : I) :
+    propagandaEffect propagandist audience target =
+    moralResponsibility propagandist audience target := by
+  unfold propagandaEffect moralResponsibility emergence
+  ring
+\end{lstlisting}
+
+\begin{interpretation}[\textbf{Why This Is Surprising}]
+Hannah Arendt argued that propaganda is the assumption of responsibility for others' beliefs.  This theorem proves she was right --- not metaphorically, but mathematically.  Every propagandist is simultaneously a moral agent bearing full responsibility for the transformation they produce.  There is no escape into ``I was just informing people'': the mathematical structure of persuasion \emph{is} the mathematical structure of moral accountability.
+
+This has immediate implications for media ethics.  A news organization that frames a story is exercising the same mathematical operation as a moral agent who assumes responsibility for the audience's changed worldview.  The ``neutral observer'' is a mathematical fiction.
+\end{interpretation}
+
+
+\section{Epistemic Injustice IS Ideological Distortion (Theorem 3)}
+
+\begin{theorem}[Injustice--Ideology Identity]
+\label{thm:injustice-ideology}
+For any prejudice $p$, speaker $s$, and hearer $h$:
+\[
+\text{credibilityShift}(p, s, h) = \text{ideologicalDistortion}(p, s, h).
+\]
+\end{theorem}
+
+\begin{proof}
+The credibility shift measures $\operatorname{rs}(p \compose s, h) - \operatorname{rs}(s, h)$: how much the speaker's testimony is altered when filtered through prejudice.  Ideological distortion measures $\operatorname{rs}(\text{filter}(p, s), h) - \operatorname{rs}(s, h)$, where the ideological filter is composition.  Since both operations are ``compose then compare,'' they yield the same quantity.
+\end{proof}
+
+\begin{lstlisting}
+theorem injustice_is_ideology (prejudice speaker hearer : I) :
+    credibilityShift prejudice speaker hearer =
+    ideologicalDistortion prejudice speaker hearer := by
+  unfold credibilityShift ideologicalDistortion ideologicalFilter
+  ring
+\end{lstlisting}
+
+\begin{interpretation}[\textbf{Why This Is Surprising}]
+Miranda Fricker's concept of testimonial injustice --- a hearer giving less credibility to a speaker because of prejudice --- is \emph{structurally identical} to Althusser's concept of ideological distortion --- a state apparatus filtering information through its ideological lens.  Prejudice does not merely \emph{resemble} ideology.  It IS ideology, operating on testimony instead of politics.
+
+This means that combating epistemic injustice and combating ideological distortion are the same mathematical problem.  A society that solves one has necessarily solved the other, and a society that tolerates one necessarily tolerates both.
+\end{interpretation}
+
+
+% ================================================================
+\chapter{The Anatomy of Absorption}
+% ================================================================
+
+\epigraph{The ideas of the ruling class are in every epoch the ruling ideas.}{Karl Marx, \textit{The German Ideology}}
+
+\section{Hegemony Absorbs the Whole Subordinate (Theorem 4)}
+
+\begin{theorem}[Absorption Theorem]
+\label{thm:absorption}
+For any hegemon $h$ and subordinate $a$:
+\[
+\text{hegemonicInfluence}(h, a) = \text{cooperationSurplus}(h, a) + \wt(a).
+\]
+\end{theorem}
+
+\begin{proof}
+We expand definitions.  The hegemonic influence is $\wt(h \compose a) - \wt(h)$.  The cooperation surplus is $\wt(h \compose a) - \wt(h) - \wt(a)$.  Therefore:
+\[
+\text{hegemonicInfluence} = \text{cooperationSurplus} + \wt(a). \qedhere
+\]
+\end{proof}
+
+\begin{lstlisting}
+theorem hegemony_absorbs_weight (h a : I) :
+    hegemonicInfluence h a = cooperationSurplus h a + moralWeight a := by
+  unfold hegemonicInfluence cooperationSurplus moralWeight
+  ring
+\end{lstlisting}
+
+\begin{paradox}[Total Absorption]
+The hegemon does not merely benefit from cooperation.  It absorbs the subordinate's \emph{entire weight} --- their full cognitive presence --- on top of any cooperative surplus.  This is why colonial empires don't just extract resources; they absorb cultures, languages, identities.  The mathematics guarantees total absorption: the subordinate's being is fully consumed.
+
+Edward Said's concept of Orientalism --- the West constructing ``the Orient'' as an object of knowledge --- is precisely this: the hegemonic composition absorbs the Orient's full weight into the Western knowledge system.
+\end{paradox}
+
+
+\section{Bio-Power IS Hegemonic Influence (Theorem 5)}
+
+\begin{theorem}[Foucault--Gramsci Identity]
+\label{thm:foucault-gramsci}
+For any institution $h$ and population $p$:
+\[
+\text{bioPower}(h, p) = \text{hegemonicInfluence}(h, p).
+\]
+\end{theorem}
+
+\begin{proof}
+Bio-power is defined as $\wt(h \compose p) - \wt(h)$, the weight gained by an institution that manages a population through composition.  This is identical to the definition of hegemonic influence.
+\end{proof}
+
+\begin{lstlisting}
+theorem biopower_is_hegemony (h population : I) :
+    bioPower h population = hegemonicInfluence h population := by
+  unfold bioPower hegemonicInfluence
+  ring
+\end{lstlisting}
+
+\begin{interpretation}[\textbf{Why This Is Surprising}]
+Foucault and Gramsci wrote in entirely different traditions.  Foucault analyzed disciplinary institutions --- prisons, hospitals, schools --- and their microphysics of power.  Gramsci analyzed cultural hegemony --- how ruling classes maintain dominance through consent rather than coercion.  These appear to be different phenomena: one is about bodies, the other about minds.
+
+But the mathematics says they are identical.  The panopticon and the newspaper, the hospital and the school, the prison and the church --- all perform the same operation: composing an institution with a population and measuring the weight gain.  The ``disciplinary'' and the ``hegemonic'' are the same mathematical function.
+
+This vindicates Foucault's later move toward ``governmentality,'' which attempted to bridge exactly this gap.  The bridge was always there; it just needed to be proven.
+\end{interpretation}
+
+
+\section{Arendt's Power IS Cooperation Surplus (Theorem 6)}
+
+\begin{theorem}[Arendt--Ethics Identity]
+\label{thm:arendt-cooperation}
+For any ideas $a$ and $b$:
+\[
+\text{arendtPower}(a, b) = \text{cooperationSurplus}(a, b).
+\]
+\end{theorem}
+
+\begin{proof}
+Arendt's power measures collective capacity beyond individual capacity: $\wt(a \compose b) - \wt(a) - \wt(b)$.  This is exactly the cooperation surplus.
+\end{proof}
+
+\begin{lstlisting}
+theorem arendt_is_cooperation (a b : I) :
+    arendtPower a b = cooperationSurplus a b := by
+  unfold arendtPower cooperationSurplus moralWeight
+  ring
+\end{lstlisting}
+
+\begin{interpretation}[\textbf{Why This Is Surprising}]
+For Arendt, power arises ``when people act in concert.''  It is the capacity that exists only in collectivity, irreducible to individual force.  The cooperation surplus of moral philosophy measures exactly the same thing: the value that exists only in combination, beyond what either party contributes alone.
+
+This means \emph{political theory and moral philosophy measure the same quantity with different names}.  Arendt's ``power'' and the ethicist's ``cooperation surplus'' are the same real number.  The political and the ethical are unified at the most basic mathematical level.
+\end{interpretation}
+
+
+% ================================================================
+\chapter{The Transmission--Morality Bridge}
+% ================================================================
+
+\epigraph{Can the subaltern speak?}{Gayatri Chakravorty Spivak}
+
+\section{Transmission Emergence IS Moral Emergence (Theorem 7)}
+
+\begin{theorem}[Transmission--Morality Identity]
+\label{thm:transmission-morality}
+For any receiver $r$, idea $i$, and observer $o$:
+\[
+\text{transmissionEmergence}(r, i, o) = \text{moralEmergence}(r, i, o).
+\]
+\end{theorem}
+
+\begin{proof}
+Both are defined as emergence: $\operatorname{rs}(r \compose i, o) - \operatorname{rs}(r, o) - \operatorname{rs}(i, o)$.  The definitions are extensionally identical.
+\end{proof}
+
+\begin{lstlisting}
+theorem transmission_is_moral (receiver idea observer : I) :
+    transmissionEmergence receiver idea observer =
+    moralEmergence receiver idea observer := by
+  unfold transmissionEmergence moralEmergence
+  rfl
+\end{lstlisting}
+
+\begin{interpretation}[\textbf{Why This Is Surprising}]
+When an idea passes from person to person, it mutates.  The mutation --- the difference between what was sent and what was received --- is the transmission emergence.  This is \emph{exactly} the moral emergence of combining the receiver's principles with the new idea.
+
+This means every act of cultural transmission is simultaneously a moral event.  When a teacher teaches, the student's moral landscape shifts by exactly the transmission emergence.  When a colonial power imposes its language, the colonized population undergoes moral transformation --- not metaphorically, but mathematically.
+
+Spivak's question ``Can the subaltern speak?'' receives a precise answer: the subaltern \emph{always} contributes to emergence (their resonance appears in the composite), but the emergence may be dominated by the hegemon's weight, making the subaltern's voice structurally invisible while remaining mathematically present.
+\end{interpretation}
+
+
+\section{Justification IS Propaganda (Theorem 8)}
+
+\begin{theorem}[Justification--Propaganda Identity]
+\label{thm:justification-propaganda}
+For any evidence $e$, belief $b$, and agent $a$:
+\[
+\text{justificationStrength}(e, b, a) = \text{propagandaEffect}(e, b, a).
+\]
+\end{theorem}
+
+\begin{proof}
+Both quantities equal the emergence $\emrg(e, b, a)$.  Justification strength measures how much evidence shifts an agent's resonance with a belief beyond the sum of their individual resonances.  Propaganda effect measures the same shift in a political context.
+\end{proof}
+
+\begin{lstlisting}
+theorem justification_is_propaganda (evidence belief agent : I) :
+    justificationStrength evidence belief agent =
+    propagandaEffect evidence belief agent := by
+  unfold justificationStrength propagandaEffect
+  ring
+\end{lstlisting}
+
+\begin{paradox}[The Collapse of Epistemology and Rhetoric]
+The rational epistemologist's ``this evidence justifies that belief'' and the political theorist's ``this message persuades that audience'' are the same mathematical sentence.  There is no structural difference between truth-seeking and persuasion.
+
+This does \emph{not} mean that truth and propaganda are morally equivalent.  It means that the \emph{mechanism} is identical: the same emergence operation underlies both.  The difference between truth and propaganda lies in the \emph{selection} of which compositions to perform (which evidence to present, which messages to send), not in the mathematical operation itself.
+
+J\"urgen Habermas's distinction between communicative action (oriented toward understanding) and strategic action (oriented toward success) is therefore a distinction of \emph{intent}, not of structure.  The mathematics of understanding and the mathematics of manipulation are identical.
+\end{paradox}
+
+
+% ================================================================
+\chapter{The Belief--Power Nexus}
+% ================================================================
+
+\epigraph{Power is not an institution, and not a structure; neither is it a certain strength we are endowed with; it is the name that one attributes to a complex strategical situation in a particular society.}{Michel Foucault, \textit{The History of Sexuality}}
+
+\section{Consent IS Capability Shift (Theorem 9)}
+
+\begin{theorem}[Consent--Capability Identity]
+\label{thm:consent-capability}
+For any hegemonic order $h$ and subject $s$:
+\[
+\text{consentDegree}(h, s) = \operatorname{rs}(s, h \compose s) - \wt(s).
+\]
+Consent equals the subject's perceived resonance with the hegemonic composite minus their baseline weight.
+\end{theorem}
+
+\begin{proof}
+Direct unfolding of the definitions.  Consent degree is defined as $\operatorname{rs}(s, h \compose s) - \operatorname{rs}(s, s)$, and moral weight is $\operatorname{rs}(s, s)$.
+\end{proof}
+
+\begin{lstlisting}
+theorem consent_is_capability_shift (hegemony subject : I) :
+    consentDegree hegemony subject =
+    rs subject (compose hegemony subject) - moralWeight subject := by
+  unfold consentDegree moralWeight
+  ring
+\end{lstlisting}
+
+\begin{interpretation}[\textbf{Why This Is Surprising}]
+Gramsci argued that hegemony operates through consent, not coercion.  This theorem reveals \emph{what consent is}: the subject's own perception of capability change.  When the subject resonates more with the hegemonic composite than with their own unmodified self, they experience this as empowerment --- and this positive experience \emph{is} consent.
+
+This explains why hegemony is so stable.  The subject genuinely experiences the hegemonic composition as beneficial (their resonance with the composite exceeds their self-resonance), even as the hegemon absorbs their full weight (Theorem~4).  Consent is not false consciousness --- it is a mathematically accurate perception of a real capability shift.  The critique of hegemony must therefore go beyond ``exposing'' false beliefs; it must offer an \emph{alternative composition} that produces a larger capability shift.
+\end{interpretation}
+
+
+\section{Belief IS Power-Knowledge (Theorem 10)}
+
+\begin{theorem}[Belief--Power-Knowledge Identity]
+\label{thm:belief-power}
+For any agent $a$ and proposition $p$:
+\[
+\text{beliefStrength}(a, p) = \text{powerKnowledge}(a, p).
+\]
+\end{theorem}
+
+\begin{proof}
+Both are defined as $\operatorname{rs}(a, p)$.  Belief strength measures how strongly an agent resonates with a proposition; power-knowledge measures the Foucauldian coupling of an agent's power and knowledge regarding that proposition.  These are the same function.
+\end{proof}
+
+\begin{lstlisting}
+theorem belief_is_power_knowledge (agent proposition : I) :
+    beliefStrength agent proposition =
+    powerKnowledge agent proposition := by
+  unfold beliefStrength powerKnowledge
+  rfl
+\end{lstlisting}
+
+\begin{paradox}[Foucault Was Literally Right]
+Foucault's thesis that power and knowledge are inseparable --- his famous ``power/knowledge'' --- is usually read as a philosophical claim about social construction.  This theorem shows it is a mathematical identity.  The function that measures how strongly you believe something IS the function that measures your power over it.
+
+To believe is to exert power.  To know is to dominate.  Epistemology \emph{is} politics, not metaphorically but \emph{extensionally}: the two functions return the same real number for every input.
+\end{paradox}
+
+
+% ================================================================
+\chapter{The Grand Identity: The Collapse of Domains}
+% ================================================================
+
+\epigraph{The owl of Minerva spreads its wings only with the falling of the dusk.}{G.W.F.\ Hegel, \textit{Philosophy of Right}}
+
+\section{Doxastic Capacity IS Symbolic Capital (Theorem 11)}
+
+\begin{theorem}[Epistemic--Political Identity]
+\label{thm:doxastic-symbolic}
+For any agent $a$:
+\[
+\text{doxasticCapacity}(a) = \text{symbolicCapital}(a).
+\]
+\end{theorem}
+
+\begin{proof}
+Both are defined as $\operatorname{rs}(a, a) = \wt(a)$.  An agent's capacity for belief equals their cultural weight.
+\end{proof}
+
+\begin{lstlisting}
+theorem doxastic_is_symbolic (agent : I) :
+    doxasticCapacity agent = symbolicCapital agent := by
+  unfold doxasticCapacity symbolicCapital
+  rfl
+\end{lstlisting}
+
+\begin{interpretation}[\textbf{Why This Is Surprising}]
+Epistemologists study how much an agent can know.  Sociologists study how much cultural capital an agent possesses.  These seem like entirely different questions --- one about cognitive capacity, the other about social position.  But they are the same real number.
+
+This means that epistemic egalitarianism (everyone should have equal capacity for knowledge) and social egalitarianism (everyone should have equal cultural capital) are the same demand.  You cannot have one without the other.  A society that is epistemically egalitarian IS socially egalitarian, and vice versa.
+
+Pierre Bourdieu's concept of cultural capital, which bridges the epistemic and the social, is vindicated at the deepest mathematical level.
+\end{interpretation}
+
+
+\section{The Grand Identity: Power = Ethics = Knowledge (Theorem 12)}
+
+\begin{theorem}[Grand Identity]
+\label{thm:grand-identity}
+For any idea $a$ in Ideatic Space:
+\[
+\wt_{\text{moral}}(a) = \text{symbolicCapital}(a) = \text{doxasticCapacity}(a).
+\]
+\end{theorem}
+
+\begin{proof}
+All three quantities are defined as $\operatorname{rs}(a, a)$.  They are extensionally identical.
+\end{proof}
+
+\begin{lstlisting}
+theorem grand_identity (a : I) :
+    moralWeight a = symbolicCapital a ∧
+    symbolicCapital a = doxasticCapacity a := by
+  unfold moralWeight symbolicCapital doxasticCapacity
+  exact ⟨rfl, rfl⟩
+\end{lstlisting}
+
+\begin{interpretation}[\textbf{Why This Is Surprising}]
+The grand identity states that power, ethics, and knowledge are not merely related --- they are \emph{the same measurement}.  An idea's moral weight, its political power, and its epistemic capacity are the same real number: self-resonance.
+
+This is the deepest result of Part~I.  It means that the division of philosophy into ethics, political theory, and epistemology is a division of \emph{vocabulary}, not of mathematics.  Rawls, Foucault, and Fricker are all studying self-resonance --- they just use different words.
+
+The implications are staggering.  Every increase in moral weight is simultaneously an increase in political power and epistemic capacity.  Every act of moral education is political empowerment.  Every act of political empowerment is epistemic enhancement.  The three pillars of philosophy collapse into one.
+\end{interpretation}

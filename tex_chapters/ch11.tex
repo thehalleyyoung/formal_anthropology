@@ -1,0 +1,955 @@
+% ================================================================
+% Chapter 11: Competing Senders and the Marketplace of Ideas
+% ================================================================
+
+\chapter{Competing Senders and the Marketplace of Ideas}
+\label{ch:marketplace}
+
+\epigraph{The ideas of the ruling class are in every epoch the ruling ideas,
+i.e.\ the class which is the ruling \emph{material} force of society is at the
+same time its ruling \emph{intellectual} force.}{Karl Marx, \textit{The German Ideology} (1846)}
+
+% ----------------------------------------------------------------
+\section{Introduction}
+% ----------------------------------------------------------------
+
+In every human ecology, multiple idea-systems compete for the same audience.
+Missionaries contend with shamans for the interpretive loyalty of
+newly contacted peoples; Enlightenment rationalism and Romantic nationalism
+vie for Europe's educated classes; Instagram influencers and grandparents
+offer competing visions of the good life to the same adolescent.
+The \emph{marketplace of ideas}---a metaphor usually left at the level of
+metaphor---is, in Ideatic Diffusion Theory, a structure amenable to rigorous
+analysis.
+
+This chapter formalizes the marketplace.  We introduce the \texttt{IdeaMarket}
+structure, which collects a list of competing \emph{senders} (signals), a
+receiver's background \emph{repertoire}, and a payoff function defined in
+terms of interpretive depth.  A sender $s_1$ \emph{dominates} sender $s_2$
+when $s_1$ produces deeper interpretations for every element of the
+receiver's repertoire.  We then prove eighteen theorems that expose the
+structural constraints on ideological competition: void never dominates,
+self-dominance is trivial, depth chains bound competitive advantage, and
+coalition of senders is subadditive---connecting to Gramsci's cultural
+hegemony, Berger's sacred canopy, and rational-choice theory of religion.
+
+The key insight is that competitive signalling in ideatic space is not a
+free-for-all: the subadditivity of depth imposes hard ceilings on how much
+any sender---or any coalition of senders---can achieve.  Cultural hegemony,
+in the formal sense, is always bounded above by the audience's accumulated
+cultural capital.  This structural result places precise limits on the
+efficacy of propaganda, evangelism, and ideological persuasion.
+
+Throughout this chapter, we work in an ideatic space $(\IS, \compose, \void, \depth, \res)$
+satisfying the IDT axioms.  Signals and repertoire elements are ideas
+$s, r \in \IS$; interpretation is composition; payoff is depth.\footnote{The
+interpretation model here is identical to that introduced in Chapter~1:
+a receiver with background $r$ encountering signal $s$ produces the
+interpretation $r \compose s$.}
+
+\subsection{Historical Foundations of the Marketplace Metaphor}
+
+The ``marketplace of ideas'' is among the most influential metaphors in Western
+political and intellectual history, yet its genealogy is rarely traced with
+care.  The phrase itself is modern, but the concept it encodes---that
+truth emerges from the competitive interplay of rival doctrines---has deep
+roots in both liberal political theory and the sociology of religion.
+
+John Stuart Mill's \textit{On Liberty} (1859) provides the canonical
+philosophical argument.  Mill's defense of free expression rests not on
+any natural right but on an \emph{epistemic} claim: suppression of opinion
+is harmful because it deprives society of the opportunity to exchange
+error for truth, or to sharpen truth by collision with error.  ``The
+peculiar evil of silencing the expression of an opinion is, that it is
+robbing the human race,'' Mill writes---a statement that, in our
+formalism, asserts that removing a sender from $\mathbf{S}$ can only
+reduce the maximum achievable payoff across the repertoire $\mathbf{R}$.
+Mill's argument implicitly assumes a kind of monotonicity: more senders,
+weakly more total payoff.  Our framework makes this assumption precise
+and identifies the conditions under which it holds.
+
+The phrase ``marketplace of ideas'' itself is typically attributed to
+Justice Oliver Wendell Holmes Jr.'s celebrated dissent in
+\textit{Abrams v.\ United States} (1919), in which he wrote: ``the best
+test of truth is the power of the thought to get itself accepted in the
+competition of the market.''  Holmes's market metaphor imports the
+apparatus of classical economics---competition, selection, equilibrium---into
+the domain of belief.  In IDT, we take this importation seriously: the
+\texttt{IdeaMarket} structure is a formal market, and dominance is a formal
+notion of competitive advantage.  But unlike the neoclassical market, the
+ideatic market operates under subadditivity rather than constant returns to
+scale, and payoff is bounded by receiver capacity rather than by supply.
+
+The sociology of religion provides a parallel tradition.  Rodney Stark and
+William Sims Bainbridge, in \textit{A Theory of Religion} (1987), proposed
+a rational-choice model of religious competition: churches are ``firms''
+producing supernatural compensators, believers are ``consumers'' selecting
+among competing suppliers, and the vigor of religious life is a function of
+market structure.  Stark's later work, \textit{The Rise of Christianity}
+(1996), argued that Christianity's triumph in the late Roman Empire was not
+a miracle but a consequence of superior ``market positioning''---a signal
+that resonated across a wider range of receiver backgrounds than its
+competitors.  Our formal notion of dominance
+(Definition~\ref{def:dominance}) captures precisely this competitive
+dynamic: a sender dominates when it achieves higher depth on \emph{every}
+element of the repertoire.
+
+Richard Dawkins's concept of the \emph{meme}, introduced in \textit{The
+Selfish Gene} (1976), offers another precursor.  Dawkins proposed that
+cultural units---memes---replicate, mutate, and compete for survival in a
+manner analogous to genes.  Daniel Dennett, in \textit{Darwin's Dangerous
+Idea} (1995), extended the memetic framework, arguing that cultural
+evolution operates through the differential reproduction of ideas in
+minds construed as ecological niches.  In our framework, memes are senders,
+minds are receivers with repertoires, and ``survival'' corresponds to
+achieving non-zero payoff: a meme ``survives'' in a mind when
+$\depth(r \compose s) > 0$ for at least one $r \in \mathbf{R}$.
+
+Antonio Gramsci's theory of cultural hegemony, developed in the
+\textit{Quaderni del carcere} (1929--1935), provides the critical
+counterpoint to liberal marketplace optimism.  For Gramsci, the marketplace
+is not a level playing field but a terrain shaped by power.  The ruling
+class achieves \emph{egemonia} not merely by producing superior signals but
+by structuring the receivers' repertoires---through education, media, and
+institutional socialization---so that its signals \emph{necessarily}
+dominate.  In IDT terms, hegemony is achieved not by maximizing
+$\depth(s)$ but by shaping $\mathbf{R}$ so that
+$\depth(r \compose s_{\text{ruling}}) \ge \depth(r \compose s_{\text{rival}})$
+for all $r \in \mathbf{R}$.  The theorems of this chapter apply regardless
+of how $\mathbf{R}$ was formed; the critical question---\emph{who shapes
+the repertoire?}---lies outside the formal system but is illuminated by it.
+
+Edward Herman and Noam Chomsky's ``propaganda model,'' articulated in
+\textit{Manufacturing Consent} (1988), extends Gramsci's insight to mass
+media.  In their account, the marketplace of ideas is systematically
+distorted by ownership concentration, advertising dependency, and
+institutional sourcing.  Our payoff bound
+(Theorem~\ref{thm:payoff-bound}) provides a structural complement: even
+in a perfectly competitive market, payoff is bounded by audience capacity.
+Propaganda's efficacy is limited not only by institutional filters but by
+the mathematical ceiling that subadditivity imposes.
+
+The modern attention economy, theorized by Herbert Simon (``a wealth of
+information creates a poverty of attention''), Tim Wu (\textit{The Attention
+Merchants}, 2016), and others, represents the latest iteration of
+marketplace competition.  Social media platforms---Facebook's News Feed,
+TikTok's For You page, YouTube's recommendation algorithm---are literal
+idea markets, with competing senders (creators, advertisers, political
+actors) vying for a finite attention budget.  The receiver's repertoire
+$\mathbf{R}$ is finite, and each sender's signal competes for interpretive
+engagement with each element of $\mathbf{R}$.  The total payoff across all
+senders is bounded by the receiver's total interpretive capacity.  The
+formal results of this chapter thus apply directly to the digital
+marketplace of the twenty-first century: algorithmic curation selects
+senders, but the structural constraints---subadditivity, bounded payoff,
+resonance preservation---remain invariant.
+
+% ----------------------------------------------------------------
+\section{Core Definitions}
+\label{sec:ch11-defs}
+% ----------------------------------------------------------------
+
+\begin{definition}[Idea Market]
+\label{def:idea-market}
+An \emph{idea market} is a tuple $\mathcal{M} = (\mathbf{S}, \mathbf{R})$
+where $\mathbf{S} = [s_1, \dots, s_m]$ is a list of \emph{competing senders}
+(signals) and $\mathbf{R} = [r_1, \dots, r_n]$ is the receiver's
+\emph{background repertoire}.  All elements belong to an ideatic space~$\IS$.
+\end{definition}
+
+\begin{lstlisting}[caption={IdeaMarket structure in Lean~4}]
+structure IdeaMarket (I : Type*) [IdeaticSpace I] where
+  senders    : List I
+  repertoire : List I
+\end{lstlisting}
+
+\begin{definition}[Interpretation]
+\label{def:interpret-ch11}
+The \emph{interpretation} of a signal $s$ against a repertoire
+$\mathbf{R} = [r_1, \dots, r_n]$ is the list
+\[
+  \operatorname{interpret}(\mathbf{R}, s)
+  \;=\; [r_1 \compose s,\; r_2 \compose s,\; \dots,\; r_n \compose s].
+\]
+Each entry $r_i \compose s$ is the idea produced when background $r_i$
+receives signal $s$.
+\end{definition}
+
+\begin{definition}[Total Payoff]
+\label{def:total-payoff}
+The \emph{total interpretive payoff} of signal $s$ on repertoire $\mathbf{R}$
+is
+\[
+  \operatorname{totalPayoff}(\mathbf{R}, s)
+  \;=\; \sum_{i=1}^{n} \depth(r_i \compose s).
+\]
+This aggregates the depth of every interpretation the signal induces.
+\end{definition}
+
+\begin{definition}[Dominance]
+\label{def:dominance}
+Sender $s_1$ \emph{dominates} sender $s_2$ on repertoire $\mathbf{R}$ when
+\[
+  \forall\, r \in \mathbf{R},\quad
+  \depth(r \compose s_1) \;\ge\; \depth(r \compose s_2).
+\]
+In anthropological terms, $s_1$ is \emph{more culturally productive} than
+$s_2$ for this audience.
+\end{definition}
+
+\begin{lstlisting}[caption={Dominance in Lean~4}]
+def dominates (s_1 s_2 : I) (rep : List I) : Prop :=
+  forall r in rep, depth (compose r s_1) >= depth (compose r s_2)
+\end{lstlisting}
+
+The notion of dominance is a pointwise ordering on the payoff function.  It
+is deliberately strong: $s_1$ must beat $s_2$ on \emph{every} member of the
+audience, not merely on average.  This models \emph{Gramscian} hegemony, in
+which the ruling ideology must be accepted across all strata of civil
+society, not merely by a majority.\footnote{Gramsci's concept of
+\emph{egemonia} in the \textit{Quaderni del carcere} requires precisely
+this universality: hegemony is not statistical dominance but categorical
+dominance across the entire \emph{blocco storico}.}
+
+% ----------------------------------------------------------------
+\section{Void and Dominance}
+\label{sec:ch11-void}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Void Dominates is Identity (11.1)]
+\label{thm:void-dom-identity}
+The void signal, when received, simply returns the repertoire unchanged:
+\[
+  \operatorname{interpret}(\mathbf{R}, \void) \;=\; \mathbf{R}.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on the list $\mathbf{R}$.  For each element $r$, the void
+axiom gives $r \compose \void = r$, so
+$\operatorname{map}(\lambda\, r.\; r \compose \void, \mathbf{R}) = \mathbf{R}$.
+\end{proof}
+
+Silence, the null message, is never the \emph{winning} strategy in a
+competitive marketplace---it merely preserves the status quo.  Gramsci's
+insight is precisely this: hegemony requires \emph{active} cultural
+production, not mere silence.  The void signal is the ideational equivalent
+of ideological abdication.
+
+\begin{example}[The Roman Marketplace of Cults]
+In the late Roman Republic, the traditional Roman pantheon competed with
+imported mystery cults---Isis from Egypt, Mithras from Persia, Cybele from
+Phrygia---for the devotion of urban populations. Each cult offered a
+different ``signal'' to the same audience. The depth of interpretation
+varied with the receiver's background: a Stoic philosopher produced a
+deeper interpretation of Mithraic ritual than a dock worker, not because
+the ritual differed but because $\depth(r_{\text{philosopher}}) >
+\depth(r_{\text{worker}})$. The eventual dominance of Christianity can be
+modeled as the emergence of a sender whose signal resonated across the
+widest range of receiver backgrounds.\footnote{Rodney Stark,
+\textit{The Rise of Christianity} (1996), argues that Christianity's
+competitive advantage lay precisely in its broad resonance across social
+strata.}
+
+The formal apparatus of this chapter illuminates the mechanism.  Each cult
+$c_i \in \mathbf{S}$ had its characteristic payoff profile across the
+urban repertoire $\mathbf{R}_{\text{Rome}}$.  Mithraism achieved high depth
+among soldiers ($\depth(r_{\text{miles}} \compose s_{\text{Mithra}})$ was
+large) but near-zero depth among women, whom it excluded.  The cult of Isis
+appealed to merchants and sailors but had limited reach among the
+senatorial class.  Christianity's competitive strategy---universal
+soteriology, egalitarian ecclesiology, portable ritual---produced moderate
+but \emph{uniform} depth across the entire repertoire.  It did not dominate
+any single cult on its home turf, but it dominated in the aggregate:
+$\operatorname{totalPayoff}(\mathbf{R}_{\text{Rome}}, s_{\text{Christ}}) >
+\operatorname{totalPayoff}(\mathbf{R}_{\text{Rome}}, s_{c_i})$ for each
+rival $c_i$.  The marketplace selected for breadth, not peak depth---a
+structural prediction of our payoff framework.
+\end{example}
+
+The Roman example illustrates a general principle that recurs throughout
+this chapter: in a diverse marketplace, the sender that achieves moderate
+depth across \emph{all} receivers often outperforms the sender that achieves
+extreme depth in a narrow niche.  This is a direct consequence of the
+structure of the total payoff function, which sums depth across the entire
+repertoire.  A signal tuned to a single receiver type can achieve high
+local depth but low total payoff; a signal tuned to the entire population
+achieves lower local depth but higher total payoff.  The tension between
+specialization and universality is thus a structural feature of the
+marketplace, not merely a strategic choice.
+
+\begin{theorem}[Self-Dominance is Trivial (11.2)]
+\label{thm:self-dom}
+Every signal dominates itself:
+\[
+  \forall\, s \in \IS,\quad \operatorname{dominates}(s, s, \mathbf{R}).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+For each $r \in \mathbf{R}$, $\depth(r \compose s) \ge \depth(r \compose s)$
+holds by reflexivity of~$\le$.
+\end{proof}
+
+Self-consistency is the minimal requirement of any ideological system.
+That a religion ``dominates itself'' says nothing about competitive
+advantage---it is the zero-information baseline.  Philosophically, this is
+Hegel's \emph{Sichselbstgleichheit}: self-identity is the formal precondition
+of all determination, never the determination itself.
+
+\begin{theorem}[Void Signal Payoff Equals Repertoire Depth (11.3)]
+\label{thm:void-payoff}
+The total payoff from the void signal equals the total depth of the repertoire:
+\[
+  \operatorname{totalPayoff}(\mathbf{R}, \void) \;=\; \operatorname{depthSum}(\mathbf{R}).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By Theorem~\ref{thm:void-dom-identity},
+$\operatorname{interpret}(\mathbf{R}, \void) = \mathbf{R}$, so
+$\operatorname{depthSum}(\operatorname{interpret}(\mathbf{R}, \void))
+= \operatorname{depthSum}(\mathbf{R})$.
+\end{proof}
+
+A society's interpretive capacity under silence is exactly its accumulated
+cultural depth.  This is the \emph{baseline} against which all competing
+signals are measured.  In Bourdieu's terms, the void signal reveals nothing
+but the audience's pre-existing \emph{capital culturel}.\footnote{Bourdieu,
+\textit{La Distinction} (1979), defines cultural capital as the accumulated
+stock of cultural knowledge, skills, and dispositions.  Our
+$\operatorname{depthSum}(\mathbf{R})$ is its formal analogue.}
+
+\begin{theorem}[Dominance Reflexivity (11.4)]
+\label{thm:dom-refl}
+Dominance is reflexive: $\operatorname{dominates}(s, s, \mathbf{R})$ for all $s$
+and $\mathbf{R}$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Immediate from Theorem~\ref{thm:self-dom}.
+\end{proof}
+
+In the language of partial orders, dominance is a \emph{preorder} (reflexive
+and---as we shall see in later chapters---transitive in an appropriate sense).
+This is the formal structure underlying marketplace competition: a preorder on
+signals, indexed by audiences.
+
+\begin{remark}[Connection to Attention Economics]
+The ideatic marketplace anticipates Herbert Simon's observation that
+``a wealth of information creates a poverty of attention.'' In our
+framework, the receiver's repertoire $\mathbf{R}$ is finite, and each
+sender competes for interpretive engagement with each element of
+$\mathbf{R}$. The total payoff across all senders is bounded by the
+receiver's total interpretive capacity---a formal version of the
+``attention budget'' that dominates contemporary media economics.
+
+Simon's insight, formulated in 1971, has acquired new urgency in the
+age of algorithmic content curation.  When a platform's recommendation
+engine selects which senders to present to a receiver, it is performing
+a constrained optimization over the idea market $\mathcal{M}$: choosing
+a subset $\mathbf{S}' \subseteq \mathbf{S}$ to maximize (some proxy for)
+total payoff subject to the attention constraint $|\mathbf{S}'| \le k$.
+The structural results of this chapter---boundedness, subadditivity,
+resonance preservation---apply to this optimization problem and constrain
+its solutions.  No algorithm, however sophisticated, can circumvent the
+subadditivity ceiling.
+\end{remark}
+
+\begin{example}[The Protestant Reformation as Marketplace Competition]
+The Protestant Reformation, inaugurated by Luther's \textit{Ninety-Five
+Theses} in 1517, is perhaps history's most consequential example of a new
+sender entering an established ideatic marketplace.  For a millennium,
+the Catholic Church had enjoyed something approaching monopoly status in
+Western European Christendom: $\mathbf{S} \approx \{s_{\text{Catholic}}\}$.
+Luther, Calvin, Zwingli, and the radical reformers introduced competing
+signals $s_{\text{Lutheran}}, s_{\text{Calvinist}}, s_{\text{Anabaptist}}$,
+each calibrated to different segments of the receiver repertoire.
+
+Luther's signal was optimized for the German-speaking urban middle class:
+vernacular scripture, congregational hymns, the doctrine of the
+priesthood of all believers.  For a Wittenberg burgher $r_{\text{burgher}}$,
+$\depth(r_{\text{burgher}} \compose s_{\text{Luther}}) \gg
+\depth(r_{\text{burgher}} \compose s_{\text{Catholic}})$---the Lutheran
+signal resonated more deeply with his existing cultural repertoire
+(vernacular literacy, anti-clerical sentiment, commercial independence).
+But for a Bavarian peasant embedded in a deeply Catholic milieu,
+$r_{\text{peasant}}$, the Catholic signal still dominated.  The
+Reformation thus illustrates the \emph{audience-dependence} of dominance:
+$s_{\text{Luther}}$ dominated $s_{\text{Catholic}}$ on some repertoires
+but not others.  The eventual confessional geography of Europe---the
+principle of \textit{cuius regio, eius religio}---reflects the fact that
+dominance was regional, not universal.
+
+Calvin's Geneva, by contrast, represents a case of \emph{repertoire
+reshaping}: the Consistory systematically restructured receivers'
+backgrounds (through catechism, discipline, sumptuary laws) so that
+$\depth(r_{\text{Genevan}} \compose s_{\text{Calvin}})$ was maximized.
+This is Gramscian hegemony avant la lettre---competitive advantage
+achieved by shaping the audience, not just the signal.
+\end{example}
+
+% ----------------------------------------------------------------
+\section{Depth Bounds on Competition}
+\label{sec:ch11-bounds}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Hermeneutic Payoff Bound (11.5)]
+\label{thm:payoff-bound}
+The total payoff of any signal $s$ on repertoire $\mathbf{R}$ is bounded:
+\[
+  \operatorname{totalPayoff}(\mathbf{R}, s)
+  \;\le\; \operatorname{depthSum}(\mathbf{R}) + |\mathbf{R}| \cdot \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $\mathbf{R}$.  At each step, the subadditivity axiom gives
+$\depth(r \compose s) \le \depth(r) + \depth(s)$, and the bound accumulates
+linearly.
+\end{proof}
+
+Even the most profound revelation cannot exceed the audience's capacity plus a
+linear contribution from the signal itself.  Mass media reaches many, but depth
+per receiver is bounded by pre-existing cultural capital.  This theorem is the
+formal backbone of what communications scholars call the
+\emph{knowledge gap hypothesis}: the information-rich get richer because their
+higher $\operatorname{depthSum}(\mathbf{R})$ allows them to extract more from
+every signal.\footnote{Tichenor, Donohue, and Olien, ``Mass Media Flow and
+Differential Growth in Knowledge,'' \textit{Public Opinion Quarterly}
+34 (1970), 159--170.}
+
+\begin{example}[Algorithmic Competition on Social Media Platforms]
+Contemporary social media platforms instantiate the idea market structure
+with unprecedented literalness.  Consider TikTok's ``For You'' page.  The
+platform maintains an enormous sender pool
+$\mathbf{S} = \{s_1, s_2, \dots, s_N\}$ (all available videos), and each
+user brings a repertoire $\mathbf{R}_u$ shaped by prior viewing history,
+demographic background, and expressed preferences.  The recommendation
+algorithm selects a subset $\mathbf{S}' \subset \mathbf{S}$ to present to
+the user, implicitly attempting to maximize engagement---a proxy for our
+total payoff $\operatorname{totalPayoff}(\mathbf{R}_u, s)$.
+
+The subadditivity bound (Theorem~\ref{thm:payoff-bound}) has an immediate
+practical consequence: no matter how sophisticated the algorithm, the total
+interpretive value extracted is bounded by the user's existing repertoire
+depth plus a linear contribution from the content.  This places a hard
+ceiling on ``algorithmic radicalization'' theories: the depth of the
+interpretation produced by an extremist signal $s_{\text{radical}}$ is
+bounded by $\depth(r) + \depth(s_{\text{radical}})$ for each repertoire
+element $r$.  A receiver with a shallow repertoire
+($\operatorname{depthSum}(\mathbf{R}_u)$ is small) can be moved by the
+signal, but only to a bounded degree.  The algorithm cannot manufacture
+depth that neither sender nor receiver possesses.
+
+Furthermore, the resonance preservation theorem
+(Theorem~\ref{thm:homogeneous-audience}) explains the ``filter bubble''
+phenomenon: users with resonant backgrounds
+($r_i \res r_j$ for $r_i, r_j \in \mathbf{R}_u$) produce resonant
+interpretations of the same content, reinforcing homogeneity.  The platform
+does not create the bubble; it amplifies a structural property of
+resonance-preserving composition.
+\end{example}
+
+The social media example illustrates how the abstract formal results of this
+chapter apply to concrete twenty-first-century institutions.  The marketplace
+metaphor, born in Mill's liberalism, refined in Holmes's jurisprudence, and
+challenged by Gramsci's critical theory, finds its most literal instantiation
+in the algorithmic content platforms of the digital age.  Yet the structural
+constraints remain invariant: subadditivity, bounded payoff, resonance
+preservation.  These are not historical contingencies but mathematical
+necessities inherent in the structure of ideatic space.
+
+\begin{theorem}[Single-Element Repertoire Payoff (11.6)]
+\label{thm:singleton-payoff}
+For a singleton repertoire $[r]$, the payoff of signal $s$ is exactly:
+\[
+  \operatorname{totalPayoff}([r], s) = \depth(r \compose s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Direct unfolding of definitions: $\operatorname{interpret}([r], s) =
+[r \compose s]$, and $\operatorname{depthSum}([r \compose s]) =
+\depth(r \compose s)$.
+\end{proof}
+
+The simplest ``audience''---one mind, one background idea---has its payoff
+fully determined by the composition of background and signal.  This is the
+irreducible unit of cultural reception, the phenomenological atom of
+\emph{Verstehen}.
+
+\begin{theorem}[Empty Repertoire Yields Zero (11.7)]
+\label{thm:empty-rep-zero}
+If no one is listening, every signal has zero payoff:
+$\operatorname{totalPayoff}([], s) = 0$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The empty list maps to the empty list, whose depth sum is zero.
+\end{proof}
+
+A prophet without followers, a book without readers---ideational production
+without reception is culturally null.  The tree that falls in an empty forest
+produces no interpretive depth.  This is not mysticism but arithmetic: zero
+receivers yield zero payoff.
+
+% ----------------------------------------------------------------
+\section{Competitive Composition}
+\label{sec:ch11-comp}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Signal Composition Depth Bound (11.8)]
+\label{thm:composed-signal-bound}
+Composing two signals $s_1, s_2$ yields a compound signal whose depth on
+any repertoire element $r$ is triply bounded:
+\[
+  \depth(r \compose (s_1 \compose s_2))
+  \;\le\; \depth(r) + \depth(s_1) + \depth(s_2).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Apply subadditivity twice: first to $s_1 \compose s_2$, then to
+$r \compose (s_1 \compose s_2)$, and combine via transitivity.
+\end{proof}
+
+Syncretism---composing competing mythologies into a single system---cannot
+create more depth than the sum of parts.  The Hellenistic synthesis of Greek
+philosophy and Egyptian religion, the syncretic Christianity of colonial Latin
+America, the New Age blending of Eastern and Western spiritualities: all are
+structurally constrained by this triple bound.  The ``best of both worlds'' is
+an arithmetic ceiling, not an aspirational metaphor.
+
+\begin{theorem}[Void Competitor Adds Nothing, Right (11.9)]
+\label{thm:void-comp-right}
+Adding void as a second sender to compose with $s$ does not change $s$:
+$s \compose \void = s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+This is the right-identity axiom of the monoid.
+\end{proof}
+
+\begin{theorem}[Void Competitor Adds Nothing, Left (11.10)]
+\label{thm:void-comp-left}
+Void composed on the left with any signal yields the signal unchanged:
+$\void \compose s = s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+This is the left-identity axiom of the monoid.
+\end{proof}
+
+A ``silent partner'' in cultural production is no partner at all.  Coalitions
+with non-contributors are structurally inert.  This is why purely nominal
+alliances---the Holy Roman Empire, which Voltaire quipped was ``neither holy,
+nor Roman, nor an empire''---add no interpretive depth.  The void contributor
+is formally invisible.
+
+The results of this section have deep implications for understanding
+cultural syncretism.  The triple bound on composed signals
+(Theorem~\ref{thm:composed-signal-bound}) formalizes a constraint that
+anthropologists of religion have long observed informally: syncretic
+religious systems---Vodou combining West African \emph{orisha} with
+Catholic saints, Sikhism blending Hindu devotionalism with Islamic
+monotheism, Bahá'í synthesizing Abrahamic and Zoroastrian themes---never
+achieve a depth exceeding the sum of their components.  This is not a
+failure of synthesis but a structural inevitability.  The ``sum of parts''
+ceiling applies universally, regardless of the creativity or profundity
+of the synthesizer.
+
+The void-composition results (Theorems~\ref{thm:void-comp-right}
+and~\ref{thm:void-comp-left}) complement the syncretism analysis by
+establishing the base case: adding nothing to a cultural system changes
+nothing.  This seemingly trivial result has a non-trivial implication for
+theories of cultural decline.  When a society's cultural production
+approaches void---when its intellectuals, artists, and religious
+leaders produce signals of negligible depth---the marketplace degenerates.
+The total payoff reduces to the existing repertoire's depth, and no
+competitive dynamics operate.  This is the formal analogue of Spengler's
+``Zivilisation'' phase, in which exhausted cultures merely repeat existing
+forms without generating new depth.\footnote{Oswald Spengler,
+\textit{Der Untergang des Abendlandes} (1918--1922).  Spengler's
+distinction between \emph{Kultur} (creative cultural production) and
+\emph{Zivilisation} (exhausted repetition) maps onto the distinction
+between non-void and near-void senders in our framework.}
+
+% ----------------------------------------------------------------
+\section{Resonance and Competitive Advantage}
+\label{sec:ch11-resonance}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Resonant Signals Produce Resonant Interpretations (11.11)]
+\label{thm:resonant-competitors}
+If two competing senders produce resonant signals, $s_1 \res s_2$, then any
+receiver with background $r$ produces resonant interpretations:
+\[
+  s_1 \res s_2
+  \quad\Longrightarrow\quad
+  (r \compose s_1) \res (r \compose s_2).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the left-composition preservation of resonance
+(\texttt{resonance\_compose\_left}).
+\end{proof}
+
+Competing denominations of the same religion---Catholic vs.\ Orthodox, Sunni
+vs.\ Shia---produce \emph{resonant} interpretations in the laity.  The
+faithful perceive both as ``basically the same religion'' precisely because the
+signals resonate.  This theorem is the formal basis of ecumenism: if the
+signals resonate, no receiver can distinguish them at the level of
+resonance.\footnote{The ecumenical movement, from the 1910 Edinburgh Conference
+onward, rests on exactly this structural claim: beneath doctrinal differences,
+the core Christian signals resonate.}
+
+\begin{theorem}[Homogeneous Audience (11.12)]
+\label{thm:homogeneous-audience}
+If two receivers have resonant backgrounds, $r_1 \res r_2$, and receive the
+same signal $s$, their interpretations are resonant:
+\[
+  r_1 \res r_2
+  \quad\Longrightarrow\quad
+  (r_1 \compose s) \res (r_2 \compose s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By right-composition preservation of resonance
+(\texttt{resonance\_compose\_right}).
+\end{proof}
+
+Members of the same cultural milieu---resonant backgrounds---confronted with
+the same competing signal will interpret it similarly.  This is why propaganda
+works best within culturally homogeneous populations: the more resonant the
+audience, the more uniform the reception.  Conversely, propaganda aimed at a
+culturally heterogeneous audience (non-resonant backgrounds) produces
+divergent interpretations---the structural limit of mass persuasion in diverse
+societies.
+
+\begin{theorem}[Full Cultural Resonance (11.13)]
+\label{thm:full-resonance}
+Resonant backgrounds plus resonant signals imply resonant interpretations:
+\[
+  r_1 \res r_2 \;\wedge\; s_1 \res s_2
+  \quad\Longrightarrow\quad
+  (r_1 \compose s_1) \res (r_2 \compose s_2).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the full composition-preservation of resonance
+(\texttt{resonance\_compose}).
+\end{proof}
+
+Allied cultures (resonant backgrounds) exposed to similar myths (resonant
+signals) will always arrive at compatible worldviews.  This is the formal
+mechanism behind what Redfield called the ``Great Tradition / Little
+Tradition'' unity: literate urban elites and illiterate peasants, as long as
+their backgrounds resonate and the signals they receive resonate, will
+inhabit structurally compatible interpretive universes.\footnote{Robert
+Redfield, \textit{Peasant Society and Culture} (1956).  Redfield's
+bi-partition of tradition into ``great'' and ``little'' variants assumes
+precisely this kind of resonance preservation across social strata.}
+
+\begin{remark}[Open Questions in Competitive Signalling]
+Several natural questions arise from the framework developed in this
+chapter that remain open for future investigation:
+
+\begin{enumerate}
+\item \textbf{Dynamic competition.}  Our model is static: senders and
+  repertoire are fixed.  In reality, senders \emph{adapt} their signals in
+  response to competitive pressure, and receivers' repertoires evolve
+  through exposure.  A dynamic extension would model the co-evolution of
+  $\mathbf{S}$ and $\mathbf{R}$ over time, potentially connecting to
+  evolutionary game theory and replicator dynamics.
+
+\item \textbf{Coalitional signalling.}  When multiple senders form a
+  coalition (an alliance of churches, a media conglomerate, a political
+  coalition), the coalition's composite signal is the composition
+  $s_1 \compose s_2 \compose \cdots \compose s_k$.  The subadditivity
+  bound applies, but optimal coalition formation---which subset of senders
+  should ally?---is a combinatorial optimization problem whose complexity
+  is not yet characterized in our framework.
+
+\item \textbf{Receiver strategic behavior.}  Our model treats receivers as
+  passive: they interpret signals with their existing repertoire but do not
+  strategically choose which signals to attend to.  Incorporating receiver
+  choice would connect the framework to mechanism design and the economics
+  of attention.
+
+\item \textbf{Stochastic payoff.}  In practice, depth may be noisy or
+  probabilistic---a receiver may or may not ``get'' a given signal on any
+  particular exposure.  A stochastic extension of the payoff function would
+  connect to information-theoretic models of cultural transmission.
+\end{enumerate}
+
+These questions point toward a richer theory of cultural competition that
+integrates the static structural results of this chapter with dynamic,
+strategic, and stochastic considerations.
+\end{remark}
+
+% ----------------------------------------------------------------
+\section{Marketplace Structural Theorems}
+\label{sec:ch11-structural}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Interpretation Preserves Length (11.14)]
+\label{thm:interp-length}
+The number of interpretations equals the repertoire size:
+$|\operatorname{interpret}(\mathbf{R}, s)| = |\mathbf{R}|$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\operatorname{interpret}$ is a \texttt{map}, which preserves list length.
+\end{proof}
+
+Cultural contact does not change the \emph{number} of categories a society
+has---it transforms each one.  The French anthropological term
+\emph{bricolage} (Lévi-Strauss) describes precisely this: the bricoleur
+rearranges existing schema rather than adding new ones.  Our theorem
+formalizes this conservation law of cultural schema.
+
+The length-preservation result has a subtle but important anthropological
+implication.  Cultural contact is often described in terms of
+\emph{accretion}---new categories being added to a society's conceptual
+inventory.  Our theorem shows that, at the formal level of ideatic
+composition, interpretation is \emph{transformative} rather than
+\emph{additive}: each element of the repertoire is transformed by the
+incoming signal, but no new elements are created.  The apparent addition
+of new categories in empirical cultural contact (the introduction of
+``democracy'' into a society that lacked the concept, for instance)
+must be modeled not as a new element appearing in the interpretation list
+but as a pre-existing schema being transformed beyond recognition---the
+bricoleur's old tool repurposed for a new function.  This is a strong
+claim, and it reflects the limitations of our model as much as the
+structure of cultural reality.  A richer model might allow the
+interpretation function to produce lists of different length, but the
+simplicity of the present framework---and its formal tractability---is
+purchased at the price of this conservation law.
+
+\begin{theorem}[Additivity of Repertoires (11.15)]
+\label{thm:rep-additivity}
+Interpreting a signal with a merged repertoire equals concatenating
+interpretations of the sub-repertoires:
+\[
+  \operatorname{interpret}(\mathbf{R}_1 \mathbin{+\!\!\!+} \mathbf{R}_2, s)
+  \;=\;
+  \operatorname{interpret}(\mathbf{R}_1, s)
+  \mathbin{+\!\!\!+}
+  \operatorname{interpret}(\mathbf{R}_2, s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the distributivity of \texttt{map} over list concatenation.
+\end{proof}
+
+When two groups merge---through marriage alliance, conquest, or
+migration---their joint interpretation of any signal equals the union of their
+separate interpretations.  Cultural integration is structurally additive.
+This additivity result is the formal basis of the ``mosaic'' model of
+multicultural societies: each group's interpretive contribution is preserved
+intact in the combined repertoire.
+
+\begin{theorem}[Composed Signal Associativity (11.16)]
+\label{thm:composed-assoc}
+Interpreting a composition of signals through background $r$ is the same
+as sequential interpretation:
+\[
+  r \compose (s_1 \compose s_2)
+  \;=\;
+  (r \compose s_1) \compose s_2.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By associativity of the monoid operation, applied symmetrically.
+\end{proof}
+
+Receiving two messages in sequence---first $s_1$, then $s_2$---is
+structurally identical to receiving their composition.  The order of cultural
+exposure \emph{telescopes} via associativity: a semester's lectures, received
+one by one, produce the same interpretation as receiving their composition
+all at once.  This is both the strength and the limitation of the model: it
+captures the structural content of sequential exposure but not the
+psychological dynamics of surprise, anticipation, or fatigue.
+
+\begin{theorem}[Marginal Depth Contribution Bound (11.17)]
+\label{thm:marginal-bound}
+Adding a new element $r$ to the repertoire increases total payoff by at most
+$\depth(r) + \depth(s)$:
+\[
+  \operatorname{totalPayoff}(r :: \mathbf{R}, s)
+  \;\le\;
+  \depth(r) + \depth(s) + \operatorname{totalPayoff}(\mathbf{R}, s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The new payoff contribution is $\depth(r \compose s) \le \depth(r) + \depth(s)$
+by subadditivity.
+\end{proof}
+
+Educating one more person---adding one more background to the audience---increases
+total societal understanding by at most that person's depth plus the signal's.
+Diminishing returns in mass education are structurally guaranteed.  This
+theorem resonates with Illich's critique of institutional education: past a
+certain point, expanding the student body adds progressively less interpretive
+value per capita.\footnote{Ivan Illich, \textit{Deschooling Society} (1971).
+Illich's argument that schooling yields diminishing returns finds formal
+support in our bound.}
+
+\begin{theorem}[Iterated Signal Depth Bound (11.18)]
+\label{thm:iterated-signal}
+Composing a signal with itself $n$ times yields depth at most $n \cdot \depth(s)$:
+\[
+  \depth(\compN{s}{n}) \;\le\; n \cdot \depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the depth bound on $\operatorname{composeN}$, which follows from induction
+and subadditivity.
+\end{proof}
+
+Repetition in ritual---chanting a mantra $n$ times, reciting a creed at every
+service, replaying a national anthem daily---has bounded interpretive effect.
+The subadditivity of depth means repetition is inherently
+\emph{anti-inflationary}: you cannot create unbounded meaning through mere
+repetition.  This constrains theories of ritual efficacy that posit cumulative
+spiritual deepening through sheer repetition.  The effect of the $n$-th
+repetition is bounded by $\depth(s)$, not by $n \cdot \depth(s)$.  The mantra
+may be powerful, but it is not infinitely so.
+
+\begin{lstlisting}[caption={Iterated signal depth bound in Lean~4}]
+theorem iterated_signal_bound (s : I) (n : ℕ) :
+    depth (composeN s n) <= n * depth s :=
+  depth_composeN s n
+\end{lstlisting}
+
+% ----------------------------------------------------------------
+\section{Implications for Media Ecology}
+\label{sec:ch11-media}
+% ----------------------------------------------------------------
+
+The formal results of this chapter, while derived in the abstract setting of
+ideatic space, have direct and substantive implications for the interdisciplinary
+field of media ecology---the study of how media environments shape human
+perception, cognition, and social organization.  We conclude the main body of
+the chapter by drawing out four such implications.
+
+\subsection{The Structural Limits of Propaganda}
+
+The payoff bound (Theorem~\ref{thm:payoff-bound}) and the marginal depth
+contribution bound (Theorem~\ref{thm:marginal-bound}) together establish a
+hard ceiling on the efficacy of propaganda.  Consider a state actor emitting
+a propaganda signal $s_{\text{prop}}$ to a population with repertoire
+$\mathbf{R}$.  The total interpretive impact is at most
+$\operatorname{depthSum}(\mathbf{R}) + |\mathbf{R}| \cdot
+\depth(s_{\text{prop}})$.  This bound is independent of the propagandist's
+skill, resources, or institutional power.  It depends only on the audience's
+pre-existing depth and the signal's intrinsic complexity.
+
+This result is both sobering and reassuring.  It is sobering because it shows
+that audiences with deep repertoires---educated, culturally rich
+populations---are capable of extracting \emph{more} depth from propaganda, not
+less.  The bound increases with $\operatorname{depthSum}(\mathbf{R})$.  It is
+reassuring because it shows that propaganda cannot create depth \emph{ex
+nihilo}: the ``big lie,'' repeated indefinitely, is bounded by
+$n \cdot \depth(s_{\text{lie}})$ (Theorem~\ref{thm:iterated-signal}), not
+by $n^2$ or $e^n$.  Repetition is subadditive.
+
+Jacques Ellul's distinction between ``propaganda of agitation'' and
+``propaganda of integration'' finds formal expression here.  Agitation
+propaganda ($\depth(s)$ is low, targeting a large $|\mathbf{R}|$) achieves
+breadth at the expense of depth.  Integration propaganda ($\depth(s)$ is
+high, targeting a resonant $\mathbf{R}$) achieves depth at the expense of
+breadth.  Neither can escape the payoff bound.\footnote{Jacques Ellul,
+\textit{Propagandes} (1962).}
+
+\subsection{Filter Bubbles and Echo Chambers}
+
+The homogeneous audience theorem (Theorem~\ref{thm:homogeneous-audience})
+provides a formal account of the ``filter bubble'' phenomenon identified by
+Eli Pariser.  When an algorithmic recommender system selects content for a user
+whose repertoire elements are mutually resonant ($r_i \res r_j$ for all
+$r_i, r_j \in \mathbf{R}_u$), any signal $s$ produces mutually resonant
+interpretations: $(r_i \compose s) \res (r_j \compose s)$.  The user's
+interpretive world becomes \emph{more} resonant with each exposure, not less.
+
+The formal mechanism is clear: resonance is preserved under composition
+(right context), so a resonant repertoire exposed to any signal remains
+resonant.  The ``bubble'' is not an artifact of the algorithm but a
+structural consequence of resonance preservation.  The algorithm merely
+\emph{accelerates} a dynamics that is inherent in the algebra of
+ideatic space.  To ``burst'' a filter bubble, one would need to introduce
+repertoire elements that are \emph{not} resonant with the existing
+repertoire---a structural intervention, not merely an algorithmic one.
+
+\subsection{The Attention Economy as Bounded Competition}
+
+The modern attention economy, in which content creators compete for a finite
+resource (human attention), maps directly onto our formal framework.  The
+receiver's attention budget corresponds to the finiteness of $\mathbf{R}$:
+a receiver can attend to only finitely many signals, and each interpretation
+$r \compose s$ consumes interpretive resources.  The total payoff across all
+attended signals is bounded by $\operatorname{depthSum}(\mathbf{R}) +
+|\mathbf{R}| \cdot \max_s \depth(s)$.
+
+This bound has implications for platform design.  A platform that presents
+$k$ signals to a receiver with repertoire of size $n$ achieves total payoff
+at most $n \cdot k$ times the sum of average depths.  Increasing $k$ (showing
+more content) does not increase payoff per item; it merely spreads the
+receiver's interpretive capacity more thinly.  This is the formal basis of
+the ``attention scarcity'' that drives the economics of digital platforms:
+the scarce resource is not information (signals are abundant) but
+interpretive capacity (repertoire is bounded).
+
+\subsection{Cultural Biodiversity and Marketplace Health}
+
+A marketplace with many diverse senders ($|\mathbf{S}|$ is large, senders are
+pairwise non-resonant) offers a richer competitive environment than a
+marketplace dominated by a few resonant senders.  The full cultural resonance
+theorem (Theorem~\ref{thm:full-resonance}) shows that resonant senders produce
+resonant interpretations: if $s_1 \res s_2$, then their interpretations in any
+receiver are also resonant.  A marketplace dominated by resonant senders thus
+produces a \emph{homogeneous} interpretive landscape---many signals, but all
+``saying the same thing'' in the resonance sense.
+
+Cultural biodiversity---the analogue of biological diversity in ecological
+theory---requires non-resonant senders.  A healthy marketplace, in our
+formalism, is one in which the sender pool $\mathbf{S}$ spans a large portion
+of ideatic space, ensuring that different receivers with different repertoires
+find signals that resonate with their particular backgrounds.  The marketplace
+metaphor thus acquires an ecological dimension: just as a healthy ecosystem
+requires species diversity, a healthy idea marketplace requires sender
+diversity.  Monopolistic control over the sender pool---whether by a state, a
+church, or a platform---reduces cultural biodiversity and, with it, the
+potential for deep interpretation across the full range of receiver backgrounds.
+
+% ----------------------------------------------------------------
+\section{Conclusion}
+\label{sec:ch11-conclusion}
+% ----------------------------------------------------------------
+
+The marketplace of ideas, when formalized in IDT, reveals a surprising
+structural rigidity.  Competition between senders is not anarchic but
+constrained: void never wins, dominance is reflexive, payoff is bounded by
+audience capacity, composition is subadditive, and resonant signals produce
+resonant interpretations regardless of competitive context.
+
+These results formalize intuitions that social theorists have long articulated
+in qualitative terms.  Gramsci's hegemony requires active cultural production
+(Theorem~\ref{thm:void-dom-identity}); Bourdieu's cultural capital constrains
+reception (Theorem~\ref{thm:payoff-bound}); Redfield's Great/Little Tradition
+unity rests on resonance preservation (Theorem~\ref{thm:full-resonance});
+Illich's diminishing returns in education follow from marginal bounds
+(Theorem~\ref{thm:marginal-bound}).
+
+In the next chapter, we turn from competition to \emph{cooperation}: stable
+matching of senders and receivers based on cultural compatibility, formalizing
+the two-sided matching structures that underlie kinship, marriage exchange,
+and interfaith dialogue.

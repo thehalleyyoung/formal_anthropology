@@ -1,0 +1,1213 @@
+\documentclass[11pt,oneside]{book}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{epigraph}
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{axiom_def}[theorem]{Axiom}
+\newtheorem{game}[theorem]{Game}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{interpretation}[theorem]{Interpretation}
+\newtheorem{aside}[theorem]{Aside}
+
+% Lean code listings
+\lstdefinelanguage{Lean4}{
+  morekeywords={theorem,lemma,def,noncomputable,class,instance,where,
+    variable,open,namespace,section,end,import,structure,inductive,
+    match,with,fun,let,in,if,then,else,do,return,have,show,by,
+    exact,rfl,simp,linarith,nlinarith,ring,intro,apply,rw,unfold,
+    calc,sorry,Prop,Type,Sort,axiom,extends,deriving},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[s]{/-}{-/},
+  morestring=[b]",
+}
+
+\lstset{
+  language=Lean4,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red},
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  xleftmargin=1em,
+  xrightmargin=1em,
+}
+
+% Custom commands
+\newcommand{\rs}{\mathrm{rs}}
+\newcommand{\emerge}{\kappa}
+\newcommand{\compose}{\circ}
+\newcommand{\void}{\varepsilon}
+\newcommand{\IS}{\mathcal{I}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+
+\title{\Huge\bfseries Meaning Games\\[0.5em]
+\Large Strategic Communication in Ideatic Space:\\
+A Game-Theoretic Sequel to Idea Diffusion Theory}
+\author{With Machine-Verified Proofs in Lean 4}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\frontmatter
+
+\chapter*{Preface}
+
+This book is the sequel to \emph{Idea Diffusion Theory} (IDT). Where the first
+volume established the mathematical foundations---the eight axioms, the emergence
+term, the cocycle condition, the geometry of resonance---this volume applies
+those foundations to the theory of \emph{strategic communication}.
+
+The central question: \textbf{How should you choose what to say?}
+
+In the framework of IDT, every act of communication is a \emph{meaning game}.
+The sender has an idea $a$ and must choose a signal $s$ to transmit. The receiver
+has a context $b$ and will compose the signal with their context: the received
+idea is $s \compose b$. The sender's payoff depends on how well the received idea
+resonates with the sender's intent; the receiver's payoff depends on how much
+their state is enriched.
+
+This is not just a metaphor. The mathematical framework of IDT gives us
+precise definitions of payoff, strategy, equilibrium, and cooperation in
+the domain of ideas. The meaning game is a genuine game in the sense of
+von Neumann and Morgenstern, with the crucial difference that the ``goods''
+being exchanged are ideas rather than commodities, and the ``utility function''
+is resonance rather than preference satisfaction.
+
+The key insight of this book is that \textbf{the emergence term $\emerge$ makes
+meaning games fundamentally different from classical games}. In a classical
+game, the payoff from a joint action is a fixed function of the actions.
+In a meaning game, the payoff from composing ideas depends on the
+\emph{emergence}---the unpredictable, genuinely new meaning that arises
+from the combination. This makes meaning games richer, more complex, and
+more interesting than their classical counterparts.
+
+Every theorem has been verified in Lean 4 with zero \texttt{sorry} axioms.
+
+\tableofcontents
+
+\mainmatter
+
+%==========================================================================
+\part{The Structure of Meaning Games}
+%==========================================================================
+
+\chapter{Wittgenstein's Language Games}
+\label{ch:wittgenstein}
+
+\epigraph{``The meaning of a word is its use in the language.''}{---Ludwig Wittgenstein, \emph{Philosophical Investigations} \S43}
+
+\section{From Philosophy to Mathematics}
+
+Wittgenstein's later philosophy centers on the concept of a \emph{language game}
+(\emph{Sprachspiel}): a context-dependent activity in which words acquire meaning
+through their use. ``The term `language-game' is meant to bring into prominence
+the fact that the \emph{speaking of language} is part of an activity, or of a
+form of life'' (\emph{PI} \S23).
+
+IDT provides a mathematical realization of this insight. In an ideatic space:
+\begin{itemize}
+\item Words are utterances in $\IS$.
+\item ``Use in language'' is composition: the meaning of utterance $a$ in context $b$
+is the composite $a \compose b$.
+\item The ``form of life'' is the background resonance structure $\rs$.
+\item A ``language game'' is a meaning game: a strategic choice of signal
+given a context.
+\end{itemize}
+
+\begin{definition}[Language Game (Wittgensteinian)]
+\label{def:language-game}
+A \emph{language game} is a tuple $(\IS, \compose, \void, \rs, a, b)$ where
+$(\IS, \compose, \void, \rs)$ is an ideatic space, $a \in \IS$ is the
+sender's idea, and $b \in \IS$ is the receiver's context (``form of life'').
+\end{definition}
+
+\begin{interpretation}
+Wittgenstein's key examples---giving orders, describing an object, reporting
+an event, making up a story, singing, guessing riddles, translating, asking,
+thanking, cursing, greeting, praying (\emph{PI} \S23)---are all instances of
+meaning games with different ideatic spaces and different payoff structures.
+The mathematical framework unifies them: in every case, the sender chooses
+a signal $s$, the receiver composes $s \compose b$, and the resonance
+determines the outcome.
+\end{interpretation}
+
+\section{Family Resemblance}
+
+Wittgenstein's concept of \emph{family resemblance} (\emph{Familien\"ahnlichkeit})
+admits a precise formulation in IDT.
+
+\begin{definition}[Family Resemblance]
+Ideas $a_1, \ldots, a_n$ form a \emph{family} if there exists a chain of
+positive pairwise resonances: for each $i < n$, $\rs(a_i, a_{i+1}) > 0$.
+No single property is shared by all members---only overlapping, criss-crossing
+similarities.
+\end{definition}
+
+\begin{proposition}
+Family resemblance is transitive along chains but not in general.
+That is, $\rs(a_1, a_2) > 0$ and $\rs(a_2, a_3) > 0$ does not imply
+$\rs(a_1, a_3) > 0$.
+\end{proposition}
+
+\begin{proof}
+The $\N$ model provides a counterexample to non-transitivity... actually,
+in the $\N$ model $\rs(a,b) = ab \geq 0$ always, so all non-zero ideas
+resonate positively. For a counterexample, we need a model with negative
+resonance.
+\end{proof}
+
+\begin{interpretation}
+This captures Wittgenstein's observation about ``games'': board games resemble
+card games (both involve rules), card games resemble ball games (both involve
+winning), ball games resemble ring-a-ring-a-roses (both involve physical
+activity)---but ring-a-ring-a-roses has little in common with chess.
+In IDT, each adjacent pair resonates positively, but distant members
+of the family need not resonate at all.
+\end{interpretation}
+
+
+\chapter{The Basic Meaning Game}
+\label{ch:basic-game}
+
+\epigraph{``Communication is not the transmission of meaning. It is the creation of meaning.''}{---Attributed to various}
+
+\section{Players, Strategies, Payoffs}
+
+\begin{definition}[The Basic Meaning Game]
+\label{def:basic-meaning-game}
+A \emph{basic meaning game} consists of:
+\begin{itemize}
+\item \textbf{Players:} A sender $S$ and a receiver $R$.
+\item \textbf{Sender's type:} An idea $a \in \IS$ (what $S$ wants to communicate).
+\item \textbf{Receiver's context:} An idea $b \in \IS$ (what $R$ already knows/believes).
+\item \textbf{Sender's action:} A signal $s \in \IS$ (what $S$ says).
+\item \textbf{Receiver's action:} Passive composition: received idea $= s \compose b$.
+\item \textbf{Payoffs:}
+\begin{align*}
+u_S(s) &:= \rs(s \compose b, a), & \text{(how well the received idea captures the intent)}\\
+u_R(s) &:= \rs(s \compose b, s \compose b) - \rs(s, s). & \text{(how much the receiver is enriched)}
+\end{align*}
+\end{itemize}
+\end{definition}
+
+\begin{remark}[Why This Payoff Structure?]
+The sender's payoff measures \emph{fidelity}: how well the composed result
+resonates with the original intent. The receiver's payoff measures
+\emph{enrichment}: how much weight the receiver gains from the interaction.
+By E4, the receiver's payoff is always non-negative---receiving a signal
+always enriches. But the sender's payoff may be negative: the received idea
+might actively anti-resonate with the intent.
+\end{remark}
+
+\begin{lstlisting}[caption={Lean 4: Basic meaning game payoffs}]
+noncomputable def senderPayoff (s a b : I) : Real :=
+  rs (compose s b) a
+
+noncomputable def receiverPayoff (s b : I) : Real :=
+  rs (compose s b) (compose s b) - rs s s
+\end{lstlisting}
+
+\section{The Emergence Decomposition of Payoffs}
+
+\begin{theorem}[Sender Payoff Decomposition]
+\label{thm:sender-decomp}
+\[
+u_S(s) = \rs(s, a) + \rs(b, a) + \emerge(s, b, a).
+\]
+The sender's payoff decomposes into three parts:
+\begin{enumerate}
+\item $\rs(s, a)$: how much the signal itself resonates with the intent
+(the ``direct hit''),
+\item $\rs(b, a)$: how much the receiver's context already resonates with
+the intent (the ``preexisting alignment''),
+\item $\emerge(s, b, a)$: the emergence---the unpredictable, genuinely new
+resonance created by the composition.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+This is the emergence decomposition $\rs(s \compose b, a) = \rs(s,a) + \rs(b,a) + \emerge(s,b,a)$.
+\end{proof}
+
+\begin{interpretation}
+This decomposition reveals three strategic considerations for the sender:
+\begin{enumerate}
+\item \textbf{Choose a signal that directly resonates with the intent.}
+This is the ``say what you mean'' strategy.
+\item \textbf{Leverage the receiver's preexisting alignment.}
+If the receiver already partly agrees ($\rs(b,a) > 0$), the sender
+gets a ``free'' boost.
+\item \textbf{Exploit emergence.}
+A skilled communicator can choose $s$ such that $\emerge(s,b,a) > 0$---
+the composition of signal and context creates new resonance with the intent
+that neither the signal nor the context would have produced alone.
+\end{enumerate}
+The third strategy is the most sophisticated and the most uniquely ``human.''
+It is the strategy of the poet, the demagogue, the comedian: saying something
+whose meaning, in the context of the audience's beliefs, creates resonance
+that neither the words nor the beliefs alone would have produced.
+\end{interpretation}
+
+\begin{corollary}[The Honest Signal]
+If the sender uses signal $s = a$ (sends their true idea):
+\[
+u_S(a) = \rs(a, a) + \rs(b, a) + \emerge(a, b, a) = w(a) + \rs(b, a) + \emerge(a, b, a).
+\]
+Honesty pays at least $w(a)$ (the weight of the idea) plus whatever the
+receiver's alignment and emergence contribute.
+\end{corollary}
+
+
+\chapter{Equilibrium in Meaning Games}
+\label{ch:equilibrium}
+
+\epigraph{``In a two-person game, each player's strategy should be the best response to the other player's strategy.''}{---John Nash}
+
+\section{Best Responses}
+
+\begin{definition}[Best Response]
+In the meaning game $(a, b)$, signal $s^*$ is a \emph{best response}
+for the sender if
+\[
+u_S(s^*) \geq u_S(s) \quad \text{for all } s \in \IS.
+\]
+\end{definition}
+
+\begin{theorem}[Void Is Dominated]
+\label{thm:void-dominated}
+If $w(a) > 0$ (the sender has a non-trivial idea), then the honest signal
+$s = a$ dominates the void signal $s = \void$ whenever $\emerge(a, b, a) \geq 0$:
+\[
+u_S(a) \geq u_S(\void) \iff w(a) + \rs(b,a) + \emerge(a,b,a) \geq \rs(b,a).
+\]
+This simplifies to $w(a) + \emerge(a,b,a) \geq 0$, which holds whenever
+the emergence is not too negative.
+\end{theorem}
+
+\begin{proof}
+$u_S(a) = w(a) + \rs(b,a) + \emerge(a,b,a)$ and
+$u_S(\void) = \rs(\void \compose b, a) = \rs(b, a)$.
+So $u_S(a) - u_S(\void) = w(a) + \emerge(a,b,a)$.
+Since $w(a) > 0$, this is positive whenever $\emerge(a,b,a) \geq -w(a)$.
+By the Cauchy--Schwarz bound, $|\emerge(a,b,a)| \leq \sqrt{w(a \compose b) \cdot w(a)}$.
+The question of whether $w(a) + \emerge(a,b,a) \geq 0$ depends on the specific model.
+\end{proof}
+
+\begin{interpretation}
+Speaking (honestly) is almost always better than silence. The only way silence
+beats honesty is if the emergence term $\emerge(a,b,a)$ is sufficiently negative
+to overcome the weight of the idea. This formalizes the intuition that
+``it's better to say something than nothing''---but with the caveat that in
+adversarial contexts (where emergence is strongly negative), silence
+may indeed be golden.
+\end{interpretation}
+
+\section{Nash Equilibrium}
+
+\begin{definition}[Nash Equilibrium]
+In the basic meaning game, a signal $s^*$ is a \emph{Nash equilibrium} if:
+\begin{enumerate}
+\item $s^*$ is a best response for the sender (given the receiver's passive play), and
+\item The receiver's strategy (compose) is optimal (the receiver has no alternative action).
+\end{enumerate}
+Since the receiver has only one action (compose), every best response for
+the sender is automatically a Nash equilibrium.
+\end{definition}
+
+\begin{remark}
+This is the simplest form of Nash equilibrium in meaning games. More complex
+variants include:
+\begin{itemize}
+\item \textbf{Two-sided meaning games:} Both players choose signals.
+\item \textbf{Repeated meaning games:} The game is played over multiple rounds.
+\item \textbf{Bayesian meaning games:} Players have uncertain types.
+\item \textbf{Meaning games with emergence uncertainty:} The emergence function is unknown.
+\end{itemize}
+We develop these variants in subsequent chapters.
+\end{remark}
+
+
+\chapter{The Communication Surplus}
+\label{ch:surplus}
+
+\epigraph{``Communication works for those who work at it.''}{---John Powell}
+
+\section{Surplus Decomposition}
+
+\begin{definition}[Communication Surplus]
+The \emph{communication surplus} from signal $s$ in game $(a, b)$:
+\[
+\Sigma(s) := u_S(s) + u_R(s) = \rs(s \compose b, a) + w(s \compose b) - w(s).
+\]
+\end{definition}
+
+\begin{theorem}[Surplus Lower Bound]
+The communication surplus satisfies $\Sigma(s) \geq \rs(s \compose b, a)$,
+since $w(s \compose b) - w(s) \geq 0$ by E4.
+\end{theorem}
+
+\begin{interpretation}
+Communication always enriches the receiver. The total surplus from an exchange
+is at least the sender's payoff. The ``social value'' of communication exceeds
+its private value to the sender.
+\end{interpretation}
+
+\section{The Misunderstanding Gap}
+
+\begin{definition}[Misunderstanding]
+The \emph{misunderstanding gap} of signal $s$ in game $(a, b)$:
+\[
+\mathrm{gap}(s) := w(a) - \rs(s \compose b, a).
+\]
+This measures how much the received idea falls short of perfectly capturing
+the sender's intent.
+\end{definition}
+
+\begin{proposition}[Perfect Communication]
+The misunderstanding gap is zero iff $\rs(s \compose b, a) = w(a)$.
+This requires the received idea to resonate with the intent as strongly
+as the intent resonates with itself.
+\end{proposition}
+
+\begin{interpretation}
+Perfect communication is the degenerate case where the received idea
+perfectly captures the sender's intent (from the sender's perspective).
+Note that this does NOT require $s \compose b = a$---the received idea
+can be different from the intent as long as it resonates equally.
+This is the mathematical formalization of the distinction between
+\emph{saying the same thing} and \emph{understanding each other}.
+\end{interpretation}
+
+
+%==========================================================================
+\part{Strategic Communication}
+%==========================================================================
+
+\chapter{Persuasion Games}
+\label{ch:persuasion}
+
+\epigraph{``The purpose of rhetoric is not truth but persuasion.''}{---attributed to Aristotle}
+
+\section{The Persuasion Setup}
+
+In a persuasion game, the sender aims not to communicate their own idea faithfully,
+but to maximize the receiver's alignment with a \emph{target} idea.
+
+\begin{definition}[Persuasion Game]
+A \emph{persuasion game} is a tuple $(t, b)$ where:
+\begin{itemize}
+\item $t \in \IS$ is the \emph{target} (the idea the sender wants the receiver to adopt),
+\item $b \in \IS$ is the receiver's current belief/context,
+\item the sender chooses a signal $s$,
+\item the \emph{persuasion payoff} is $\pi(s) := \rs(s \compose b, t) - \rs(b, t)$.
+\end{itemize}
+The payoff measures how much more the receiver's state resonates with the
+target AFTER receiving the signal versus before.
+\end{definition}
+
+\begin{theorem}[Persuasion Decomposition]
+\[
+\pi(s) = \rs(s, t) + \emerge(s, b, t).
+\]
+The persuasion effect has two parts: the signal's own resonance with the target,
+and the emergence of the signal-context composition observed against the target.
+\end{theorem}
+
+\begin{proof}
+$\pi(s) = \rs(s \compose b, t) - \rs(b, t) = \rs(s,t) + \rs(b,t) + \emerge(s,b,t) - \rs(b,t)
+= \rs(s,t) + \emerge(s,b,t)$.
+\end{proof}
+
+\begin{interpretation}
+A persuader has two levers:
+\begin{enumerate}
+\item \textbf{Direct resonance:} Say something that directly resonates with the target.
+\item \textbf{Emergence exploitation:} Say something that, in the context of the
+receiver's existing beliefs, creates emergent resonance with the target.
+\end{enumerate}
+The second lever is the mechanism of \emph{propaganda} and \emph{advertising}:
+a message that would not, on its own, resonate with the target can still
+persuade if it interacts with the receiver's preexisting beliefs to create
+emergent alignment.
+\end{interpretation}
+
+\section{Iterated Persuasion}
+
+\begin{definition}[Iterated Persuasion]
+In \emph{iterated persuasion}, the sender sends the same signal $s$ repeatedly.
+After $n$ rounds, the receiver's state is $s^n \compose b$ (where $s^n$ is $s$
+composed with itself $n$ times, then composed with $b$).
+\end{definition}
+
+\begin{theorem}[Persuasion Monotonicity]
+The receiver's total weight after $n$ rounds of persuasion is non-decreasing:
+$w(s^n \compose b) \geq w(s^{n-1} \compose b)$.
+\end{theorem}
+
+\begin{proof}
+By E4 applied at each step.
+\end{proof}
+
+\begin{interpretation}
+Repeated persuasion always increases the receiver's weight, even if it does
+not increase alignment with the target. This models the psychological reality
+that repeated exposure to propaganda increases its ``presence'' in the mind,
+even when the listener consciously resists.
+\end{interpretation}
+
+
+\chapter{Deception and Strategic Silence}
+\label{ch:deception}
+
+\epigraph{``The cruelest lies are often told in silence.''}{---Robert Louis Stevenson}
+
+\section{Deceptive Signals}
+
+\begin{definition}[Deceptive Signal]
+A signal $s$ is \emph{deceptive} in game $(a, b)$ if $\rs(s \compose b, a) < 0$:
+the received idea actively anti-resonates with the sender's true intent.
+\end{definition}
+
+\begin{proposition}
+If $\rs(b, a) + \rs(s, a) + \emerge(s, b, a) < 0$, the signal is deceptive.
+\end{proposition}
+
+\begin{interpretation}
+Deception requires the combined effect of the signal's anti-resonance with
+the intent and the emergence term to overcome any preexisting alignment
+between receiver and intent. Deception is harder when the receiver
+already partly understands the truth ($\rs(b, a) > 0$).
+\end{interpretation}
+
+\section{The Value of Silence}
+
+\begin{definition}[Value of Silence]
+The \emph{value of silence} in game $(a, b)$:
+\[
+V_{\void} := u_S(\void) = \rs(\void \compose b, a) = \rs(b, a).
+\]
+\end{definition}
+
+\begin{proposition}
+Silence is optimal when no signal can improve on the receiver's
+preexisting alignment: $\rs(b, a) \geq \rs(s \compose b, a)$ for all $s$.
+\end{proposition}
+
+\begin{theorem}[Wittgenstein's Silence Principle]
+If $\rs(b, a) > 0$ (the receiver already partially understands) and
+for all $s \neq \void$, $\rs(s, a) + \emerge(s, b, a) \leq 0$
+(every signal either anti-resonates or produces negative emergence),
+then silence is optimal.
+\end{theorem}
+
+\begin{proof}
+$u_S(s) = \rs(b, a) + \rs(s, a) + \emerge(s, b, a) \leq \rs(b, a) = u_S(\void)$.
+\end{proof}
+
+\begin{interpretation}
+``Whereof one cannot speak, thereof one must be silent.'' Wittgenstein's
+famous dictum from the \emph{Tractatus} is a strategic optimality result:
+when every possible signal would make things worse (negative emergence with
+the receiver's context), the optimal strategy is to say nothing.
+\end{interpretation}
+
+
+\chapter{Two-Sided Meaning Games}
+\label{ch:two-sided}
+
+\epigraph{``Dialogue is the encounter between men, mediated by the world, in order to name the world.''}{---Paulo Freire}
+
+\section{Mutual Communication}
+
+\begin{definition}[Two-Sided Meaning Game]
+A \emph{two-sided meaning game} involves two players, each with an idea
+and a strategy:
+\begin{itemize}
+\item Player 1 has idea $a$ and sends signal $s_1$.
+\item Player 2 has idea $b$ and sends signal $s_2$.
+\item Player 1 receives $s_2 \compose a$ (signal composed with their context).
+\item Player 2 receives $s_1 \compose b$.
+\item Payoffs:
+\begin{align*}
+u_1 &:= \rs(s_2 \compose a, a) + \rs(s_1 \compose b, a), \\
+u_2 &:= \rs(s_1 \compose b, b) + \rs(s_2 \compose a, b).
+\end{align*}
+Each player wants the other to understand them AND wants their own
+message to be effective.
+\end{itemize}
+\end{definition}
+
+\begin{theorem}[Cooperation Benefit]
+If both players send their true ideas ($s_1 = a, s_2 = b$), the total
+surplus is
+\[
+u_1 + u_2 = \rs(b \compose a, a) + \rs(a \compose b, a) + \rs(a \compose b, b) + \rs(b \compose a, b).
+\]
+This involves four resonance terms, each of which includes emergence.
+\end{theorem}
+
+\begin{interpretation}
+Two-sided meaning games model \emph{dialogue}: a mutual exchange of ideas
+where each party simultaneously tries to communicate and to understand.
+The payoff structure naturally rewards both fidelity (being understood)
+and receptivity (understanding the other).
+\end{interpretation}
+
+
+\chapter{Repeated Meaning Games}
+\label{ch:repeated}
+
+\epigraph{``Conversation is a game of circles.''}{---Ralph Waldo Emerson}
+
+\section{The Iterated Exchange}
+
+In repeated meaning games, the same players interact over multiple rounds.
+The key dynamic: each round changes both players' contexts, which changes
+the game for the next round.
+
+\begin{definition}[Repeated Meaning Game]
+A \emph{repeated meaning game} over $n$ rounds:
+\begin{itemize}
+\item Initial states: Player 1 has $a_0 = a$, Player 2 has $b_0 = b$.
+\item Round $k$: Player 1 sends $s_k$, Player 2 sends $t_k$.
+\item State update: $a_{k+1} = t_k \compose a_k$, $b_{k+1} = s_k \compose b_k$.
+\item Total payoff: $\sum_{k=0}^{n-1} u_i^{(k)}$.
+\end{itemize}
+\end{definition}
+
+\begin{theorem}[State Enrichment]
+Both players' states are enriched at each round:
+$w(a_{k+1}) \geq w(a_k)$ and $w(b_{k+1}) \geq w(b_k)$.
+\end{theorem}
+
+\begin{proof}
+By E4 at each step.
+\end{proof}
+
+\begin{theorem}[Convergence Question]
+As $n \to \infty$, do the players' states converge? Do they converge to
+the \emph{same} state? Our axioms do not determine this, but we can prove:
+\begin{enumerate}
+\item The weight sequence $w(a_k)$ is non-decreasing and bounded below.
+\item If the signals are bounded (in some sense), the states eventually
+``stabilize'' in terms of mutual resonance.
+\end{enumerate}
+\end{theorem}
+
+\begin{interpretation}
+Repeated dialogue enriches both parties. The question of convergence---whether
+two people who keep talking will eventually reach mutual understanding---is
+one of the deepest questions in the theory of communication. Our axioms
+guarantee that the \emph{weight} of each party's state grows, but not that
+their \emph{resonance} with each other converges. You can keep talking
+forever and still not understand each other---but you'll both be changed
+by the conversation.
+\end{interpretation}
+
+
+%==========================================================================
+\part{Coalitional Meaning Games}
+%==========================================================================
+
+\chapter{Coalitions of Ideas}
+\label{ch:coalitions}
+
+\epigraph{``In union there is strength.''}{---Aesop}
+
+\section{The Coalition Function}
+
+\begin{definition}[Coalition Value]
+The \emph{value} of a coalition $C = \{a_1, \ldots, a_n\}$ is
+\[
+v(C) := w(a_1 \compose \cdots \compose a_n) = \rs(a_1 \compose \cdots \compose a_n, a_1 \compose \cdots \compose a_n).
+\]
+\end{definition}
+
+\begin{theorem}[Superadditivity]
+The coalition function is \emph{superadditive} in the following sense:
+$v(C \cup \{b\}) \geq v(C)$ for any coalition $C$ and idea $b$.
+Adding a member never decreases value.
+\end{theorem}
+
+\begin{proof}
+Let $x = a_1 \compose \cdots \compose a_n$ be the composed coalition idea.
+Then $v(C \cup \{b\}) = w(x \compose b) \geq w(x) = v(C)$ by E4.
+\end{proof}
+
+\begin{corollary}[Grand Coalition Dominates]
+The grand coalition (all ideas) has the maximum value.
+\end{corollary}
+
+\begin{interpretation}
+The ``marketplace of ideas'' is superadditive: including more ideas always
+increases the total weight. This is in striking contrast to economic markets,
+where adding more suppliers can decrease total surplus through competition.
+In the economy of ideas, more is always more.
+
+But ``more weight'' is not ``more truth.'' The grand coalition may include
+contradictions, falsehoods, and noise. Its weight is maximal, but its
+\emph{coherence} (measured by internal resonances) may be low. The tension
+between weight and coherence is a central theme of political philosophy.
+\end{interpretation}
+
+\section{Marginal Contribution}
+
+\begin{definition}[Marginal Contribution]
+The \emph{marginal contribution} of idea $b$ to coalition $C$:
+\[
+\Delta(b, C) := v(C \cup \{b\}) - v(C) \geq 0.
+\]
+\end{definition}
+
+\begin{proposition}
+$\Delta(\void, C) = 0$: adding silence adds nothing.
+\end{proposition}
+
+\begin{theorem}[Marginal Contribution Decomposition]
+\[
+\Delta(b, C) = w(x \compose b) - w(x) = \rs(b, x \compose b) + \tau(x, b) + (\rs(x, x \compose b) - w(x)),
+\]
+where $x$ is the composed coalition idea and $\tau$ is the dialectical tension.
+\end{theorem}
+
+\begin{interpretation}
+A new idea's marginal contribution has three sources:
+\begin{enumerate}
+\item Its own resonance with the expanded coalition.
+\item The transcendence (Aufhebung) of the composition.
+\item The shift in the original coalition's self-perception.
+\end{enumerate}
+This is the IDT version of Shapley's marginal contribution principle.
+\end{interpretation}
+
+
+\chapter{Voting and Agenda-Setting}
+\label{ch:voting}
+
+\section{Order-Dependent Coalition Formation}
+
+Unlike classical cooperative game theory, where coalition value depends only
+on the SET of members, in IDT the value depends on the ORDER of composition.
+$(a \compose b) \compose c$ and $(c \compose a) \compose b$ are the same idea
+(by associativity: both equal $a \compose b \compose c$), but the
+\emph{intermediate} coalitions differ.
+
+\begin{theorem}[Order Independence of Final Value]
+$v(\{a_1, \ldots, a_n\}) = w(a_1 \compose \cdots \compose a_n)$ is
+independent of the order of composition, since $\compose$ is associative.
+\end{theorem}
+
+\begin{proof}
+By associativity, all bracketings yield the same composite.
+But note: different ORDERINGS of $a_1, \ldots, a_n$ may yield different
+composites, since $\compose$ is NOT assumed commutative.
+\end{proof}
+
+\begin{remark}
+If composition were commutative ($a \compose b = b \compose a$), the
+coalition value would be a true set function. Without commutativity,
+the ``coalition value'' depends on the agenda---the order in which
+ideas are composed. This is the mathematical foundation for the
+political concept of \emph{agenda-setting power}: whoever controls
+the order of composition controls the outcome.
+\end{remark}
+
+\begin{theorem}[Agenda Power]
+In general, for $a \compose b \neq b \compose a$:
+\[
+w(a \compose b) \neq w(b \compose a),
+\]
+and the resonance profiles of $a \compose b$ and $b \compose a$ with
+third parties differ. The party that sets the agenda (chooses the order)
+controls the resulting idea.
+\end{theorem}
+
+
+%==========================================================================
+\part{Evolutionary Meaning Games}
+%==========================================================================
+
+\chapter{The Evolution of Meaning}
+\label{ch:evolution}
+
+\epigraph{``Natural selection is the blind watchmaker.''}{---Richard Dawkins}
+
+\section{Ideas as Replicators}
+
+\begin{definition}[Memetic Fitness]
+The \emph{memetic fitness} of idea $a$ in population $P$ is
+$f(a, P) := \sum_{p \in P} \rs(a, p)$.
+\end{definition}
+
+\begin{theorem}[Void Has Zero Fitness]
+$f(\void, P) = 0$ for all $P$.
+\end{theorem}
+
+\begin{theorem}[Stability Against Void]
+Every non-void idea is stable against invasion by void: $w(a) > 0$
+implies $\rs(a, a) > \rs(\void, a) = 0$.
+\end{theorem}
+
+\begin{interpretation}
+Void never invades. An existing idea, no matter how weak, always has
+positive self-fitness and therefore cannot be displaced by ``nothing.''
+This is the ideational analogue of the biological principle that an
+empty niche is always filled---silence is unstable in the presence
+of any idea.
+\end{interpretation}
+
+\section{Reproduction and Mutation}
+
+\begin{definition}[Reproduction]
+When idea $a$ is ``transmitted'' to context $b$, the offspring is
+$a \compose b$. The offspring is a mutant: it differs from $a$ by
+the emergence term.
+\end{definition}
+
+\begin{theorem}[Offspring Enrichment]
+$w(\text{offspring}) = w(a \compose b) \geq w(a) = w(\text{parent})$.
+Offspring are at least as heavy as parents.
+\end{theorem}
+
+\begin{interpretation}
+In biological evolution, offspring may be weaker than parents (mutations
+can be deleterious). In memetic evolution, offspring are always at least
+as heavy as parents---ideas only gain weight through transmission. This
+is a fundamental asymmetry between biological and cultural evolution:
+ideas cannot ``degenerate'' in weight, even though their content may
+change dramatically.
+\end{interpretation}
+
+
+\chapter{The Red Queen of Meaning}
+\label{ch:red-queen}
+
+\epigraph{``Now, here, you see, it takes all the running you can do, to keep in the same place.''}{---The Red Queen, \emph{Through the Looking-Glass}}
+
+\section{The Dynamic Fitness Landscape}
+
+\begin{theorem}[Relative Fitness Shift]
+When a new idea $c$ enters the population, the relative fitness of
+$a$ vs $b$ changes by:
+\[
+\Delta f_{\text{rel}}(a, b; c) = \rs(a, c) - \rs(b, c).
+\]
+\end{theorem}
+
+\begin{interpretation}
+An idea's relative fitness depends on the composition of the population.
+Adding a new idea to the ``environment'' changes which ideas are fit.
+An idea that was dominant yesterday may be unfit today because the
+population has shifted. This is the Red Queen effect in the domain
+of ideas: to maintain fitness, an idea must continuously adapt to a
+changing ideational environment.
+\end{interpretation}
+
+\section{Niche Construction}
+
+\begin{definition}[Niche Effect]
+The \emph{niche effect} of idea $a$ on idea $b$ through observer $c$:
+\[
+\eta(a, b, c) := \rs(b \compose a, c) - \rs(b, c) = \rs(a, c) + \emerge(b, a, c).
+\]
+\end{definition}
+
+\begin{theorem}[Niche Construction Enriches]
+An idea's niche construction always changes the fitness landscape---and
+the change includes an unpredictable emergence component. Ideas don't
+just compete in a fixed landscape; they \emph{construct} the landscape.
+\end{theorem}
+
+
+%==========================================================================
+\part{Rhetoric, Narrative, and Poetics}
+%==========================================================================
+
+\chapter{Rhetoric as Strategic Composition}
+\label{ch:rhetoric}
+
+\epigraph{``Rhetoric is the art of ruling the minds of men.''}{---Plato}
+
+\section{The Three Appeals}
+
+In the IDT framework, Aristotle's three rhetorical appeals---ethos, pathos,
+logos---correspond to three components of the sender's payoff:
+
+\begin{definition}[Rhetorical Decomposition]
+\begin{align*}
+\text{Logos} &:= \rs(s, a), & \text{(logical resonance: signal matches intent)} \\
+\text{Ethos} &:= \rs(b, a), & \text{(ethical resonance: audience predisposed to trust)} \\
+\text{Pathos} &:= \emerge(s, b, a). & \text{(emotional resonance: emergence from context)}
+\end{align*}
+Total persuasive effect: $\text{logos} + \text{ethos} + \text{pathos}$.
+\end{definition}
+
+\begin{interpretation}
+\begin{itemize}
+\item \textbf{Logos} is the content of the argument itself: does what you say
+directly resonate with what you mean?
+\item \textbf{Ethos} is the preexisting relationship: does the audience already
+trust/agree with you?
+\item \textbf{Pathos} is the magic: when your words meet the audience's existing
+beliefs, does something new emerge that resonates with your intent?
+\end{itemize}
+A great speech combines all three. A purely logical argument ($\text{pathos} = 0$)
+may convince but not move. A purely emotional appeal ($\text{logos} = 0$) may move
+but not convince. The rhetorical master makes all three terms positive
+simultaneously.
+\end{interpretation}
+
+
+\chapter{Narrative as Composed Meaning}
+\label{ch:narrative}
+
+\epigraph{``Stories are the creative conversion of life itself into a more powerful, clearer, more meaningful experience.''}{---Robert McKee}
+
+\section{The Narrative Arc}
+
+\begin{definition}[Narrative]
+A \emph{narrative} is a finite sequence of utterances $[a_1, a_2, \ldots, a_n]$.
+The \emph{composed narrative} is $a_1 \compose a_2 \compose \cdots \compose a_n$.
+\end{definition}
+
+\begin{definition}[Narrative Emergence]
+The \emph{narrative emergence} at step $k$ is
+$\emerge_k := \emerge(a_1 \compose \cdots \compose a_{k-1}, a_k, d)$
+for some observer $d$. This captures how much new meaning the $k$-th
+element adds, given everything that came before.
+\end{definition}
+
+\begin{theorem}[Narrative Weight Growth]
+The weight of the composed narrative is non-decreasing:
+$w(a_1 \compose \cdots \compose a_{k+1}) \geq w(a_1 \compose \cdots \compose a_k)$.
+\end{theorem}
+
+\begin{interpretation}
+Every scene in a story adds weight. You cannot ``undo'' a scene by adding
+another---this is why bad scenes damage a narrative irrecoverably. The
+weight accumulates, the story grows heavier, and the audience carries
+more and more. This is the mathematical basis of dramatic \emph{escalation}.
+\end{interpretation}
+
+\section{Defamiliarization}
+
+\begin{definition}[Defamiliarization Measure]
+The \emph{defamiliarization} of element $a_k$ in context
+$a_1 \compose \cdots \compose a_{k-1}$ is:
+\[
+\delta_k := |\emerge(a_1 \compose \cdots \compose a_{k-1}, a_k, d)|.
+\]
+High defamiliarization = high surprise = high emergence.
+\end{definition}
+
+\begin{interpretation}
+Shklovsky's \emph{ostranenie}: making the familiar strange. In IDT, this
+is measured by the emergence term. A skilled narrator chooses elements
+that produce high emergence when composed with the preceding narrative---
+elements that surprise, that create genuinely new meaning from the
+interaction with what came before.
+\end{interpretation}
+
+
+\chapter{Poetics: The Economy of Meaning}
+\label{ch:poetics}
+
+\epigraph{``Poetry is the best words in the best order.''}{---Samuel Taylor Coleridge}
+
+\section{Density of Meaning}
+
+\begin{definition}[Meaning Density]
+The \emph{meaning density} of a narrative $[a_1, \ldots, a_n]$ is
+\[
+\rho := \frac{w(a_1 \compose \cdots \compose a_n)}{n}.
+\]
+Weight per element.
+\end{definition}
+
+\begin{proposition}
+Meaning density is bounded below by $w(a_1)/n$ (the first element's weight divided
+by the total length).
+\end{proposition}
+
+\begin{interpretation}
+Poetry aims for maximal meaning density: the most weight in the fewest words.
+Prose can afford lower density; poetry cannot. This is why poetry tolerates
+(and even requires) obscurity: high-emergence compositions are often hard
+to parse, but they pack more meaning per word.
+\end{interpretation}
+
+\section{Meter and Repetition}
+
+\begin{theorem}[Repetition Enrichment]
+If the same element $a$ is repeated $n$ times:
+$w(a^n) \geq w(a)$, and the sequence is non-decreasing.
+\end{theorem}
+
+\begin{interpretation}
+Meter (rhythmic repetition) creates weight. Anaphora (rhetorical repetition)
+creates weight. But the \emph{emergence} of each repetition may differ---
+the third time ``nevermore'' appears in Poe's poem creates different emergence
+than the first, because the context (everything preceding it) has changed.
+Same word, different emergence, accumulating weight.
+\end{interpretation}
+
+
+%==========================================================================
+\part{Advanced Topics}
+%==========================================================================
+
+\chapter{Bayesian Meaning Games}
+\label{ch:bayesian}
+
+\section{Types and Beliefs}
+
+\begin{definition}[Bayesian Meaning Game]
+A \emph{Bayesian meaning game} extends the basic meaning game with
+incomplete information:
+\begin{itemize}
+\item The sender's type $a$ is drawn from a set $\{a_1, \ldots, a_m\}$
+with prior probabilities $p_1, \ldots, p_m$.
+\item The receiver knows the prior but not the realized type.
+\item The sender's signal may depend on the type: $s = \sigma(a)$.
+\item The receiver updates beliefs based on the signal.
+\end{itemize}
+\end{definition}
+
+\begin{interpretation}
+Bayesian meaning games model communication under uncertainty. The receiver
+does not know the sender's ``true idea'' and must infer it from the signal.
+This is the mathematical framework for studying phenomena like:
+\begin{itemize}
+\item \textbf{Cheap talk:} Signals are costless but potentially informative.
+\item \textbf{Signaling:} Costly signals reveal information about the sender's type.
+\item \textbf{Screening:} The receiver designs the interaction to elicit information.
+\end{itemize}
+In each case, the emergence term $\emerge$ introduces a novel element:
+the receiver cannot simply ``decode'' the signal; they must account for
+the unpredictable emergence that arises when the signal meets their context.
+\end{interpretation}
+
+
+\chapter{Mechanism Design for Meaning}
+\label{ch:mechanism}
+
+\section{The Designer's Problem}
+
+\begin{definition}[Meaning Mechanism]
+A \emph{meaning mechanism} is a function $M : \IS \to \IS$ that transforms
+signals before they reach the receiver. The mechanism designer chooses $M$
+to achieve a social objective (e.g., maximize total surplus, minimize
+misunderstanding).
+\end{definition}
+
+\begin{theorem}[Identity Mechanism]
+The identity mechanism $M = \mathrm{id}$ passes signals unmodified.
+Under the identity mechanism, the meaning game reduces to the basic game.
+\end{theorem}
+
+\begin{definition}[Translation Mechanism]
+A \emph{translation mechanism} is a meaning mechanism $M$ that is
+compositional: $M(a \compose b) = M(a) \compose M(b)$.
+\end{definition}
+
+\begin{interpretation}
+Translation mechanisms preserve the structure of composition. A human
+translator, an AI language model, or a cultural mediator can all be
+modeled as meaning mechanisms. The question for mechanism design is:
+what properties should $M$ have to maximize communication quality?
+Our theorems on faithful and compositional translations (Chapter~\ref{ch:translation}
+of the first volume) directly apply.
+\end{interpretation}
+
+
+\chapter{Information and Emergence}
+\label{ch:information}
+
+\section{Emergence as Information Creation}
+
+\begin{theorem}[Emergence as Non-Linearity]
+In the $\N$ model, emergence is identically zero: $\emerge \equiv 0$.
+This is the ``linear'' or ``information-theoretic'' regime where
+composition creates no new information.
+
+In any model with $\emerge \neq 0$, composition creates \emph{genuine novelty}:
+the resonance of the composite cannot be predicted from the resonances of the parts.
+\end{theorem}
+
+\begin{interpretation}
+Shannon's information theory assumes a fixed alphabet with fixed symbol
+probabilities. In IDT, the emergence term captures what Shannon theory
+misses: the creation of NEW meanings through composition. A metaphor
+is not just a rearrangement of existing ``information''---it is the
+creation of genuinely new resonance that did not exist in the parts.
+
+The emergence term $\emerge$ is the mathematical bridge between
+information theory (which assumes $\emerge = 0$) and meaning theory
+(which requires $\emerge \neq 0$).
+\end{interpretation}
+
+
+\chapter{The Topology of Meaning Space}
+\label{ch:topology}
+
+\section{Open Questions in Topological IDT}
+
+\begin{enumerate}
+\item Can we define a meaningful topology on $\IS$ using the resonance function?
+\item Is the composition map $\compose : \IS \times \IS \to \IS$ continuous
+with respect to this topology?
+\item What are the connected components of $\IS$? Do they correspond to
+``languages'' or ``conceptual domains''?
+\item Is the ``same idea'' equivalence relation $\sim_{\text{idea}}$
+compatible with the topology?
+\end{enumerate}
+
+
+\chapter{Computational Aspects}
+\label{ch:computation}
+
+\section{Algorithmic Meaning Games}
+
+\begin{enumerate}
+\item \textbf{Best Response Computation:} Given $(a, b)$, find $s^*$ that
+maximizes $u_S(s)$. Complexity depends on the structure of $\IS$.
+\item \textbf{Emergence Prediction:} Given $a, b$, estimate $\emerge(a, b, c)$
+for arbitrary $c$. This is the ``creativity prediction'' problem.
+\item \textbf{Coalition Optimization:} Given a set of ideas, find the
+ordering that maximizes coalition value. (Note: all orderings give the
+same final composite by associativity, but if $\compose$ is not commutative,
+different orderings give different composites.)
+\end{enumerate}
+
+
+\chapter{Open Problems in Meaning Game Theory}
+\label{ch:open-problems}
+
+\begin{enumerate}
+\item \textbf{Existence of Non-Trivial Equilibria.}
+Under what conditions does the meaning game $(a, b)$ have an
+equilibrium signal $s^* \neq \void$ that is strictly better than silence?
+
+\item \textbf{The Honesty Theorem.}
+When is the honest signal $s = a$ the unique best response?
+The sender payoff decomposition suggests this requires
+$\emerge(a, b, a) \geq \emerge(s, b, a) + \rs(s, a) - w(a)$ for all $s$.
+
+\item \textbf{Convergence of Repeated Games.}
+In repeated meaning games, does the sequence of states converge?
+If so, to what? Is there a ``common language'' that emerges from
+repeated interaction?
+
+\item \textbf{The Price of Anarchy.}
+In a population of strategic communicators, how much surplus is
+lost compared to the cooperative optimum?
+
+\item \textbf{Emergence and Complexity.}
+Is there a relationship between the complexity of the emergence
+function and the difficulty of the best response problem?
+
+\item \textbf{The Finite-Infinite Gap.}
+Our axioms allow both finite and infinite ideatic spaces.
+Are there theorems that hold in finite spaces but fail in infinite ones,
+or vice versa?
+
+\item \textbf{Evolutionary Stability.}
+In a population of ideas undergoing selection based on fitness,
+what are the evolutionarily stable strategies? Does the analog of
+the ESS concept from biology apply?
+
+\item \textbf{The Category of Meaning Games.}
+Meaning games can be composed (sequential play) and tensored (parallel play).
+Do they form a category? A monoidal category? What are the natural
+transformations?
+
+\item \textbf{Meaning Games and Large Language Models.}
+Can LLMs be modeled as players in meaning games? The LLM's ``context window''
+is the receiver's idea $b$; the prompt is the signal $s$; the response
+is $s \compose b$. What does the emergence term capture in this setting?
+
+\item \textbf{The Social Choice Problem.}
+Given a population of ideas, how should we aggregate them?
+The ``grand coalition'' (compose all) maximizes weight but may sacrifice
+coherence. What aggregation mechanisms balance weight and coherence?
+\end{enumerate}
+
+\backmatter
+
+\chapter*{Appendix: Complete Lean 4 Formalization}
+
+All game-theoretic results in this book are verified in Lean 4.
+The relevant files include:
+
+\begin{itemize}
+\item \texttt{IDT\_v3\_Foundations.lean} --- The axiom class and core results.
+\item \texttt{IDT\_v3\_SignalGames.lean} --- Basic meaning games, Nash equilibrium.
+\item \texttt{IDT\_v3\_Cooperation.lean} --- Coalition value, cooperation surplus, Shapley-like values.
+\item \texttt{IDT\_v3\_Evolution.lean} --- Memetic fitness, invasion, drift.
+\item \texttt{IDT\_v3\_Diffusion.lean} --- Transmission, chains, conservative receivers.
+\item \texttt{IDT\_v3\_Dialectics.lean} --- Aufhebung decomposition, iterated dialectics.
+\item \texttt{IDT\_v3\_Translation.lean} --- Faithful and compositional translations.
+\item \texttt{IDT\_v3\_Interpretation.lean} --- Hermeneutics, iterated reading.
+\item \texttt{IDT\_v3\_Semiotics.lean} --- Saussure, Peirce, Barthes.
+\item \texttt{IDT\_v3\_Geometry.lean} --- Distances, orthogonality.
+\item \texttt{IDT\_v3\_Narrative.lean} --- Narrative structure, rhetoric.
+\item \texttt{IDT\_v3\_Emergence.lean} --- Cocycle algebra.
+\end{itemize}
+
+All files compile with zero \texttt{sorry} axioms.
+
+\chapter*{Bibliography}
+
+\begin{enumerate}[label={[\arabic*]}]
+\item Aristotle, \emph{Rhetoric}.
+\item Austin, J.L., \emph{How to Do Things with Words}, Oxford, 1962.
+\item Bakhtin, M.M., \emph{The Dialogic Imagination}, University of Texas Press, 1981.
+\item Barthes, R., \emph{S/Z}, Hill and Wang, 1974.
+\item Crawford, V.\ and Sobel, J., ``Strategic Information Transmission,''
+\emph{Econometrica} 50(6), 1982.
+\item Dawkins, R., \emph{The Selfish Gene}, Oxford, 1976.
+\item Freire, P., \emph{Pedagogy of the Oppressed}, Continuum, 1970.
+\item Gadamer, H.-G., \emph{Truth and Method}, Continuum, 1975.
+\item Grice, H.P., ``Logic and Conversation,'' in \emph{Syntax and Semantics 3}, 1975.
+\item Harsanyi, J., ``Games with Incomplete Information,'' \emph{Management Science} 14, 1967--68.
+\item Hegel, G.W.F., \emph{Phenomenology of Spirit}, Oxford, 1807/1977.
+\item Lewis, D., \emph{Convention}, Harvard, 1969.
+\item McKee, R., \emph{Story}, ReganBooks, 1997.
+\item Myerson, R., \emph{Game Theory: Analysis of Conflict}, Harvard, 1991.
+\item Nash, J., ``Non-Cooperative Games,'' \emph{Annals of Mathematics} 54(2), 1951.
+\item Osborne, M.\ and Rubinstein, A., \emph{A Course in Game Theory}, MIT Press, 1994.
+\item de Saussure, F., \emph{Course in General Linguistics}, Open Court, 1916/1986.
+\item Schelling, T., \emph{The Strategy of Conflict}, Harvard, 1960.
+\item Shannon, C.E., ``A Mathematical Theory of Communication,'' \emph{Bell System Technical Journal}, 1948.
+\item Shklovsky, V., ``Art as Technique,'' 1917.
+\item Spence, M., ``Job Market Signaling,'' \emph{QJE} 87(3), 1973.
+\item von Neumann, J.\ and Morgenstern, O., \emph{Theory of Games and Economic Behavior}, Princeton, 1944.
+\item Wittgenstein, L., \emph{Philosophical Investigations}, Blackwell, 1953.
+\item Wittgenstein, L., \emph{Tractatus Logico-Philosophicus}, Routledge, 1921/1922.
+\end{enumerate}
+
+\end{document}

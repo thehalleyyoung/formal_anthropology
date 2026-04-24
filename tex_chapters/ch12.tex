@@ -1,0 +1,800 @@
+% ================================================================
+% Chapter 12: Stable Matching and Cultural Compatibility
+% ================================================================
+
+\chapter{Stable Matching and Cultural Compatibility}
+\label{ch:matching}
+
+\epigraph{The prohibition of incest is less a rule prohibiting marriage with
+the mother, sister, or daughter, than a rule obliging the mother, sister, or
+daughter to be \emph{given} to others.  It is the supreme rule of the gift.}%
+{Claude Lévi-Strauss, \textit{Les Structures élémentaires de la parenté} (1949)}
+
+% ----------------------------------------------------------------
+\section{Introduction}
+% ----------------------------------------------------------------
+
+Two-sided matching is ubiquitous in human social organization.  Marriage
+exchange---the foundational institution of kinship---pairs lineages on the
+basis of compatibility.  Student--mentor pairing in academic apprenticeship,
+patron--client relationships in Mediterranean and Mesoamerican societies,
+and interfaith dialogue all involve matching ``senders'' with ``receivers''
+on the basis of \emph{cultural compatibility}.
+
+In Ideatic Diffusion Theory, compatibility reduces to resonance.  Two ideas
+are compatible when they evoke each other; a match is fruitful when the
+composition of the paired ideas achieves significant depth.  This chapter
+formalizes these notions and proves eighteen theorems that connect matching
+theory to Lévi-Strauss's kinship structures, Malinowski's Kula ring,
+Mauss's gift economy, and Bourdieu's marriage strategies.
+
+The central contribution is a suite of theorems showing that compatibility is
+reflexive, symmetric, and preserved under composition---precisely the
+algebraic properties that make stable matching \emph{possible}.  Without
+these properties, no stable assignment of senders to receivers could exist.
+Lévi-Strauss's intuition that kinship is a ``total social fact'' finds its
+formal expression in the closure of compatibility under the monoid
+operation.\footnote{Lévi-Strauss's notion of kinship as \emph{fait social
+total} (following Mauss) implies that every aspect of social life---economic,
+ritual, juridical---is implicated in the matching structure.  Our algebraic
+closure results formalize this totality.}
+
+\subsection{Historical Foundations of Matching Theory}
+
+The mathematical theory of stable matching originates with David Gale and
+Lloyd Shapley's seminal 1962 paper, ``College Admissions and the Stability
+of Marriage.''  Gale and Shapley proved that for any set of men and women
+with complete and transitive preference orderings, a stable matching
+exists---one in which no unmatched pair mutually prefers each other to their
+assigned partners.  Their deferred acceptance algorithm, elegant in its
+simplicity, showed that stability is not merely a theoretical possibility but
+a constructively achievable outcome.
+
+The practical significance of stable matching was recognized by the Nobel
+Committee in 2012, when Lloyd Shapley (jointly with Alvin Roth) received the
+Sveriges Riksbank Prize in Economic Sciences.  Roth's contribution was to
+demonstrate that stable matching theory could be applied to real-world
+institutional design: the National Resident Matching Program (NRMP) for
+medical residencies, school choice mechanisms in New York and Boston, and
+kidney exchange programs.  Roth's work showed that abstract mathematical
+properties---stability, strategy-proofness, efficiency---have direct
+consequences for human welfare.\footnote{Alvin E.\ Roth, ``The Economist as
+Engineer: Game Theory, Experimentation, and Computation as Tools for Design
+Economics,'' \textit{Econometrica} 70(4), 2002, pp.\ 1341--1378.}
+
+The anthropological study of matching long predates its mathematical
+formalization.  Claude Lévi-Strauss's \textit{Les Structures élémentaires
+de la parenté} (1949) is, in essence, a theory of marriage matching.
+Lévi-Strauss distinguished two fundamental types of exchange:
+\emph{restricted exchange} (échange restreint), in which two groups
+directly swap marriage partners, and \emph{generalized exchange} (échange
+généralisé), in which three or more groups form a directed cycle of
+partner transfer.  In restricted exchange, if clan A gives women to clan B,
+then clan B gives women to clan A---a bilateral matching.  In generalized
+exchange, A gives to B, B gives to C, C gives to A---a cyclic matching
+that cannot be decomposed into bilateral pairs.
+
+Lévi-Strauss's analysis was deeply influenced by Marcel Mauss's theory of
+the gift (\textit{Essai sur le don}, 1925).  Mauss argued that exchange is
+the foundation of social solidarity: the obligation to give, to receive,
+and to reciprocate constitutes the ``total social fact'' (fait social total)
+that binds individuals into society.  For Lévi-Strauss, marriage exchange is
+the paradigmatic instance of Mauss's triple obligation: lineages are obliged
+to give women (the prohibition of incest), to receive women (exogamy), and
+to reciprocate (the alliance system).  Our formal notion of compatibility---
+defined as resonance between sender and receiver---captures the structural
+precondition for this exchange: two lineages can exchange only if their
+totemic symbols resonate.
+
+The cross-cousin marriage systems that preoccupied Lévi-Strauss provide
+particularly elegant illustrations of matching theory.  In \emph{Dravidian
+kinship} (exemplified by many South Indian and Australian Aboriginal
+societies), the marriageable category is defined by a binary partition of
+kin into ``parallel'' (same-sex sibling links) and ``cross'' (opposite-sex
+sibling links) relatives.  Ego must marry a cross-cousin---specifically,
+in the most restricted systems, a bilateral cross-cousin (mother's
+brother's daughter, who is also father's sister's daughter).  This system
+generates a stable matching between two exogamous moieties, each moiety
+constituting a ``sender'' pool for the other.
+
+The Kariera system of Western Australia, analyzed by A.\ R.\
+Radcliffe-Brown in 1913, provides the simplest four-section system:
+society is divided into four named sections, and marriage rules specify
+exactly which section may marry which.  The Kariera system is equivalent
+to a bipartite graph with two moieties and a deterministic matching rule
+within each generation.  In our framework, the four sections correspond
+to four ideas $a_1, a_2, a_3, a_4 \in \IS$, with compatibility
+$a_i \res a_j$ holding if and only if $i$ and $j$ belong to
+marriageable sections.  The reflexivity, symmetry, and composition-preservation
+of compatibility (Theorems~\ref{thm:self-compat}--\ref{thm:comp-preserves})
+ensure that the Kariera system is algebraically well-defined across
+generations.
+
+Modern matching markets extend these ancient patterns into new domains.
+Dating applications (Tinder, Hinge, Bumble) are literal matching markets
+in which individuals present signals (profiles) and express compatibility
+judgments (swipes).  The underlying algorithms---while proprietary---are
+descendants of the Gale-Shapley framework, adapted for incomplete
+information and stochastic preferences.  In our formalism, a dating app
+user's profile is a signal $s \in \IS$, their preferences constitute a
+repertoire $\mathbf{R}$, and a ``match'' occurs when mutual compatibility
+$s_A \res s_B$ holds.  The reflexivity of compatibility
+(Theorem~\ref{thm:self-compat}) guarantees that every user is trivially
+compatible with themselves---the formal reason that self-matching must be
+explicitly excluded by platform design.
+
+Organ donation matching, formalized by Roth, Sönmez, and Ünver (2004),
+provides another modern instance.  Here, the ``ideas'' are biological: a
+donor kidney's immunological profile is a signal, a recipient's antibody
+profile is a repertoire element, and compatibility is immunological
+crossmatch compatibility.  The algebraic properties we prove in this
+chapter---reflexivity, symmetry, composition preservation---do \emph{not}
+generally hold for immunological compatibility (crossmatch can be
+asymmetric), which is precisely why kidney exchange requires more
+sophisticated algorithms than simple stable matching.  Our framework thus
+identifies the structural properties that distinguish culturally-mediated
+matching from biologically-constrained matching.
+
+Assortative mating---the tendency for individuals to mate with similar
+partners---has been extensively documented in sociology.  Educational
+homogamy (the tendency to marry partners of similar educational attainment)
+has increased dramatically in the United States and Western Europe since
+the 1960s, with profound consequences for income inequality.\footnote{Robert
+D.\ Mare, ``Five Decades of Educational Assortative Mating,''
+\textit{American Sociological Review} 56(1), 1991, pp.\ 15--32.}
+In our framework, assortative mating corresponds to a preference for
+matches in which sender and receiver have similar depth:
+$|\depth(s) - \depth(r)| \le \epsilon$ for some threshold $\epsilon$.
+The composition quality bound (Theorem~\ref{thm:quality-bound}) implies
+that assortatively matched pairs achieve quality close to
+$2 \cdot \depth(a)$ (when $\depth(s) \approx \depth(r) \approx \depth(a)$),
+while disassortatively matched pairs (one deep, one shallow) achieve
+quality bounded by $\depth(\text{deep}) + \depth(\text{shallow})$---a
+larger bound but with diminishing marginal returns from the shallow
+partner's contribution.
+
+% ----------------------------------------------------------------
+\section{Core Definitions}
+\label{sec:ch12-defs}
+% ----------------------------------------------------------------
+
+\begin{definition}[Compatibility]
+\label{def:compatible}
+Two ideas $a, b \in \IS$ are \emph{compatible} when they resonate:
+\[
+  \operatorname{compatible}(a, b)
+  \;\;\stackrel{\text{def}}{=}\;\;
+  a \res b.
+\]
+In kinship theory, this is the analogue of \emph{marriageability}: two
+lineages are compatible when their totemic symbols evoke each other.
+\end{definition}
+
+\begin{definition}[Match Pair]
+\label{def:match-pair}
+A \emph{match pair} is a structure $\langle \text{sender}, \text{receiver} \rangle$
+pairing a sending idea (gift, signal, myth) with a receiving idea (background,
+habitus, totem).  A match pair is \emph{compatible} when sender and receiver
+resonate.
+\end{definition}
+
+\begin{lstlisting}[caption={MatchPair structure in Lean~4}]
+structure MatchPair (I : Type*) [IdeaticSpace I] where
+  sender   : I
+  receiver : I
+
+def MatchPair.isCompatible (p : MatchPair I) : Prop :=
+  compatible p.sender p.receiver
+\end{lstlisting}
+
+\begin{definition}[Composition Quality]
+\label{def:comp-quality}
+The \emph{composition quality} of a sender--receiver pair is the depth of
+their composition:
+\[
+  \operatorname{quality}(s, r) \;=\; \depth(s \compose r).
+\]
+Higher quality means deeper cultural synthesis.
+\end{definition}
+
+% ----------------------------------------------------------------
+\section{Compatibility Fundamentals}
+\label{sec:ch12-compat}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Self-Compatibility (12.1)]
+\label{thm:self-compat}
+Every idea is compatible with itself: $\forall\, a \in \IS,\; a \res a$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By reflexivity of resonance.
+\end{proof}
+
+Endogamy---marrying within one's own group---is always ``compatible'' in the
+formal sense.  Lévi-Strauss argued that exogamy is culturally
+\emph{mandated} precisely because endogamy is always the structural default.
+The prohibition of incest is not the prohibition of something impossible but
+of something \emph{too easy}: the self-match is always available, and culture
+must intervene to prevent it.
+
+\begin{remark}[Connection to Graph Theory and Bipartite Matching]
+The compatibility relation $\res$, being reflexive
+(Theorem~\ref{thm:self-compat}) and symmetric
+(Theorem~\ref{thm:compat-symm}), defines an undirected graph on the
+ideatic space $\IS$: the \emph{compatibility graph} $G_{\res} = (\IS, E)$
+where $\{a, b\} \in E$ iff $a \res b$.  Reflexivity means every vertex
+has a self-loop; symmetry means every edge is undirected.  A stable
+matching in the sense of Gale and Shapley is then a maximum matching in
+this graph, subject to preference orderings.
+
+When the compatibility graph is bipartite---as in moiety-based marriage
+systems, where society is divided into two exogamous halves---the matching
+problem reduces to bipartite matching, for which efficient polynomial-time
+algorithms exist (e.g., the Hopcroft-Karp algorithm).  The four-section
+systems (Kariera, Aranda) correspond to bipartite graphs with additional
+structure.  The eight-section systems analyzed by Lévi-Strauss correspond
+to more complex graph structures whose matching properties depend on the
+specific compatibility rules encoded in the kinship terminology.
+
+This graph-theoretic perspective connects our algebraic framework to the
+extensive literature on matching in combinatorial optimization, including
+Hall's marriage theorem, König's theorem, and the Birkhoff-von Neumann
+theorem on doubly stochastic matrices.  Each of these classical results
+has an anthropological interpretation when the vertices of the graph are
+cultural ideas and the edges are resonance relations.
+\end{remark}
+
+\begin{theorem}[Compatibility is Symmetric (12.2)]
+\label{thm:compat-symm}
+If $a$ is compatible with $b$, then $b$ is compatible with $a$:
+\[
+  a \res b \;\Longrightarrow\; b \res a.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By symmetry of resonance.
+\end{proof}
+
+In Lévi-Strauss's \emph{restricted exchange}, if clan A can marry into clan B,
+then clan B can marry into clan A.  The symmetry of marriage exchange---the
+\emph{connubium}---is a structural consequence of resonance symmetry.  This
+rules out asymmetric kinship systems in which marriageability is one-directional,
+a constraint that Lévi-Strauss himself noted distinguishes restricted from
+generalized exchange.\footnote{In \emph{generalized exchange}, asymmetry
+\emph{is} allowed---clan A gives to B, B gives to C, C gives to A---but
+the pairwise compatibility remains symmetric; only the \emph{flow} of
+gifts is directed.}
+
+\begin{example}[The Kula Ring: Circular Exchange and Compatibility]
+Bronisław Malinowski's study of the Kula ring in the Trobriand Islands
+(\textit{Argonauts of the Western Pacific}, 1922) provides a classic
+illustration of matching based on compatibility.  In the Kula system,
+ceremonial objects circulate among island communities in a fixed ring:
+\emph{soulava} (necklaces) travel clockwise, \emph{mwali} (armbands)
+travel counterclockwise.  Each exchange is between two partners---a
+sender and a receiver---who are bound by a long-term Kula relationship.
+
+In our framework, each Kula partner brings a cultural repertoire shaped
+by their island's traditions, their rank within the chieftainship
+hierarchy, and their personal exchange history.  A successful Kula
+exchange requires compatibility: the sender's object (signal) must
+resonate with the receiver's expectations (repertoire element).  A
+\emph{soulava} of great prestige resonates differently in the hands of a
+paramount chief ($\depth(r_{\text{chief}} \compose s_{\text{soulava}})$
+is high) than in the hands of a commoner
+($\depth(r_{\text{commoner}} \compose s_{\text{soulava}})$ is lower).
+
+The symmetry of compatibility (Theorem~\ref{thm:compat-symm}) is
+instantiated in the Kula by the norm of reciprocity: if chief A finds
+chief B a worthy Kula partner (compatible), then chief B finds chief A
+equally worthy.  The exchange relationship is necessarily bilateral, even
+though the objects flow in a single direction at any given moment.
+Malinowski emphasized that the Kula partnership, once established, is
+``one of the permanent and overriding features of the natives'
+life''---a stable match in both the colloquial and the technical sense.
+\end{example}
+
+\begin{theorem}[Void Self-Compatibility (12.3)]
+\label{thm:void-self-compat}
+Void is compatible with itself: $\void \res \void$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+An instance of self-compatibility (Theorem~\ref{thm:self-compat}).
+\end{proof}
+
+The null exchange---two parties exchanging nothing---is trivially compatible.
+This is the structural zero-point of all reciprocity, the ``degree zero'' of
+Mauss's gift economy.  It is the baseline from which all actual exchange
+departs.
+
+\begin{theorem}[Absorbed Void Preserves Compatibility (12.4)]
+\label{thm:absorbed-void}
+If $a \res b$, then $(a \compose \void) \res b$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Since $a \compose \void = a$ by the void axiom, this is immediate.
+\end{proof}
+
+Appending silence to a cultural signal does not change its compatibility.
+A ritual followed by silence is the same ritual---the ``afterglow'' of
+ceremony is structurally inert.  The Durkheimian \emph{effervescence
+collective} dissipates, but the signal's compatibility endures.
+
+% ----------------------------------------------------------------
+\section{Composition and Compatibility}
+\label{sec:ch12-comp}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Composition Preserves Compatibility (12.5)]
+\label{thm:comp-preserves}
+If $(a, a')$ and $(b, b')$ are compatible pairs, then their compositions
+are also compatible:
+\[
+  a \res a' \;\wedge\; b \res b'
+  \quad\Longrightarrow\quad
+  (a \compose b) \res (a' \compose b').
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the full composition-preservation of resonance
+(\texttt{resonance\_compose}).
+\end{proof}
+
+If two couples are each internally compatible, their ``children'' (compositions)
+are also compatible with each other.  Cultural compatibility is
+\emph{heritable} through ideatic composition.  This is Lévi-Strauss's
+\emph{atom of kinship}: the minimal structure of kinship---two
+allied families producing compatible offspring---is formally guaranteed by
+this theorem.\footnote{Lévi-Strauss introduced the ``atom of kinship'' in
+his 1945 article ``Structural Analysis in Linguistics and in Anthropology.''
+The atom comprises a man, his wife, their child, and the wife's brother: four
+positions related by three relations (descent, marriage, avunculate).  Our
+theorem captures the compositional closure that makes this atom stable.}
+
+\begin{example}[Indian Caste Endogamy and Jati Compatibility]
+The Indian caste system, particularly the institution of
+\emph{jati} (birth-based sub-caste), provides one of the most elaborate
+and long-lived matching systems in human history.  Each jati constitutes a
+closed endogamous unit: marriage is permitted only within one's own jati,
+or, in some reform movements, within a limited set of ``compatible'' jatis.
+
+In our framework, each jati $j$ corresponds to an idea in $\IS$, encoding
+the ritual status, occupational identity, dietary practices, and kinship
+norms of the group.  Endogamy is the requirement that matching occurs only
+between compatible ideas: $j_1 \res j_2$ holds only when $j_1$ and $j_2$
+belong to marriageable categories.  Traditionally, the strictest form of
+endogamy requires $j_1 = j_2$---self-matching---which is always guaranteed
+by Theorem~\ref{thm:self-compat}.
+
+The composition-preservation theorem (Theorem~\ref{thm:comp-preserves})
+has a specific implication for the Indian system: if two jatis are
+compatible and another pair of jatis is compatible, then the composed
+cultural identities of their offspring are also compatible.  This ensures
+the \emph{heritability} of caste compatibility across generations---precisely
+the structural property that has allowed the jati system to persist for
+millennia.  The system is self-reinforcing because compatibility, once
+established, is algebraically guaranteed to reproduce itself through
+composition.
+
+B.\ R.\ Ambedkar's critique of caste endogamy---articulated in his 1916
+paper ``Castes in India: Their Mechanism, Genesis and Development''---can be
+read as a critique of this very algebraic closure.  Ambedkar argued that
+caste is maintained by ``endogamy superimposed on exogamy'': the
+prohibition of inter-caste marriage creates closed compatibility classes,
+while the mandate of exogamy within the caste ensures that the compatibility
+class reproduces itself.  Our formal framework captures exactly this
+mechanism: self-compatibility guarantees the endogamous baseline, and
+composition preservation guarantees hereditary closure.
+\end{example}
+
+\begin{theorem}[Right-Context Compatibility (12.6)]
+\label{thm:right-context}
+Compatible senders remain compatible when placed in the same right context:
+\[
+  a \res b
+  \quad\Longrightarrow\quad
+  (a \compose c) \res (b \compose c).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By right-composition preservation of resonance.
+\end{proof}
+
+If two myths resonate, adding the same ritual context to both preserves their
+resonance.  Shared ritual frames maintain cultural compatibility---which is
+why liturgical uniformity (the Latin Mass, the Pali Canon) serves as a
+\emph{resonance stabilizer} across geographically dispersed communities.
+
+\begin{theorem}[Left-Context Compatibility (12.7)]
+\label{thm:left-context}
+Compatible ideas remain compatible when preceded by the same context:
+\[
+  a \res b
+  \quad\Longrightarrow\quad
+  (c \compose a) \res (c \compose b).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By left-composition preservation of resonance.
+\end{proof}
+
+A shared cultural preamble---educational background, initiation rite---preserves
+the resonance between ideas.  Preliminary socialization ensures continued
+compatibility, which is why initiation rites (Masonic degrees, academic
+comprehensive exams, military basic training) serve as \emph{compatibility
+guarantors}: by imposing a common left-context $c$, they ensure that
+subsequent ideas $a, b$ remain resonant in the initiates' minds.
+
+\begin{example}[Academic Peer Review as Cultural Matching]
+The peer review system in academic publishing instantiates a matching
+problem with direct parallels to our formal framework.  When a journal
+editor receives a manuscript (sender signal $s$), they must match it with
+reviewers whose expertise (receiver repertoire) is compatible.  A paper
+on Bayesian phylogenetics must be matched with a reviewer who can produce
+a deep interpretation---$\depth(r_{\text{expert}} \compose s_{\text{paper}})$
+is high---rather than a reviewer whose interpretation is shallow or null.
+
+The left-context compatibility result (Theorem~\ref{thm:left-context})
+applies directly: if two papers $a, b$ on related topics resonate
+($a \res b$), then a reviewer with any background $c$ produces resonant
+interpretations of both: $(c \compose a) \res (c \compose b)$.  This is
+why reviewers are typically assigned clusters of related papers---the
+resonance between papers ensures consistent evaluation.
+
+The right-context result (Theorem~\ref{thm:right-context}) applies to
+reviewer training: if two reviewers $c_1, c_2$ share a common disciplinary
+background (are both ``preceded by'' the same graduate training $c$), then
+their compatibility with any given paper is preserved.  The
+standardization of doctoral training within a discipline serves as the
+``shared left-context'' that ensures reviewer compatibility with the
+discipline's literature.
+\end{example}
+
+% ----------------------------------------------------------------
+\section{Quality Bounds}
+\label{sec:ch12-quality}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Composition Quality Bound (12.8)]
+\label{thm:quality-bound}
+The quality of any match is bounded by the sum of depths:
+\[
+  \operatorname{quality}(s, r) \;\le\; \depth(s) + \depth(r).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Direct application of the subadditivity axiom.
+\end{proof}
+
+The depth of cultural synthesis---marriage, trade, dialogue---cannot exceed
+the combined depth of the participants.  Two shallow cultures produce a
+shallow synthesis.  This constrains utopian visions of ``fusion'': the
+Esperanto of cultures is bounded above by the complexity of the cultures
+being fused.
+
+\begin{theorem}[Void Match Quality, Right (12.9)]
+\label{thm:void-quality-right}
+Matching with void yields one's own depth: $\operatorname{quality}(a, \void) = \depth(a)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$a \compose \void = a$ by the void axiom.
+\end{proof}
+
+The ``null exchange''---giving silence, receiving nothing---reveals one's own
+depth.  This is the formal basis of introspection: in the absence of external
+input, one sees only one's own complexity.  The contemplative
+traditions---monastic silence, Zen \emph{zazen}, Quaker worship---formalize
+this structural fact as spiritual practice.
+
+\begin{theorem}[Void Match Quality, Left (12.10)]
+\label{thm:void-quality-left}
+The void sender reveals the receiver's depth: $\operatorname{quality}(\void, a) = \depth(a)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\void \compose a = a$ by the void axiom.
+\end{proof}
+
+A culture that sends nothing (isolationism) reveals only what the receiver
+already has.  The ``mirror effect'' of cultural isolation: the isolated
+society, receiving no external signals, can only see its own reflection.
+
+\begin{theorem}[Void-Void Match (12.11)]
+\label{thm:void-void}
+The quality of matching void with void is zero: $\operatorname{quality}(\void, \void) = 0$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\void \compose \void = \void$, and $\depth(\void) = 0$.
+\end{proof}
+
+When neither party brings anything, nothing is produced.  The ``empty
+exchange'' has zero cultural value---the structural null point of all social
+interaction.  This is Hobbes's state of nature, formalized: before the
+social contract introduces non-void ideas, cultural quality is identically
+zero.
+
+% ----------------------------------------------------------------
+\section{Match Pair Properties}
+\label{sec:ch12-pairs}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Compatible Pairs are Self-Evident (12.12)]
+\label{thm:self-match}
+The match pair $(a, a)$ is always compatible.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By self-compatibility (Theorem~\ref{thm:self-compat}).
+\end{proof}
+
+Self-matching (narcissistic culture) is always structurally valid, even if
+socially prohibited.  The incest taboo in Lévi-Strauss's theory exists
+precisely to prevent the structurally trivial but socially destructive
+self-match.  Without the taboo, every lineage would choose itself---the
+path of least structural resistance.
+
+\begin{theorem}[Void Pair is Compatible (12.13)]
+\label{thm:void-pair}
+The match pair $(\void, \void)$ is compatible.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By self-compatibility of void.
+\end{proof}
+
+The ``null marriage''---two culturally empty entities exchanging nothing---is
+trivially compatible.  This is the structural zero of kinship: before culture
+introduces non-void ideas, all matches are vacuously valid.
+
+\begin{theorem}[Composition Quality Associativity (12.14)]
+\label{thm:quality-assoc}
+Quality is associative under composition:
+\[
+  \operatorname{quality}((a \compose b), c)
+  \;=\;
+  \operatorname{quality}(a, (b \compose c)).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Both sides unfold to $\depth((a \compose b) \compose c) = \depth(a \compose (b \compose c))$
+by associativity.
+\end{proof}
+
+In a three-party exchange (mediator between two clans), the total quality is
+invariant under regrouping.  The ``middle-man'' can be absorbed into either
+side without changing the structural outcome---a formal justification for the
+role of the \emph{go-between} in cross-cultural negotiation.
+
+\begin{remark}[Open Questions on Dynamic Compatibility]
+The matching theory developed in this chapter is fundamentally
+\emph{static}: compatibility is a fixed relation on $\IS$, and match
+quality is a fixed function of depth.  In practice, cultural compatibility
+is dynamic---it evolves over time as matched pairs interact, adapt, and
+transform each other.  Several open questions arise:
+
+\begin{enumerate}
+\item \textbf{Compatibility drift.}  Can two initially compatible ideas
+  become incompatible through repeated composition?  Our framework precludes
+  this (composition preserves compatibility by Theorem~\ref{thm:comp-preserves}),
+  but this may reflect a limitation of the model rather than a feature of
+  cultural reality.  Marriages do fail; alliances do dissolve.  A richer
+  model might introduce a dynamic compatibility relation
+  $\res_t$ that evolves with time.
+
+\item \textbf{Matching under incomplete information.}  In the
+  Gale-Shapley framework, agents know their complete preference orderings.
+  In cultural matching, compatibility is often discovered only through
+  interaction---one does not know whether two ideas resonate until one
+  composes them.  A model incorporating costly compatibility testing
+  (``courtship'') would connect to the economics of search and inspection
+  goods.
+
+\item \textbf{Many-to-many matching.}  Our match pairs are dyadic, but
+  many cultural institutions involve polyadic matching: a student matched
+  with multiple mentors, a polycultural society integrating many traditions
+  simultaneously.  Extending the framework to $k$-tuples rather than pairs
+  would require generalizing the compatibility and quality notions.
+
+\item \textbf{Stability under perturbation.}  Is a stable matching robust
+  to small changes in the compatibility relation?  If one pair's resonance
+  is disrupted (e.g., by cultural change), does the entire matching unravel,
+  or can it be locally repaired?  This connects to the literature on robust
+  matching in mechanism design.
+\end{enumerate}
+\end{remark}
+
+% ----------------------------------------------------------------
+\section{Structural Matching Theorems}
+\label{sec:ch12-structural}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Double Composition Quality Bound (12.15)]
+\label{thm:double-bound}
+The quality of matching two compound ideas is quadruply bounded:
+\[
+  \operatorname{quality}((a \compose b), (c \compose d))
+  \;\le\;
+  \depth(a) + \depth(b) + \depth(c) + \depth(d).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Apply subadditivity to the outer composition, then to each inner
+composition, and combine via transitivity.
+\end{proof}
+
+The synthesis of two compound ideas---the alliance of two already-complex
+cultural systems---cannot exceed the total depth of all components.  Colonial
+encounters between complex civilizations (Aztec--Spanish, Chinese--British)
+produce syntheses bounded by the sum of all four sub-cultural depths involved.
+
+\begin{theorem}[Iterated Matching Depth (12.16)]
+\label{thm:iterated-match}
+Matching a signal with itself $n$ times via $\compN{a}{n}$ yields depth at
+most $n \cdot \depth(a)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the iterated composition depth bound (Theorem~\ref{thm:iterated-signal}
+from Chapter~\ref{ch:marketplace}).
+\end{proof}
+
+Repeated cultural exchange---annual rituals, recurring trade---has bounded
+cumulative depth.  The Kula ring's repeated exchanges are subadditive: each
+cycle adds at most $\depth(\text{gift})$ to the cultural synthesis.
+Malinowski's observation that the Kula values lie not in the objects
+themselves but in the circulation is consistent with our bound: the \emph{same}
+gift, circulated $n$ times, yields at most $n \cdot \depth(\text{gift})$,
+not exponentially growing prestige.\footnote{Bronisław Malinowski,
+\textit{Argonauts of the Western Pacific} (1922).}
+
+\begin{theorem}[Synthesis Self-Compatibility (12.17)]
+\label{thm:synthesis-self}
+If $a$ and $b$ are compatible, then their composition $a \compose b$ is
+compatible with itself.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Every idea is self-compatible (Theorem~\ref{thm:self-compat}).
+\end{proof}
+
+A culturally valid marriage (compatible pair) produces offspring (composition)
+that is internally consistent.  The synthesis is never self-contradictory
+in the resonance sense---a formal guarantee of the coherence of
+cross-cultural offspring.
+
+\begin{theorem}[Exchange Symmetry of Quality (12.18)]
+\label{thm:exchange-symm}
+If $a \res b$, then both $(a \compose b)$ and $(b \compose a)$ are
+self-compatible:
+\[
+  a \res b
+  \;\Longrightarrow\;
+  (a \compose b) \res (a \compose b)
+  \;\wedge\;
+  (b \compose a) \res (b \compose a).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Both directions follow from self-compatibility.
+\end{proof}
+
+In Mauss's \textit{Essai sur le don}, the gift and counter-gift are
+structurally parallel but not identical.  We have $a \compose b \ne b \compose a$
+in general---composition is not commutative---formalizing the asymmetry inherent
+in reciprocal exchange.  The gift carries the giver's stamp; the counter-gift
+carries the recipient's.  Yet both compositions are self-consistent: neither the
+gift nor the counter-gift contradicts itself, even if they differ from each
+other.  Reciprocity does not require identity---only mutual
+self-consistency.\footnote{Marcel Mauss, \textit{Essai sur le don} (1925).
+The \emph{hau}---the spirit of the gift that compels return---need not be
+identical to the original gift, only resonant with it.}
+
+\begin{lstlisting}[caption={Exchange symmetry in Lean~4}]
+theorem exchange_compositions_self_compatible {a b : I}
+    (h : compatible a b) :
+    compatible (compose a b) (compose a b) /\
+    compatible (compose b a) (compose b a) :=
+  <self_compatible _, self_compatible _>
+\end{lstlisting}
+
+\begin{remark}[Connection to Chapter~\ref{ch:marketplace}: From Competition to Cooperation]
+Chapters~\ref{ch:marketplace} and~\ref{ch:matching} are structural
+complements.  In Chapter~\ref{ch:marketplace}, multiple senders compete
+for a single receiver's interpretive engagement; the central question is
+\emph{which signal dominates?}  In this chapter, senders and receivers are
+matched pairwise; the central question is \emph{which pairings are stable?}
+
+The formal connection is precise.  The dominance relation of
+Chapter~\ref{ch:marketplace}---$s_1$ dominates $s_2$ on repertoire
+$\mathbf{R}$ when
+$\depth(r \compose s_1) \ge \depth(r \compose s_2)$ for all
+$r \in \mathbf{R}$---can be interpreted as a preference ordering: the
+receiver ``prefers'' $s_1$ to $s_2$.  When this preference ordering is
+used to construct a Gale-Shapley instance, the resulting stable matching
+is the \emph{equilibrium of the marketplace}.  Competition
+(Chapter~\ref{ch:marketplace}) determines preferences; matching
+(this chapter) determines allocation.
+
+This connection illuminates a fundamental tension in cultural systems.  The
+marketplace rewards \emph{breadth}---signals that achieve non-zero depth
+across many receivers.  But matching rewards \emph{depth}---pairings that
+achieve maximal composition quality for specific pairs.  A society that
+optimizes for marketplace competition (broadcasting uniform signals) may
+sacrifice matching quality (deep dyadic synthesis), and vice versa.  The
+tension between broadcast media (marketplace logic) and intimate
+relationships (matching logic) is a structural feature of ideatic space,
+not merely a sociological observation.
+\end{remark}
+
+\subsection{Matching, Solidarity, and Cultural Reproduction}
+
+The eighteen theorems of this chapter collectively establish that the
+algebraic structure of ideatic space is \emph{hospitable to matching}: the
+properties of reflexivity, symmetry, composition-preservation, and bounded
+quality ensure that stable pairings exist, persist across generations, and
+produce bounded but non-trivial cultural synthesis.  This hospitality is
+not accidental.  The IDT axioms were chosen, in part, because they
+guarantee exactly these matching-theoretic properties.  The axioms encode,
+at the most abstract level, the structural preconditions for the
+reciprocal exchange that Mauss identified as the foundation of social life.
+
+Durkheim's distinction between \emph{mechanical solidarity} (solidarity
+based on similarity) and \emph{organic solidarity} (solidarity based on
+complementarity) maps onto two extreme regimes of our matching framework.
+In mechanical solidarity, all ideas are mutually resonant
+($a \res b$ for all $a, b \in \IS$), and every match is trivially
+compatible.  The compatibility graph is complete, and any matching is stable.
+In organic solidarity, compatibility is selective---$a \res b$ holds only
+for specific pairs---and matching requires careful allocation.  The
+transition from mechanical to organic solidarity, which Durkheim associated
+with the division of labor, corresponds formally to the sparsification of
+the compatibility graph: fewer edges, more constrained matching, more
+complex equilibria.
+
+The cultural reproduction of matching systems---their persistence across
+generations---is guaranteed by composition-preservation
+(Theorem~\ref{thm:comp-preserves}).  If this generation's matches are
+compatible, then the ``offspring'' (compositions) of those matches are also
+compatible with each other.  The matching system reproduces itself through
+algebraic closure.  This is the formal mechanism underlying what Bourdieu
+called \emph{reproduction}: the tendency of social structures to perpetuate
+themselves through the very practices they engender.\footnote{Pierre
+Bourdieu, \textit{La Reproduction} (1970), co-authored with Jean-Claude
+Passeron.}
+
+% ----------------------------------------------------------------
+\section{Conclusion}
+\label{sec:ch12-conclusion}
+% ----------------------------------------------------------------
+
+The matching theory developed in this chapter reveals that cultural
+compatibility---defined as resonance---possesses exactly the algebraic
+properties needed for stable pairing.  Compatibility is reflexive
+(Theorem~\ref{thm:self-compat}), symmetric
+(Theorem~\ref{thm:compat-symm}), and preserved under composition
+(Theorem~\ref{thm:comp-preserves}).  These are not accidental features but
+structural necessities: without them, the kinship systems catalogued by
+Lévi-Strauss, the gift economies described by Mauss, and the patron--client
+networks analyzed by Bourdieu would lack the algebraic foundation to persist
+across generations.
+
+Quality bounds (Theorem~\ref{thm:quality-bound}) ensure that no match
+produces unbounded cultural synthesis, and void-match results
+(Theorems~\ref{thm:void-quality-right}--\ref{thm:void-void}) establish the
+baseline against which all exchange is measured.  In the next chapter, we
+move from dyadic matching to \emph{coalitional} composition: the
+cooperative game theory of cultural groups, formalized through Durkheim's
+concept of solidarity.

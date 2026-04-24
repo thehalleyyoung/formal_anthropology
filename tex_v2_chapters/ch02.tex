@@ -1,0 +1,686 @@
+% ================================================================
+% CHAPTER 2: RESONANCE AS INNER PRODUCT
+% ================================================================
+\chapter{Resonance as Inner Product}
+\label{ch:resonance}
+
+\epigraph{A sign is something by knowing which we know something more.}{Charles Sanders Peirce, \textit{Collected Papers}, 8.332}
+
+\section{From Binary Resonance to Quantitative Resonance}
+
+In IDT~v1, resonance was a binary relation: two ideas either resonate ($a \res
+b$) or they do not. This captured the \emph{existence} of intellectual affinity
+but not its \emph{degree}. The passage to IDT~v2 replaces this binary relation
+with a real-valued function --- the \textbf{resonance strength} --- defined as
+the inner product of the embedded vectors.
+
+\begin{definition}[Resonance Strength]
+\label{def:resonance-strength}
+The \textbf{resonance strength} between ideas $a$ and $b$ is:
+\[
+  \rs{a}{b} \;:=\; \ip{\embed{a}}{\embed{b}}_\Hspace.
+\]
+\end{definition}
+
+This definition inherits all the properties of the inner product, which we now
+develop systematically.
+
+
+\section{Fundamental Properties of Resonance}
+
+\begin{theorem}[Symmetry of Resonance]
+\label{thm:resonance-symmetry}
+For all ideas $a, b \in \IS$:
+\[
+  \rs{a}{b} = \rs{b}{a}.
+\]
+\end{theorem}
+
+\begin{proof}
+This follows immediately from the symmetry of the real inner product:
+\[
+  \rs{a}{b} = \ip{\embed{a}}{\embed{b}} = \ip{\embed{b}}{\embed{a}} = \rs{b}{a}.
+\]
+In Lean~4:
+\begin{lstlisting}
+theorem rs_symm (a b : Idea) : rs a b = rs b a := by
+  simp [rs, real_inner_comm]
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Mutuality of Resonance]
+\label{interp:mutuality}
+The symmetry of resonance is a mathematical expression of a deep philosophical
+principle: \emph{intellectual affinity is mutual}. If idea $a$ resonates with
+idea $b$, then $b$ resonates equally with $a$. Darwin's theory resonates with
+Wallace's just as much as Wallace's resonates with Darwin's. This is not
+trivially true in all frameworks: in a directed model of ``influence,'' the
+relationship might be asymmetric (Darwin influenced Wallace more than Wallace
+influenced Darwin). But resonance, as we define it, is not influence --- it
+is \emph{structural affinity}, and structural affinity is inherently symmetric.
+
+In Bourdieu's sociology, this corresponds to the observation that cultural
+capital is not merely possessed but \emph{recognized}: agent $A$'s recognition
+of $B$'s cultural standing is necessarily reciprocated by $B$'s recognition of
+$A$'s, at least at the structural level. The asymmetries of power and prestige
+are modeled not by asymmetric resonance but by differences in \emph{norm} (some
+ideas carry more weight than others) and by differences in \emph{strategic
+position} (some agents occupy more favorable positions in the communication
+game).
+\end{interpretation}
+
+\begin{theorem}[Self-Resonance]
+\label{thm:self-resonance}
+For any idea $a \in \IS$:
+\[
+  \rs{a}{a} = \nrm{\embed{a}}^2 \geq 0,
+\]
+with equality if and only if $\embed{a} = 0$ (i.e., $a$ is synonymous with
+$\void$ in the embedding).
+\end{theorem}
+
+\begin{proof}
+$\rs{a}{a} = \ip{\embed{a}}{\embed{a}} = \nrm{\embed{a}}^2$ by definition of
+the norm. Non-negativity and the characterization of equality follow from the
+axioms of an inner product space.
+
+In Lean~4:
+\begin{lstlisting}
+theorem rs_self_nonneg (a : Idea) : 0 ≤ rs a a := by
+  simp [rs, inner_self_nonneg]
+
+theorem rs_self_eq_zero_iff (a : Idea) :
+    rs a a = 0 ↔ φ a = 0 := by
+  simp [rs, inner_self_eq_zero]
+\end{lstlisting}
+\end{proof}
+
+\begin{definition}[Norm of an Idea]
+\label{def:idea-norm}
+The \textbf{norm} (or \textbf{weight}) of an idea $a$ is:
+\[
+  \nrm{a}_\IS \;:=\; \nrm{\embed{a}}_\Hspace = \sqrt{\rs{a}{a}}.
+\]
+\end{definition}
+
+The norm measures the ``magnitude'' or ``weight'' of an idea in meaning space.
+It is always non-negative, and it equals zero only for ideas that are synonymous
+with the void.
+
+\begin{theorem}[Void Has Zero Resonance]
+\label{thm:void-zero-resonance}
+For all ideas $a \in \IS$:
+\[
+  \rs{\void}{a} = 0 \quad \text{and} \quad \rs{a}{\void} = 0.
+\]
+\end{theorem}
+
+\begin{proof}
+$\rs{\void}{a} = \ip{\embed{\void}}{\embed{a}} = \ip{0}{\embed{a}} = 0$.
+The second equality follows from symmetry, or directly by the same argument
+applied to the second component.
+
+In Lean~4:
+\begin{lstlisting}
+theorem rs_void (a : Idea) : rs void a = 0 := by
+  simp [rs, embed_void, inner_zero_left]
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Silence Resonates with Nothing]
+\label{interp:silence-resonance}
+The void has zero resonance with every idea. This is the mathematical expression
+of a profound truth about silence: genuine silence --- not the pregnant pause or
+the strategic withholding of speech, but the utter absence of ideation --- has
+no intellectual affinity with anything. It neither agrees nor disagrees,
+neither supports nor opposes, neither reinforces nor undermines.
+
+This should be contrasted with \emph{near-void} ideas: ideas of very small norm,
+which are close to silence but not identical with it. A vague platitude, a
+meaningless pleasantry, a formulaic greeting --- these have small norm and
+therefore small resonance with most other ideas, but they are not exactly the
+void. They occupy the neighborhood of the origin in meaning space: the region
+of near-silence, where ideas barely exist as ideas at all.
+
+In the Buddhist tradition, this corresponds to the distinction between
+\emph{\'s\=unyat\=a} (emptiness, the void) and ordinary ignorance. The void is
+not mere absence of knowledge but a positive state of non-ideation --- the zero
+vector, not a small random vector.
+\end{interpretation}
+
+
+\section{The Cauchy--Schwarz Inequality: Limits of Understanding}
+
+The most important inequality in all of functional analysis is the
+Cauchy--Schwarz inequality. In the context of IDT~v2, it becomes a fundamental
+limit on the degree of resonance between ideas.
+
+\begin{theorem}[Cauchy--Schwarz for Resonance]
+\label{thm:cauchy-schwarz}
+For all ideas $a, b \in \IS$:
+\[
+  |\rs{a}{b}|^2 \;\leq\; \rs{a}{a} \cdot \rs{b}{b},
+\]
+or equivalently:
+\[
+  |\rs{a}{b}| \;\leq\; \nrm{\embed{a}} \cdot \nrm{\embed{b}}.
+\]
+Equality holds if and only if $\embed{a}$ and $\embed{b}$ are linearly dependent
+--- i.e., one is a scalar multiple of the other.
+\end{theorem}
+
+\begin{proof}
+This is the Cauchy--Schwarz inequality for the inner product space $\Hspace$,
+applied to the vectors $\embed{a}$ and $\embed{b}$. The proof is standard:
+for any $t \in \mathbb{R}$,
+\[
+  0 \leq \nrm{\embed{a} + t\embed{b}}^2
+  = \nrm{\embed{a}}^2 + 2t\ip{\embed{a}}{\embed{b}} + t^2\nrm{\embed{b}}^2.
+\]
+This is a non-negative quadratic in $t$, so its discriminant is non-positive:
+\[
+  4\ip{\embed{a}}{\embed{b}}^2 - 4\nrm{\embed{a}}^2\nrm{\embed{b}}^2 \leq 0,
+\]
+which gives the result. Equality holds iff the quadratic has a real root, i.e.,
+iff $\embed{a} + t\embed{b} = 0$ for some $t$, i.e., iff $\embed{a}$ and
+$\embed{b}$ are linearly dependent.
+
+In Lean~4:
+\begin{lstlisting}
+theorem cauchy_schwarz_resonance (a b : Idea) :
+    rs a b ^ 2 ≤ rs a a * rs b b := by
+  simp [rs]
+  exact inner_mul_le_norm_mul_sq (φ a) (φ b)
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[The Fundamental Limit on Cross-Cultural Understanding]
+\label{interp:cauchy-schwarz}
+The Cauchy--Schwarz inequality for resonance is arguably the single most
+important result in IDT~v2. It states that the degree of resonance between
+two ideas is bounded above by the product of their individual weights. In
+normalized form:
+\[
+  \frac{|\rs{a}{b}|}{\sqrt{\rs{a}{a}} \cdot \sqrt{\rs{b}{b}}} \;\leq\; 1.
+\]
+This ratio --- the absolute value of the \emph{cosine similarity} between
+$\embed{a}$ and $\embed{b}$ --- measures the ``purity'' of the resonance:
+how much of each idea's weight is involved in the resonance with the other.
+The bound says that this purity can never exceed $1$, and it reaches $1$
+only when the ideas are ``parallel'' --- pointing in the same (or exactly
+opposite) direction in meaning space.
+
+In cultural terms, this is a mathematical limit on cross-cultural understanding.
+No matter how empathetic, how scholarly, how committed to understanding another
+culture you are, the degree to which your ideas can resonate with theirs is
+bounded by the product of your respective cultural weights. And this bound is
+tight only when your ideas are ``parallel'' to theirs --- when you are, in some
+sense, already thinking in the same direction.
+
+This formalizes a version of Kuhn's thesis of paradigm incommensurability, but
+with an important refinement. Kuhn claimed that scientists working in different
+paradigms cannot fully understand each other. The Cauchy--Schwarz inequality
+agrees --- but it quantifies the degree of mutual understanding, rather than
+treating incommensurability as an all-or-nothing phenomenon. Two paradigms can
+have small but non-zero resonance, corresponding to partial but incomplete
+mutual understanding. And the bound tells us exactly how much resonance is
+possible given the ``weights'' of the two paradigms.
+
+The equality case is also illuminating. Maximum resonance occurs when
+$\embed{a} = \lambda \embed{b}$ for some scalar $\lambda$. In cultural terms,
+this means that full mutual understanding requires the ideas to be ``parallel''
+--- they must point in the same direction in meaning space, differing only in
+magnitude. This is the formal counterpart of the hermeneutic insight that
+understanding requires a ``fusion of horizons'' (Gadamer): you can fully
+understand another's idea only when your own idea is already oriented in the
+same direction.
+\end{interpretation}
+
+
+\section{Normalized Resonance and Cosine Similarity}
+
+The Cauchy--Schwarz inequality motivates the following normalization.
+
+\begin{definition}[Normalized Resonance]
+\label{def:normalized-resonance}
+For ideas $a, b \in \IS$ with $\embed{a} \neq 0$ and $\embed{b} \neq 0$,
+the \textbf{normalized resonance} (or \textbf{cosine similarity}) is:
+\[
+  \hat{r}(a, b) \;:=\; \frac{\rs{a}{b}}{\nrm{\embed{a}} \cdot \nrm{\embed{b}}}
+  \;=\; \frac{\ip{\embed{a}}{\embed{b}}}{\nrm{\embed{a}} \cdot \nrm{\embed{b}}}.
+\]
+\end{definition}
+
+\begin{proposition}[Range of Normalized Resonance]
+\label{prop:normalized-range}
+For non-void ideas $a$ and $b$:
+\[
+  -1 \;\leq\; \hat{r}(a, b) \;\leq\; 1.
+\]
+Moreover:
+\begin{enumerate}
+\item $\hat{r}(a, b) = 1$ if and only if $\embed{a}$ and $\embed{b}$ are
+positive scalar multiples of each other (``perfect alignment'');
+\item $\hat{r}(a, b) = -1$ if and only if $\embed{a}$ and $\embed{b}$ are
+negative scalar multiples of each other (``perfect opposition'');
+\item $\hat{r}(a, b) = 0$ if and only if $\embed{a} \perp \embed{b}$
+(``complete independence'').
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The bounds follow from the Cauchy--Schwarz inequality (Theorem~\ref{thm:cauchy-schwarz}).
+The characterizations of the extreme cases follow from the equality conditions
+of Cauchy--Schwarz and the definition of orthogonality.
+\end{proof}
+
+\begin{interpretation}[The Resonance Spectrum]
+\label{interp:spectrum}
+The normalized resonance $\hat{r}(a, b) \in [-1, 1]$ provides a complete
+spectrum of intellectual relationships:
+
+\begin{center}
+\begin{tabular}{cl}
+\textbf{Value} & \textbf{Interpretation} \\
+\hline
+$+1$ & Perfect alignment: ideas say the ``same thing'' (up to emphasis) \\
+$(0, 1)$ & Partial agreement: ideas point in roughly the same direction \\
+$0$ & Independence: ideas are about completely unrelated topics \\
+$(-1, 0)$ & Partial conflict: ideas point in roughly opposite directions \\
+$-1$ & Perfect opposition: ideas are exactly contradictory \\
+\end{tabular}
+\end{center}
+
+This spectrum is richer than both the binary resonance of IDT~v1 (which
+conflates all positive values into ``resonates'' and treats zero and negative
+values as ``does not resonate'') and the informal language of intellectual
+discourse (which typically distinguishes only between ``agreement,''
+``disagreement,'' and ``irrelevance'').
+
+The cosine similarity formulation also connects IDT~v2 to the vast literature
+on distributional semantics and information retrieval, where cosine similarity
+is the standard measure of semantic relatedness between text vectors. In that
+literature, the cosine similarity between two document vectors measures how much
+they are ``about the same thing.'' IDT~v2 elevates this computational technique
+to a principled theoretical framework.
+\end{interpretation}
+
+
+\section{Bilinearity and the Algebra of Resonance}
+
+The inner product is bilinear: linear in each argument separately. This gives
+resonance a rich algebraic structure.
+
+\begin{theorem}[Bilinearity of Resonance]
+\label{thm:bilinearity}
+For all ideas $a, b, c \in \IS$:
+\begin{enumerate}
+\item $\rs{a \compose b}{c} = \rs{a}{c} + \rs{b}{c}$ \hfill
+(left-additivity)
+\item $\rs{c}{a \compose b} = \rs{c}{a} + \rs{c}{b}$ \hfill
+(right-additivity)
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+For (1):
+\begin{align*}
+  \rs{a \compose b}{c}
+  &= \ip{\embed{a \compose b}}{\embed{c}} \\
+  &= \ip{\embed{a} + \embed{b}}{\embed{c}} \\
+  &= \ip{\embed{a}}{\embed{c}} + \ip{\embed{b}}{\embed{c}} \\
+  &= \rs{a}{c} + \rs{b}{c}.
+\end{align*}
+Part (2) follows by symmetry, or by the same argument using linearity in the
+second component.
+
+In Lean~4:
+\begin{lstlisting}
+theorem rs_bilinear_left (a b c : Idea) :
+    rs (a ∘ b) c = rs a c + rs b c := by
+  simp [rs, embed_compose, inner_add_left]
+\end{lstlisting}
+\end{proof}
+
+\begin{corollary}[Resonance of Compositions]
+\label{cor:resonance-compositions}
+For ideas $a, b, c, d \in \IS$:
+\[
+  \rs{a \compose b}{c \compose d}
+  = \rs{a}{c} + \rs{a}{d} + \rs{b}{c} + \rs{b}{d}.
+\]
+\end{corollary}
+
+\begin{proof}
+Apply left-additivity, then right-additivity to each term:
+\begin{align*}
+  \rs{a \compose b}{c \compose d}
+  &= \rs{a}{c \compose d} + \rs{b}{c \compose d} \\
+  &= \rs{a}{c} + \rs{a}{d} + \rs{b}{c} + \rs{b}{d}.
+\end{align*}
+\end{proof}
+
+\begin{interpretation}[The Resonance Decomposition]
+\label{interp:decomposition}
+Corollary~\ref{cor:resonance-compositions} says that the resonance between two
+composite ideas decomposes into a sum of ``pairwise'' resonances between their
+components. The resonance between ``democratic socialism'' and ``market
+liberalism'' is the sum of four terms: democracy--markets, democracy--liberalism,
+socialism--markets, and socialism--liberalism. Each pair contributes independently
+to the total resonance.
+
+This decomposition has important implications for \emph{coalition politics}.
+When two political ideologies are composites of several component ideas, their
+mutual resonance depends on all pairwise interactions between components. A
+coalition is stable when the sum is positive (overall resonance) and unstable
+when it is negative (overall conflict). The decomposition shows exactly which
+pairwise interactions are contributing to or detracting from the coalition.
+
+More abstractly, the bilinearity of resonance means that the resonance function
+$\rs{\cdot}{\cdot}$ is a \emph{bilinear form} on the image of $\varphi$. This
+places IDT~v2 squarely within the classical theory of quadratic forms, with all
+the algebraic machinery that entails: diagonalization, signature, index, and
+Witt equivalence. The spectral theory developed in Chapter~\ref{ch:spectral}
+exploits this connection systematically.
+\end{interpretation}
+
+
+\section{Resonance and the Riesz Representation Theorem}
+
+The Riesz representation theorem states that every continuous linear functional
+on a Hilbert space is represented by inner product with a unique vector. In
+IDT~v2, this has a beautiful interpretation.
+
+\begin{proposition}[Ideas as Linear Functionals]
+\label{prop:riesz}
+Each idea $c \in \IS$ defines a linear functional $\ell_c : \Hspace \to
+\mathbb{R}$ by $\ell_c(v) := \ip{v}{\embed{c}}$. By the Riesz representation
+theorem, $\ell_c$ is the unique continuous linear functional represented by the
+vector $\embed{c}$.
+\end{proposition}
+
+\begin{proof}
+The map $v \mapsto \ip{v}{\embed{c}}$ is clearly linear and continuous (by
+Cauchy--Schwarz). The Riesz representation theorem asserts that this is the
+\emph{only} way to define a continuous linear functional on $\Hspace$: every
+such functional has the form $v \mapsto \ip{v}{w}$ for a unique $w \in \Hspace$.
+\end{proof}
+
+\begin{interpretation}[Ideas as Evaluation Functions]
+\label{interp:riesz}
+The Riesz representation establishes a profound duality: an idea is
+simultaneously a \emph{point} in meaning space (the vector $\embed{c}$) and an
+\emph{evaluation function} on meaning space (the functional $\ell_c$). As a
+point, the idea has a location, a direction, and a magnitude. As a functional,
+the idea evaluates other meanings, assigning each a real-valued ``score'' ---
+the resonance strength.
+
+This duality is deeply Peircean. In Peirce's semiotics, a sign has three
+aspects: the \emph{representamen} (the sign-vehicle), the \emph{object} (what
+the sign refers to), and the \emph{interpretant} (the effect of the sign on an
+interpreter). The vector $\embed{c}$ corresponds to the representamen (the sign
+as a mathematical object); the functional $\ell_c$ corresponds to the
+interpretant (the sign's capacity to evaluate and be evaluated by other signs).
+The object is the ``external reality'' to which the sign refers, which IDT~v2
+does not model directly --- it models only the relationships \emph{among} signs.
+
+The Riesz representation also connects to Bourdieu's theory of cultural capital.
+Bourdieu argued that cultural objects function simultaneously as ``things'' (with
+intrinsic properties) and as ``instruments of distinction'' (used to evaluate
+and classify other agents). An artwork is both an object in a gallery and a
+criterion of taste. A philosophical theory is both a set of propositions and a
+standard against which other theories are judged. The point-functional duality
+of the Hilbert space model captures this double character precisely.
+\end{interpretation}
+
+
+\section{Peirce's Semiotics and the Three Types of Resonance}
+
+Charles Sanders Peirce distinguished three types of signs based on the
+relationship between the sign and its object:
+
+\begin{itemize}
+\item \textbf{Icons}: signs that resemble their objects (a portrait, a map, a
+diagram);
+\item \textbf{Indices}: signs that are causally connected to their objects
+(smoke as a sign of fire, a weathervane as a sign of wind direction);
+\item \textbf{Symbols}: signs whose relationship to their objects is purely
+conventional (words, mathematical symbols, traffic lights).
+\end{itemize}
+
+In IDT~v2, these three types of signs correspond to three sources of resonance.
+
+\begin{definition}[Iconic, Indexical, and Symbolic Resonance]
+\label{def:peirce-resonance}
+Let $a, b \in \IS$ be ideas with $\rs{a}{b} \neq 0$. We say the resonance is:
+\begin{itemize}
+\item \textbf{Iconic} if $\embed{a}$ and $\embed{b}$ are close in direction
+(small angle), reflecting structural similarity in meaning;
+\item \textbf{Indexical} if the resonance arises from ideas that co-occur
+in the same contexts (occupying similar regions of $\Hspace$ due to shared
+contextual features);
+\item \textbf{Symbolic} if the resonance is the result of conventional
+association --- the embedding $\varphi$ maps them to correlated vectors by
+cultural convention rather than structural necessity.
+\end{itemize}
+\end{definition}
+
+\begin{interpretation}[The Sources of Meaning]
+\label{interp:peirce}
+This classification reveals that the inner product $\rs{a}{b}$ aggregates
+multiple sources of meaning-relatedness into a single number. Iconic resonance
+reflects inherent structural similarity (``democracy'' resonates with
+``republic'' because the concepts share structural features). Indexical resonance
+reflects contextual co-occurrence (``smoke'' resonates with ``fire'' because
+they appear in the same situations). Symbolic resonance reflects arbitrary
+convention (``dog'' resonates with ``loyalty'' in English-language cultural
+context, but this resonance is conventional, not structural or causal).
+
+The Hilbert space model does not distinguish among these sources --- they all
+contribute to the same inner product. This is both a strength (it provides a
+unified measure of meaning-relatedness) and a limitation (it cannot tell us
+\emph{why} two ideas resonate). Future extensions of IDT~v2 might decompose
+$\Hspace$ into ``iconic,'' ``indexical,'' and ``symbolic'' subspaces, with
+the total resonance being the sum of projections onto each.
+
+The Peircean trichotomy also suggests that the embedding $\varphi$ is not
+unique: different embedding choices emphasize different sources of resonance.
+A ``structural'' embedding (emphasizing logical relationships) would maximize
+iconic resonance; a ``distributional'' embedding (emphasizing co-occurrence)
+would maximize indexical resonance; a ``cultural'' embedding (emphasizing
+conventional associations) would maximize symbolic resonance. Each embedding
+captures a different aspect of meaning, and the full picture requires
+considering multiple embeddings simultaneously --- a theme we return to in
+Chapter~\ref{ch:spectral}.
+\end{interpretation}
+
+
+\section{The Polarization Identity}
+
+The inner product and the norm are related by the \emph{polarization identity},
+which allows us to express resonance in terms of distances.
+
+\begin{theorem}[Polarization Identity for Resonance]
+\label{thm:polarization}
+For all ideas $a, b \in \IS$:
+\[
+  \rs{a}{b} = \frac{1}{2}\left(
+    \nrm{\embed{a} + \embed{b}}^2 - \nrm{\embed{a}}^2 - \nrm{\embed{b}}^2
+  \right)
+  = \frac{1}{2}\left(
+    \rs{a \compose b}{a \compose b} - \rs{a}{a} - \rs{b}{b}
+  \right).
+\]
+\end{theorem}
+
+\begin{proof}
+Expanding:
+\begin{align*}
+  \nrm{\embed{a} + \embed{b}}^2
+  &= \ip{\embed{a} + \embed{b}}{\embed{a} + \embed{b}} \\
+  &= \nrm{\embed{a}}^2 + 2\ip{\embed{a}}{\embed{b}} + \nrm{\embed{b}}^2 \\
+  &= \nrm{\embed{a}}^2 + 2\rs{a}{b} + \nrm{\embed{b}}^2.
+\end{align*}
+Solving for $\rs{a}{b}$ gives the result. The second form uses $\nrm{\embed{a}
++ \embed{b}}^2 = \nrm{\embed{a \compose b}}^2 = \rs{a \compose b}{a \compose
+b}$.
+
+In Lean~4:
+\begin{lstlisting}
+theorem polarization_resonance (a b : Idea) :
+    rs a b = (rs (a ∘ b) (a ∘ b) - rs a a - rs b b) / 2 := by
+  simp [rs, embed_compose, inner_add_left, inner_add_right]
+  ring
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Resonance from Observables]
+\label{interp:polarization}
+The polarization identity has a remarkable practical consequence: it shows that
+resonance between two ideas can be \emph{computed} from three self-resonance
+measurements. If you can measure the ``weight'' of idea $a$ alone, the weight
+of idea $b$ alone, and the weight of their composition $a \compose b$, then you
+can compute their resonance:
+\[
+  \rs{a}{b} = \frac{\rs{a \compose b}{a \compose b} - \rs{a}{a} - \rs{b}{b}}{2}.
+\]
+This is analogous to measuring the gravitational force between two masses by
+observing their combined motion rather than directly detecting the force.
+
+In empirical applications, self-resonance might be measured as the ``cultural
+weight'' or ``salience'' of an idea --- how much attention it commands, how
+frequently it is discussed, how strongly people feel about it. The polarization
+identity then says: the resonance between two ideas can be inferred from the
+salience of each idea separately and the salience of their combination. If
+combining two ideas produces a composite with more salience than the sum of the
+parts, the ideas have positive resonance (they reinforce each other). If the
+composite has less salience, the resonance is negative (they partially cancel).
+
+This provides a potentially \emph{testable} prediction of IDT~v2: the
+``cultural salience'' of a composite idea should differ from the sum of the
+component saliences by exactly twice the resonance. Any systematic deviation
+from this prediction would indicate a failure of the additivity axiom --- a
+non-linearity in how ideas combine.
+\end{interpretation}
+
+
+\section{Self-Resonance as Conviction}
+
+Self-resonance deserves special attention, as it plays a central role in the
+game theory of meaning (Part~II).
+
+\begin{definition}[Conviction]
+\label{def:conviction}
+The \textbf{conviction} of an idea $a$ is its self-resonance:
+\[
+  \kappa(a) \;:=\; \rs{a}{a} = \nrm{\embed{a}}^2.
+\]
+\end{definition}
+
+\begin{proposition}[Properties of Conviction]
+\label{prop:conviction}
+Conviction satisfies:
+\begin{enumerate}
+\item $\kappa(a) \geq 0$ for all $a$, with $\kappa(a) = 0$ iff $a
+\equiv_\varphi \void$.
+\item $\kappa(a \compose b) = \kappa(a) + \kappa(b) + 2\rs{a}{b}$.
+\item $\kappa(a^{\langle n \rangle}) = n^2 \kappa(a)$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) follows from the positivity of the inner product. For (2):
+\begin{align*}
+  \kappa(a \compose b)
+  &= \nrm{\embed{a} + \embed{b}}^2 \\
+  &= \nrm{\embed{a}}^2 + 2\ip{\embed{a}}{\embed{b}} + \nrm{\embed{b}}^2 \\
+  &= \kappa(a) + 2\rs{a}{b} + \kappa(b).
+\end{align*}
+(3) follows from Corollary~\ref{cor:self-resonance-iterated} in
+Chapter~\ref{ch:geometry}.
+\end{proof}
+
+\begin{interpretation}[Conviction and Composition]
+\label{interp:conviction}
+The formula $\kappa(a \compose b) = \kappa(a) + \kappa(b) + 2\rs{a}{b}$ reveals
+a non-trivial interaction between conviction and resonance. When you combine two
+ideas that have positive resonance ($\rs{a}{b} > 0$), the conviction of the
+composite exceeds the sum of the individual convictions. Reinforcing ideas
+produce more conviction than they carry separately --- a phenomenon familiar
+from political rhetoric, where combining multiple aligned messages produces a
+``bandwagon effect'' that exceeds what any individual message would achieve.
+
+Conversely, when the resonance is negative ($\rs{a}{b} < 0$), the composite has
+\emph{less} conviction than the sum of the parts. This is the formal expression
+of \emph{cognitive dissonance}: holding two conflicting beliefs simultaneously
+reduces one's overall conviction. If the conflict is severe enough
+($\rs{a}{b} < -(\kappa(a) + \kappa(b))/2$, which is impossible by
+Cauchy--Schwarz unless the norms are equal and the ideas are anti-parallel),
+the composite conviction approaches zero.
+
+The quadratic growth $\kappa(a^{\langle n \rangle}) = n^2 \kappa(a)$ means that
+conviction grows super-linearly with repetition. This is the ``echo chamber''
+effect: an idea repeated within an insular community gains disproportionate
+conviction, not because of any evidence or argument, but simply because the
+vector gets longer with each repetition, and conviction is the \emph{square}
+of the length.
+\end{interpretation}
+
+\begin{example}[Resonance in Political Discourse]
+\label{ex:political-resonance}
+Consider three political ideas embedded in $\mathbb{R}^3$:
+\begin{align*}
+  \embed{\text{equality}} &= (3, 0, 1), \\
+  \embed{\text{liberty}} &= (2, 2, 0), \\
+  \embed{\text{order}} &= (0, -1, 3).
+\end{align*}
+The resonance matrix is:
+\[
+  \begin{pmatrix}
+    \rs{\text{eq}}{\text{eq}} & \rs{\text{eq}}{\text{lib}} &
+    \rs{\text{eq}}{\text{ord}} \\
+    \rs{\text{lib}}{\text{eq}} & \rs{\text{lib}}{\text{lib}} &
+    \rs{\text{lib}}{\text{ord}} \\
+    \rs{\text{ord}}{\text{eq}} & \rs{\text{ord}}{\text{lib}} &
+    \rs{\text{ord}}{\text{ord}}
+  \end{pmatrix}
+  =
+  \begin{pmatrix}
+    10 & 6 & 3 \\
+    6 & 8 & -2 \\
+    3 & -2 & 10
+  \end{pmatrix}.
+\]
+Equality and liberty resonate positively (6), but liberty and order have
+negative resonance ($-2$): they are in mild tension. Equality and order have
+moderate positive resonance (3). The ideology ``liberty + order'' has conviction
+$8 + 10 + 2(-2) = 14$, while ``equality + liberty'' has conviction
+$10 + 8 + 2(6) = 30$. The reinforcing pair produces more than twice the
+conviction of the conflicting pair.
+\end{example}
+
+\begin{example}[Cosine Similarity in Distributional Semantics]
+\label{ex:cosine}
+In computational linguistics, word2vec embeddings yield cosine similarities such
+as:
+\begin{align*}
+  \hat{r}(\text{king}, \text{queen}) &\approx 0.73, \\
+  \hat{r}(\text{king}, \text{woman}) &\approx 0.32, \\
+  \hat{r}(\text{king}, \text{potato}) &\approx 0.04.
+\end{align*}
+The IDT~v2 framework provides a principled interpretation of these numbers:
+king and queen are highly resonant (closely aligned in meaning space), king and
+woman are moderately resonant (sharing some semantic features but differing in
+others), and king and potato are nearly orthogonal (semantically unrelated). The
+inner product gives a quantitative measure of what distributional semantics
+discovers empirically.
+\end{example}
+
+\bigskip
+
+This chapter has established resonance as the inner product of embedded ideas,
+developed its fundamental properties, and connected it to semiotics, cultural
+theory, and distributional semantics. In Chapter~\ref{ch:metric}, we derive the
+metric structure that the inner product induces on the space of ideas --- the
+\emph{distance} between ideas, which will give precise mathematical content to
+notions of intellectual proximity and paradigmatic incommensurability.

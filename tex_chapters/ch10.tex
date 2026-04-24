@@ -1,0 +1,485 @@
+% =============================================================
+%  Chapter 10 — Multi-Receiver Signalling and Public Ritual
+%  Lean source: FormalAnthropology/IDT_Signal_Ch10.lean
+% =============================================================
+\chapter{Multi-Receiver Signalling and Public Ritual}
+\label{ch:multireceiver}
+
+\epigraph{%
+  ``The culture of a people is an ensemble of texts, themselves ensembles,
+  which the anthropologist strains to read over the shoulders of those to
+  whom they properly belong.''}%
+  {Clifford Geertz, \textit{The Interpretation of Cultures} (1973)}
+
+% ----------------------------------------------------------------
+\section{Introduction: One Ritual, Many Minds}
+\label{sec:mr-intro}
+
+The defining feature of public ritual is that the \emph{same} signal is
+sent to \emph{multiple} receivers with \emph{different} cultural
+backgrounds.  A Catholic mass is witnessed simultaneously by the devout
+grandmother who has attended every Sunday for sixty years, the skeptical
+teenager dragged along by family obligation, and the visiting anthropologist
+scribbling field notes.  Each receives the same sensory input; each produces
+a radically different interpretation.
+
+Clifford Geertz captured this multiplicity in his concept of ``thick
+description'': the same cockfight in Bali means ``gambling'' to one
+observer, ``status contest'' to another, ``art'' to a third, and ``data''
+to the ethnographer.\footnote{Geertz, C., ``Deep Play: Notes on the
+Balinese Cockfight,'' in \textit{The Interpretation of Cultures} (Basic
+Books, 1973), pp.~412--453.}  Victor Turner extended the insight to ritual
+proper: the same ceremony of \emph{Nkang'a} among the Ndembu produces
+different (but structurally related) experiences in initiands, elders, and
+spectators.\footnote{Turner, V., \textit{The Forest of Symbols: Aspects of
+Ndembu Ritual} (Cornell, 1967).}
+
+The previous chapters studied signalling to a \emph{single} receiver.  This
+chapter generalizes to the multi-receiver case.  We define an
+\emph{audience}---a list of repertoires, each representing a different
+mind---and study what happens when a single signal is broadcast to the
+entire audience simultaneously.
+
+The central anthropological insight is that public ritual \emph{works} not
+because everyone gets the same meaning, but because everyone gets
+\emph{resonant} meanings.  The grandmother, the teenager, and the
+anthropologist all experience something structurally related---though not
+identical---because resonance is preserved under composition with a common
+signal.  This is the formal foundation of Durkheim's \emph{conscience
+collective}: shared ritual produces shared structure, not shared content.
+
+
+% ================================================================
+\section{Core Definitions}
+\label{sec:mr-defs}
+
+\begin{definition}[Audience]
+\label{def:audience}
+An \emph{audience} is a list of repertoires:
+\[
+  \mathrm{Audience}(\IS) \;=\; \mathrm{List}(\mathrm{Repertoire}(\IS))
+  \;=\; \mathrm{List}(\mathrm{List}\;\IS).
+\]
+Each element represents one mind's stock of ideas.  The audience is
+heterogeneous: different minds may have different numbers of ideas and
+different depths.
+\end{definition}
+
+\begin{definition}[Audience Outcome]
+\label{def:audience-outcome}
+The \emph{audience outcome} of sending signal $s$ to audience
+$A = [R_1,\ldots,R_m]$ is the list of interpretation lists:
+\[
+  \mathrm{audienceOutcome}(A, s) \;=\;
+  [\mathrm{interpret}(R_1,s),\;\ldots,\;\mathrm{interpret}(R_m,s)].
+\]
+\end{definition}
+
+\begin{lstlisting}[caption={Audience and audience outcome in Lean~4.}]
+abbrev Audience (I : Type*) := List (Repertoire I)
+
+def audienceOutcome
+    (audience : Audience I) (s : I) : List (List I) :=
+  audience.map (fun rep => interpret rep s)
+\end{lstlisting}
+
+\begin{definition}[Total Audience Depth]
+\label{def:total-audience-depth}
+The \emph{total audience depth} of an outcome is the sum of all depth sums
+across all minds:
+\[
+  \mathrm{totalAudienceDepth}(\mathit{outcomes}) \;=\;
+  \sum_{i}\;\mathrm{depthSum}(\mathit{outcomes}_i).
+\]
+\end{definition}
+
+
+% ================================================================
+\section{Structural Invariants}
+\label{sec:mr-structure}
+
+The first group of theorems establishes that the multi-receiver operation
+preserves the fundamental structural properties of signalling.
+
+\begin{theorem}[Audience Size Preservation (10.1)]
+\label{thm:audience-size}
+$|\mathrm{audienceOutcome}(A, s)| = |A|.$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\mathrm{audienceOutcome}$ is a \texttt{List.map}, which preserves length.
+\end{proof}
+
+A public ritual has exactly as many ``experiences'' as there are
+participants.  No ghost observers, no merged consciousnesses---each mind
+is counted exactly once.  This is a non-trivial modeling choice: it rules
+out ``collective consciousness'' as a separate entity above and beyond the
+individual minds.%
+\footnote{Durkheim's \emph{conscience collective} is often misread as
+positing a supra-individual mind.  In IDT, collective consciousness is
+emergent: it is the structural similarity (resonance) among individual
+outcomes, not a separate entity.}
+
+\begin{theorem}[Per-Receiver Interpretation Count (10.2)]
+\label{thm:per-receiver-count}
+$|\mathrm{interpret}(R, s)| = |R|.$
+\end{theorem}
+
+Each mind produces exactly as many interpretations as it has ideas in its
+repertoire.  A five-category mind produces five interpretations; a
+fifty-category mind produces fifty.  The signal doesn't create or destroy
+ideas---it transforms each one.
+
+\begin{theorem}[Same Signal Different Minds --- Length Preserved (10.3)]
+\label{thm:same-signal-different}
+For any audience member $R\in A$:
+$|\mathrm{interpret}(R, s)| = |R|.$
+\end{theorem}
+
+The ``same ceremony, different meanings'' principle: each participant brings
+their own framework and gets their own number of meanings, determined by
+\emph{their} background, not the signal.  A child at a symphony may have
+three categories (``loud,'' ``soft,'' ``boring''); a musicologist may have
+three hundred.  The symphony produces three interpretations for the child
+and three hundred for the musicologist.
+
+
+% ================================================================
+\section{Void Signal: Universal Transparency}
+\label{sec:mr-void}
+
+\begin{theorem}[Void Signal Transparent For Single Receiver (10.4)]
+\label{thm:void-transparent-single}
+$\mathrm{interpret}(R, \void) = R.$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $R$.  For each idea $r$, $r\compose\void = r$ by the
+right-identity axiom.
+\end{proof}
+
+Silence leaves every mind unchanged.  The minute of silence, the Quaker
+meeting, the Buddhist \emph{noble silence}---all exploit this: by saying
+nothing, every participant's existing worldview remains intact.  Silence
+is the only signal that is universally transparent.
+
+\begin{theorem}[Void Signal Transparent For All Audiences (10.5)]
+\label{thm:void-transparent-audience}
+$\mathrm{audienceOutcome}(A, \void) = A.$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on the audience list.  Each repertoire maps to itself
+by Theorem~\ref{thm:void-transparent-single}.
+\end{proof}
+
+Universal transparency of silence is the formal foundation of the ``null
+ritual''---a ceremony that changes nothing.  Every culture has such
+ceremonies: they serve social functions (marking solidarity, observing
+convention) without altering anyone's ideas.  The formal result shows that
+void is the \emph{unique} signal with this property (assuming the repertoire
+is non-trivially structured).
+
+\begin{lstlisting}[caption={Void transparency for audiences in Lean~4.}]
+theorem void_transparent_audience (audience : Audience I) :
+    audienceOutcome audience (IdeaticSpace.void : I)
+      = audience
+\end{lstlisting}
+
+
+% ================================================================
+\section{Depth Bounds Across Audiences}
+\label{sec:mr-depth}
+
+\begin{theorem}[Single Receiver Depth Bound (10.6)]
+\label{thm:single-receiver-depth}
+\[
+  \mathrm{depthSum}(\mathrm{interpret}(R, s))
+  \;\le\;
+  \mathrm{depthSum}(R) + |R|\cdot\depth(s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Induction on $R$.  At each step, $\depth(r\compose s)\le\depth(r)+\depth(s)$
+by subadditivity.  Summing over all $|R|$ elements gives the bound.
+\end{proof}
+
+Each audience member's ``persuasion exposure'' is linearly bounded.  This
+extends the persuasion bounds of Chapter~\ref{ch:persuasion} to the
+per-receiver setting: even in a public ritual, each participant's total
+interpretive transformation is bounded by their own cultural depth plus the
+ceremony's complexity.
+
+\begin{theorem}[Audience Depth Bound --- Per Member (10.7)]
+\label{thm:audience-member-depth}
+For each $R\in A$:
+$\mathrm{depthSum}(\mathrm{interpret}(R,s)) \le \mathrm{depthSum}(R)+|R|\cdot\depth(s).$
+\end{theorem}
+
+A PhD and a child at the same concert are both bounded, but differently.
+The PhD's larger repertoire means a larger absolute bound, but the \emph{per-idea}
+bound ($\depth(r)+\depth(s)$ for each schema) is the same.  The signal's
+persuasive impact is democratic in structure but heterogeneous in magnitude.
+
+\begin{theorem}[Empty Audience Has Empty Outcome (10.8)]
+\label{thm:empty-audience}
+$\mathrm{audienceOutcome}([], s) = [].$
+\end{theorem}
+
+A ritual with no participants produces no effects.  Performance requires an
+audience.  This is the formal version of the old question: if a tree falls
+in a forest and no one is there to hear it, does it make a sound?  In IDT:
+if a signal is sent to an empty audience, no interpretations are produced.
+
+\begin{theorem}[Singleton Audience Outcome (10.9)]
+\label{thm:singleton-audience}
+$\mathrm{audienceOutcome}([R], s) = [\mathrm{interpret}(R,s)].$
+\end{theorem}
+
+An audience of one produces exactly one interpretation list.  This is the
+formal model of individual meditation or private prayer: a single mind
+processing a signal in isolation.  It reduces the multi-receiver framework
+to the single-receiver case of Chapters~\ref{ch:equilibrium}--\ref{ch:echo}.
+
+
+% ================================================================
+\section{Resonance Across Audiences}
+\label{sec:mr-resonance}
+
+This section contains the deepest results of the chapter.  Resonance---the
+structural similarity between ideas---propagates through multi-receiver
+signalling in three ways: through resonant signals, through resonant
+receivers, and through the combination of both.
+
+\begin{theorem}[Resonant Signals Same Mind (10.10)]
+\label{thm:resonant-signals-same}
+If $s_1\res s_2$, then for each background idea $r$:
+$r\compose s_1 \res r\compose s_2.$
+\end{theorem}
+
+Christmas and Hanukkah are ``resonant signals''---structurally similar
+festivals involving light, family gathering, and gift-giving.  Each
+participant's experience of one resonates with their experience of the
+other.  This is why comparative religion is intellectually productive: the
+structural similarity of the signals guarantees structural similarity of the
+interpretations, regardless of the receiver's background.
+
+\begin{theorem}[Same Signal Resonant Receivers (10.11)]
+\label{thm:same-signal-resonant}
+If $r_1\res r_2$, then for any signal $s$:
+$r_1\compose s \res r_2\compose s.$
+\end{theorem}
+
+Two members of the same culture (resonant backgrounds) always produce
+resonant interpretations of the same event.  This is Durkheim's
+\emph{conscience collective}: cultural consensus is a structural consequence
+of shared backgrounds.  The theorem gives it precise mathematical content:
+resonant backgrounds + common signal = resonant experiences.%
+\footnote{Durkheim, \'E., \textit{Les Formes \'el\'ementaires de la vie
+religieuse} (1912).  The concept of \emph{conscience collective} has been
+criticized as vague; the resonance theorem provides a formal sharpening.}
+
+\begin{theorem}[Full Resonance: Resonant Receivers + Resonant Signals (10.12)]
+\label{thm:full-resonance}
+If $r_1\res r_2$ and $s_1\res s_2$, then
+$r_1\compose s_1 \res r_2\compose s_2.$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Direct from the resonance-compose axiom: resonance is preserved under
+composition when both components resonate.
+\end{proof}
+
+Members of allied cultures witnessing similar rituals produce resonant
+experiences.  This is Turner's \emph{communitas}: spontaneous solidarity
+arising when similar people undergo similar experiences.  The theorem shows
+that communitas is not mystical---it is a structural consequence of
+resonance preservation under composition.
+
+\begin{theorem}[Self-Resonance of All Audience Outcomes (10.13)]
+\label{thm:audience-self-resonance}
+For each audience member with $r\in R$:
+$r\compose s \res r\compose s.$
+\end{theorem}
+
+Each participant's experience of a ritual is internally consistent,
+regardless of how different participants' experiences are from each other.
+The grandmother's experience is coherent; the teenager's experience is
+coherent; the anthropologist's experience is coherent.  What may not be
+coherent is the \emph{comparison} between them---but that is a question
+about \emph{inter-resonance}, not \emph{self-resonance}.
+
+\begin{lstlisting}[caption={Full resonance theorem in Lean~4.}]
+theorem full_resonance
+    {r_1 r_2 s_1 s_2 : I}
+    (hr : IdeaticSpace.resonates r_1 r_2)
+    (hs : IdeaticSpace.resonates s_1 s_2) :
+    IdeaticSpace.resonates
+      (IdeaticSpace.compose r_1 s_1)
+      (IdeaticSpace.compose r_2 s_2) :=
+  IdeaticSpace.resonance_compose r_1 r_2 s_1 s_2 hr hs
+\end{lstlisting}
+
+
+% ================================================================
+\section{Audience Composition and Merging}
+\label{sec:mr-merging}
+
+\begin{theorem}[Audience Concatenation (10.14)]
+\label{thm:audience-concat}
+\[
+  \mathrm{audienceOutcome}(A_1\!+\!+\!A_2,\; s)
+  \;=\;
+  \mathrm{audienceOutcome}(A_1, s)\!+\!+\;\mathrm{audienceOutcome}(A_2, s).
+\]
+\end{theorem}
+
+Merging two audiences then signalling is the same as signalling each
+audience separately then merging the results.  A joint ceremony for two
+communities (e.g., an interfaith service) produces results that are just the
+concatenation of what each community would have experienced separately.
+
+There is no mysterious ``synergy'' in public ritual---just the union of
+individual experiences.  This is a strong anti-holistic result: it says that
+the collective effect of a public ritual is \emph{decomposable} into
+per-community effects.  Turner's communitas, whatever its phenomenological
+reality, is structurally a concatenation, not a fusion.
+
+\begin{theorem}[Replicated Audience (10.15)]
+\label{thm:replicated-audience}
+An audience of $n$ identical minds produces $n$ identical interpretation lists:
+\[
+  \mathrm{audienceOutcome}(\mathrm{replicate}(n, R),\; s)
+  \;=\;
+  \mathrm{replicate}(n, \mathrm{interpret}(R, s)).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Induction on $n$.  The base case is trivial.  For the inductive step, the
+head of the list is $\mathrm{interpret}(R,s)$, and the tail follows by the
+inductive hypothesis.
+\end{proof}
+
+A perfectly homogeneous community produces perfectly homogeneous responses
+to any signal.  This is the theoretical limit of cultural uniformity---the
+formal ``ideal type'' of a totalitarian society in which every citizen has
+been given the same repertoire.  In practice, no society achieves this: even
+the most totalitarian regimes harbor underground variation.%
+\footnote{On the limits of cultural homogenization in totalitarian states,
+see Fitzpatrick, S., \textit{Everyday Stalinism} (Oxford, 1999);
+Gellately, R., \textit{Backing Hitler} (Oxford, 2001).}
+
+\begin{lstlisting}[caption={Replicated audience in Lean~4.}]
+theorem replicated_audience
+    (rep : Repertoire I) (s : I) (n : ℕ) :
+    audienceOutcome (List.replicate n rep) s =
+    List.replicate n (interpret rep s)
+\end{lstlisting}
+
+
+% ================================================================
+\section{Advanced Multi-Receiver Properties}
+\label{sec:mr-advanced}
+
+\begin{theorem}[Sequential Signal to Audience (10.16)]
+\label{thm:sequential-audience}
+For each audience member:
+$r\compose(s_1\compose s_2) = (r\compose s_1)\compose s_2.$
+\end{theorem}
+
+A two-act ritual (overture + main act) is equivalent to the main act
+performed for an audience that has already absorbed the overture.  The first
+act transforms the audience; the second act addresses the transformed
+audience.  This is the associativity of composition applied to the ritual
+setting, and it justifies the common anthropological practice of analyzing
+multi-phase rituals as sequential transformations of the participants'
+interpretive state.
+
+\begin{theorem}[Void Audience Member is Transparent (10.17)]
+\label{thm:void-audience-member}
+$\mathrm{interpret}([\void], s) = [s].$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\void\compose s = s$ by the left-identity axiom.
+\end{proof}
+
+The ``naive observer'' with no cultural baggage sees the signal as-is.  This
+formalizes the (impossible) ideal of Husserl's \emph{epoch\'e}---bracketing
+all presuppositions to encounter the phenomenon ``as it really is.''  In
+IDT, the void audience member is the formal model of phenomenological
+reduction: a mind with no background that processes signals transparently.
+
+Of course, no real observer achieves this.  Every ethnographer brings a
+repertoire; every scientist brings a paradigm.  The void audience member is
+a limiting case, useful for theoretical analysis but unattainable in
+practice.%
+\footnote{Gadamer's critique of Husserl in \textit{Truth and Method} (1960)
+makes precisely this point: understanding always involves
+\emph{Vorurteile} (pre-judgments), and the attempt to eliminate them is
+itself a pre-judgment.}
+
+\begin{theorem}[Depth Bound for Void Outcome Across Audience (10.18)]
+\label{thm:void-outcome-preserved}
+$\mathrm{depthSum}(\mathrm{interpret}(R, \void)) = \mathrm{depthSum}(R).$
+\end{theorem}
+
+The ``information cost'' of silence is exactly zero for every audience member
+simultaneously.  This is the formal foundation of the \emph{status quo}:
+doing nothing changes nothing for anyone, regardless of their background.
+
+Combined with the audience concatenation theorem
+(Theorem~\ref{thm:audience-concat}), this means that the void signal
+preserves the total audience depth exactly:
+$\mathrm{totalAudienceDepth}(\mathrm{audienceOutcome}(A,\void))
+= \mathrm{totalAudienceDepth}(A)$.
+Silence is cost-free at the individual level \emph{and} at the collective
+level.
+
+\begin{lstlisting}[caption={Void outcome depth preservation in Lean~4.}]
+theorem void_outcome_depth_preserved
+    (rep : Repertoire I) :
+    depthSum (interpret rep (IdeaticSpace.void : I))
+      = depthSum rep
+\end{lstlisting}
+
+
+% ================================================================
+\section{Conclusion}
+\label{sec:mr-conclusion}
+
+This chapter generalized the signalling framework from single receivers to
+heterogeneous audiences, providing formal foundations for the anthropological
+study of public ritual.
+
+The central results are:
+\begin{enumerate}
+  \item \emph{Structural invariance}
+    (Theorems~\ref{thm:audience-size}--\ref{thm:same-signal-different}):
+    audience size and per-receiver interpretation count are preserved.
+  \item \emph{Universal transparency of void}
+    (Theorems~\ref{thm:void-transparent-single}--\ref{thm:void-transparent-audience}):
+    silence changes no one.
+  \item \emph{Resonance propagation}
+    (Theorems~\ref{thm:resonant-signals-same}--\ref{thm:full-resonance}):
+    resonant signals and resonant receivers produce resonant experiences.
+  \item \emph{Decomposability} (Theorem~\ref{thm:audience-concat}):
+    multi-community rituals decompose into per-community effects.
+\end{enumerate}
+
+The theory vindicates Geertz's ``thick description'' program: different
+observers \emph{do} produce different interpretations, but these
+interpretations are structurally related through the resonance relation.
+It formalizes Durkheim's \emph{conscience collective} as resonance among
+individual outcomes, and Turner's \emph{communitas} as the full resonance
+theorem (Theorem~\ref{thm:full-resonance}).
+
+Together, Chapters~\ref{ch:equilibrium}--\ref{ch:multireceiver} provide a
+complete game-theoretic framework for the study of signalling in ideatic
+spaces: from equilibrium existence (Chapter~\ref{ch:equilibrium}) through
+persuasion bounds (Chapter~\ref{ch:persuasion}), lossy reception
+(Chapter~\ref{ch:lossy}), echo chambers (Chapter~\ref{ch:echo}), to the
+multi-receiver case studied here.  The framework is fully formalized in
+Lean~4, with every theorem machine-verified and zero \texttt{sorry} axioms.

@@ -1,0 +1,50 @@
+% Volume 5.2: Ethics (Chapters 11–15)
+% Expanding formal ideatic theory into normative domains
+
+\part{Ethics}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Kant's Categorical Imperative}
+\label{ch:kant}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction: The Moral Law Within}
+
+Kant's ethical project aspires to ground morality in pure practical reason, independent of empirical psychology or teleological ends. The categorical imperative—``Act only according to that maxim whereby you can at the same time will that it should become a universal law''—demands that moral principles be universalizable. In the language of ideatic theory, universalizability is a coherence constraint: an ideatic structure $I$ representing a moral maxim must remain coherent when extended to all agents. This chapter formalizes Kant's insight that moral laws must survive replication without contradiction.
+
+\begin{interpretation}
+The categorical imperative is not merely a test for permissibility; it is a structural condition on ideatic spaces. A maxim is morally permissible iff its formalization in $\IS$ can be cloned to arbitrary cardinality without engendering contradictions or destabilizing the resonance profile. In other words, Kantian morality is the requirement that ethical ideas exhibit a form of \emph{copying stability}.
+\end{interpretation}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Universalizability as Resonance Copying}
+
+Universalizability is a constraint on the \emph{replication dynamics} of ideas. Suppose agent $a$ adopts maxim $M$, formalized as an ideatic structure $I_M \in \IS$. To test universalizability, we clone $I_M$ to all agents and check whether the resulting configuration is coherent.
+
+\begin{definition}[Universalizable Maxim]
+Let $A$ be a set of agents and $I_M$ an ideatic structure representing maxim $M$. We say $M$ is \emph{universalizable} if the ideatic space $\bigoplus_{a \in A} I_M$ is coherent (i.e., satisfies resonance constraints without contradiction).
+\end{definition}
+
+This definition captures Kant's criterion: if everyone acted on $M$, would the moral universe remain consistent? In resonance-theoretic terms, universalizability is stability under arbitrary copying.
+
+\begin{remark}
+The formalization above assumes agents are interchangeable. Kant's moral law abstracts away contingent features of individuals—only the rational will matters. Ideatic universalizability respects this abstraction by treating agents as instances of the same rational structure.
+\end{remark}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Formula of Universal Law}
+
+Kant distinguishes between hypothetical imperatives (conditional on ends) and categorical imperatives (unconditional). A categorical imperative must hold regardless of particular desires. In ideatic terms, a categorical principle is independent of any agent's utility function; it is encoded purely in the topology of the ideatic space.
+
+\begin{theorem}[Categorical Imperative as Fixed Point]
+\textit{(IDT\_v3\_Ethics.lean, line 95)}
+A maxim $M$ satisfies the categorical imperative iff the ideatic structure $I_M$ is a fixed point under universal replication: for all agent sets $A$, the resonance profile $\rs(\bigoplus_{a \in A} I_M)$ equals the resonance profile $\rs(I_M)$.
+\end{theorem}
+
+\begin{proof}
+Suppose $M$ is categorical. Then the moral law it encodes does not change when universalized. Replicating $I_M$ to all agents yields the same resonance structure—no new constraints or contradictions emerge. Conversely, if replication alters the resonance profile, then the maxim depends on contingent features (like scarcity, competition, or strategic interaction), violating categoricity.
+\end{proof}
+
+\begin{interpretation}
+This theorem explains why maxims like ``steal when convenient'' fail the categorical imperative. If everyone stole, the institution of property would collapse, changing the meaning of ``steal.'' The resonance profile is not invariant under copying. In contrast, maxims like ``help others in need'' remain coherent under replication, because the meaning of ``help'' does not depend on exclusivity.
+\end{interpretation}

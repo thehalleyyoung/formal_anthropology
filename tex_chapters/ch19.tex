@@ -1,0 +1,889 @@
+% ============================================================
+%  Chapter 19 — Social Choice and Hermeneutic Aggregation
+% ============================================================
+\chapter{Social Choice and Hermeneutic Aggregation}
+\label{ch:social}
+
+\begin{quote}
+\textit{``In communicative action participants are not primarily oriented to
+their own individual successes; they pursue their individual goals under the
+condition that they can harmonize their plans of action on the basis of
+common situation definitions.''}\\
+--- J\"urgen Habermas, \textit{The Theory of Communicative Action} (1981)
+\end{quote}
+
+\vspace{1em}
+
+\section{Introduction}
+
+When a sermon is preached, a lecture delivered, or a news broadcast aired,
+each member of the audience interprets the message through their own
+background---their education, culture, temperament, and prior beliefs.
+J\"urgen Habermas's theory of communicative action asks the fundamental
+question: how do multiple, heterogeneous interpretations converge into shared
+meaning?\footnote{Habermas's magnum opus, \textit{Theorie des kommunikativen
+Handelns} (1981), distinguishes between ``strategic action'' (oriented
+toward individual success) and ``communicative action'' (oriented toward
+mutual understanding).  The hermeneutic aggregation problem belongs squarely
+to the domain of communicative action.}
+
+This is the \emph{hermeneutic aggregation problem}: given $n$ agents with
+background ideas $[r_1, \ldots, r_n]$ and a shared signal $s$, each agent
+produces an interpretation $\compose(r_i, s)$.  The interpretations can then
+be aggregated---by sequential composition, by deliberation, by voting---into
+a collective meaning.  Under what conditions does this collective meaning
+reflect a genuine consensus rather than a mere concatenation of
+incompatible readings?
+
+In IDT, we formalize this problem through three core concepts:
+\begin{itemize}
+  \item \texttt{interpretations}: the list of all agents' interpretations of a
+    shared signal;
+  \item \texttt{aggregateCompose}: the sequential composition of
+    interpretations into a single collective meaning;
+  \item \texttt{coherentInterpretation}: the condition that all
+    interpretations pairwise resonate, formalizing Habermas's ``ideal speech
+    situation.''
+\end{itemize}
+
+This chapter proves eighteen theorems characterizing the algebraic and
+metric properties of hermeneutic aggregation.  The results establish when
+coherence is achievable, how depth constrains the interpretive effort of a
+community, and what role void---silence, absence, non-participation---plays
+in the aggregation process.
+
+\subsection{Historical Background: From Arrow to Arendt}
+
+The problem of aggregating individual judgments into collective decisions has
+a distinguished intellectual pedigree that long predates our formalization.
+We situate IDT's hermeneutic aggregation within this tradition.
+
+\paragraph{Arrow's impossibility theorem.}
+Kenneth Arrow's celebrated impossibility theorem (1951) demonstrated that no
+social welfare function can simultaneously satisfy a small set of seemingly
+reasonable axioms---unrestricted domain, Pareto efficiency, independence of
+irrelevant alternatives, and non-dictatorship.\footnote{Kenneth J.\ Arrow,
+\textit{Social Choice and Individual Values} (1951; 2nd ed.\ 1963).  The
+theorem shattered the optimism of welfare economics by showing that
+``democratic'' aggregation of preferences is, in a precise sense,
+impossible.}  Arrow's theorem concerns the aggregation of \emph{preference
+orderings}; our theory concerns the aggregation of \emph{interpretive
+compositions}.  Yet the structural parallel is illuminating: just as Arrow
+showed that no aggregation rule can perfectly reconcile individual
+preferences, our depth bounds (Theorem~\ref{thm:interpretation_depth_sum_bound})
+show that no aggregation can transcend the cognitive resources of its
+participants.  The impossibility is not logical but resource-theoretic:
+consensus is possible, but \emph{bounded}.
+
+\paragraph{Sen's liberal paradox and the capability approach.}
+Amartya Sen extended Arrow's framework in two crucial directions.  His
+``liberal paradox'' (1970) showed that even minimal individual liberty is
+incompatible with Pareto optimality---a result that highlights the tension
+between individual autonomy and collective welfare.\footnote{Amartya Sen,
+``The Impossibility of a Paretian Liberal,'' \textit{Journal of Political
+Economy} 78(1), 1970, pp.\ 152--157.}  Sen's later ``capability approach''
+shifted the focus from preference satisfaction to the substantive freedoms
+individuals enjoy.  In IDT terms, each agent's ``capability'' to interpret
+is captured by their background depth $\depth(r_i)$: agents with richer
+backgrounds have greater interpretive capability, and the community's total
+capability constrains its aggregate interpretive richness.
+
+\paragraph{Condorcet's jury theorem and epistemic democracy.}
+The Marquis de Condorcet's jury theorem (1785) established that if each
+juror has a probability greater than $\frac{1}{2}$ of identifying the
+correct answer, then the probability that the majority vote is correct
+approaches 1 as the number of jurors grows.\footnote{Condorcet,
+\textit{Essai sur l'application de l'analyse \`a la probabilit\'e des
+d\'ecisions rendues \`a la pluralit\'e des voix} (1785).}  This ``wisdom of
+crowds'' result provides a probabilistic justification for democratic
+aggregation.  IDT's depth bounds complement Condorcet's result: while
+Condorcet shows that larger groups make \emph{more accurate} decisions
+(under certain conditions), our
+Theorem~\ref{thm:interpretation_depth_sum_bound} shows that larger groups
+produce \emph{more total interpretive depth}---a resource-theoretic rather
+than epistemic claim.
+
+\paragraph{Habermas's ideal speech situation.}
+J\"urgen Habermas's discourse ethics posits an ``ideal speech situation'' in
+which all participants have equal opportunity to speak, all arguments are
+assessed solely on their merits, and consensus is reached through the
+``unforced force of the better argument.''\footnote{Habermas, \textit{Moral
+Consciousness and Communicative Action} (1990), trans.\ Christian Lenhardt
+and Shierry Weber Nicholsen.}  Our coherent interpretation condition
+(Definition~\ref{def:coherentInterpretation}) formalizes this ideal: it
+requires that all pairwise interpretations resonate, which in turn requires
+that the ``horizons'' of all participants be compatible.  The gap between
+the ideal and the real---between universal resonance and partial
+resonance---is the gap between Habermas's regulative ideal and the
+messy reality of actual discourse.
+
+\paragraph{Deliberative democracy.}
+John Rawls's concept of ``public reason'' restricts legitimate political
+arguments to those accessible to all citizens regardless of their
+comprehensive doctrines.\footnote{John Rawls, \textit{Political Liberalism}
+(1993), Lecture VI.}  James Fishkin's ``deliberative polling'' experiments
+demonstrate that informed, structured deliberation can shift opinions toward
+more reflective positions.\footnote{James S.\ Fishkin, \textit{Democracy
+and Deliberation: New Directions for Democratic Reform} (1991).}  IDT
+provides a formal model for such processes: each round of deliberation is
+an application of $\texttt{aggregateCompose}$, and the shift in collective
+meaning can be tracked through changes in aggregate depth and resonance
+structure.
+
+\paragraph{Modern instantiations.}
+The hermeneutic aggregation problem is not merely theoretical.  Reddit's
+upvoting system aggregates millions of interpretive judgments into a
+ranked ordering of content; Wikipedia's consensus model requires editors
+to negotiate shared meaning through iterative revision; Liquid Democracy
+systems allow voters to delegate their interpretive authority to trusted
+proxies, creating chains of delegated interpretation that structurally
+resemble relay chains (Chapter~\ref{ch:network}).  Each of these systems
+instantiates a particular aggregation rule, and each faces the fundamental
+tension between aggregation (voting, ranking) and deliberation (discussion,
+revision, consensus-building).
+
+\paragraph{Arendt on plurality and the public sphere.}
+Hannah Arendt argued that the fundamental condition of politics is
+\emph{plurality}: the fact that human beings are alike enough to understand
+each other and different enough to need speech and action to make themselves
+understood.\footnote{Hannah Arendt, \textit{The Human Condition} (1958),
+\S5.}  IDT captures this duality precisely.  Resonance captures the
+``alike enough'' dimension: agents whose backgrounds resonate can achieve
+coherent interpretation.  The diversity of backgrounds---the fact that
+$r_i \neq r_j$ in general---captures the ``different enough'' dimension:
+each agent brings their own horizon to the interpretive encounter.  The
+hermeneutic aggregation problem is, in Arendt's terms, the problem of
+creating a \emph{common world} out of a plurality of perspectives.
+
+\paragraph{The tension between aggregation and deliberation.}
+Two fundamentally different approaches to collective decision-making run
+through the social choice literature.  \emph{Aggregative} approaches---
+voting, polling, preference aggregation---take individual judgments as
+given and combine them mechanically.  \emph{Deliberative} approaches---
+dialogue, discussion, argumentation---seek to transform individual
+judgments through the process of collective reasoning.  IDT's
+$\texttt{aggregateCompose}$ function occupies an interesting middle ground:
+it is aggregative in structure (a fold over a list) but compositional in
+content (each step involves genuine interpretive engagement via
+$\compose$).  The result is an aggregation that is not merely additive
+but genuinely transformative---each voice interacts with the existing
+consensus, potentially altering it in ways that simple concatenation
+would not.
+
+\section{Core Definitions}
+\label{sec:ch19-defs}
+
+\begin{definition}[Interpretations]
+\label{def:interpretations}
+Let $\text{reps} = [r_1, \ldots, r_n]$ be the agents' repertoire ideas and
+$s \in \IS$ be the shared signal.  The \emph{interpretations} are:
+\[
+  \texttt{interpretations}(\text{reps}, s) \;:=\;
+  [\ \compose(r_1, s),\; \compose(r_2, s),\; \ldots,\; \compose(r_n, s)\ ].
+\]
+Each agent interprets the signal by composing it with their own background.
+\end{definition}
+
+\begin{lstlisting}[caption={Interpretations in Lean}]
+def interpretations (reps : List I) (s : I) : List I :=
+  reps.map (fun r => IdeaticSpace.compose r s)
+\end{lstlisting}
+
+In Gadamer's hermeneutic philosophy, each interpreter brings their own
+``horizon''---their pre-understanding, their historically-effected
+consciousness---to the encounter with the text.  The interpretation is the
+``fusion of horizons'' between background and signal, which in IDT is
+precisely $\compose(r_i, s)$.\footnote{Hans-Georg Gadamer,
+\textit{Wahrheit und Methode} (1960), introduced the concept of
+\textit{Horizontverschmelzung} (fusion of horizons) as the fundamental
+structure of understanding.}
+
+\begin{definition}[Aggregate Composition]
+\label{def:aggregateCompose}
+The \emph{aggregate composition} of a list of ideas is their right-fold
+via composition:
+\[
+  \texttt{aggregateCompose}([\,]) = \void, \qquad
+  \texttt{aggregateCompose}(a :: \text{rest}) = \compose(a, \texttt{aggregateCompose}(\text{rest})).
+\]
+This models the process by which a community arrives at a single shared
+interpretation through successive dialogue.
+\end{definition}
+
+\begin{lstlisting}[caption={Aggregate composition in Lean}]
+def aggregateCompose : List I -> I
+  | [] => IdeaticSpace.void
+  | a :: rest => IdeaticSpace.compose a (aggregateCompose rest)
+\end{lstlisting}
+
+The right-fold semantics are significant: the last voice in the list serves
+as the ``base'' upon which earlier voices build.  In Habermas's terms, this
+models a deliberative process in which each new speaker adds their
+perspective ``on top of'' the existing consensus.
+
+\begin{definition}[Coherent Interpretation]
+\label{def:coherentInterpretation}
+A group of agents achieves \emph{coherent interpretation} of signal $s$ when
+all pairs of interpretations resonate:
+\[
+  \texttt{coherentInterpretation}(\text{reps}, s) \;:\Longleftrightarrow\;
+  \forall\, x, y \in \texttt{interpretations}(\text{reps}, s),\quad
+  \text{resonates}(x, y).
+\]
+This is the formal condition for ``hermeneutic consensus.''
+\end{definition}
+
+\begin{remark}[Resonance and Habermas's Validity Claims]
+\label{rem:resonance_validity}
+Habermas distinguished three types of validity claims implicit in every
+communicative act: claims to \emph{truth} (propositional correctness),
+\emph{rightness} (normative legitimacy), and \emph{sincerity} (subjective
+truthfulness).\footnote{Habermas, \textit{The Theory of Communicative
+Action}, Vol.\ I, Ch.\ III.}  In IDT, resonance between two ideas captures
+a structural compatibility that encompasses all three dimensions
+simultaneously.  Two interpretations resonate when they are ``in tune''
+across the full spectrum of validity---not merely factually consistent, but
+also normatively compatible and phenomenologically consonant.  The coherent
+interpretation condition thus formalizes an ideal in which Habermas's three
+validity claims are simultaneously satisfied across all pairs of
+interpreters: a community that achieves coherent interpretation has
+resolved not only its factual disagreements but also its normative and
+expressive ones.
+\end{remark}
+
+\begin{lstlisting}[caption={Coherent interpretation in Lean}]
+def coherentInterpretation (reps : List I) (s : I) : Prop :=
+  forall x in interpretations reps s, forall y in interpretations reps s,
+    IdeaticSpace.resonates x y
+\end{lstlisting}
+
+Habermas's ``ideal speech situation'' is one in which all participants'
+interpretations are mutually comprehensible.  Coherent interpretation is the
+formal counterpart: when it holds, the community has achieved a state of
+hermeneutic equilibrium in which every reading ``rhymes'' with every other.
+
+% ============================================================
+\section{Examples of Hermeneutic Aggregation}
+\label{sec:ch19-examples}
+
+Before proceeding to the formal theorems, we ground the abstract framework
+in concrete historical and contemporary examples.
+
+\begin{example}[The Athenian Assembly]
+\label{ex:athenian_assembly}
+The Athenian \textit{ekklesia} provides a paradigmatic case of hermeneutic
+aggregation.  When Pericles delivered his Funeral Oration, each citizen in
+the audience---farmer, artisan, merchant, philosopher---interpreted the
+speech through their own background ($r_i$).  The collective meaning of the
+oration was not any single interpretation but the aggregate
+$\texttt{aggregateCompose}([\compose(r_1, s), \ldots, \compose(r_n, s)])$.
+Thucydides's text, by recording the speech for posterity, froze one
+particular composition of signal and historian's background, which
+subsequent readers have re-composed with \textit{their} backgrounds
+across twenty-five centuries.\footnote{Thucydides, \textit{History of
+the Peloponnesian War}, Book II, 34--46.  The speech's interpretation
+has itself been subject to centuries of hermeneutic aggregation.}
+
+The Athenian case also illustrates the depth bound
+(Theorem~\ref{thm:interpretation_depth_sum_bound}): the total interpretive
+richness of the assembly was bounded by the aggregate cultural depth of
+Athenian citizenship plus the rhetorical complexity of Pericles's oration.
+No assembly, however large, could have extracted infinite meaning from a
+finite speech.
+\end{example}
+
+\begin{example}[Wikipedia's Consensus Model]
+\label{ex:wikipedia_consensus}
+Wikipedia's editorial process provides a modern instantiation of hermeneutic
+aggregation under conditions of radical pluralism.  Consider a contested
+article---say, on a politically sensitive historical event.  Each editor
+$r_i$ brings their own background (nationalist historiography, critical
+theory, primary source expertise, lived experience) to the shared
+``signal'' of the available evidence.  Their edits constitute interpretations
+$\compose(r_i, s)$, and the article's evolution through successive revisions
+mirrors the sequential composition of $\texttt{aggregateCompose}$.
+
+Wikipedia's ``neutral point of view'' policy functions as an institutional
+approximation of coherent interpretation: it demands that the article's
+content be acceptable to all editors---formally, that all pairwise
+interpretations resonate.  In practice, this ideal is approached through
+the Talk page, where editors engage in deliberation to achieve (or
+approximate) the coherence condition.  When coherence fails---when editors'
+backgrounds are too divergent for pairwise resonance---the result is an
+``edit war,'' the hermeneutic analogue of political deadlock.
+
+The depth bound applies here as well: the total interpretive richness of a
+Wikipedia article is bounded by the aggregate expertise of its editor
+community.  This explains the empirical observation that articles on
+specialized topics tend to plateau in quality once the relevant expert
+community has been exhausted.\footnote{See Aaron Halfaker et al.,
+``The Rise and Decline of an Open Collaboration System,''
+\textit{American Behavioral Scientist} 57(5), 2013, pp.\ 664--688.}
+\end{example}
+
+\begin{example}[Jury Deliberation as Hermeneutic Aggregation]
+\label{ex:jury_deliberation}
+A criminal trial presents jurors with a shared signal $s$---the totality
+of evidence, testimony, and legal instruction.  Each juror interprets
+this signal through their own background: their life experience, moral
+intuitions, understanding of human nature, and capacity for legal
+reasoning.  The jury's deliberation process is an instance of
+$\texttt{aggregateCompose}$: jurors successively share their interpretations,
+and each contribution reshapes the emerging collective understanding.
+
+The requirement of unanimity in many jurisdictions is a strong coherence
+condition: not merely pairwise resonance but identity of conclusion.
+A hung jury---one that cannot reach unanimity---represents a failure
+of coherent interpretation: the jurors' backgrounds are sufficiently
+divergent that no signal, however compelling, can produce pairwise
+resonance among all interpretations.
+
+This example also illuminates Theorem~\ref{thm:resonant_pair_coherent}:
+jurors who share similar backgrounds (profession, class, education) are
+more likely to achieve pairwise resonance and thus coherent interpretation.
+The well-documented phenomenon of jury selection bias---attorneys'
+systematic efforts to seat favorable jurors---is precisely an attempt
+to engineer the resonance structure of the interpretive community.
+\end{example}
+
+\begin{example}[The European Union's Multilingual Interpretation Challenge]
+\label{ex:eu_multilingual}
+The European Union conducts its business in 24 official languages, with
+every regulation, directive, and judgment of the European Court of Justice
+translated into each language.  This creates a distinctive hermeneutic
+aggregation problem: the ``signal'' (a legal text) must be interpreted
+not only through each reader's individual background but also through the
+lens of their linguistic community.
+
+Each language version constitutes an interpretation $\compose(r_{\text{lang}}, s)$
+where $r_{\text{lang}}$ encodes the conceptual categories, legal traditions,
+and cultural associations of the target language.  The EU's legal doctrine
+that all language versions are ``equally authentic'' is a coherence
+requirement: all twenty-four interpretations must resonate with each other.
+When they do not---when, for example, the German version of a directive
+has subtly different implications from the French version---the European
+Court of Justice must engage in meta-interpretation, composing its own
+judicial background with the divergent linguistic interpretations to
+produce a single authoritative reading.
+
+The EU case dramatically illustrates the tension between aggregation and
+deliberation: mechanical translation (aggregation) often fails to preserve
+meaning, requiring subsequent judicial deliberation to restore
+coherence.\footnote{See Baaij, C.J.W., ``Fifty Years of Multilingual
+Interpretation in the European Union,'' in \textit{The Oxford Handbook
+of Language and Law} (2012), pp.\ 217--231.}
+\end{example}
+
+% ============================================================
+\section{Empty and Singleton Groups}
+\label{sec:ch19-empty}
+
+\begin{theorem}[Empty Group Has Void Interpretation (19.1)]
+\label{thm:empty_group_void}
+For all $s \in \IS$,
+\[
+  \texttt{aggregateCompose}\bigl(\texttt{interpretations}([\,], s)\bigr) = \void.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+$\texttt{interpretations}([\,], s) = [\,]$, and
+$\texttt{aggregateCompose}([\,]) = \void$ by definition.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+An empty polity produces no collective meaning.  This is the political-theory
+baseline: without citizens, there is no \textit{res publica}.
+
+\begin{remark}[Arrow's Theorem and the Limits of Hermeneutic Aggregation]
+\label{rem:arrow_limits}
+Arrow's impossibility theorem demonstrates that no aggregation procedure for
+preference orderings can simultaneously satisfy four reasonable axioms.
+A natural question arises: does an analogous impossibility hold for
+hermeneutic aggregation?  The answer is nuanced.  Our
+$\texttt{aggregateCompose}$ function does not face Arrow's impossibility
+because it does not attempt to produce a ``socially optimal'' interpretation
+from individual preferences \emph{over} interpretations.  Rather, it
+sequentially composes interpretations into a single composite---an
+operation more akin to concatenation than to social choice.  However, this
+comes at a cost: the result of $\texttt{aggregateCompose}$ is
+order-dependent (by the non-commutativity explored in
+Chapter~\ref{ch:bargaining}), which means that the aggregation procedure
+is sensitive to who speaks in what order.  Arrow's impossibility is avoided
+not by satisfying all his axioms but by relaxing the anonymity
+condition---in IDT, the order of voices matters.
+\end{remark}
+
+
+\begin{theorem}[Singleton = Individual Interpretation (19.2)]
+\label{thm:singleton_interpretation}
+\[
+  \texttt{aggregateCompose}\bigl(\texttt{interpretations}([r], s)\bigr) = \compose(r, s).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+$\texttt{interpretations}([r], s) = [\compose(r,s)]$, and
+$\texttt{aggregateCompose}([\compose(r,s)]) = \compose(\compose(r,s), \void) =
+\compose(r,s)$ by right-identity.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A solitary reader's interpretation \emph{is} the meaning.  In hermeneutics,
+the singleton case collapses the distinction between individual and
+collective meaning: when there is only one interpreter, their reading is
+authoritative by default.
+
+\begin{theorem}[Interpretation Count = Agent Count (19.5)]
+\label{thm:interpretation_count}
+$|\texttt{interpretations}(\text{reps}, s)| = |\text{reps}|$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The \texttt{map} operation preserves list length.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Every agent produces exactly one interpretation---no more, no less.  This
+``one person, one reading'' principle is the hermeneutic analogue of the
+democratic ``one person, one vote.''\footnote{The analogy to social choice
+theory is intentional.  Arrow's impossibility theorem concerns the
+aggregation of preference orderings; our theory concerns the aggregation of
+interpretive compositions.  The structural parallels are explored further in
+Section~\ref{sec:ch19-coherence}.}
+
+\begin{theorem}[Interpretation Map Preserves Nil (19.17)]
+\label{thm:interpret_nil}
+$\texttt{interpretations}([\,], s) = [\,]$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Mapping over the empty list yields the empty list.
+\hfill$\square$
+
+% ============================================================
+\section{Void Signal and Self-Resonance}
+\label{sec:ch19-void}
+
+When the signal is void---when nothing is said---the interpretive situation
+simplifies dramatically.
+
+\begin{theorem}[Void Signal Preserves Repertoire (19.3)]
+\label{thm:void_signal_preserves}
+\[
+  \texttt{interpretations}(\text{reps}, \void) = \text{reps}.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By induction on the list.  For each $r \in \text{reps}$, $\compose(r, \void) = r$
+by right-identity.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+When there is no text to interpret, each interpreter is left with only their
+own pre-understanding.  In Gadamer's terms, their horizon remains unchanged:
+the void signal induces no fusion of horizons, and each agent's
+interpretation equals their original repertoire idea.
+
+\begin{theorem}[Void Signal Yields Self-Resonant Group (19.4)]
+\label{thm:void_signal_self_resonant}
+For all $x \in \texttt{interpretations}(\text{reps}, \void)$,
+$\text{resonates}(x, x)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By Theorem~\ref{thm:void_signal_preserves}, interpretations equal the
+original repertoire ideas, and self-resonance is universal.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+In the absence of ritual content, mechanical solidarity still holds: each
+individual remains internally coherent.  Durkheim's insight that social
+cohesion begins with self-consistency finds formal expression here.
+
+\begin{theorem}[Void Repertoire Interpretation (19.14)]
+\label{thm:void_background_interpretation}
+$\texttt{interpretations}([\void], s) = [s]$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+$\compose(\void, s) = s$ by left-identity.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A \textit{tabula rasa}---a mind with no pre-existing ideas---interprets the
+signal as the signal itself, without transformation.  The void background
+is a perfect mirror: the interpretation is the signal unchanged.
+
+\begin{theorem}[Aggregate of Voids is Void (19.15)]
+\label{thm:void_aggregate_void}
+For all $n$,
+$\texttt{aggregateCompose}\bigl(\texttt{interpretations}(\underbrace{[\void, \ldots, \void]}_{n}, \void)\bigr) = \void$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By Theorem~\ref{thm:void_signal_preserves}, the interpretations are
+$n$ copies of $\void$.  By induction, aggregating $n$ voids yields $\void$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Empty minds interpreting nothing produce nothing.  This is the nihilistic
+limit of hermeneutic aggregation: when neither the community nor the text
+carries any content, the outcome is silence.
+
+\begin{theorem}[Aggregate Singleton Void Signal (19.18)]
+\label{thm:aggregate_singleton_void}
+$\texttt{aggregateCompose}\bigl(\texttt{interpretations}([r], \void)\bigr) = r$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By void-signal preservation, the interpretation list is $[r]$, and
+$\texttt{aggregateCompose}([r]) = \compose(r, \void) = r$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+In the absence of external stimuli, consciousness returns to its own
+content---pure self-reflection.  Phenomenologically, the subject without
+object collapses back upon itself.
+
+% ============================================================
+\section{Aggregation Mechanics}
+\label{sec:ch19-aggregate}
+
+\begin{theorem}[Aggregating Empty Yields Void (19.9)]
+\label{thm:aggregate_nil}
+$\texttt{aggregateCompose}([\,]) = \void$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad Definitional. \hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Without any contributions to the discourse, the outcome is silence.
+Habermas's communicative action requires at least one speaker.
+
+\begin{theorem}[Aggregate Cons Unfolding (19.10)]
+\label{thm:aggregate_cons}
+$\texttt{aggregateCompose}(a :: \text{rest}) = \compose(a, \texttt{aggregateCompose}(\text{rest}))$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad Definitional. \hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Each new voice adds their perspective on top of the existing consensus.
+The deliberative process is compositional: the $k$-th speaker composes
+their idea with the aggregate of the remaining speakers, building the
+collective meaning layer by layer.
+
+\begin{theorem}[Void Aggregate Identity (19.11)]
+\label{thm:void_aggregate}
+$\texttt{aggregateCompose}(\void :: \text{rest}) = \texttt{aggregateCompose}(\text{rest})$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+$\compose(\void, \texttt{aggregateCompose}(\text{rest})) =
+\texttt{aggregateCompose}(\text{rest})$ by left-identity.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A silent participant doesn't alter the collective meaning.  Non-contributing
+members are transparent to the aggregation process---they neither add nor
+subtract from the deliberative outcome.
+
+\begin{theorem}[Self-Resonance of Aggregate (19.12)]
+\label{thm:aggregate_self_resonance}
+$\text{resonates}\bigl(\texttt{aggregateCompose}(\text{interps}),\;
+\texttt{aggregateCompose}(\text{interps})\bigr)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad Self-resonance is universal. \hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Any completed deliberation, however contentious, achieves internal
+self-consistency as a composite idea.  The aggregate may fail to satisfy
+individual participants, but it is always coherent with itself---a minimal
+condition for the output of any decision procedure.
+
+% ============================================================
+\section{Coherence and Resonance}
+\label{sec:ch19-coherence}
+
+Under what conditions does a group achieve hermeneutic consensus?
+The following theorems establish both trivial and substantive conditions
+for coherent interpretation.
+
+\begin{theorem}[Empty Interpretation List is Coherent (19.7)]
+\label{thm:empty_coherent}
+$\texttt{coherentInterpretation}([\,], s)$ for all $s$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Universal quantification over the empty set is vacuously true.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Unanimity without voters: if no one interprets, there's no disagreement.
+This is the degenerate case of consensus---trivially achieved but
+informationally empty.
+
+\begin{theorem}[Singleton Interpretation is Coherent (19.8)]
+\label{thm:singleton_coherent}
+$\texttt{coherentInterpretation}([r], s)$ for all $r, s$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The only interpretation is $\compose(r, s)$, which resonates with itself.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A lone reader always agrees with their own interpretation.  Solipsism is
+trivially coherent.  The interesting cases arise when multiple agents must
+reach consensus.
+
+\begin{theorem}[Resonant Pair Coherence (19.13)]
+\label{thm:resonant_pair_coherent}
+If $\text{resonates}(r_1, r_2)$, then
+$\texttt{coherentInterpretation}([r_1, r_2], s)$ for all $s$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+There are four cases (each interpretation against each interpretation).
+The diagonal cases are self-resonance.  The off-diagonal cases follow from
+\texttt{resonance\_compose\_right}: $\text{resonates}(r_1, r_2)$ implies
+$\text{resonates}(\compose(r_1, s), \compose(r_2, s))$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+This is Durkheim's \textit{conscience collective} theorem: agents who share
+deep cultural resonance will agree on any new information.  If two minds
+resonate at the level of their background assumptions, their interpretations
+of any signal will cohere.  This is the formal mechanism underlying
+``preaching to the choir''---the choir already agrees, so any sermon
+produces consensus.\footnote{The sociological implications are significant.
+Theorem~\ref{thm:resonant_pair_coherent} implies that cultural homogeneity
+is \emph{sufficient} for hermeneutic consensus.  The converse---whether
+consensus requires homogeneity---is a deeper question left for future work.}
+
+% ============================================================
+\section{Depth Bounds on Aggregation}
+\label{sec:ch19-depth}
+
+\begin{theorem}[Aggregate Depth Bound---Singleton (19.6)]
+\label{thm:singleton_aggregate_depth}
+\[
+  \depth\bigl(\texttt{aggregateCompose}(\texttt{interpretations}([r], s))\bigr)
+  \leq \depth(r) + \depth(s).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By Theorem~\ref{thm:singleton_interpretation}, the aggregate equals
+$\compose(r, s)$, and subadditivity applies.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+One person's understanding adds at most their background depth to the
+signal's depth.  This is the hermeneutic bound for individual interpretation.
+
+\begin{theorem}[Interpretation Depth Sum Bound (19.16)]
+\label{thm:interpretation_depth_sum_bound}
+\[
+  \texttt{depthSum}\bigl(\texttt{interpretations}(\text{reps}, s)\bigr)
+  \leq \texttt{depthSum}(\text{reps}) + |\text{reps}| \cdot \depth(s).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By induction on the list.  At each step, $\depth(\compose(r, s)) \leq
+\depth(r) + \depth(s)$ by subadditivity, and the inductive hypothesis
+bounds the tail.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The total hermeneutic effort of a community is bounded by their collective
+background knowledge plus the signal's complexity distributed across all
+members.  In resource-theoretic terms, the ``cognitive budget'' of a
+community constrains its total interpretive output.  This bound has
+practical implications for deliberative democracy: a community of $n$
+agents, each of bounded sophistication $d$, encountering a signal of
+depth $\depth(s)$, can produce total interpretive richness at most
+$nd + n \cdot \depth(s)$---a linear bound in both the number of agents
+and the signal complexity.\footnote{Compare this to the ``Condorcet jury
+theorem'' in social choice theory, which provides conditions under which
+larger groups make better decisions.  Our depth bound is not about
+\emph{accuracy} but about \emph{total complexity}---a complementary
+perspective.}
+
+\begin{remark}[Connection to Bargaining Theory (Chapter~\ref{ch:bargaining})]
+\label{rem:connection_bargaining}
+The aggregation mechanics developed in this chapter have deep connections
+to the bargaining theory of Chapter~\ref{ch:bargaining}.  In bargaining,
+the order of composition matters: $\compose(a, b) \neq \compose(b, a)$
+in general.  In hermeneutic aggregation, the analogous asymmetry appears
+in $\texttt{aggregateCompose}$: the right-fold semantics privilege the
+last speaker (who provides the ``base'') and the first speaker (whose
+voice is outermost).  This order-dependence is not a defect of the
+formalization but a feature of real deliberation: in any sequential
+discussion, the order of contributions shapes the outcome.  The bargaining
+power that Chapter~\ref{ch:bargaining} attributed to the first mover
+reappears here as \emph{agenda-setting power}: the agent who structures
+the order of deliberation---who speaks first, who speaks last---exerts
+disproportionate influence on the aggregate meaning.
+
+This connection suggests that a complete theory of hermeneutic aggregation
+must incorporate the strategic considerations of bargaining theory.
+The ``ideal speech situation'' in which order does not matter corresponds
+precisely to the commutative case: $\compose(a, b) = \compose(b, a)$.
+In real communicative action, commutativity fails, and the politics of
+turn-taking becomes an ineliminable dimension of collective meaning-making.
+\end{remark}
+
+% ============================================================
+\section{From Arrow to Habermas: Aggregation vs.\ Deliberation}
+\label{sec:ch19-arrow-habermas}
+
+The theorems proved in this chapter illuminate a fundamental tension in
+democratic theory: the opposition between \emph{aggregative} and
+\emph{deliberative} models of collective decision-making.
+
+\subsection{The Aggregative Model}
+
+In the aggregative model, individual judgments are treated as fixed inputs
+to a mechanical procedure.  Social choice theory, from Condorcet through
+Arrow and beyond, takes this approach: each agent has a preference ordering
+(or, in our case, an interpretation), and the goal is to combine these
+inputs into a collective output via some well-defined function.  Our
+$\texttt{aggregateCompose}$ is such a function: it takes a list of
+interpretations and produces a single composite idea.
+
+The aggregative model has several virtues.  It is precise, compositional,
+and amenable to formal analysis.  The depth bounds of this chapter
+(Theorems~\ref{thm:singleton_aggregate_depth} and
+\ref{thm:interpretation_depth_sum_bound}) are aggregative results: they
+characterize the resources required for the mechanical combination of
+interpretations.
+
+However, the aggregative model also has well-known limitations.  Arrow's
+theorem shows that no aggregation function satisfying certain axioms
+exists; Sen's liberal paradox shows that individual rights and collective
+rationality conflict; and Riker's instability thesis argues that
+aggregative outcomes are inherently manipulable.\footnote{William H.\ Riker,
+\textit{Liberalism Against Populism} (1982).}  These impossibility results
+apply, \textit{mutatis mutandis}, to hermeneutic aggregation: the order-dependence of $\texttt{aggregateCompose}$ is a manifestation of the
+sensitivity that aggregation theorists have long identified.
+
+\subsection{The Deliberative Model}
+
+In the deliberative model, individual judgments are not fixed inputs but
+are transformed through the process of dialogue.  Habermas, Rawls, and
+Cohen argue that legitimate collective decisions emerge not from the
+aggregation of pre-existing preferences but from the transformation of
+preferences through reasoned deliberation.\footnote{Joshua Cohen,
+``Deliberation and Democratic Legitimacy,'' in \textit{The Good Polity}
+(1989), ed.\ A.\ Hamlin and P.\ Pettit, pp.\ 17--34.}
+
+In IDT terms, deliberation corresponds to a dynamic process in which
+agents update their backgrounds $r_i$ in response to the interpretations
+$\compose(r_j, s)$ of other agents.  After hearing agent $j$'s
+interpretation, agent $i$ may revise their background from $r_i$ to
+$r_i' = \compose(r_i, \compose(r_j, s))$, incorporating $j$'s perspective
+into their own pre-understanding.  This iterated updating is a composition
+chain---the same structure we studied in Chapter~\ref{ch:network}'s relay
+chains, but now applied to the internal dynamics of a deliberating group.
+
+\subsection{The IDT Synthesis}
+
+IDT's contribution to this debate is to provide a framework in which
+aggregation and deliberation are not opposed but \emph{nested}.  The
+$\texttt{aggregateCompose}$ function is an aggregation procedure, but each
+step involves a genuine composition---a ``fusion of horizons'' in Gadamer's
+terms---rather than a mere concatenation.  The coherent interpretation
+condition (Definition~\ref{def:coherentInterpretation}) identifies the
+circumstances under which this compositional aggregation produces genuine
+consensus rather than mere compilation.
+
+The key insight is that \emph{resonance} bridges the aggregation--deliberation
+divide.  When agents share pairwise resonance
+(Theorem~\ref{thm:resonant_pair_coherent}), the aggregative procedure
+automatically produces a deliberative outcome: the composite interpretation
+is one that all agents can endorse, because their backgrounds are
+sufficiently aligned to generate compatible readings.  When resonance is
+absent, the aggregative procedure may fail to produce consensus, and
+genuine deliberation---the updating of backgrounds through dialogue---becomes
+necessary.
+
+This framework suggests a normative program for democratic theory: design
+institutions that foster resonance (through education, shared experience,
+cross-cultural dialogue) so that the aggregative procedures of democracy
+produce genuinely deliberative outcomes.  The formal apparatus of IDT
+makes this program precise: the goal is to increase the proportion of
+pairs $(r_i, r_j)$ that satisfy $\text{resonates}(r_i, r_j)$, thereby
+expanding the domain of signals for which coherent interpretation is
+achievable.
+
+% ============================================================
+\section{Conclusion}
+\label{sec:ch19-concl}
+
+This chapter has formalized the hermeneutic aggregation problem within
+Ideatic Diffusion Theory, proving eighteen theorems that characterize the
+structure of collective interpretation.
+
+The central results form a coherent picture:
+\begin{itemize}
+  \item \textbf{Void baseline:} Void signal preserves backgrounds; void
+    agents are transparent (Theorems~\ref{thm:void_signal_preserves}--\ref{thm:void_aggregate}).
+  \item \textbf{Coherence conditions:} Empty and singleton groups are
+    trivially coherent; resonant pairs achieve substantive consensus
+    (Theorems~\ref{thm:empty_coherent}--\ref{thm:resonant_pair_coherent}).
+  \item \textbf{Depth bounds:} Total interpretive effort is linearly bounded
+    (Theorems~\ref{thm:singleton_aggregate_depth}--\ref{thm:interpretation_depth_sum_bound}).
+  \item \textbf{Aggregation mechanics:} Sequential composition of
+    interpretations is well-defined and compositional
+    (Theorems~\ref{thm:aggregate_nil}--\ref{thm:aggregate_self_resonance}).
+\end{itemize}
+
+Habermas's theory of communicative action envisioned a form of rationality
+grounded in mutual understanding rather than strategic calculation.  Our
+formalization shows that the ``ideal speech situation'' has a precise
+mathematical structure: it is the state in which all agents' interpretations
+pairwise resonate (Definition~\ref{def:coherentInterpretation}), and this
+state is achievable whenever the agents share cultural resonance
+(Theorem~\ref{thm:resonant_pair_coherent}).
+
+In the final chapter, we synthesize all the threads of the signalling-game
+arc into a unified theory of meaning.

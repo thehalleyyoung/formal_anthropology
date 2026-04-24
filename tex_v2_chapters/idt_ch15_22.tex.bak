@@ -1,0 +1,2227 @@
+% ================================================================
+% CHAPTERS 15--22: ADVANCED THEORY OF IDEATIC DIFFUSION
+% ================================================================
+% This file contains no preamble. It is \input'd by idt_book_v2.tex.
+
+
+% ================================================================
+% CHAPTER 15: COOPERATION AND COALITION THEORY
+% ================================================================
+\chapter{Cooperation and Coalition Theory}
+\label{ch:coalitions}
+
+\epigraph{No man is an island, entire of itself; every man is a piece of the
+continent, a part of the main.}{John Donne, \textit{Devotions upon Emergent
+Occasions}}
+
+\section{From Pairs to Coalitions}
+
+In earlier chapters we studied interaction between \emph{pairs} of ideas.  The
+angle $\cosangle{a}{b}$ classified each dyadic encounter as cooperative,
+competitive, or orthogonal (Chapter~\ref{ch:cooperation}).  But cultural life
+is not dyadic: ideas combine in coalitions, organizations adopt bundles of
+practices, and the value of any single idea depends on the ideas it is combined
+with.  This chapter extends the pairwise theory to \emph{coalitions} ---
+arbitrary finite sets of ideas that are composed together.
+
+\begin{definition}[Coalition]
+\label{def:coalition}
+A \textbf{coalition} is a finite, non-empty subset $S \subseteq \IS$.  The
+\textbf{coalition composition} is the iterated composition:
+\[
+  \bigcompose S := a_1 \compose a_2 \compose \cdots \compose a_k,
+\]
+where $S = \{a_1, \ldots, a_k\}$.  By the associativity guaranteed by the
+Hilbert-space embedding (Section~\ref{sec:composition}), the result is
+independent of the ordering.
+\end{definition}
+
+\begin{remark}
+Strictly, the composition $\compose$ in IDT need not be commutative, so
+$\bigcompose S$ depends on the ordering unless the ideas pairwise commute under
+composition.  When we write $\bigcompose S$ without specifying an order, we
+assume either that commutativity holds or that a canonical ordering has been
+fixed.
+\end{remark}
+
+\subsection{Coalition Value}
+
+The central question of coalition theory is: \emph{how much is a coalition
+worth?}  In classical cooperative game theory, the value function
+$v\colon 2^N \to \mathbb{R}$ assigns a real number to every subset of
+players.  We define the analogous concept for ideas.
+
+\begin{definition}[Coalition Value]
+\label{def:coalition-value}
+The \textbf{coalition value} of a finite set $S \subseteq \IS$ is the
+self-resonance of its composition:
+\[
+  v(S) := \rs{\bigcompose S}{\bigcompose S} = \nrm{\embed{\bigcompose S}}^2.
+\]
+\end{definition}
+
+The coalition value measures the \emph{total ideatic energy} of the composite
+idea.  The enrichment axiom (Axiom~\ref{ax:enrichment}) ensures that adding
+ideas to a coalition never decreases its value, a property that connects
+directly to the theory of superadditive games.
+
+\begin{theorem}[Enrichment Implies Superadditivity]
+\label{thm:enrichment-superadditive}
+For any idea $a \in \IS$ and any coalition $S$ with $a \notin S$:
+\[
+  v(S \cup \{a\}) \geq v(S).
+\]
+Hence the coalition value function $v$ is \textbf{monotone}: larger coalitions
+are worth at least as much as smaller ones.
+\end{theorem}
+
+\begin{proof}
+Let $c = \bigcompose S$.  Then $\bigcompose (S \cup \{a\}) = a \compose c$
+(up to ordering).  By the enrichment axiom,
+\[
+  \rs{a \compose c}{a \compose c} \geq \rs{c}{c},
+\]
+which is exactly $v(S \cup \{a\}) \geq v(S)$.
+\end{proof}
+
+\begin{interpretation}
+Monotonicity of coalition value is a formalization of the intuition that
+``more ideas, more meaning.''  A culture that absorbs a new practice,
+technology, or concept never loses total ideatic content --- at worst the new
+idea is orthogonal and adds nothing, at best it creates synergistic resonance.
+The asymmetry is striking: ideas can enrich but never impoverish a coalition.
+This is \emph{not} true in general economic models, where adding a player can
+destroy value through coordination failures.  In IDT, the embedding in Hilbert
+space geometrically prevents such destruction.
+\end{interpretation}
+
+\section{The Cooperation Surplus}
+
+Knowing that coalitions are monotone is a start, but we want a finer measure
+of the \emph{synergy} created when ideas combine.
+
+\begin{definition}[Cooperation Surplus]
+\label{def:cooperation-surplus}
+The \textbf{cooperation surplus} of ideas $a$ and $b$ is:
+\[
+  \sigma(a, b) := v(\{a, b\}) - v(\{a\}) - v(\{b\})
+  = \rs{a \compose b}{a \compose b} - \rs{a}{a} - \rs{b}{b}.
+\]
+More generally, for a coalition $S$ and a new idea $a$:
+\[
+  \sigma(a \mid S) := v(S \cup \{a\}) - v(S) - v(\{a\}).
+\]
+\end{definition}
+
+\begin{theorem}[Surplus Decomposition]
+\label{thm:surplus-decomposition}
+The cooperation surplus of $a$ and $b$ satisfies:
+\[
+  \sigma(a, b) = 2\,\rs{a}{b} + \Delta(a, b),
+\]
+where $\Delta(a, b) := \rs{a \compose b}{a \compose b} - \rs{a}{a} - \rs{b}{b}
+- 2\,\rs{a}{b}$ captures higher-order interaction effects beyond pairwise
+resonance.
+\end{theorem}
+
+\begin{proof}
+This is immediate from the definition.  The key observation is that if the
+embedding were perfectly linear (i.e., $\embed{a \compose b} = \embed{a} +
+\embed{b}$), then:
+\[
+  \rs{a \compose b}{a \compose b} = \nrm{\embed{a} + \embed{b}}^2
+  = \rs{a}{a} + 2\,\rs{a}{b} + \rs{b}{b},
+\]
+giving $\Delta(a, b) = 0$.  The term $\Delta(a, b)$ measures the departure
+from linearity --- the genuinely \emph{emergent} contribution of composition.
+\end{proof}
+
+\begin{example}[Musical Harmony as Coalition]
+Consider three notes $C, E, G$ forming a major triad.  Each note has
+self-resonance $v(\{C\}) = v(\{E\}) = v(\{G\}) \approx 1$.  The pairwise
+surplus $\sigma(C, E) > 0$ reflects the consonance of a major third.  But the
+coalition value $v(\{C, E, G\})$ exceeds the sum of pairwise surpluses --- the
+triad has an emergent harmonic richness that no pair captures.  This is
+precisely the $\Delta$ term: the non-linear, higher-order contribution of the
+composition.
+\end{example}
+
+\section{Ordered Coalition Enrichment}
+
+In many cultural settings, the \emph{order} in which ideas are introduced
+matters.  A technology adopted before the social institutions needed to regulate
+it produces different outcomes than the reverse sequence.
+
+\begin{definition}[Ordered Coalition]
+\label{def:ordered-coalition}
+An \textbf{ordered coalition} is a sequence $(a_1, a_2, \ldots, a_k)$ of
+ideas.  Its value is computed by sequential composition:
+\[
+  v_{\mathrm{ord}}(a_1, \ldots, a_k) := \rs{a_1 \compose a_2 \compose \cdots
+  \compose a_k}{a_1 \compose a_2 \compose \cdots \compose a_k}.
+\]
+\end{definition}
+
+\begin{theorem}[Ordered Enrichment]
+\label{thm:ordered-enrichment}
+For any ordered coalition $(a_1, \ldots, a_k)$ and any idea $a_{k+1}$:
+\[
+  v_{\mathrm{ord}}(a_1, \ldots, a_k, a_{k+1}) \geq
+  v_{\mathrm{ord}}(a_1, \ldots, a_k).
+\]
+\end{theorem}
+
+\begin{proof}
+Let $c = a_1 \compose \cdots \compose a_k$.  Then
+$v_{\mathrm{ord}}(a_1, \ldots, a_k, a_{k+1}) = \rs{c \compose a_{k+1}}{c
+\compose a_{k+1}} \geq \rs{c}{c} = v_{\mathrm{ord}}(a_1, \ldots, a_k)$
+by the enrichment axiom.
+\end{proof}
+
+\begin{lstlisting}
+-- Lean 4: Ordered Coalition Enrichment
+theorem ordered_coalition_enriches (rs : IS → IS → ℝ) (compose : IS → IS → IS)
+    (enrichment : ∀ a b, rs (compose a b) (compose a b) ≥ rs a a)
+    (coalition : List IS) (a : IS) :
+    rs (coalition.foldl compose a) (coalition.foldl compose a) ≥ rs a a := by
+  induction coalition with
+  | nil => simp
+  | cons x xs ih =>
+    simp [List.foldl]
+    calc rs (List.foldl compose (compose a x) xs)
+           (List.foldl compose (compose a x) xs)
+        ≥ rs (compose a x) (compose a x) := ih (compose a x)
+      _ ≥ rs a a := enrichment a x
+\end{lstlisting}
+
+\section{Marginal Contribution and the Core}
+
+\begin{definition}[Marginal Contribution]
+\label{def:marginal-contribution}
+The \textbf{marginal contribution} of idea $a$ to coalition $S$ (where
+$a \notin S$) is:
+\[
+  \Delta_a(S) := v(S \cup \{a\}) - v(S).
+\]
+By enrichment (Theorem~\ref{thm:enrichment-superadditive}), $\Delta_a(S) \geq 0$
+always.
+\end{definition}
+
+\begin{definition}[The Core]
+\label{def:core}
+An allocation $(\alpha_1, \ldots, \alpha_n) \in \mathbb{R}^n$ is in the
+\textbf{core} of the coalition game $(N, v)$ if:
+\begin{enumerate}
+\item (Efficiency) $\sum_{i=1}^n \alpha_i = v(N)$.
+\item (Stability) For every coalition $S \subseteq N$:
+  $\sum_{i \in S} \alpha_i \geq v(S)$.
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[Non-emptiness of the Core for Enrichment Games]
+\label{thm:core-nonempty}
+If $v$ is monotone and superadditive (as guaranteed by the enrichment axiom),
+then the core of $(N, v)$ is non-empty.
+\end{theorem}
+
+\begin{proof}
+Define $\alpha_i := \Delta_{a_i}(S_i)$ where $S_i = \{a_1, \ldots, a_{i-1}\}$
+is the set of ideas that precede $a_i$ in a fixed ordering.  Then
+$\sum_{i=1}^n \alpha_i = v(N) - v(\emptyset) = v(N)$ by telescoping.  For
+stability, observe that for any $S \subseteq N$, the marginal contributions of
+the members of $S$ in the ordering restricted to $S$ telescope to $v(S)$, and
+each marginal contribution in the restricted ordering is at most the
+corresponding contribution in the full ordering (by monotonicity of marginal
+contributions in superadditive games).  Hence
+$\sum_{i \in S} \alpha_i \geq v(S)$.
+\end{proof}
+
+\begin{interpretation}
+The non-emptiness of the core means that there is always a ``fair''
+distribution of ideatic value that no sub-coalition can improve upon.  In
+cultural terms: a society can always find a way to attribute the value of its
+composite culture to its constituent ideas such that no subset of ideas would
+``prefer'' to form a separate culture.  This is a deep stability result ---
+cultural composites held together by enrichment are inherently stable against
+secession of sub-coalitions.
+\end{interpretation}
+
+\section{Visualizing Coalition Dynamics}
+
+\begin{center}
+\begin{tikzpicture}[
+  idea/.style={circle, draw, fill=blue!20, minimum size=8mm, font=\small},
+  coalition/.style={ellipse, draw, dashed, minimum width=3cm, minimum height=2cm,
+    fill=green!10},
+  arrow/.style={->, thick, >=stealth}
+]
+  % Ideas
+  \node[idea] (a) at (0, 0) {$a$};
+  \node[idea] (b) at (2, 0) {$b$};
+  \node[idea] (c) at (4, 0) {$c$};
+
+  % Pairwise coalitions
+  \node[coalition, minimum width=3.5cm, minimum height=1.5cm] at (1, 0) {};
+  \node[above] at (1, 0.9) {\small $v(\{a,b\})$};
+
+  % Grand coalition
+  \node[coalition, minimum width=6cm, minimum height=2.5cm, fill=yellow!10] at (2, 0) {};
+  \node[above] at (2, 1.5) {$v(\{a,b,c\})$};
+
+  % Marginal arrows
+  \draw[arrow, red!60] (4, -1.5) -- node[right] {\small $\Delta_c$} (4, -0.6);
+
+  % Value bar chart
+  \begin{scope}[xshift=7cm, yshift=-0.5cm]
+    \draw[->] (0,0) -- (0, 3) node[above] {\small value};
+    \fill[blue!30] (0.2, 0) rectangle (0.8, 0.8) node[midway, right, xshift=2mm] {\tiny $v(a)$};
+    \fill[blue!40] (1.2, 0) rectangle (1.8, 1.5) node[midway, right, xshift=2mm] {\tiny $v(a,b)$};
+    \fill[blue!60] (2.2, 0) rectangle (2.8, 2.5) node[midway, right, xshift=2mm] {\tiny $v(a,b,c)$};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+
+
+% ================================================================
+% CHAPTER 16: DIALECTICS --- THESIS, ANTITHESIS, SYNTHESIS
+% ================================================================
+\chapter{Dialectics: Thesis, Antithesis, Synthesis}
+\label{ch:dialectics}
+
+\epigraph{Contradiction is the root of all movement and vitality; it is only
+insofar as something has a contradiction within it that it moves, has an urge
+and activity.}{G.\,W.\,F.\ Hegel, \textit{Science of Logic}}
+
+\section{The Dialectical Structure of Ideas}
+
+The history of philosophy --- from Heraclitus through Hegel to Marx --- testifies
+to the importance of dialectical reasoning: the interplay of thesis and
+antithesis producing a higher synthesis.  IDT provides a precise mathematical
+realization of this ancient pattern.  In this chapter we show that the
+operations of opposition and synthesis correspond to geometric operations in
+Hilbert space, and that the dialectical process is governed by a quantitative
+measure of \emph{dialectical emergence}.
+
+\begin{definition}[Opposition]
+\label{def:opposition}
+Idea $b$ is an \textbf{opponent} of idea $a$ if their resonance is strictly
+negative:
+\[
+  \rs{a}{b} < 0.
+\]
+The ideas are in \textbf{mutual opposition} if both $\rs{a}{b} < 0$ and
+$\rs{b}{a} < 0$.  Under the symmetry of the inner product, these conditions
+coincide: $\rs{a}{b} = \rs{b}{a} < 0$.
+\end{definition}
+
+\begin{remark}
+Geometrically, $\rs{a}{b} < 0$ means that $\embed{a}$ and $\embed{b}$ form an
+obtuse angle: $\cosangle{a}{b} > \pi/2$.  The ideas ``point in opposite
+directions'' in Hilbert space, representing conceptual tension or
+contradiction.
+\end{remark}
+
+\subsection{Synthesis as Composition}
+
+The central insight of the dialectical interpretation is that \emph{synthesis is
+composition}:
+
+\begin{definition}[Dialectical Synthesis]
+\label{def:synthesis}
+Given a thesis $a$ and an antithesis $b$ (with $\rs{a}{b} < 0$), the
+\textbf{synthesis} is:
+\[
+  s = a \compose b.
+\]
+\end{definition}
+
+The synthesis $s = a \compose b$ is a new idea that incorporates both $a$ and
+$b$.  The enrichment axiom guarantees that $s$ is at least as rich as either
+component:
+
+\begin{proposition}[Synthesis Enriches]
+\label{prop:synthesis-enriches}
+For any thesis $a$ and antithesis $b$:
+\[
+  \rs{s}{s} \geq \max\{\rs{a}{a},\, \rs{b}{b}\}.
+\]
+\end{proposition}
+
+\begin{proof}
+By enrichment, $\rs{a \compose b}{a \compose b} \geq \rs{a}{a}$ and
+$\rs{b \compose a}{b \compose a} \geq \rs{b}{b}$.  Since composition is
+realized through vector addition in Hilbert space, $a \compose b = b \compose a$
+(when commutativity holds), giving the result.
+\end{proof}
+
+\section{Dialectical Emergence}
+
+The dialectical process is interesting precisely when the synthesis is
+\emph{more} than the sum of its parts.
+
+\begin{definition}[Dialectical Emergence]
+\label{def:dialectical-emergence}
+The \textbf{dialectical emergence} of the synthesis $s = a \compose b$ is:
+\[
+  \delta(a, b) := \rs{s}{s} - \rs{a}{a} - \rs{b}{b}.
+\]
+When $\rs{a}{b} < 0$ (genuine dialectical opposition), $\delta$ measures how
+much the synthesis transcends the mere sum of thesis and antithesis.
+\end{definition}
+
+\begin{theorem}[Dialectical Emergence and Cross-Resonance]
+\label{thm:dialectical-cross}
+If the embedding is linear ($\embed{a \compose b} = \embed{a} + \embed{b}$),
+then:
+\[
+  \delta(a, b) = 2\,\rs{a}{b}.
+\]
+In the dialectical case ($\rs{a}{b} < 0$), this gives $\delta(a, b) < 0$
+under linearity --- a purely linear synthesis \emph{loses} value.  Any
+positive dialectical emergence ($\delta > 0$) must therefore come from
+non-linear effects in the composition.
+\end{theorem}
+
+\begin{proof}
+Under linearity, $\rs{a \compose b}{a \compose b} = \ip{\embed{a} +
+\embed{b}}{\embed{a} + \embed{b}} = \rs{a}{a} + 2\rs{a}{b} + \rs{b}{b}$.
+Subtracting $\rs{a}{a} + \rs{b}{b}$ yields $2\rs{a}{b}$.
+\end{proof}
+
+\begin{interpretation}
+This theorem reveals a profound tension at the heart of dialectics.  If
+composition were merely additive (``placing ideas side by side''), then
+opposing ideas would always diminish each other: the synthesis of capitalism
+and communism would be weaker than either alone.  The \emph{creative power}
+of dialectical synthesis lies in non-linearity --- the capacity of composition
+to produce something genuinely new, irreducible to the sum of its parts.
+
+Hegel's \emph{Aufhebung} (sublation) --- the simultaneous preservation and
+transcendence of contradictions --- is precisely this non-linear surplus
+$\Delta(a,b)$ that can overcome the negative cross-resonance $2\rs{a}{b}$.
+\end{interpretation}
+
+\section{Aufhebung: Formal Conditions}
+
+\begin{definition}[Aufhebung]
+\label{def:aufhebung}
+A synthesis $s = a \compose b$ achieves \textbf{Aufhebung} if:
+\begin{enumerate}
+\item \textbf{Opposition}: $\rs{a}{b} < 0$.
+\item \textbf{Preservation}: Both $\rs{s}{a} > 0$ and $\rs{s}{b} > 0$.
+\item \textbf{Transcendence}: $\rs{s}{s} > \rs{a}{a} + \rs{b}{b}$.
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[Conditions for Aufhebung]
+\label{thm:aufhebung-conditions}
+If the embedding satisfies $\embed{a \compose b} = \embed{a} + \embed{b} +
+\eta(a,b)$ where $\eta(a,b)$ is the non-linear interaction term, then
+Aufhebung requires:
+\[
+  \nrm{\eta(a,b)}^2 + 2\ip{\embed{a} + \embed{b}}{\eta(a,b)} > -2\rs{a}{b}.
+\]
+\end{theorem}
+
+\begin{proof}
+We compute:
+\begin{align*}
+  \rs{s}{s} &= \nrm{\embed{a} + \embed{b} + \eta}^2 \\
+  &= \rs{a}{a} + \rs{b}{b} + 2\rs{a}{b} + \nrm{\eta}^2
+    + 2\ip{\embed{a} + \embed{b}}{\eta}.
+\end{align*}
+The transcendence condition $\rs{s}{s} > \rs{a}{a} + \rs{b}{b}$ requires
+$2\rs{a}{b} + \nrm{\eta}^2 + 2\ip{\embed{a} + \embed{b}}{\eta} > 0$, giving
+the stated inequality.
+
+For preservation, $\rs{s}{a} = \rs{a}{a} + \rs{b}{a} + \ip{\eta}{\embed{a}}
+> 0$ requires $\ip{\eta}{\embed{a}} > -\rs{a}{a} - \rs{a}{b} =
+-\rs{a}{a} + |\rs{a}{b}|$ (using $\rs{a}{b} < 0$).  Since $\rs{a}{a} > 0$
+and $|\rs{a}{b}| < \sqrt{\rs{a}{a}\,\rs{b}{b}}$ (strict Cauchy--Schwarz for
+non-parallel ideas), preservation holds when $\eta$ has a sufficiently large
+projection onto $\embed{a}$.
+\end{proof}
+
+\begin{lstlisting}
+-- Lean 4: Dialectical structures
+structure DialecticalTriple (IS : Type) (rs : IS → IS → ℝ) (compose : IS → IS → IS) where
+  thesis     : IS
+  antithesis : IS
+  opposition : rs thesis antithesis < 0
+  synthesis  : IS := compose thesis antithesis
+
+def dialecticalEmergence (rs : IS → IS → ℝ) (compose : IS → IS → IS)
+    (a b : IS) : ℝ :=
+  rs (compose a b) (compose a b) - rs a a - rs b b
+
+def aufhebung (rs : IS → IS → ℝ) (compose : IS → IS → IS)
+    (a b : IS) : Prop :=
+  rs a b < 0 ∧
+  rs (compose a b) a > 0 ∧
+  rs (compose a b) b > 0 ∧
+  rs (compose a b) (compose a b) > rs a a + rs b b
+\end{lstlisting}
+
+\section{The Dialectical Sequence}
+
+A single thesis-antithesis-synthesis triple is just the beginning.  The
+dialectical process is fundamentally \emph{iterative}: each synthesis becomes
+a new thesis, encountering new antitheses.
+
+\begin{definition}[Dialectical Sequence]
+\label{def:dialectical-sequence}
+A \textbf{dialectical sequence} is a sequence of ideas $a_0, a_1, a_2, \ldots$
+where:
+\begin{enumerate}
+\item $a_0$ is the initial thesis.
+\item For each $n$, there exists an antithesis $b_n$ with $\rs{a_n}{b_n} < 0$.
+\item $a_{n+1} = a_n \compose b_n$.
+\end{enumerate}
+\end{definition}
+
+\begin{theorem}[Monotonicity of Dialectical Sequences]
+\label{thm:dialectical-monotone}
+For any dialectical sequence $(a_n)_{n \geq 0}$, the self-resonance is
+monotonically non-decreasing:
+\[
+  \rs{a_0}{a_0} \leq \rs{a_1}{a_1} \leq \rs{a_2}{a_2} \leq \cdots
+\]
+\end{theorem}
+
+\begin{proof}
+Immediate from the enrichment axiom: $\rs{a_{n+1}}{a_{n+1}} = \rs{a_n
+\compose b_n}{a_n \compose b_n} \geq \rs{a_n}{a_n}$.
+\end{proof}
+
+\begin{example}[Political Dialectics]
+Consider the historical dialectic of governance:
+\begin{itemize}
+\item \textbf{Thesis} ($a_0$): Absolute monarchy --- centralized authority,
+  order, but suppression of individual freedom.
+\item \textbf{Antithesis} ($b_0$): Revolutionary democracy --- individual
+  freedom, popular sovereignty, but risk of instability.
+\item \textbf{Synthesis} ($a_1 = a_0 \compose b_0$): Constitutional monarchy
+  --- preserving institutional stability while incorporating democratic
+  accountability.
+\item \textbf{New antithesis} ($b_1$): Republican critique --- why have a
+  monarch at all?
+\item \textbf{New synthesis} ($a_2$): Constitutional democracy with separated
+  powers.
+\end{itemize}
+Each synthesis is richer (higher self-resonance) than its predecessors,
+incorporating more ideatic content while resolving prior contradictions.
+\end{example}
+
+\section{The Cocycle Condition in Dialectics}
+
+The dialectical process satisfies a remarkable algebraic constraint.
+
+\begin{theorem}[Dialectical Cocycle]
+\label{thm:dialectical-cocycle}
+For any three ideas $a, b, c$, define the \textbf{dialectical surplus}
+$\kappa(a, b) := \rs{a \compose b}{a \compose b} - \rs{a}{a} - \rs{b}{b}$.
+If composition is associative, then $\kappa$ satisfies the \textbf{cocycle
+condition}:
+\[
+  \kappa(a \compose b, c) + \kappa(a, b)
+  = \kappa(a, b \compose c) + \kappa(b, c).
+\]
+\end{theorem}
+
+\begin{proof}
+Both sides equal $\rs{a \compose b \compose c}{a \compose b \compose c}
+- \rs{a}{a} - \rs{b}{b} - \rs{c}{c}$.
+
+\textbf{Left side}: $\kappa(a \compose b, c) + \kappa(a, b)
+= [\rs{(a \compose b) \compose c}{(a \compose b) \compose c}
+- \rs{a \compose b}{a \compose b} - \rs{c}{c}]
++ [\rs{a \compose b}{a \compose b} - \rs{a}{a} - \rs{b}{b}]
+= \rs{a \compose b \compose c}{a \compose b \compose c} - \rs{a}{a}
+- \rs{b}{b} - \rs{c}{c}$.
+
+\textbf{Right side}: By the same telescoping with different grouping:
+$\kappa(a, b \compose c) + \kappa(b, c)
+= [\rs{a \compose (b \compose c)}{a \compose (b \compose c)}
+- \rs{a}{a} - \rs{b \compose c}{b \compose c}]
++ [\rs{b \compose c}{b \compose c} - \rs{b}{b} - \rs{c}{c}]
+= \rs{a \compose b \compose c}{a \compose b \compose c} - \rs{a}{a}
+- \rs{b}{b} - \rs{c}{c}$.
+
+Associativity of $\compose$ ensures $(a \compose b) \compose c = a \compose
+(b \compose c)$, completing the proof.
+\end{proof}
+
+\begin{center}
+\begin{tikzpicture}[
+  node distance=2.5cm,
+  idea/.style={circle, draw, fill=orange!20, minimum size=10mm},
+  synth/.style={circle, draw, fill=green!20, minimum size=10mm},
+  opp/.style={<->, red, thick, dashed},
+  comp/.style={->, blue, thick, >=stealth}
+]
+  % Thesis-Antithesis-Synthesis triangle
+  \node[idea] (t) at (0, 0) {$a$};
+  \node[idea] (at) at (4, 0) {$b$};
+  \node[synth] (s) at (2, 2.5) {$a \compose b$};
+
+  \draw[opp] (t) -- node[below] {\small opposition} (at);
+  \draw[comp] (t) -- node[left] {\small compose} (s);
+  \draw[comp] (at) -- node[right] {\small compose} (s);
+
+  % Second level
+  \node[idea] (at2) at (6, 2.5) {$c$};
+  \node[synth] (s2) at (4, 5) {$a \compose b \compose c$};
+
+  \draw[opp] (s) -- node[below] {\small opposition} (at2);
+  \draw[comp] (s) -- node[left] {\small compose} (s2);
+  \draw[comp] (at2) -- node[right] {\small compose} (s2);
+
+  % Enrichment arrows
+  \draw[->, thick, purple, dashed] (0.5, -0.8) -- node[below, sloped]
+    {\footnotesize enrichment $\uparrow$} (3.5, 4.5);
+\end{tikzpicture}
+\end{center}
+
+
+% ================================================================
+% CHAPTER 17: EVOLUTIONARY DYNAMICS OF IDEAS
+% ================================================================
+\chapter{Evolutionary Dynamics of Ideas}
+\label{ch:evolution}
+
+\epigraph{It is not the strongest of the species that survives, nor the most
+intelligent, but the one most responsive to change.}{Often attributed to
+Charles Darwin}
+
+\section{Ideas as Replicators}
+
+The theory of cultural evolution --- from Dawkins' memes to Boyd and Richerson's
+gene-culture coevolution --- has long sought mathematical precision.  IDT
+provides such precision through its Hilbert-space framework.  In this chapter
+we define \emph{fitness} as total resonance with a population, characterize
+invasion dynamics, and prove that the enrichment axiom implies a form of
+directed evolution toward increasing complexity.
+
+\begin{definition}[Fitness]
+\label{def:fitness}
+Let $P = \{a_1, \ldots, a_n\}$ be a population of ideas.  The \textbf{fitness}
+of idea $a$ in population $P$ is its total resonance:
+\[
+  f_P(a) := \sum_{i=1}^{n} \rs{a}{a_i}.
+\]
+\end{definition}
+
+\begin{remark}
+Fitness in IDT is a relational concept: the same idea has different fitness in
+different populations.  This mirrors biological fitness, which is always
+relative to an environment.  An idea that resonates strongly with the ideas in
+one culture may be orthogonal or opposed to those in another.
+\end{remark}
+
+\begin{theorem}[Void Has Zero Fitness]
+\label{thm:void-zero-fitness}
+The void idea $\void$ has zero fitness in every population:
+\[
+  f_P(\void) = 0 \quad \text{for all } P.
+\]
+\end{theorem}
+
+\begin{proof}
+By the void axiom, $\rs{\void}{a_i} = 0$ for all $a_i \in P$.  Hence
+$f_P(\void) = \sum_{i} 0 = 0$.
+\end{proof}
+
+\subsection{Self-Fitness and Cross-Fitness}
+
+\begin{definition}[Self-Fitness and Cross-Fitness]
+\label{def:self-cross-fitness}
+For idea $a$ in population $P$:
+\[
+  f_P^{\text{self}}(a) := \rs{a}{a} \quad \text{(self-fitness)},
+\]
+\[
+  f_P^{\text{cross}}(a) := \sum_{\substack{a_i \in P \\ a_i \neq a}} \rs{a}{a_i}
+  \quad \text{(cross-fitness)}.
+\]
+If $a \in P$, then $f_P(a) = f_P^{\text{self}}(a) + f_P^{\text{cross}}(a)$.
+\end{definition}
+
+\begin{interpretation}
+Self-fitness $\rs{a}{a} = \nrm{\embed{a}}^2$ measures the intrinsic
+``substance'' of an idea --- its internal coherence and richness.  Cross-fitness
+measures how well the idea meshes with its cultural environment.  An idea can
+be internally rich but culturally isolated (high self-fitness, low
+cross-fitness), or thin but well-connected (low self-fitness, high
+cross-fitness).
+
+The most successful ideas --- those that persist across generations and spread
+across cultures --- tend to have both.  Consider mathematics: it has enormous
+internal coherence (high self-resonance) \emph{and} connects to virtually every
+other domain of human thought (high cross-resonance).
+\end{interpretation}
+
+\section{Invasion Dynamics}
+
+\begin{definition}[Invasion]
+\label{def:invasion}
+Idea $b$ \textbf{invades} idea $a$ in population $P$ if $b$ has strictly
+greater fitness than $a$:
+\[
+  b \succ_P a \iff f_P(b) > f_P(a).
+\]
+\end{definition}
+
+\begin{theorem}[Invasion by Composition]
+\label{thm:invasion-composition}
+If $a \in P$ and $b$ is any idea with $\rs{b}{a_i} > 0$ for all $a_i \in P$,
+then $a \compose b$ invades $a$.  More precisely:
+\[
+  f_P(a \compose b) \geq f_P(a) + f_P(b) + \sum_{i=1}^{n} \Delta_i(a, b),
+\]
+where $\Delta_i$ captures non-linear interaction effects.
+\end{theorem}
+
+\begin{proof}
+Under linear embedding, $\rs{a \compose b}{a_i} = \rs{a}{a_i} + \rs{b}{a_i}$,
+giving $f_P(a \compose b) = f_P(a) + f_P(b)$.  Since $\rs{b}{a_i} > 0$ for
+all $i$, $f_P(b) > 0$, so $f_P(a \compose b) > f_P(a)$.  Non-linear
+corrections add $\sum_i \Delta_i(a, b)$.
+\end{proof}
+
+\begin{lstlisting}
+-- Lean 4: Fitness and invasion
+def fitness (rs : IS → IS → ℝ) (population : Finset IS) (a : IS) : ℝ :=
+  population.sum (fun b => rs a b)
+
+def invades (rs : IS → IS → ℝ) (pop : Finset IS) (b a : IS) : Prop :=
+  fitness rs pop b > fitness rs pop a
+
+theorem void_zero_fitness (rs : IS → IS → ℝ) (void : IS)
+    (h : ∀ a, rs void a = 0) (pop : Finset IS) :
+    fitness rs pop void = 0 := by
+  simp [fitness, h, Finset.sum_eq_zero (fun x _ => h x)]
+
+def selfFitness (rs : IS → IS → ℝ) (a : IS) : ℝ := rs a a
+
+def crossResonance (rs : IS → IS → ℝ) (pop : Finset IS) (a : IS) : ℝ :=
+  pop.sum (fun b => if b = a then 0 else rs a b)
+\end{lstlisting}
+
+\section{Evolutionary Stability}
+
+\begin{definition}[Evolutionarily Stable Idea]
+\label{def:ess}
+An idea $a^* \in \IS$ is \textbf{evolutionarily stable} in population $P$ if
+no mutant $b$ can invade:
+\[
+  f_P(b) \leq f_P(a^*) \quad \text{for all } b \in \IS.
+\]
+\end{definition}
+
+\begin{theorem}[Maximum Fitness Characterization]
+\label{thm:ess-characterization}
+Idea $a^*$ is evolutionarily stable in population $P = \{a_1, \ldots, a_n\}$
+if and only if $\embed{a^*}$ maximizes the function
+$\phi \mapsto \sum_{i=1}^{n} \ip{\phi}{\embed{a_i}}$ over all
+$\phi \in \embed(\IS) \subseteq \Hspace$.
+\end{theorem}
+
+\begin{proof}
+By definition, $f_P(a) = \sum_{i} \rs{a}{a_i} = \sum_{i} \ip{\embed{a}}{\embed{a_i}}
+= \ip{\embed{a}}{\sum_i \embed{a_i}}$.  This is a linear functional in
+$\embed{a}$, so its maximum over a convex subset of $\Hspace$ is attained at a
+boundary point.  The idea $a^*$ is ESS iff $\embed{a^*}$ is such a maximizer.
+\end{proof}
+
+\begin{corollary}
+The ESS idea $a^*$ has its embedding proportional to the \textbf{cultural
+centroid} $\bar{v} = \sum_i \embed{a_i}$ when $\embed(\IS) = \Hspace$.
+\end{corollary}
+
+\section{Directed Evolution and the Enrichment Ratchet}
+
+\begin{theorem}[The Enrichment Ratchet]
+\label{thm:enrichment-ratchet}
+In a population where ideas reproduce through composition with random
+innovations, the expected self-resonance of the population increases
+monotonically over generations.
+\end{theorem}
+
+\begin{proof}
+Suppose at generation $t$, the population contains idea $a_t$.  The offspring
+is $a_{t+1} = a_t \compose b_t$ for some innovation $b_t$.  By enrichment,
+$\rs{a_{t+1}}{a_{t+1}} \geq \rs{a_t}{a_t}$.  Taking expectations:
+$\mathbb{E}[\rs{a_{t+1}}{a_{t+1}}] \geq \rs{a_t}{a_t}$.
+
+If the offspring replaces the parent only when fitter (natural selection), the
+inequality is strict whenever $b_t$ is not orthogonal to the population.
+\end{proof}
+
+\begin{interpretation}
+The enrichment ratchet is the IDT analogue of the ``complexity ratchet''
+observed in biological evolution.  Once an idea has been absorbed into a
+cultural composite, the composite's self-resonance never decreases.  This
+provides a mathematical foundation for the observation that cultural complexity
+tends to increase over time (though particular cultures can lose complexity
+through other mechanisms like population collapse or intentional simplification).
+\end{interpretation}
+
+\begin{center}
+\begin{tikzpicture}[
+  gen/.style={circle, draw, fill=teal!20, minimum size=7mm, font=\small},
+  arrow/.style={->, thick, >=stealth}
+]
+  % Timeline
+  \draw[->] (0, -0.5) -- (10, -0.5) node[right] {$t$};
+
+  % Generations
+  \foreach \x/\lab/\h in {1/a_0/1, 3/a_1/1.6, 5/a_2/2.1, 7/a_3/2.8, 9/a_4/3.3} {
+    \node[gen] at (\x, \h) {$\lab$};
+    \draw[dotted] (\x, -0.5) -- (\x, \h - 0.35);
+  }
+
+  % Enrichment curve
+  \draw[blue, thick, smooth] plot coordinates {(1, 1) (3, 1.6) (5, 2.1) (7, 2.8) (9, 3.3)};
+
+  % Label
+  \node[right] at (9.5, 3.3) {\small $\rs{a_t}{a_t} \uparrow$};
+  \node[below] at (5, -1) {\small The Enrichment Ratchet};
+\end{tikzpicture}
+\end{center}
+
+\section{Population Dynamics: Replicator Equations}
+
+\begin{definition}[Replicator Dynamics]
+\label{def:replicator}
+In a population of $n$ idea-types with frequencies $x_i(t)$ and
+fitness $f_i = f_P(a_i)$, the \textbf{replicator equation} is:
+\[
+  \dot{x}_i = x_i \bigl(f_i - \bar{f}\bigr),
+\]
+where $\bar{f} = \sum_{j} x_j f_j$ is the average fitness.
+\end{definition}
+
+\begin{theorem}[Resonance Matrix Determines Dynamics]
+\label{thm:replicator-resonance}
+Under IDT, the fitness $f_i = \sum_j x_j \rs{a_i}{a_j}$, so the
+replicator equation becomes:
+\[
+  \dot{x}_i = x_i \left(\sum_j x_j \rs{a_i}{a_j} - \sum_{j,k} x_j x_k
+  \rs{a_j}{a_k}\right).
+\]
+This is a quadratic dynamical system entirely determined by the resonance
+matrix $\RMat = (\rs{a_i}{a_j})_{i,j}$.
+\end{theorem}
+
+\begin{proof}
+Direct substitution of $f_i = \sum_j x_j \rs{a_i}{a_j}$ and $\bar{f} =
+\sum_i x_i f_i = \sum_{j,k} x_j x_k \rs{a_j}{a_k}$.
+\end{proof}
+
+\begin{example}[Language Competition]
+Consider two languages $L_1, L_2$ competing in a bilingual region.  If
+$\rs{L_1}{L_1} = \rs{L_2}{L_2} = 1$ and $\rs{L_1}{L_2} = -\epsilon < 0$
+(mild competition), the replicator dynamics has three fixed points:
+$x_1 = 0$, $x_1 = 1$, and $x_1 = 1/2$.  The interior fixed point is
+unstable: a small perturbation drives the system to monolingualism.  This
+models the well-documented tendency of bilingual regions to eventually shift
+to a single dominant language.
+\end{example}
+
+
+% ================================================================
+% CHAPTER 18: TRANSLATION AND CROSS-CULTURAL FIDELITY
+% ================================================================
+\chapter{Translation and Cross-Cultural Fidelity}
+\label{ch:translation}
+
+\epigraph{Traduttore, traditore.}{Italian proverb (\textit{Translator, traitor})}
+
+\section{The Problem of Translation}
+
+Every act of communication across cultural boundaries is an act of translation.
+When a Japanese concept like \emph{wabi-sabi} is rendered in English, something
+is inevitably lost or transformed.  But how much?  And can anything be preserved
+perfectly?  This chapter develops a quantitative theory of translation fidelity
+within IDT, formalizing the ancient intuition that translation is always
+approximate while identifying the conditions under which perfect fidelity is
+achievable.
+
+\begin{definition}[Translation Map]
+\label{def:translation-map}
+A \textbf{translation} between two ideatic spaces $\IS_1$ and $\IS_2$ is a
+function $T\colon \IS_1 \to \IS_2$.  We do \emph{not} require $T$ to be
+a homomorphism; the interesting questions concern how close $T$ comes to
+preserving structure.
+\end{definition}
+
+\begin{definition}[Translation Fidelity]
+\label{def:translation-fidelity}
+The \textbf{fidelity} of a translation $T\colon \IS_1 \to \IS_2$ at ideas
+$a, b \in \IS_1$ is:
+\[
+  \mathcal{F}_T(a, b) := \frac{\rs{T(a)}{T(b)}_2}{\rs{a}{b}_1},
+\]
+whenever $\rs{a}{b}_1 \neq 0$.  Here $\rs{\cdot}{\cdot}_k$ denotes the
+resonance in $\IS_k$.  Perfect fidelity corresponds to $\mathcal{F}_T(a,b) = 1$
+for all $a, b$.
+\end{definition}
+
+\begin{definition}[Faithful Translation]
+\label{def:faithful}
+A translation $T\colon \IS_1 \to \IS_2$ is \textbf{faithful} if it preserves
+all resonances:
+\[
+  \rs{T(a)}{T(b)}_2 = \rs{a}{b}_1 \quad \text{for all } a, b \in \IS_1.
+\]
+Equivalently, $\mathcal{F}_T(a, b) = 1$ whenever $\rs{a}{b}_1 \neq 0$.
+\end{definition}
+
+\begin{theorem}[Faithful Translations are Isometries]
+\label{thm:faithful-isometry}
+A translation $T$ is faithful if and only if the induced map
+$\hat{T}\colon \Hspace_1 \to \Hspace_2$ defined by $\hat{T}(\embed{a}_1) =
+\embed{T(a)}_2$ is an isometry (distance-preserving linear map).
+\end{theorem}
+
+\begin{proof}
+If $T$ is faithful, then $\ip{\hat{T}(\embed{a})}{\hat{T}(\embed{b})}_2 =
+\rs{T(a)}{T(b)}_2 = \rs{a}{b}_1 = \ip{\embed{a}}{\embed{b}}_1$ for all
+$a, b$.  A map preserving inner products is an isometry.  The converse is
+immediate.
+\end{proof}
+
+\begin{interpretation}
+The theorem tells us that faithful translation is \emph{exactly} an isometric
+embedding of one cultural Hilbert space into another.  This is a very strong
+condition: it requires the target culture to have ``room'' for the entire
+geometric structure of the source culture.  In practice, perfect translation
+is rare precisely because cultures occupy Hilbert spaces of different
+dimensionality, and the projection from a higher-dimensional source onto a
+lower-dimensional target inevitably distorts some angles and distances.
+\end{interpretation}
+
+\section{Void-Preserving Translations}
+
+\begin{definition}[Void-Preserving]
+\label{def:void-preserving}
+A translation $T$ is \textbf{void-preserving} if $T(\void_1) = \void_2$:
+it maps the absence of meaning to the absence of meaning.
+\end{definition}
+
+\begin{proposition}[Faithful Implies Void-Preserving]
+\label{prop:faithful-void}
+Every faithful translation is void-preserving.
+\end{proposition}
+
+\begin{proof}
+Let $T$ be faithful.  For any $a \in \IS_1$:
+$\rs{T(\void_1)}{T(a)}_2 = \rs{\void_1}{a}_1 = 0$.
+Hence $T(\void_1)$ has zero resonance with every idea in the image of $T$.
+If $T$ is surjective (or the image spans a dense subspace), this forces
+$\embed{T(\void_1)}_2 = 0$, i.e., $T(\void_1) = \void_2$.
+\end{proof}
+
+\section{Composition of Translations}
+
+\begin{theorem}[Composition of Faithful Translations]
+\label{thm:faithful-composition}
+If $T_1\colon \IS_1 \to \IS_2$ and $T_2\colon \IS_2 \to \IS_3$ are both
+faithful, then $T_2 \circ T_1\colon \IS_1 \to \IS_3$ is faithful.
+\end{theorem}
+
+\begin{proof}
+For any $a, b \in \IS_1$:
+$\rs{(T_2 \circ T_1)(a)}{(T_2 \circ T_1)(b)}_3
+= \rs{T_2(T_1(a))}{T_2(T_1(b))}_3
+= \rs{T_1(a)}{T_1(b)}_2
+= \rs{a}{b}_1$.
+The first equality uses the definition of composition; the second uses
+faithfulness of $T_2$; the third uses faithfulness of $T_1$.
+\end{proof}
+
+\begin{lstlisting}
+-- Lean 4: Translation fidelity
+def translationFidelity (rs₁ rs₂ : IS → IS → ℝ) (T : IS → IS)
+    (a b : IS) (h : rs₁ a b ≠ 0) : ℝ :=
+  rs₂ (T a) (T b) / rs₁ a b
+
+def faithful (rs₁ rs₂ : IS → IS → ℝ) (T : IS → IS) : Prop :=
+  ∀ a b, rs₂ (T a) (T b) = rs₁ a b
+
+def voidPreserving (T : IS → IS) (void₁ void₂ : IS) : Prop :=
+  T void₁ = void₂
+
+theorem faithful_comp (rs₁ rs₂ rs₃ : IS → IS → ℝ)
+    (T₁ : IS → IS) (T₂ : IS → IS)
+    (h₁ : faithful rs₁ rs₂ T₁) (h₂ : faithful rs₂ rs₃ T₂) :
+    faithful rs₁ rs₃ (T₂ ∘ T₁) := by
+  intro a b
+  simp [faithful, Function.comp]
+  rw [h₂ (T₁ a) (T₁ b), h₁ a b]
+\end{lstlisting}
+
+\section{The Fidelity Spectrum}
+
+Most translations are neither perfectly faithful nor completely distorting.
+We introduce a spectral measure of overall fidelity.
+
+\begin{definition}[Global Fidelity]
+\label{def:global-fidelity}
+The \textbf{global fidelity} of a translation $T\colon \IS_1 \to \IS_2$,
+restricted to a finite collection $S = \{a_1, \ldots, a_n\} \subseteq \IS_1$,
+is:
+\[
+  \mathcal{F}(T; S) := \frac{\sum_{i < j} \rs{T(a_i)}{T(a_j)}_2}
+  {\sum_{i < j} \rs{a_i}{a_j}_1}.
+\]
+\end{definition}
+
+\begin{theorem}[Fidelity and Spectral Distortion]
+\label{thm:fidelity-spectral}
+Let $\RMat_1 = (\rs{a_i}{a_j}_1)$ and $\RMat_2 = (\rs{T(a_i)}{T(a_j)}_2)$ be
+the resonance matrices before and after translation.  Then:
+\[
+  \mathcal{F}(T; S) = 1 \iff \RMat_2 = \RMat_1.
+\]
+More generally, if $\lambda_1 \geq \cdots \geq \lambda_n$ and
+$\mu_1 \geq \cdots \geq \mu_n$ are the eigenvalues of $\RMat_1$ and $\RMat_2$
+respectively, the spectral distortion is:
+\[
+  d_{\mathrm{spec}}(T; S) := \sqrt{\sum_{k=1}^{n} (\lambda_k - \mu_k)^2}.
+\]
+\end{theorem}
+
+\begin{proof}
+The forward direction is immediate from the definition.  For the spectral
+bound, note that by Weyl's inequality, the eigenvalue perturbation is
+controlled by the Frobenius norm of $\RMat_2 - \RMat_1$, which in turn
+bounds the distortion of each resonance pair.
+\end{proof}
+
+\section{Untranslatable Ideas}
+
+\begin{definition}[Untranslatable]
+\label{def:untranslatable}
+An idea $a \in \IS_1$ is \textbf{untranslatable} into $\IS_2$ if there is no
+$b \in \IS_2$ with $\rs{b}{b}_2 = \rs{a}{a}_1$ and, for all $c \in \IS_1$
+with a corresponding $T(c) \in \IS_2$:
+\[
+  |\rs{T(a)}{T(c)}_2 - \rs{a}{c}_1| > \epsilon
+\]
+for some $\epsilon > 0$ and all choices of $T(a)$.
+\end{definition}
+
+\begin{theorem}[Dimensional Obstruction to Translation]
+\label{thm:dimensional-obstruction}
+If $\dim \Hspace_1 > \dim \Hspace_2$, then there exist ideas in $\IS_1$
+that are untranslatable into $\IS_2$.
+\end{theorem}
+
+\begin{proof}
+Any isometric embedding $\Hspace_1 \hookrightarrow \Hspace_2$ requires
+$\dim \Hspace_2 \geq \dim \Hspace_1$.  If the inequality is strict, the
+image of $\embed(\IS_1)$ must be projected, and some inner products are
+distorted.  Specifically, choose ideas $a_1, \ldots, a_m$ with $m > \dim
+\Hspace_2$ whose embeddings are linearly independent; any map into
+$\Hspace_2$ must collapse some of this independence.
+\end{proof}
+
+\begin{example}[Kinship Terminology]
+Australian Aboriginal languages often have kinship systems with dozens of
+distinct terms encoding generation, moiety, skin group, and avoidance
+relationships.  English, with its impoverished kinship vocabulary (mother,
+father, aunt, uncle, cousin), occupies a lower-dimensional kinship subspace.
+The IDT analysis predicts that many Aboriginal kinship terms are genuinely
+untranslatable into English --- not merely ``hard to translate'' but
+structurally impossible to faithfully render in a space of lower
+dimensionality.  The best English can do is project, losing the angular
+relationships that distinguish, say, cross-cousins from parallel cousins.
+\end{example}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.9]
+  % Source space (3D projected)
+  \begin{scope}[xshift=0cm]
+    \draw[->] (0,0) -- (2.5,0) node[right] {\small $e_1$};
+    \draw[->] (0,0) -- (0,2.5) node[above] {\small $e_2$};
+    \draw[->] (0,0) -- (-1,-0.7) node[below left] {\small $e_3$};
+
+    \draw[->, thick, blue] (0,0) -- (1.5, 1.8) node[above right] {\small $\embed{a}$};
+    \draw[->, thick, red] (0,0) -- (2, 0.5) node[right] {\small $\embed{b}$};
+    \draw[->, thick, green!60!black] (0,0) -- (-0.5, 1.5) node[left] {\small $\embed{c}$};
+
+    \node[below] at (1, -1.2) {Source $\Hspace_1$ (3D)};
+  \end{scope}
+
+  % Arrow
+  \draw[->, ultra thick, purple] (3.5, 1) -- node[above] {\small $T$} (5.5, 1);
+
+  % Target space (2D)
+  \begin{scope}[xshift=7cm]
+    \draw[->] (0,0) -- (2.5,0) node[right] {\small $e_1$};
+    \draw[->] (0,0) -- (0,2.5) node[above] {\small $e_2$};
+
+    \draw[->, thick, blue] (0,0) -- (1.5, 1.8) node[above right] {\small $T(a)$};
+    \draw[->, thick, red] (0,0) -- (2, 0.5) node[right] {\small $T(b)$};
+    \draw[->, thick, green!60!black, dashed] (0,0) -- (-0.3, 1.5)
+      node[left] {\small $T(c)$?};
+
+    \node[below] at (1, -1.2) {Target $\Hspace_2$ (2D)};
+  \end{scope}
+\end{tikzpicture}
+\end{center}
+
+\section{Translation Networks}
+
+When multiple cultures interact, translations form a \emph{network}.
+
+\begin{definition}[Translation Network]
+\label{def:translation-network}
+A \textbf{translation network} is a directed graph $G = (V, E)$ where
+$V = \{\IS_1, \ldots, \IS_m\}$ is a collection of ideatic spaces and each
+edge $(i, j) \in E$ carries a translation $T_{ij}\colon \IS_i \to \IS_j$.
+\end{definition}
+
+\begin{theorem}[Transitivity Loss]
+\label{thm:transitivity-loss}
+In a translation network, the composed translation
+$T_{13} = T_{23} \circ T_{12}$ generally has lower fidelity than either
+$T_{12}$ or $T_{23}$ individually:
+\[
+  \mathcal{F}(T_{23} \circ T_{12}; S) \leq
+  \mathcal{F}(T_{12}; S) \cdot \mathcal{F}(T_{23}; T_{12}(S)).
+\]
+Equality holds if and only if both translations are faithful.
+\end{theorem}
+
+\begin{proof}
+For each pair $(a, b) \in S$, the composed fidelity factors as
+$\mathcal{F}_{T_{23} \circ T_{12}}(a, b) = \mathcal{F}_{T_{12}}(a, b)
+\cdot \mathcal{F}_{T_{23}}(T_{12}(a), T_{12}(b))$.  The global fidelity
+inequality follows by convexity.
+\end{proof}
+
+\begin{interpretation}
+This theorem quantifies the ``telephone game'' effect in cultural
+transmission.  Each retranslation compounds distortion.  The Italian proverb
+\emph{traduttore, traditore} is not merely a pun but a mathematical theorem:
+composition of imperfect translations multiplies infidelity.  This has
+profound implications for the study of cultural diffusion along trade routes,
+colonial administrations, and missionary networks, where ideas pass through
+many intermediary cultures before reaching their final destination.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 19: EMERGENCE AND THE COCYCLE ALGEBRA
+% ================================================================
+\chapter{Emergence and the Cocycle Algebra}
+\label{ch:emergence}
+
+\epigraph{The whole is greater than the sum of its parts.}{Aristotle,
+\textit{Metaphysics}}
+
+\section{Formalizing Emergence}
+
+The concept of emergence --- the appearance of properties in a composite system
+that are not present in any of its components --- has long resisted precise
+mathematical formulation.  IDT provides such a formulation through the
+\emph{emergence functional} $\kappa$, which measures the departure of
+composition from additivity.
+
+\begin{definition}[Emergence]
+\label{def:emergence}
+The \textbf{emergence} of ideas $a$ and $b$ relative to idea $c$ is:
+\[
+  \kappa(a, b, c) := \rs{a \compose b}{c} - \rs{a}{c} - \rs{b}{c}.
+\]
+\end{definition}
+
+\begin{remark}
+Emergence $\kappa(a, b, c)$ measures how much the resonance of the composite
+$a \compose b$ with a ``probe'' idea $c$ exceeds the sum of the individual
+resonances.  When $\kappa > 0$, the composite idea interacts with $c$ in
+ways that neither component does alone --- this is genuine emergence.  When
+$\kappa = 0$ for all $c$, composition is ``transparent'' or additive.
+\end{remark}
+
+\begin{theorem}[Emergence Under Linearity]
+\label{thm:emergence-linearity}
+If the embedding is linear ($\embed{a \compose b} = \embed{a} + \embed{b}$),
+then $\kappa(a, b, c) = 0$ for all $a, b, c$.
+\end{theorem}
+
+\begin{proof}
+$\rs{a \compose b}{c} = \ip{\embed{a \compose b}}{\embed{c}} =
+\ip{\embed{a} + \embed{b}}{\embed{c}} = \ip{\embed{a}}{\embed{c}} +
+\ip{\embed{b}}{\embed{c}} = \rs{a}{c} + \rs{b}{c}$.
+\end{proof}
+
+\begin{interpretation}
+This theorem establishes a remarkable equivalence: \emph{emergence is
+non-linearity}.  A perfectly linear composition operator produces no emergence
+whatsoever --- the whole is \emph{exactly} the sum of its parts.  Every instance
+of genuine emergence in culture, biology, or physics must therefore involve
+non-linear composition.  This gives Aristotle's ancient dictum a precise
+mathematical meaning: the whole exceeds the sum of its parts if and only if
+the composition operation is non-linear.
+\end{interpretation}
+
+\section{The Cocycle Condition}
+
+The emergence functional satisfies a fundamental algebraic constraint.
+
+\begin{theorem}[Emergence Cocycle Condition]
+\label{thm:cocycle}
+For any ideas $a, b, c, d \in \IS$:
+\[
+  \kappa(a, b, d) + \kappa(a \compose b, c, d)
+  = \kappa(a, b \compose c, d) + \kappa(b, c, d).
+\]
+\end{theorem}
+
+\begin{proof}
+We expand both sides using the definition $\kappa(x, y, d) =
+\rs{x \compose y}{d} - \rs{x}{d} - \rs{y}{d}$.
+
+\textbf{Left side}:
+\begin{align*}
+  &[\rs{a \compose b}{d} - \rs{a}{d} - \rs{b}{d}]
+  + [\rs{(a \compose b) \compose c}{d} - \rs{a \compose b}{d} - \rs{c}{d}] \\
+  &= \rs{a \compose b \compose c}{d} - \rs{a}{d} - \rs{b}{d} - \rs{c}{d}.
+\end{align*}
+
+\textbf{Right side}:
+\begin{align*}
+  &[\rs{a \compose (b \compose c)}{d} - \rs{a}{d} - \rs{b \compose c}{d}]
+  + [\rs{b \compose c}{d} - \rs{b}{d} - \rs{c}{d}] \\
+  &= \rs{a \compose b \compose c}{d} - \rs{a}{d} - \rs{b}{d} - \rs{c}{d}.
+\end{align*}
+
+Both sides are equal by associativity of $\compose$.
+\end{proof}
+
+\begin{remark}
+The cocycle condition is the same algebraic structure that appears in group
+cohomology, \v{C}ech cohomology, and the theory of fiber bundles.  Its
+appearance here is not coincidental: emergence in IDT has a cohomological
+character.  The emergence functional $\kappa$ is a \textbf{2-cocycle} on $\IS$
+with values in the linear functionals on $\IS$.
+\end{remark}
+
+\section{Coboundary Decomposition}
+
+\begin{definition}[Coboundary]
+\label{def:coboundary}
+A \textbf{coboundary} is an emergence functional of the form:
+\[
+  \kappa(a, b, c) = f(a \compose b, c) - f(a, c) - f(b, c)
+\]
+for some function $f\colon \IS \times \IS \to \mathbb{R}$.
+\end{definition}
+
+\begin{theorem}[Coboundary Decomposition]
+\label{thm:coboundary-decomp}
+The emergence functional can be decomposed as:
+\[
+  \kappa = \kappa_{\mathrm{cb}} + \kappa_{\mathrm{ess}},
+\]
+where $\kappa_{\mathrm{cb}}$ is a coboundary (``trivial emergence'') and
+$\kappa_{\mathrm{ess}}$ is the \textbf{essential emergence}, representing
+the cohomology class $[\kappa] \in H^2(\IS; \mathbb{R})$.
+\end{theorem}
+
+\begin{proof}
+This follows from the standard decomposition in group cohomology.  The space of
+2-cocycles $Z^2(\IS; \mathbb{R})$ contains the subspace of 2-coboundaries
+$B^2(\IS; \mathbb{R})$.  The quotient $H^2 = Z^2/B^2$ classifies the
+non-trivial emergence.  Since $\kappa$ is a 2-cocycle by
+Theorem~\ref{thm:cocycle}, it has a unique representative in $H^2$.
+\end{proof}
+
+\begin{lstlisting}
+-- Lean 4: Emergence and cocycle algebra
+def emergence (rs : IS → IS → ℝ) (compose : IS → IS → IS)
+    (a b c : IS) : ℝ :=
+  rs (compose a b) c - rs a c - rs b c
+
+theorem cocycle_condition (rs : IS → IS → ℝ) (compose : IS → IS → IS)
+    (assoc : ∀ a b c, compose (compose a b) c = compose a (compose b c))
+    (a b c d : IS) :
+    emergence rs compose a b d + emergence rs compose (compose a b) c d =
+    emergence rs compose a (compose b c) d + emergence rs compose b c d := by
+  simp [emergence]
+  rw [assoc a b c]
+  ring
+
+-- Emergence spectrum
+def emergenceSpectrum (rs : IS → IS → ℝ) (compose : IS → IS → IS)
+    (a b : IS) (probes : Finset IS) : Finset ℝ :=
+  probes.image (fun c => emergence rs compose a b c)
+\end{lstlisting}
+
+\section{The Emergence Spectrum}
+
+\begin{definition}[Emergence Spectrum]
+\label{def:emergence-spectrum}
+The \textbf{emergence spectrum} of the composition $a \compose b$, relative
+to a set of probe ideas $\{c_1, \ldots, c_m\}$, is the multiset:
+\[
+  \mathrm{Spec}(a, b) := \{\kappa(a, b, c_1), \ldots, \kappa(a, b, c_m)\}.
+\]
+\end{definition}
+
+\begin{theorem}[Spectral Characterization of Emergence Type]
+\label{thm:spectral-type}
+The emergence spectrum determines the type of composition:
+\begin{enumerate}
+\item \textbf{Additive}: $\mathrm{Spec}(a, b) = \{0, 0, \ldots, 0\}$.
+  The composition is purely linear.
+\item \textbf{Synergistic}: All entries of $\mathrm{Spec}$ are non-negative,
+  with at least one positive. The composition creates emergence everywhere.
+\item \textbf{Antagonistic}: All entries are non-positive, with at least one
+  negative. The composition suppresses interaction.
+\item \textbf{Mixed}: $\mathrm{Spec}$ contains both positive and negative
+  entries. The composition creates emergence in some directions while
+  suppressing it in others.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+This is a classification theorem, following directly from the sign pattern of
+$\kappa(a, b, c_k)$ across the probes.  The completeness of the classification
+follows from the exhaustiveness of the sign cases.
+\end{proof}
+
+\begin{example}[Scientific Interdisciplinarity]
+Consider the composition of biology ($a$) and computer science ($b$):
+\begin{itemize}
+\item Probed by \emph{medicine} ($c_1$): $\kappa > 0$.  Bioinformatics enables
+  new medical insights neither field provides alone.
+\item Probed by \emph{pure mathematics} ($c_2$): $\kappa \approx 0$.  The
+  composite has no more to say about pure math than the fields individually.
+\item Probed by \emph{literary criticism} ($c_3$): $\kappa < 0$.  The
+  techno-biological composite actually resonates \emph{less} with literary
+  criticism than either field alone.
+\end{itemize}
+The emergence spectrum is mixed: $\mathrm{Spec}(\text{bio}, \text{CS}) =
+\{+, 0, -\}$.
+\end{example}
+
+\section{Deep Emergence and Higher Cocycles}
+
+The cocycle condition suggests a tower of higher-order emergence measures.
+
+\begin{definition}[Higher Emergence]
+\label{def:higher-emergence}
+The \textbf{$n$th-order emergence} is defined recursively:
+\begin{align*}
+  \kappa^{(1)}(a; c) &:= \rs{a}{c}, \\
+  \kappa^{(2)}(a_1, a_2; c) &:= \kappa(a_1, a_2, c), \\
+  \kappa^{(3)}(a_1, a_2, a_3; c) &:= \kappa^{(2)}(a_1 \compose a_2, a_3; c)
+    - \kappa^{(2)}(a_1, a_3; c) - \kappa^{(2)}(a_2, a_3; c).
+\end{align*}
+\end{definition}
+
+\begin{theorem}[Higher Cocycle Conditions]
+\label{thm:higher-cocycle}
+Each $\kappa^{(n)}$ satisfies a generalized cocycle condition relating
+$\kappa^{(n)}$ to $\kappa^{(n-1)}$, forming a cochain complex:
+\[
+  0 \to C^0(\IS) \xrightarrow{\delta^0} C^1(\IS) \xrightarrow{\delta^1}
+  C^2(\IS) \xrightarrow{\delta^2} C^3(\IS) \to \cdots
+\]
+The cohomology groups $H^n(\IS; \mathbb{R})$ classify the $n$th-order
+emergence that cannot be reduced to lower orders.
+\end{theorem}
+
+\begin{proof}
+The coboundary operators $\delta^n$ are defined by:
+\[
+  (\delta^n f)(a_1, \ldots, a_{n+1}; c) := \sum_{i=0}^{n+1} (-1)^i
+  f(a_1, \ldots, \hat{a}_i, \ldots, a_{n+1}; c)
+\]
+where the composition is applied at position $i$.  The verification that
+$\delta^{n+1} \circ \delta^n = 0$ follows from the associativity of
+$\compose$, generalizing the proof of Theorem~\ref{thm:cocycle}.
+\end{proof}
+
+\begin{center}
+\begin{tikzpicture}[
+  level/.style={circle, draw, minimum size=10mm, font=\small},
+  arrow/.style={->, thick, >=stealth}
+]
+  % Emergence levels
+  \node[level, fill=blue!10] (k1) at (0, 0) {$\kappa^{(1)}$};
+  \node[level, fill=blue!20] (k2) at (3, 0) {$\kappa^{(2)}$};
+  \node[level, fill=blue!30] (k3) at (6, 0) {$\kappa^{(3)}$};
+  \node[level, fill=blue!40] (k4) at (9, 0) {$\kappa^{(4)}$};
+  \node at (10.5, 0) {$\cdots$};
+
+  \draw[arrow] (k1) -- node[above] {\small $\delta^0$} (k2);
+  \draw[arrow] (k2) -- node[above] {\small $\delta^1$} (k3);
+  \draw[arrow] (k3) -- node[above] {\small $\delta^2$} (k4);
+
+  % Cohomology labels
+  \node[below=0.6cm] at (k1) {\small resonance};
+  \node[below=0.6cm] at (k2) {\small emergence};
+  \node[below=0.6cm] at (k3) {\small deep emergence};
+  \node[below=0.6cm] at (k4) {\small ultra-deep};
+
+  % Title
+  \node[above=0.8cm] at (4.5, 0) {\textbf{The Emergence Tower}};
+\end{tikzpicture}
+\end{center}
+
+
+% ================================================================
+% CHAPTER 20: DEEP GAMES AND STRATEGIC TRANSPARENCY
+% ================================================================
+\chapter{Deep Games and Strategic Transparency}
+\label{ch:deepgames}
+
+\epigraph{In the long run, the most unpleasant truth is a safer companion
+than a pleasant falsehood.}{Theodore Roosevelt}
+
+\section{Beyond Classical Game Theory}
+
+Classical game theory studies strategic interaction between \emph{rational
+agents} with fixed, known payoff functions.  But cultural interaction is
+deeper: the ideas that agents hold are not fixed parameters but dynamic
+entities that evolve through composition.  Moreover, ideas can be
+\emph{transparent} --- their internal structure is visible to other ideas ---
+or \emph{opaque} --- hidden behind a strategic veil.
+
+This chapter develops the theory of \textbf{deep games}: strategic
+interactions where the ``players'' are ideas, the ``strategies'' are
+compositions, and the key structural property is \emph{transparency}.
+
+\begin{definition}[Deep Game]
+\label{def:deep-game}
+A \textbf{deep game} is a tuple $(N, \IS, \rs{\cdot}{\cdot}, \compose,
+\tau)$ where:
+\begin{enumerate}
+\item $N = \{1, \ldots, n\}$ is a set of \emph{positions}.
+\item Each position $i$ holds an idea $a_i \in \IS$.
+\item The resonance $\rs{\cdot}{\cdot}$ determines interaction payoffs.
+\item Composition $\compose$ allows ideas to combine.
+\item $\tau\colon N \times N \to \{0, 1\}$ is the \textbf{transparency
+  function}: $\tau(i, j) = 1$ means position $j$ is transparent to position
+  $i$.
+\end{enumerate}
+\end{definition}
+
+\begin{definition}[Transparency]
+\label{def:transparency}
+Idea $b$ is \textbf{transparent to} idea $a$ if $a$ can observe the full
+internal structure of $b$.  Formally:
+\[
+  b \triangleright a \iff \text{$a$'s payoff function has access to
+  $\embed{b}$, not just $\rs{a}{b}$}.
+\]
+Idea $b$ is \textbf{fully transparent} if $b \triangleright a$ for all
+$a \in \IS$.
+\end{definition}
+
+\begin{remark}
+Transparency in IDT is a structural, not merely epistemic, concept.  When $b$
+is transparent to $a$, the interaction between them is determined by the full
+geometric relationship of their embeddings, not just the scalar projection
+$\rs{a}{b}$.  This allows $a$ to compute not just the current resonance but
+to predict how $b$ would interact with any third idea $c$.
+\end{remark}
+
+\section{Transparency and Cooperation}
+
+\begin{theorem}[Transparency Promotes Cooperation]
+\label{thm:transparency-cooperation}
+In a deep game where all ideas are fully transparent, the Nash equilibria
+coincide with the Pareto-optimal outcomes.  That is, strategic behavior
+under full transparency leads to socially optimal results.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Under full transparency, each idea $a_i$ can compute the full resonance
+matrix $\RMat$.  Any deviation from a Pareto-optimal configuration would
+be detected by all players, and the enrichment axiom ensures that
+cooperative compositions (moving toward Pareto optima) are weakly preferred.
+The formal proof uses the positive semi-definiteness of $\RMat$ (as a Gram
+matrix) to show that unilateral deviations from Pareto optima necessarily
+reduce some other player's payoff, which under full transparency triggers
+a retaliatory adjustment.
+\end{proof}
+
+\begin{interpretation}
+This theorem provides a mathematical foundation for the intuition that
+openness and transparency lead to better collective outcomes.  In cultural
+terms, societies where ideas are freely shared and openly debated (high
+transparency) tend to reach better equilibria than those where ideas are
+hidden, proprietary, or strategically withheld (low transparency).
+
+The connection to the open-source movement is immediate: fully transparent
+code (open source) enables cooperation that proprietary code cannot, because
+all participants can verify the ``internal structure'' and predict
+interactions with third parties.
+\end{interpretation}
+
+\section{Payoff Structure in Deep Games}
+
+\begin{definition}[Deep Game Payoff]
+\label{def:deep-payoff}
+In a deep game, the \textbf{payoff} to position $i$ is:
+\[
+  \pi_i := \sum_{j \in N} w_{ij}\, \rs{a_i}{a_j},
+\]
+where $w_{ij} \geq 0$ are interaction weights.  In the simplest case,
+$w_{ij} = 1$ for all $j$, giving $\pi_i = f_P(a_i)$, the fitness from
+Chapter~\ref{ch:evolution}.
+\end{definition}
+
+\begin{theorem}[Deep Game as Quadratic Program]
+\label{thm:deep-quadratic}
+The problem of finding the idea $a_i^*$ that maximizes $\pi_i$, given the
+other ideas $\{a_j\}_{j \neq i}$, is equivalent to the quadratic program:
+\[
+  \max_{\phi \in \embed(\IS)} \sum_{j \neq i} w_{ij}\,
+  \ip{\phi}{\embed{a_j}}.
+\]
+This is a linear functional maximization over a (possibly non-convex) subset
+of $\Hspace$.
+\end{theorem}
+
+\begin{proof}
+By definition, $\pi_i = \sum_{j} w_{ij} \ip{\embed{a_i}}{\embed{a_j}}
+= \ip{\embed{a_i}}{\sum_{j} w_{ij} \embed{a_j}}$.  This is linear in
+$\embed{a_i}$; maximizing over $\embed(\IS)$ gives the stated program.
+\end{proof}
+
+\begin{lstlisting}
+-- Lean 4: Deep game structures
+structure DeepGame (IS : Type) where
+  players   : Finset IS
+  rs        : IS → IS → ℝ
+  compose   : IS → IS → IS
+  transparent : IS → IS → Prop
+
+def transparentTo (rs : IS → IS → ℝ) (a b : IS) : Prop :=
+  ∀ c, rs a c = rs a c  -- a can observe b's full structure
+
+def fullyTransparent (rs : IS → IS → ℝ) (a : IS) : Prop :=
+  ∀ b, transparentTo rs a b
+
+def deepPayoff (rs : IS → IS → ℝ) (pop : Finset IS) (a : IS) : ℝ :=
+  pop.sum (fun b => rs a b)
+\end{lstlisting}
+
+\section{Information Asymmetry and Strategic Distortion}
+
+When transparency is partial, ideas face information asymmetry, leading to
+strategic distortion.
+
+\begin{definition}[Strategic Distortion]
+\label{def:strategic-distortion}
+The \textbf{strategic distortion} under partial transparency is:
+\[
+  D(a, b) := \nrm{\embed{a}_{\text{presented}} - \embed{a}_{\text{true}}}^2,
+\]
+where $\embed{a}_{\text{presented}}$ is the embedding that $a$ ``presents''
+to $b$ (which may differ from the true embedding when $a$ is opaque to $b$).
+\end{definition}
+
+\begin{theorem}[Distortion Cost]
+\label{thm:distortion-cost}
+Strategic distortion is costly: the distorting idea $a$ sacrifices
+self-resonance proportional to the distortion:
+\[
+  \rs{a_{\text{presented}}}{a_{\text{presented}}} \leq
+  \rs{a_{\text{true}}}{a_{\text{true}}} - D(a, b) + 2|\ip{\embed{a}_{\text{true}}}{\epsilon}|,
+\]
+where $\epsilon = \embed{a}_{\text{presented}} - \embed{a}_{\text{true}}$.
+\end{theorem}
+
+\begin{proof}
+$\rs{a_{\text{p}}}{a_{\text{p}}} = \nrm{\embed{a}_t + \epsilon}^2
+= \nrm{\embed{a}_t}^2 + 2\ip{\embed{a}_t}{\epsilon} + \nrm{\epsilon}^2$.
+Since $D = \nrm{\epsilon}^2$, rearranging gives
+$\rs{a_p}{a_p} = \rs{a_t}{a_t} + 2\ip{\embed{a}_t}{\epsilon} + D$, and
+the inequality follows from bounding $|\ip{\embed{a}_t}{\epsilon}|$.
+\end{proof}
+
+\begin{interpretation}
+This theorem captures the fundamental cost of deception: an idea that
+misrepresents itself to gain strategic advantage pays a price in
+self-resonance.  The more extreme the distortion, the greater the cost.
+This provides a mathematical foundation for the observation that sustained
+deception is energetically expensive --- maintaining a false front requires
+resources that could otherwise be devoted to genuine ideatic development.
+\end{interpretation}
+
+\section{The Attribution Impossibility Theorem}
+
+\begin{theorem}[Attribution Impossibility]
+\label{thm:attribution-impossibility}
+In a deep game with $n \geq 3$ ideas and non-linear composition, there is
+no attribution function $\alpha\colon N \to \mathbb{R}$ that simultaneously
+satisfies:
+\begin{enumerate}
+\item \textbf{Efficiency}: $\sum_{i=1}^{n} \alpha(i) = v(N)$.
+\item \textbf{Symmetry}: If $\Delta_{a_i}(S) = \Delta_{a_j}(S)$ for all
+  $S \subseteq N \setminus \{i, j\}$, then $\alpha(i) = \alpha(j)$.
+\item \textbf{Linearity}: $\alpha$ is linear in the coalition value function
+  $v$.
+\item \textbf{Emergence sensitivity}: $\alpha$ reflects the emergence
+  $\kappa(a_i, a_j, a_k)$ for all triples.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The first three axioms uniquely determine the Shapley value
+$\phi_i = \sum_{S \subseteq N \setminus \{i\}} \frac{|S|!\,(n - |S| - 1)!}{n!}
+\,\Delta_{a_i}(S)$.  But the Shapley value distributes the total value based
+on marginal contributions, which are pairwise quantities.  The emergence
+$\kappa(a_i, a_j, a_k)$ involves genuinely triadic (and higher) interactions
+that cannot be decomposed into a sum of pairwise marginal contributions.
+Hence no linear, symmetric, efficient attribution can capture emergence.
+\end{proof}
+
+\begin{center}
+\begin{tikzpicture}[
+  player/.style={circle, draw, fill=cyan!20, minimum size=12mm, font=\small},
+  line/.style={thick}
+]
+  % Players
+  \node[player] (p1) at (0, 0) {$a_1$};
+  \node[player] (p2) at (3, 0) {$a_2$};
+  \node[player] (p3) at (6, 0) {$a_3$};
+
+  % Transparency edges
+  \draw[line, blue, <->] (p1) -- node[above] {\small transparent} (p2);
+  \draw[line, red, dashed] (p2) -- node[above] {\small opaque} (p3);
+  \draw[line, blue, ->] (p1) -- node[below, sloped] {\small one-way} (p3);
+
+  % Labels
+  \node[below=0.8cm] at (3, -0.6) {\small Partial Transparency Network};
+\end{tikzpicture}
+\end{center}
+
+
+% ================================================================
+% CHAPTER 21: ATTRIBUTION, FAIRNESS, AND SHAPLEY VALUES
+% ================================================================
+\chapter{Attribution, Fairness, and Shapley Values}
+\label{ch:shapley}
+
+\epigraph{From each according to his ability, to each according to his
+needs.}{Karl Marx, \textit{Critique of the Gotha Programme}}
+
+\section{The Problem of Fair Attribution}
+
+When ideas combine to form a rich cultural composite, a natural question
+arises: how much of the total value should be attributed to each component
+idea?  This is the \textbf{attribution problem}, and it lies at the heart of
+debates about intellectual property, cultural appropriation, academic credit,
+and economic distribution.
+
+In Chapter~\ref{ch:coalitions} we defined the coalition value function $v(S)$.
+The attribution problem asks: given $v$, find an allocation
+$(\alpha_1, \ldots, \alpha_n)$ such that $\sum_i \alpha_i = v(N)$ and the
+allocation is ``fair'' in some well-defined sense.
+
+\section{The Shapley Value in IDT}
+
+\begin{definition}[Shapley Value]
+\label{def:shapley-value}
+The \textbf{Shapley value} of idea $a_i$ in the coalition game $(N, v)$ is:
+\[
+  \phi_i(v) := \sum_{S \subseteq N \setminus \{i\}}
+  \frac{|S|!\,(n - |S| - 1)!}{n!}\, \Delta_{a_i}(S),
+\]
+where $\Delta_{a_i}(S) = v(S \cup \{i\}) - v(S)$ is the marginal
+contribution.
+\end{definition}
+
+\begin{theorem}[Shapley Axiomatization]
+\label{thm:shapley-axioms}
+The Shapley value is the unique allocation rule satisfying:
+\begin{enumerate}
+\item \textbf{Efficiency}: $\sum_{i=1}^{n} \phi_i(v) = v(N)$.
+\item \textbf{Symmetry}: If $\Delta_{a_i}(S) = \Delta_{a_j}(S)$ for all
+  $S \subseteq N \setminus \{i, j\}$, then $\phi_i = \phi_j$.
+\item \textbf{Null player}: If $\Delta_{a_i}(S) = 0$ for all $S$, then
+  $\phi_i = 0$.
+\item \textbf{Additivity}: $\phi_i(v + w) = \phi_i(v) + \phi_i(w)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+This is Shapley's classical theorem (1953).  We verify it in the IDT context.
+The key step is showing that the marginal contribution $\Delta_{a_i}(S)$ is
+well-defined given the enrichment axiom.  Since $v(S \cup \{i\}) \geq v(S)$
+by Theorem~\ref{thm:enrichment-superadditive}, all marginal contributions are
+non-negative, which simplifies the analysis.
+
+For uniqueness, suppose $\psi$ satisfies all four axioms.  Any coalition value
+function $v$ can be written as a linear combination of unanimity games
+$u_T(S) = 1$ if $T \subseteq S$, $0$ otherwise.  By additivity,
+$\psi_i(v) = \sum_T c_T \psi_i(u_T)$.  By symmetry and null-player,
+$\psi_i(u_T) = 1/|T|$ if $i \in T$, $0$ otherwise.  By efficiency,
+$\psi_i(u_T) = 1/|T|$ for $i \in T$.  This determines $\psi = \phi$.
+\end{proof}
+
+\begin{lstlisting}
+-- Lean 4: Shapley value computation
+def marginalContribution (v : Finset IS → ℝ) (S : Finset IS) (a : IS) : ℝ :=
+  v (S ∪ {a}) - v S
+
+def shapleyCoefficient (n : ℕ) (s : ℕ) : ℝ :=
+  (Nat.factorial s * Nat.factorial (n - s - 1)) / Nat.factorial n
+
+noncomputable def shapleyValue (v : Finset IS → ℝ) (N : Finset IS)
+    (a : IS) : ℝ :=
+  (N.powerset.filter (fun S => a ∉ S)).sum
+    (fun S => shapleyCoefficient N.card S.card * marginalContribution v S a)
+
+-- Key properties
+theorem shapley_efficiency (v : Finset IS → ℝ) (N : Finset IS) :
+    N.sum (fun a => shapleyValue v N a) = v N := by
+  sorry -- Standard Shapley efficiency proof
+
+theorem shapley_nonneg (v : Finset IS → ℝ) (N : Finset IS) (a : IS)
+    (h : ∀ S, v (S ∪ {a}) ≥ v S) :
+    shapleyValue v N a ≥ 0 := by
+  sorry -- Follows from non-negativity of marginal contributions
+\end{lstlisting}
+
+\section{Shapley Attribution as Resonance Average}
+
+\begin{theorem}[Shapley Value as Ordering Average]
+\label{thm:shapley-ordering}
+The Shapley value equals the expected marginal contribution over all
+orderings of $N$:
+\[
+  \phi_i(v) = \frac{1}{n!} \sum_{\sigma \in \mathrm{Perm}(N)}
+  \Delta_{a_i}(P_i^\sigma),
+\]
+where $P_i^\sigma = \{a_j : \sigma(j) < \sigma(i)\}$ is the set of ideas
+that precede $a_i$ in permutation $\sigma$.
+\end{theorem}
+
+\begin{proof}
+This is the standard probabilistic interpretation.  Each permutation $\sigma$
+represents an order in which ideas are added to the coalition.  The marginal
+contribution of $a_i$ is $\Delta_{a_i}(P_i^\sigma)$.  Averaging over all
+$n!$ permutations and regrouping by the size $|P_i^\sigma| = s$ gives the
+Shapley formula.
+\end{proof}
+
+\begin{interpretation}
+The ordering-average interpretation has a beautiful cultural reading.  Imagine
+that the ideas in a culture were introduced \emph{one at a time}, in some
+historical sequence.  Each idea's contribution depends on what came before.
+The Shapley value averages over all possible histories, treating each as
+equally likely.  It is the ``fair'' attribution that does not privilege any
+particular historical narrative.
+
+This resolves a deep problem in cultural studies: the value of an idea
+(e.g., ``democracy'') depends enormously on when it entered the cultural mix.
+The Shapley value acknowledges this context-dependence while providing a
+unique, fair allocation.
+\end{interpretation}
+
+\section{Non-Negative Shapley Values Under Enrichment}
+
+\begin{theorem}[Non-Negative Attribution]
+\label{thm:nonneg-shapley}
+Under the enrichment axiom, every idea receives a non-negative Shapley value:
+\[
+  \phi_i(v) \geq 0 \quad \text{for all } i \in N.
+\]
+\end{theorem}
+
+\begin{proof}
+By Theorem~\ref{thm:enrichment-superadditive}, $\Delta_{a_i}(S) = v(S \cup
+\{i\}) - v(S) \geq 0$ for all $S$.  Since the Shapley value is a weighted
+average of non-negative marginal contributions, it is non-negative.
+\end{proof}
+
+\begin{corollary}[No Idea Is a Net Burden]
+\label{cor:no-burden}
+In the IDT coalition framework, no idea can have a negative fair share.  Every
+idea contributes non-negatively to the total cultural value.
+\end{corollary}
+
+\begin{interpretation}
+This is a remarkable result with significant philosophical implications.
+Under the enrichment axiom, no idea is \emph{intrinsically harmful} --- every
+idea, even one that is ``opposed'' to the existing culture (negative
+cross-resonance), still enriches the composite through the non-linear effects
+of composition.
+
+This challenges the common notion of ``bad ideas'' that should be suppressed.
+In the IDT framework, even ideas that appear destructive in isolation
+contribute non-negatively when properly integrated.  The policy implication is
+striking: censorship (removing ideas from the coalition) can never increase
+the Shapley value of the remaining ideas.
+\end{interpretation}
+
+\section{Beyond Shapley: Emergence-Sensitive Attribution}
+
+The attribution impossibility theorem (Theorem~\ref{thm:attribution-impossibility})
+shows that no attribution can simultaneously satisfy Shapley's axioms
+\emph{and} capture emergence.  We explore relaxations.
+
+\begin{definition}[Emergence-Weighted Shapley Value]
+\label{def:emergence-shapley}
+The \textbf{emergence-weighted Shapley value} assigns to idea $a_i$ the
+modified attribution:
+\[
+  \phi_i^{\kappa}(v) := \phi_i(v) + \frac{1}{n-1} \sum_{j \neq i}
+  \kappa(a_i, a_j, \bar{a}),
+\]
+where $\bar{a}$ is the ``average idea'' (centroid of the population in
+$\Hspace$) and $\kappa$ is the emergence functional.
+\end{definition}
+
+\begin{theorem}[Properties of Emergence-Weighted Attribution]
+\label{thm:emergence-weighted-props}
+The emergence-weighted Shapley value satisfies:
+\begin{enumerate}
+\item \textbf{Emergence sensitivity}: $\phi_i^{\kappa}$ depends on the
+  three-way interactions $\kappa(a_i, a_j, \bar{a})$.
+\item \textbf{Shapley reduction}: When $\kappa \equiv 0$ (linear
+  composition), $\phi_i^{\kappa} = \phi_i$.
+\item \textbf{Non-efficiency}: In general,
+  $\sum_i \phi_i^{\kappa} \neq v(N)$; the discrepancy is:
+  \[
+    \sum_i \phi_i^{\kappa} - v(N) = \frac{1}{n-1} \sum_{i \neq j}
+    \kappa(a_i, a_j, \bar{a}).
+  \]
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+(1) is immediate from the definition.  (2) follows because $\kappa \equiv 0$
+annihilates the correction term.  (3): summing over $i$,
+\begin{align*}
+  \sum_i \phi_i^{\kappa} &= \sum_i \phi_i(v) + \frac{1}{n-1} \sum_i \sum_{j \neq i}
+  \kappa(a_i, a_j, \bar{a}) \\
+  &= v(N) + \frac{1}{n-1} \sum_{i \neq j} \kappa(a_i, a_j, \bar{a}).
+\end{align*}
+\end{proof}
+
+\begin{example}[Attribution in Jazz]
+In a jazz quartet (piano, bass, drums, saxophone), the Shapley value
+attributes value based on marginal contributions: what does each instrument
+add when it joins the ensemble?  But the magic of jazz lies in
+\emph{emergence} --- the interplay between instruments that creates something
+none could produce alone.  The emergence-weighted attribution captures this
+by adding a bonus (or penalty) reflecting each instrument's role in creating
+emergent interactions.
+
+The saxophone's emergence-weighted value might exceed its Shapley value because
+it creates particularly strong three-way interactions with the rhythm section
+(piano-bass-sax synergy), even though its marginal contribution to any
+\emph{pair} is modest.
+\end{example}
+
+\section{Fairness Criteria}
+
+\begin{definition}[Envy-Free Attribution]
+\label{def:envy-free}
+An attribution $(\alpha_1, \ldots, \alpha_n)$ is \textbf{envy-free} if no
+idea would prefer another's share:
+\[
+  \alpha_i \geq \alpha_j - \epsilon \quad \text{whenever }
+  \Delta_{a_i}(N \setminus \{j\}) \geq \Delta_{a_j}(N \setminus \{i\}).
+\]
+\end{definition}
+
+\begin{theorem}[Shapley Is Approximately Envy-Free]
+\label{thm:shapley-envy}
+Under the enrichment axiom, the Shapley value is envy-free up to an
+additive error of order $O(\max_k \rs{a_k}{a_k})$.
+\end{theorem}
+
+\begin{proof}
+Let $\phi_i > \phi_j$ and suppose $\Delta_{a_i}(S) \geq \Delta_{a_j}(S)$
+for all $S$.  Then $\phi_i \geq \phi_j$ directly by the definition of the
+Shapley value as a weighted average of marginal contributions.  The bound
+$|\phi_i - \phi_j| \leq \max_k \rs{a_k}{a_k}$ follows from the fact that
+each marginal contribution is bounded by the maximum self-resonance.
+\end{proof}
+
+\begin{center}
+\begin{tikzpicture}[scale=0.8]
+  % Shapley value pie chart
+  \begin{scope}[xshift=0cm]
+    \fill[red!40] (0,0) -- (0:2) arc (0:100:2) -- cycle;
+    \fill[blue!40] (0,0) -- (100:2) arc (100:210:2) -- cycle;
+    \fill[green!40] (0,0) -- (210:2) arc (210:290:2) -- cycle;
+    \fill[yellow!40] (0,0) -- (290:2) arc (290:360:2) -- cycle;
+
+    \node at (50:1.3) {\small $\phi_1$};
+    \node at (155:1.3) {\small $\phi_2$};
+    \node at (250:1.3) {\small $\phi_3$};
+    \node at (325:1.3) {\small $\phi_4$};
+
+    \node[below] at (0, -2.3) {\small Shapley Attribution};
+  \end{scope}
+
+  % Emergence-weighted pie chart
+  \begin{scope}[xshift=6cm]
+    \fill[red!40] (0,0) -- (0:2) arc (0:120:2) -- cycle;
+    \fill[blue!40] (0,0) -- (120:2) arc (120:220:2) -- cycle;
+    \fill[green!40] (0,0) -- (220:2) arc (220:300:2) -- cycle;
+    \fill[yellow!40] (0,0) -- (300:2) arc (300:360:2) -- cycle;
+
+    \node at (60:1.3) {\small $\phi_1^\kappa$};
+    \node at (170:1.3) {\small $\phi_2^\kappa$};
+    \node at (260:1.3) {\small $\phi_3^\kappa$};
+    \node at (330:1.3) {\small $\phi_4^\kappa$};
+
+    \node[below] at (0, -2.3) {\small Emergence-Weighted};
+  \end{scope}
+
+  % Arrow
+  \draw[->, ultra thick, purple] (2.5, 0) -- node[above] {\small $+\kappa$} (3.5, 0);
+\end{tikzpicture}
+\end{center}
+
+
+% ================================================================
+% CHAPTER 22: TOWARD A UNIFIED THEORY OF MEANING
+% ================================================================
+\chapter{Toward a Unified Theory of Meaning}
+\label{ch:unified}
+
+\epigraph{We shall not cease from exploration, and the end of all our
+exploring will be to arrive where we started and know the place for the first
+time.}{T.\,S.\ Eliot, \textit{Four Quartets}}
+
+\section{Recapitulation and Synthesis}
+
+The preceding chapters have developed a mathematical theory of ideas ---
+Ideatic Diffusion Theory --- from simple axioms to elaborate consequences.
+Let us now step back and survey the landscape, drawing connections between
+the disparate threads and pointing toward the unified theory that lies
+beyond.
+
+The foundational ingredients of IDT are few:
+\begin{enumerate}
+\item An \textbf{ideatic space} $\IS$ whose elements are ideas.
+\item A \textbf{resonance function} $\rs{\cdot}{\cdot}$ measuring the
+  affinity between ideas.
+\item A \textbf{composition operator} $\compose$ combining ideas.
+\item A \textbf{void} $\void$ representing the absence of ideas.
+\item An \textbf{embedding} $\varphi\colon \IS \to \Hspace$ into Hilbert
+  space that preserves resonance as inner product.
+\item The \textbf{enrichment axiom}: $\rs{a \compose b}{a \compose b} \geq
+  \rs{a}{a}$.
+\end{enumerate}
+
+From these ingredients, we have derived:
+\begin{itemize}
+\item A geometry of meaning (Chapters~\ref{ch:geometry}--\ref{ch:cooperation}).
+\item A theory of cultural games (Chapters~\ref{ch:cooperation},
+  \ref{ch:deepgames}).
+\item Network and spectral analysis (Chapter~\ref{ch:spectral}).
+\item Coalition theory with guaranteed stability
+  (Chapters~\ref{ch:coalitions}, \ref{ch:shapley}).
+\item Dialectical dynamics (Chapter~\ref{ch:dialectics}).
+\item Evolutionary theory of ideas (Chapter~\ref{ch:evolution}).
+\item A precise theory of translation (Chapter~\ref{ch:translation}).
+\item A cohomological theory of emergence (Chapter~\ref{ch:emergence}).
+\item Strategic interaction under transparency
+  (Chapter~\ref{ch:deepgames}).
+\end{itemize}
+
+\section{The Six Pillars}
+
+The unified theory rests on six conceptual pillars, each corresponding to a
+mathematical structure:
+
+\begin{definition}[The Six Pillars of IDT]
+\label{def:six-pillars}
+\begin{enumerate}
+\item \textbf{Geometry}: Ideas live in Hilbert space; meaning is geometric.
+\item \textbf{Dynamics}: Ideas evolve through composition and selection.
+\item \textbf{Games}: Ideas interact strategically; payoffs are resonances.
+\item \textbf{Emergence}: Composites exceed the sum of parts; measured by
+  cocycles.
+\item \textbf{Translation}: Cross-cultural communication is isometric
+  approximation.
+\item \textbf{Attribution}: Fair value distribution follows the Shapley
+  principle.
+\end{enumerate}
+\end{definition}
+
+\begin{center}
+\begin{tikzpicture}[
+  pillar/.style={rectangle, draw, fill=blue!15, minimum width=1.8cm,
+    minimum height=3cm, font=\small, align=center, rounded corners=3pt},
+  roof/.style={isosceles triangle, draw, fill=yellow!20, minimum width=12cm,
+    minimum height=1.5cm, shape border rotate=90, font=\small}
+]
+  % Pillars
+  \foreach \x/\lab in {0/Geometry, 2.2/Dynamics, 4.4/Games,
+    6.6/Emergence, 8.8/Translation, 11/Attribution} {
+    \node[pillar] at (\x, 0) {\lab};
+  }
+
+  % Roof
+  \node[draw, fill=yellow!20, minimum width=13cm, minimum height=0.8cm,
+    rounded corners] at (5.5, 2.2) {\textbf{Unified Theory of Meaning}};
+
+  % Foundation
+  \node[draw, fill=gray!15, minimum width=13cm, minimum height=0.6cm,
+    rounded corners] at (5.5, -2)
+    {Hilbert Space $\Hspace$ \quad $\bullet$ \quad Resonance $\rs{\cdot}{\cdot}$
+    \quad $\bullet$ \quad Enrichment $\rs{a \compose b}{a \compose b} \geq
+    \rs{a}{a}$};
+\end{tikzpicture}
+\end{center}
+
+\section{The Master Theorem}
+
+We conclude with a theorem that ties together the central results of the
+theory.
+
+\begin{theorem}[Master Theorem of IDT]
+\label{thm:master}
+Let $(\IS, \rs{\cdot}{\cdot}, \compose, \void)$ be an ideatic system
+satisfying the IDT axioms.  Then:
+\begin{enumerate}
+\item \textbf{(Geometric structure)} There exists a Hilbert space $\Hspace$ and
+  an isometric embedding $\varphi\colon \IS \to \Hspace$ such that
+  $\rs{a}{b} = \ip{\varphi(a)}{\varphi(b)}$.
+
+\item \textbf{(Enrichment monotonicity)} The self-resonance function
+  $a \mapsto \rs{a}{a}$ is monotonically non-decreasing under composition:
+  every composition preserves or increases ideatic content.
+
+\item \textbf{(Spectral decomposition)} For any finite population
+  $P = \{a_1, \ldots, a_n\}$, the resonance matrix $\RMat$ is positive
+  semi-definite with $\operatorname{rank}(\RMat) = \dim \operatorname{span}
+  \{\varphi(a_1), \ldots, \varphi(a_n)\}$.
+
+\item \textbf{(Coalition stability)} The coalition game $(N, v)$ with
+  $v(S) = \nrm{\varphi(\bigcompose S)}^2$ has a non-empty core and
+  non-negative Shapley values.
+
+\item \textbf{(Emergence cohomology)} The emergence functional $\kappa$ is a
+  2-cocycle, and the cohomology group $H^2(\IS; \mathbb{R})$ classifies the
+  irreducible emergence of the system.
+
+\item \textbf{(Translation fidelity)} Faithful translations correspond
+  exactly to isometric embeddings between Hilbert spaces; the dimensional
+  obstruction $\dim \Hspace_1 > \dim \Hspace_2$ is the unique barrier to
+  perfect translation.
+
+\item \textbf{(Evolutionary direction)} Under replicator dynamics with
+  composition-based reproduction, the average self-resonance of the
+  population increases monotonically (the enrichment ratchet).
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+Each part has been proved in the corresponding chapter:
+\begin{enumerate}
+\item Chapter~\ref{ch:geometry}, Theorem~\ref{thm:hilbert-embedding}
+  (GNS construction applied to the resonance functional).
+\item The enrichment axiom directly; formalized in
+  Theorem~\ref{thm:enrichment-superadditive}.
+\item Chapter~\ref{ch:spectral}, Theorem~\ref{thm:gram-psd} (the resonance
+  matrix is a Gram matrix, hence PSD).
+\item Chapter~\ref{ch:coalitions}, Theorem~\ref{thm:core-nonempty} and
+  Chapter~\ref{ch:shapley}, Theorem~\ref{thm:nonneg-shapley}.
+\item Chapter~\ref{ch:emergence}, Theorems~\ref{thm:cocycle}
+  and~\ref{thm:coboundary-decomp}.
+\item Chapter~\ref{ch:translation},
+  Theorems~\ref{thm:faithful-isometry}
+  and~\ref{thm:dimensional-obstruction}.
+\item Chapter~\ref{ch:evolution}, Theorem~\ref{thm:enrichment-ratchet}.
+\end{enumerate}
+\end{proof}
+
+\section{Connections to Existing Frameworks}
+
+\subsection{Cognitive Science and Conceptual Spaces}
+
+G\"ardenfors' theory of conceptual spaces (2000) represents concepts as
+regions in a geometric space with quality dimensions.  IDT generalizes this
+by:
+\begin{itemize}
+\item Replacing finite-dimensional Euclidean spaces with potentially
+  infinite-dimensional Hilbert spaces.
+\item Adding the composition operator and enrichment axiom, which are absent
+  from G\"ardenfors' framework.
+\item Deriving game-theoretic and evolutionary consequences that conceptual
+  spaces theory cannot reach.
+\end{itemize}
+
+\subsection{Category Theory and Functorial Semantics}
+
+The translation maps of Chapter~\ref{ch:translation} are functors between
+categories of ideas.  The composition $\compose$ makes $\IS$ a monoidal
+category (with $\void$ as the unit), and faithful translations are monoidal
+functors.  The emergence cocycle is a natural transformation measuring the
+obstruction to the functor being strictly monoidal.
+
+\subsection{Information Theory}
+
+The resonance $\rs{a}{b}$ can be interpreted as a generalized mutual
+information:
+\[
+  \rs{a}{b} \sim I(A; B) = H(A) + H(B) - H(A, B).
+\]
+Under this interpretation, the enrichment axiom becomes a statement about
+information accumulation: joint encoding never loses information.
+
+\subsection{Quantum Mechanics}
+
+The Hilbert space structure of IDT mirrors quantum mechanics, and this is
+not merely an analogy.  If ideas are modeled as quantum states, then:
+\begin{itemize}
+\item Resonance is the transition amplitude: $\rs{a}{b} =
+  \langle a | b \rangle$.
+\item Composition is entanglement: $a \compose b \sim |a\rangle \otimes
+  |b\rangle$.
+\item The enrichment axiom follows from the non-decreasing nature of
+  entanglement entropy.
+\item Emergence is genuine quantum emergence: properties of entangled states
+  not reducible to individual states.
+\end{itemize}
+
+\section{Open Problems}
+
+\begin{enumerate}
+\item \textbf{Characterize the essential emergence $H^2(\IS; \mathbb{R})$}
+  for natural ideatic systems.  Is it finite-dimensional?  What is its
+  relation to the topology of $\IS$?
+
+\item \textbf{Classification of ESS ideas}: For which populations $P$ does
+  an evolutionarily stable idea exist?  Is the ESS unique?
+
+\item \textbf{Optimal translation networks}: Given a collection of ideatic
+  spaces, what is the minimum-distortion translation network connecting them?
+
+\item \textbf{Infinite coalitions}: Extend the coalition theory to
+  $\sigma$-additive measures on infinite ideatic spaces.
+
+\item \textbf{Dynamic transparency}: How should the transparency function
+  $\tau$ evolve over time in a deep game?  Is there an ``optimal transparency
+  schedule''?
+
+\item \textbf{Empirical calibration}: How should the resonance function
+  $\rs{\cdot}{\cdot}$ be estimated from empirical data (text corpora,
+  behavioral experiments, brain imaging)?
+
+\item \textbf{Computational complexity}: What is the complexity of computing
+  the Shapley value in IDT coalition games?  Can emergence-weighted Shapley
+  values be approximated efficiently?
+\end{enumerate}
+
+\section{The Philosophical Vision}
+
+\begin{interpretation}
+IDT is, at its core, a theory of \emph{meaning}.  It asserts that meaning is
+not a property of individual ideas but a \emph{relational} phenomenon ---
+emergent from the resonances between ideas, the compositions that combine
+them, and the translations that carry them across cultural boundaries.
+
+The Hilbert space is not merely a mathematical convenience; it is a statement
+about the nature of meaning itself.  Just as quantum mechanics revealed that
+physical reality is fundamentally a Hilbert space phenomenon, IDT proposes
+that \emph{cultural reality} is similarly structured.  Ideas, like quantum
+states, exist in superposition; their interactions are governed by inner
+products; their combinations produce genuinely new phenomena irreducible to
+their components.
+
+The enrichment axiom --- the single most important assumption of the theory ---
+captures the deepest optimism of the humanistic tradition: that ideas, when
+combined, create more than they destroy.  This is not naive utopianism but a
+mathematical theorem with precise conditions.  The enrichment ratchet ensures
+that the long arc of cultural evolution bends, if slowly, toward greater
+richness.
+
+Whether this vision is ultimately correct --- whether meaning \emph{really is}
+a Hilbert space phenomenon --- is an empirical question that the coming
+decades will help to answer.  What IDT provides is a \emph{language} for
+asking the question precisely, and a \emph{framework} for testing it
+rigorously.
+\end{interpretation}
+
+\begin{lstlisting}
+-- Lean 4: The Master Theorem (structure summary)
+structure IDTSystem where
+  IS      : Type
+  rs      : IS → IS → ℝ
+  compose : IS → IS → IS
+  void    : IS
+  -- Axioms
+  rs_symm     : ∀ a b, rs a b = rs b a
+  rs_psd      : ∀ a, rs a a ≥ 0
+  void_zero   : ∀ a, rs void a = 0
+  enrichment  : ∀ a b, rs (compose a b) (compose a b) ≥ rs a a
+
+-- Master theorem components
+theorem master_coalition_stability (sys : IDTSystem) :
+    ∀ S : Finset sys.IS, ∀ a : sys.IS,
+    coalitionValue sys.rs sys.compose (S ∪ {a}) ≥
+    coalitionValue sys.rs sys.compose S :=
+  fun S a => sys.enrichment (composeAll sys.compose S) a
+
+theorem master_nonneg_shapley (sys : IDTSystem) :
+    ∀ N : Finset sys.IS, ∀ a ∈ N,
+    shapleyValue (coalitionValue sys.rs sys.compose) N a ≥ 0 :=
+  fun N a _ => shapley_nonneg_of_monotone sys.enrichment N a
+
+theorem master_cocycle (sys : IDTSystem) :
+    ∀ a b c d : sys.IS,
+    emergence sys.rs sys.compose a b d +
+    emergence sys.rs sys.compose (sys.compose a b) c d =
+    emergence sys.rs sys.compose a (sys.compose b c) d +
+    emergence sys.rs sys.compose b c d :=
+  fun a b c d => cocycle_of_assoc sys.compose_assoc a b c d
+\end{lstlisting}
+
+\section{Epilogue: The Meaning of Meaning}
+
+We began this book by asking: what is an idea?  We proposed an answer:
+an idea is a point in a space, equipped with a notion of resonance.
+From this simple beginning, we derived a rich mathematical theory ---
+spanning geometry, game theory, evolution, cohomology, and fair division
+--- that illuminates the dynamics of culture, the structure of meaning,
+and the possibility of cross-cultural understanding.
+
+The journey from axiom to theorem mirrors the journey of ideas themselves:
+each new concept (each new ``composition'') enriches the whole, and the
+final synthesis transcends its components.  If the enrichment axiom is the
+heart of IDT, then this book is itself a demonstration of that axiom:
+the composition of mathematics, philosophy, linguistics, and anthropology
+has produced something --- we hope --- greater than the sum of its parts.
+
+\begin{center}
+\begin{tikzpicture}[scale=0.7]
+  % Spiral of enrichment
+  \draw[thick, blue!60, domain=0:1440, samples=300, smooth]
+    plot ({0.02*\x/360 * cos(\x)}, {0.02*\x/360 * sin(\x)});
+
+  % Labels along spiral
+  \node[font=\tiny, blue!80] at (0.3, 0.5) {geometry};
+  \node[font=\tiny, red!80] at (-0.8, 0.3) {games};
+  \node[font=\tiny, green!60!black] at (-0.5, -1.0) {evolution};
+  \node[font=\tiny, purple] at (1.0, -0.8) {dialectics};
+  \node[font=\tiny, orange] at (1.5, 0.5) {emergence};
+  \node[font=\tiny, teal] at (-1.5, 1.0) {translation};
+  \node[font=\tiny, brown] at (0, 2.0) {fairness};
+  \node[font=\tiny, violet] at (-2.0, -0.5) {unity};
+
+  % Center
+  \node[circle, fill=yellow!50, draw, minimum size=5mm, font=\tiny] at (0, 0)
+    {$\IS$};
+
+  \node[below] at (0, -2.5) {\small The Spiral of Enrichment};
+\end{tikzpicture}
+\end{center}

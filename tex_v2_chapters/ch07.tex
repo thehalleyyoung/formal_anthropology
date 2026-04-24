@@ -1,0 +1,420 @@
+% ================================================================
+% CHAPTER 7: NASH EQUILIBRIUM IN THE HILBERT SPACE
+% ================================================================
+\chapter{Nash Equilibrium in the Hilbert Space}
+\label{ch:nash}
+
+\epigraph{Every art and every inquiry, and similarly every action and pursuit,
+is thought to aim at some good.}{Aristotle, \textit{Nicomachean Ethics}, I.1}
+
+\section{Equilibrium in the Meaning Game}
+
+In Chapter~\ref{ch:payoffs}, we established the payoff structure of the meaning
+game. We now ask: what are the \emph{equilibria} of this game? Under what
+conditions does neither player wish to change their signal, given the other's
+signal?
+
+\begin{definition}[Nash Equilibrium in the Meaning Game]
+\label{def:nash-meaning}
+A pair $(s^*, r^*)$ is a \textbf{Nash equilibrium} of the meaning game if:
+\begin{enumerate}
+\item The sender cannot increase their payoff by changing $s^*$ (holding $r^*$
+fixed):
+\[
+  \payoff{S}{s^*, r^*} \geq \payoff{S}{s, r^*} \quad \text{for all } s \in \IS;
+\]
+\item The receiver cannot increase their payoff by changing $r^*$ (holding $s^*$
+fixed):
+\[
+  \payoff{R}{s^*, r^*} \geq \payoff{R}{s^*, r} \quad \text{for all } r \in \IS.
+\]
+\end{enumerate}
+\end{definition}
+
+\begin{remark}[The Strategy Spaces]
+In the standard meaning game, the sender chooses $s$ and the receiver's
+``strategy'' is their prior $r$. In the symmetric version
+(Definition~\ref{def:symmetric-game}), both agents choose their ideas
+simultaneously. In both cases, the strategy space is $\IS$ (or a subset of it,
+if we impose constraints such as budget limits on norms).
+\end{remark}
+
+
+\section{The Trivial Equilibrium}
+
+\begin{theorem}[Void is Always an Equilibrium]
+\label{thm:void-equilibrium}
+The pair $(\void, \void)$ is always a Nash equilibrium of the symmetric meaning
+game, with payoff zero for both players.
+\end{theorem}
+
+\begin{proof}
+Player $i$'s payoff at $(\void, \void)$ is $\rs{\void}{\void \compose \void} =
+\rs{\void}{\void} = 0$.
+
+If player 1 deviates to some $a \neq \void$ while player 2 stays at $\void$:
+\[
+  \payoff{1}{a, \void} = \rs{a}{a} + \rs{a}{\void} = \rs{a}{a} + 0 = \rs{a}{a}.
+\]
+This is $\geq 0$, so deviating (weakly) improves player 1's payoff. Thus
+$(\void, \void)$ is a Nash equilibrium only in the \emph{weak} sense: no player
+\emph{strictly} benefits from deviation if we require $\rs{a}{a} = 0$, which
+holds only when $\embed{a} = 0$.
+
+Correction: $(\void, \void)$ is a Nash equilibrium only if no player can achieve
+a strictly positive payoff by deviating. Since $\payoff{1}{a, \void} = \rs{a}{a}
+\geq 0$, the deviation payoff is non-negative but not strictly greater than 0
+only when $\embed{a} = 0$. For any idea $a$ with $\embed{a} \neq 0$, the payoff
+$\rs{a}{a} > 0 > 0$, so the deviation \emph{is} strictly profitable.
+
+Therefore, $(\void, \void)$ is \emph{not} a Nash equilibrium when the strategy
+space contains any non-void idea! We must revise.
+\end{proof}
+
+\begin{theorem}[Void is Not a Nash Equilibrium (Revised)]
+\label{thm:void-not-ne}
+If the strategy space contains any idea $a$ with $\embed{a} \neq 0$, then
+$(\void, \void)$ is \emph{not} a Nash equilibrium.
+\end{theorem}
+
+\begin{proof}
+Player 1 can deviate to $a$ and receive payoff $\rs{a}{a} > 0 > 0 =
+\payoff{1}{\void, \void}$. So the deviation is strictly profitable.
+
+In Lean~4:
+\begin{lstlisting}
+theorem void_not_ne (a : Idea) (ha : φ a ≠ 0) :
+    ¬ is_nash_eq void void := by
+  intro h
+  have := h.1 a  -- sender can deviate to a
+  simp [sender_payoff, rs_void, rs_self_pos ha] at this
+  linarith
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Silence is Unstable]
+\label{interp:silence-unstable}
+Theorem~\ref{thm:void-not-ne} has a beautiful interpretation: \emph{silence is
+not a stable equilibrium}. If both agents are silent (playing $\void$), either
+one can improve their payoff by speaking --- by introducing any non-trivial
+idea. The self-resonance term $\rs{a}{a} > 0$ provides a strictly positive
+incentive to speak, regardless of what the other agent is doing.
+
+This is a mathematical model of the ``itch to communicate'': there is always a
+strategic incentive to break silence, because any non-void idea generates
+positive self-resonance. In an evolutionary sense, mutants who ``speak up''
+always invade a population of silent agents.
+
+The instability of silence connects to Heidegger's notion that human existence
+is fundamentally \emph{disclosive}: Dasein is always already ``thrown'' into a
+world of meaning, always already communicating. The Hilbert space model gives
+this a game-theoretic foundation: silence is unstable because it leaves positive
+payoffs on the table. Speaking is not merely a cultural norm but a strategic
+necessity.
+\end{interpretation}
+
+
+\section{Existence of Non-Trivial Equilibria}
+
+Since the void is not an equilibrium, we must look for non-trivial ones. The
+existence and structure of equilibria depend on the strategy space.
+
+\begin{definition}[Constrained Meaning Game]
+\label{def:constrained-game}
+A \textbf{constrained meaning game} is a symmetric meaning game where each
+player's strategy space is a closed, bounded, convex subset $\mathcal{S}
+\subseteq \Hspace$ (the set of feasible signal embeddings).
+\end{definition}
+
+\begin{theorem}[Existence of Nash Equilibrium (Constrained Game)]
+\label{thm:ne-existence}
+In a constrained meaning game with compact, convex strategy space $\mathcal{S}
+\subseteq \Hspace$, a Nash equilibrium exists.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Player $i$'s payoff is $\payoff{i}{v_i, v_j} = \nrm{v_i}^2 + \ip{v_i}{v_j}$,
+where $v_i, v_j \in \mathcal{S}$. The best response of player $i$ to $v_j$ is:
+\[
+  \text{BR}_i(v_j) = \arg\max_{v_i \in \mathcal{S}} \left(\nrm{v_i}^2 +
+  \ip{v_i}{v_j}\right).
+\]
+The objective $v_i \mapsto \nrm{v_i}^2 + \ip{v_i}{v_j}$ is continuous (and in
+fact strictly convex) on $\mathcal{S}$. Since $\mathcal{S}$ is compact, the
+maximum is attained. The best response correspondence is upper hemicontinuous
+(by the Maximum Theorem) and maps the compact, convex set $\mathcal{S}$ to
+itself. By Kakutani's fixed point theorem (or Brouwer's, since the best
+response is single-valued by strict convexity), a fixed point exists.
+
+Note: the strict convexity of $v_i \mapsto \nrm{v_i}^2 + \ip{v_i}{v_j}$ means
+the best response is unique for each $v_j$, so the best response is a
+\emph{function} (not just a correspondence), and Brouwer's theorem suffices.
+
+In Lean~4:
+\begin{lstlisting}
+theorem ne_exists (hS : IsCompact S) (hSc : Convex ℝ S)
+    (hSne : S.Nonempty) :
+    ∃ v ∈ S, is_nash_eq_constrained v v S := by
+  -- Apply Brouwer's fixed point theorem to the best response map
+  sorry -- requires Brouwer's theorem from topology
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Cultural Equilibria as Fixed Points]
+\label{interp:fixed-points}
+The existence theorem guarantees that cultural equilibria exist --- at least when
+the strategy space is bounded (agents have finite communicative resources). But
+what do these equilibria look like?
+
+In a constrained game, the Nash equilibrium tends to occur at the \emph{boundary}
+of the strategy space: each player uses their maximum available weight, directed
+as favorably as possible given the other's signal. This is because the payoff
+$\nrm{v_i}^2 + \ip{v_i}{v_j}$ is increasing in $\nrm{v_i}$ (the self-resonance
+term dominates), so players always prefer to ``speak as loudly as possible.''
+
+The direction of the equilibrium depends on the geometry of $\mathcal{S}$. If
+$\mathcal{S}$ is a ball (all directions equally available), the equilibrium has
+both players choosing the same direction --- the direction that maximizes the sum
+of self-resonance and cross-resonance. If $\mathcal{S}$ has asymmetric shape
+(some directions are ``easier'' to express than others), the equilibrium reflects
+these constraints.
+
+In cultural terms, the strategy space $\mathcal{S}$ represents the set of ideas
+that are \emph{expressible} within a given cultural context. A culture with a
+rich vocabulary for emotions but a poor vocabulary for mathematics has a strategy
+space that extends far in ``emotional'' directions but is constrained in
+``mathematical'' directions. The Nash equilibria of discourse within this culture
+will favor emotional expression over mathematical precision --- not because the
+agents lack mathematical ability, but because the strategy space makes
+mathematical signals costly or impossible to produce.
+\end{interpretation}
+
+
+\section{Characterizing Equilibria}
+
+\begin{theorem}[First-Order Characterization]
+\label{thm:first-order}
+In a constrained meaning game with strategy space $\mathcal{S} = \{v \in
+\Hspace : \nrm{v} \leq M\}$ (a ball of radius $M$), the Nash equilibrium
+$(v_1^*, v_2^*)$ satisfies: both $v_1^*$ and $v_2^*$ lie on the boundary
+$\nrm{v_i^*} = M$, and:
+\[
+  v_i^* = M \cdot \frac{2v_i^* + v_j^*}{\nrm{2v_i^* + v_j^*}}.
+\]
+That is, each player's equilibrium strategy points in the direction $2v_i^* +
+v_j^*$ --- a weighted combination of their own signal and their partner's.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Player $i$'s payoff is $f(v_i) = \nrm{v_i}^2 + \ip{v_i}{v_j}$. On the ball
+$\nrm{v_i} \leq M$, the maximum of $f$ is attained on the boundary (since $f$
+is convex and increasing in $\nrm{v_i}$). On the boundary $\nrm{v_i} = M$,
+we maximize $\ip{v_i}{v_j}$ (since $\nrm{v_i}^2 = M^2$ is constant), which is
+achieved when $v_i = M \cdot v_j / \nrm{v_j}$.
+
+Wait --- let me reconsider. We are maximizing $f(v_i) = \nrm{v_i}^2 +
+\ip{v_i}{v_j}$ over $\nrm{v_i} \leq M$. The gradient is $\nabla f(v_i) =
+2v_i + v_j$. Since $f$ is strictly convex (the Hessian is $2I$, positive
+definite), the unconstrained maximizer does not exist (it goes to $+\infty$).
+On the ball, the maximum is on the boundary, and by the KKT conditions:
+$2v_i^* + v_j^* = \lambda v_i^*$ for some $\lambda > 0$ (the gradient is a
+positive multiple of the outward normal). This gives $v_i^* = v_j^* / (\lambda
+- 2)$, or equivalently, $v_i^*$ is in the direction of $v_j^*$. So at the NE,
+$v_1^* \parallel v_2^*$!
+
+Let us state this correctly.
+\end{proof}
+
+\begin{theorem}[Equilibria Are Parallel]
+\label{thm:parallel-equilibria}
+In the constrained meaning game with strategy space $\{v : \nrm{v} \leq M\}$,
+every Nash equilibrium $(v_1^*, v_2^*)$ satisfies $v_1^* \parallel v_2^*$ (the
+strategies are parallel vectors). Specifically, $v_1^* = v_2^* = M \hat{u}$ for
+some unit vector $\hat{u}$.
+\end{theorem}
+
+\begin{proof}
+From the analysis above: the best response of player $i$ to $v_j$ is
+$\text{BR}_i(v_j) = M \cdot v_j / \nrm{v_j}$ (assuming $v_j \neq 0$). At
+equilibrium, $v_1^* = M \cdot v_2^* / \nrm{v_2^*}$ and $v_2^* = M \cdot
+v_1^* / \nrm{v_1^*}$. Substituting:
+\[
+  v_1^* = M \cdot \frac{M \cdot v_1^* / \nrm{v_1^*}}{\nrm{M \cdot v_1^* /
+  \nrm{v_1^*}}} = M \cdot \frac{v_1^*}{\nrm{v_1^*}}.
+\]
+This is satisfied when $\nrm{v_1^*} = M$ (which we already know). So
+$v_1^*$ and $v_2^*$ are both on the boundary and parallel. Since $v_1^* =
+M \hat{v}_2$ and $\nrm{v_2^*} = M$, we get $v_1^* = v_2^*$.
+
+In Lean~4:
+\begin{lstlisting}
+theorem ne_parallel (hne : is_ne v1 v2 M)
+    (hv1 : v1 ≠ 0) (hv2 : v2 ≠ 0) :
+    ∃ (u : H), ‖u‖ = 1 ∧ v1 = M • u ∧ v2 = M • u := by
+  sorry -- follows from best response analysis
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Consensus as Equilibrium]
+\label{interp:consensus}
+Theorem~\ref{thm:parallel-equilibria} is one of the central results of the
+game-theoretic analysis: \emph{all Nash equilibria of the constrained meaning
+game are consensus equilibria}. At equilibrium, both players express the same
+idea (up to the common norm constraint $M$). They ``agree.''
+
+This is not because the players are altruistic or because the game is
+cooperative. It is a consequence of pure strategic self-interest: each player's
+payoff is maximized by signaling in the same direction as the other player
+(to maximize the cross-resonance term), and the self-resonance term is the same
+regardless of direction (since $\nrm{v_i^*} = M$ in all equilibria). The
+\emph{direction} of the consensus is indeterminate (any direction $\hat{u}$ is
+an equilibrium), but the \emph{fact} of consensus is a structural consequence
+of the payoff function.
+
+This result formalizes Habermas's thesis that \emph{the telos of communication
+is consensus}. Habermas argued that the very structure of communicative action
+--- the presupposition that speakers are sincere, truthful, and normatively
+appropriate --- pushes discourse toward agreement. IDT~v2 provides a
+game-theoretic mechanism: consensus is a Nash equilibrium, and all Nash
+equilibria are consensus equilibria. The push toward agreement is not a
+normative ideal imposed from outside but a strategic consequence of the
+inner-product payoff structure.
+
+But the theorem also reveals a dark side of consensus. The direction of the
+consensus is arbitrary --- any direction is an equilibrium. If the initial
+conditions favor one direction (say, because of historical accident, power
+asymmetry, or propaganda), the equilibrium selects that direction. The resulting
+consensus is ``stable'' (no player wants to deviate) but not necessarily
+``correct'' or ``just.'' This is the game-theoretic foundation of Gramsci's
+theory of \emph{hegemony}: the dominant ideology is an equilibrium, stable
+not because it is true but because no individual can profitably deviate from it.
+\end{interpretation}
+
+
+\section{Multiple Equilibria and Coordination}
+
+\begin{theorem}[Continuum of Equilibria]
+\label{thm:continuum-ne}
+The constrained meaning game with strategy space $\{v : \nrm{v} \leq M\}$ in
+a Hilbert space of dimension $n \geq 2$ has a continuum of Nash equilibria,
+one for each direction in $\Hspace$. These equilibria all yield the same payoff:
+\[
+  \payoff{i}{} = M^2 + M^2 = 2M^2 \quad \text{for each player.}
+\]
+\end{theorem}
+
+\begin{proof}
+At any consensus equilibrium $v_1^* = v_2^* = M\hat{u}$:
+\[
+  \payoff{i}{} = \nrm{M\hat{u}}^2 + \ip{M\hat{u}}{M\hat{u}} = M^2 + M^2 = 2M^2.
+\]
+There are uncountably many unit vectors $\hat{u}$ (when $n \geq 2$), hence
+uncountably many equilibria.
+\end{proof}
+
+\begin{interpretation}[The Coordination Problem of Culture]
+\label{interp:coordination}
+The multiplicity of equilibria is a mathematical model of the \emph{coordination
+problem} in cultural production. Every culture must coordinate on a shared
+direction of meaning --- a shared set of values, concepts, and priorities. The
+game theory tells us that \emph{any} direction is sustainable as an equilibrium,
+but the agents must somehow \emph{coordinate} on a particular one.
+
+In the language of game theory, the meaning game is a \emph{pure coordination
+game}: all equilibria yield the same payoff, and the challenge is selecting one.
+Selection mechanisms include:
+
+\begin{itemize}
+\item \textbf{History}: the current equilibrium is the one that happened to be
+selected in the past, and inertia maintains it.
+\item \textbf{Focal points} (Schelling): some directions are ``natural'' or
+``salient'' and serve as coordination devices. In a culture, focal points might
+be canonical texts, foundational myths, or charismatic leaders.
+\item \textbf{Power}: agents with more weight (higher norm) can ``steer'' the
+equilibrium toward their preferred direction, as their signals are more
+influential.
+\end{itemize}
+
+The indeterminacy of the equilibrium direction is, in fact, the formal content
+of cultural \emph{contingency}: the fact that different cultures, facing the
+same strategic situation, arrive at radically different equilibria. Why does
+one culture organize around honor and shame while another organizes around guilt
+and innocence? The game theory says: both are equilibria, and the selection
+is a matter of historical contingency, not strategic necessity.
+\end{interpretation}
+
+\begin{example}[Equilibrium Selection via Focal Points]
+\label{ex:focal}
+Consider a meaning game in $\mathbb{R}^2$ with $M = 1$. Any unit vector
+$\hat{u} = (\cos\alpha, \sin\alpha)$ defines an equilibrium. Suppose the
+culture has a pre-existing ``canonical text'' $t$ with $\embed{t} = (1, 0)$.
+If agents use $t$ as a focal point, they coordinate on $\hat{u} = (1, 0)$,
+and the equilibrium is $(1, 0), (1, 0)$ with payoff $2$ for each.
+
+If a competing canon $t'$ emerges with $\embed{t'} = (0, 1)$, the agents face
+a coordination dilemma: which canon to organize around? The theory predicts
+that the equilibrium selected will depend on factors outside the model ---
+prestige, power, historical accident --- since both canons support equally
+good equilibria.
+\end{example}
+
+
+\section{Equilibria with Heterogeneous Constraints}
+
+\begin{definition}[Heterogeneous Constrained Game]
+\label{def:hetero-game}
+In a \textbf{heterogeneous constrained game}, player $i$ has a budget
+$M_i$ (maximum signal weight): $\nrm{v_i} \leq M_i$.
+\end{definition}
+
+\begin{theorem}[Equilibrium with Heterogeneous Budgets]
+\label{thm:hetero-ne}
+In the heterogeneous constrained game, every Nash equilibrium satisfies
+$v_1^* \parallel v_2^*$, with $\nrm{v_i^*} = M_i$ for each $i$. The
+payoffs are:
+\begin{align*}
+  \payoff{1}{} &= M_1^2 + M_1 M_2, \\
+  \payoff{2}{} &= M_2^2 + M_1 M_2.
+\end{align*}
+The player with the larger budget gets the higher payoff: $\payoff{1}{} >
+\payoff{2}{}$ iff $M_1 > M_2$.
+\end{theorem}
+
+\begin{proof}
+The best response analysis from Theorem~\ref{thm:parallel-equilibria} extends
+directly: player $i$'s best response to $v_j$ is $M_i \cdot v_j / \nrm{v_j}$.
+At equilibrium, $v_1^* = M_1 \hat{u}$ and $v_2^* = M_2 \hat{u}$ for some
+unit vector $\hat{u}$. The payoffs follow by direct computation:
+$\payoff{i}{} = M_i^2 + M_i M_j$.
+\end{proof}
+
+\begin{interpretation}[Inequality in the Marketplace of Ideas]
+\label{interp:inequality}
+The heterogeneous equilibrium result formalizes a fundamental inequality in
+communication: \emph{agents with greater communicative resources
+(larger budgets $M_i$) receive higher payoffs}. The payoff difference
+$\payoff{1}{} - \payoff{2}{} = M_1^2 - M_2^2$ grows quadratically in the
+budget difference.
+
+This is a model of \emph{structural inequality in the marketplace of ideas}.
+Agents with more resources --- better education, larger platforms, more
+institutional support --- can signal with greater weight and thus extract
+more value from every communicative exchange. The ``marketplace of ideas''
+is not a level playing field; it systematically favors those who can ``speak
+louder'' (produce signals of greater norm).
+
+In Bourdieu's framework, the budget $M_i$ is a component of \emph{cultural
+capital}: the accumulated resources that enable an agent to participate
+effectively in cultural exchange. The quadratic payoff advantage of larger
+$M_i$ explains the self-reinforcing nature of cultural capital: those who
+start with more capital extract more value from cultural exchange, enabling
+them to accumulate even more capital.
+\end{interpretation}
+
+\bigskip
+
+This chapter has established the equilibrium structure of the meaning game: Nash
+equilibria are consensus equilibria (both players agree), the direction of
+consensus is indeterminate (any direction works), and agents with more
+communicative resources extract more value. In Chapter~\ref{ch:cooperation}, we
+classify the types of games that arise depending on the angle between ideas.

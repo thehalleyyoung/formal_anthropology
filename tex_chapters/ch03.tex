@@ -10,6 +10,59 @@ to fake.''}{Amotz Zahavi, \textit{The Handicap Principle}}
 
 % ── Introduction ──────────────────────────────────────────────────────
 
+Why do organisms---and human societies in particular---invest enormous
+resources in signals that appear, on the surface, to be wasteful?  The
+peacock drags a metabolically expensive tail through the underbrush; the
+stotting gazelle leaps conspicuously in the presence of a predator
+rather than fleeing at full speed; the young Maasai warrior hunts a lion
+with a spear when safer alternatives exist.  In each case, the very
+costliness of the signal is what makes it \emph{honest}: a weak peacock
+cannot afford the tail, a slow gazelle cannot afford the leap, and a
+cowardly warrior cannot afford the hunt.\footnote{Zahavi's original
+  formulation (1975) was widely resisted until Grafen (1990) provided a
+  formal game-theoretic model showing that handicap equilibria could be
+  evolutionarily stable.  See Grafen, A., ``Biological signals as
+  handicaps,'' \textit{Journal of Theoretical Biology}, 144(4), 1990,
+  pp.~517--546.}
+
+Sosis and Alcorta~\cite{sosis2003} extended this logic from biology to
+religion, arguing that costly rituals---painful initiations, dietary
+restrictions, time-consuming liturgical practices---function as
+\emph{credibility-enhancing displays} (CREDs) that solve the free-rider
+problem in cooperative groups.  Religious communities face a persistent
+threat from individuals who would enjoy the benefits of group membership
+(mutual aid, shared childcare, collective defence) without bearing the
+costs of commitment.  Costly rituals screen out free-riders by imposing
+costs that only genuinely committed individuals are willing to pay.
+
+Henrich's~(2009) cultural evolution framework~\cite{henrich2009}
+situates costly signalling within a broader theory of cultural group
+selection: groups that evolve effective costly-signalling mechanisms
+outcompete groups that do not, because they achieve higher levels of
+internal cooperation.\footnote{See also Boyd and Richerson (1985) on the
+  coevolution of genes and culture, and Norenzayan (2013) on ``Big
+  Gods'' as a cultural evolutionary response to the scaling problem of
+  cooperation.}  Irons~(2001) independently developed a costly
+signalling account of religious commitment, emphasising that religious
+costs are ``hard to fake'' precisely because they involve genuine
+sacrifice---time, resources, pain, or opportunity cost.  Bulbulia~(2004)
+further argued that religious costs function as \emph{credibility
+enhancers}: the greater the cost borne by a signaller, the more credible
+the signal of underlying commitment.\footnote{Bulbulia, J., ``The
+  cognitive and evolutionary psychology of religion,''
+  \textit{Biology and Philosophy}, 19(5), 2004, pp.~655--686.}
+
+The central contribution of Ideatic Depth Theory to this literature is
+the identification of \textbf{depth with cost}.  Where Zahavi spoke of
+metabolic cost, Spence of educational cost, and Sosis of ritual cost,
+IDT provides a unified formal measure: the \emph{depth} of a signal in
+an ideatic space.  This identification is not merely notational
+convenience.  It allows us to derive, as formal theorems, the key
+properties that costly signalling theorists have posited as assumptions:
+subadditivity of combined signals, linear scaling of iterated rituals,
+the single-crossing property that separates types, and the bounded
+impact of signals on audiences of finite sophistication.
+
 Zahavi's (1975) handicap principle~\cite{zahavi1975} and Sosis's (2003)
 costly signalling theory of ritual~\cite{sosis2003} propose that honest
 communication requires \emph{costly} signals.  The depth of an idea---its
@@ -35,6 +88,43 @@ intrinsic to the act itself.
 (\S\ref{sec:ch3:crossing}), bound interpretation cost
 (\S\ref{sec:ch3:interp-cost}), and analyse the interaction between
 resonance and cost (\S\ref{sec:ch3:resonance-cost}).
+
+\subsection*{Historical Context: From Veblen to Zahavi}
+
+The intuition that costliness signals quality has deep roots in the
+social sciences, well predating Zahavi's biological formalisation.
+Thorstein Veblen's \textit{Theory of the Leisure Class}~(1899)
+introduced the concept of ``conspicuous consumption''---the display of
+wealth through deliberately wasteful expenditure---as a mechanism for
+signalling social status.\footnote{Veblen, T., \textit{The Theory of
+  the Leisure Class: An Economic Study of Institutions}, Macmillan,
+  1899.  Veblen's analysis of ``conspicuous waste'' anticipates the
+  costly signalling framework by nearly a century.}  The industrial
+magnate who commissions a mansion far beyond his residential needs, the
+aristocrat who maintains a retinue of idle servants---these are,
+in IDT terms, high-depth signals whose cost is the point.
+
+Marcel Mauss's \textit{The Gift}~(1925) extended this logic to
+non-market societies.  The potlatch ceremonies of the Pacific Northwest
+involved competitive gift-giving and, in extreme cases, competitive
+destruction of wealth: canoes broken, blankets burned, coppers thrown
+into the sea.  Mauss recognised that these acts of apparent waste were
+in fact \emph{investments in social obligation}: the depth of the
+sacrifice created debts that bound communities
+together.\footnote{Mauss, M., \textit{Essai sur le don}, L'Ann\'{e}e
+  Sociologique, 1925.  English translation: \textit{The Gift}, trans.\
+  W.~D.~Halls, Routledge, 1990.}
+
+What Veblen and Mauss lacked was a formal framework capable of deriving
+the \emph{consequences} of costly signalling from its
+\emph{structure}.  Zahavi~(1975) provided the biological version of
+such a framework; Spence~(1973) provided the economic version.  IDT
+now provides a framework general enough to encompass both, grounding
+cost in the combinatorial structure of ideatic depth.  The theorems that
+follow make precise the properties that Veblen, Mauss, Zahavi, and
+Sosis described informally: why cost is subadditive, why empty signals
+carry no cost, and why high-quality types bear cost more
+efficiently than low-quality types.
 
 % ── §1. Depth as Signal Cost ─────────────────────────────────────────
 \section{Depth as Signal Cost}
@@ -107,6 +197,58 @@ You cannot fake costly signals by ``adding silence.''  Prefixing or
 appending a dramatic pause to a sacrifice does not change its cost.
 \end{remark}
 
+\begin{example}[The Potlatch of the Pacific Northwest]
+Among the Kwakwaka'wakw (formerly called Kwakiutl) peoples of the
+Pacific Northwest coast, the potlatch ceremony served as a paradigmatic
+costly signal.  Chiefs competed for social rank by giving away---and in
+extreme cases, deliberately destroying---enormous quantities of wealth:
+blankets, canoes, eulachon oil, and prized copper shields known as
+\textit{t'lakwa}.  The depth of the signal was measured not in symbolic
+gestures but in real material sacrifice.  A chief who destroyed a copper
+worth thousands of blankets was producing a signal of such depth that no
+rival of lesser means could replicate it.  In IDT terms,
+$\operatorname{signalCost}(\text{potlatch}) = \depth(\text{potlatch})$,
+and this depth was precisely what made the signal unfakeable: one cannot
+pretend to destroy wealth one does not possess.\footnote{Boas, F.,
+  \textit{Kwakiutl Ethnography}, ed.\ H.~Codere, University of Chicago
+  Press, 1966.  See also Codere, H., ``Fighting with property: a study
+  of Kwakiutl potlatching and warfare,'' American Ethnological Society
+  Monograph~18, 1950.}
+\end{example}
+
+\begin{example}[Scarification Among the Nuer]
+Evans-Pritchard's ethnography of the Nuer of southern Sudan documented a
+striking initiation rite: adolescent boys received six deep horizontal
+cuts across the forehead, from ear to ear, using a small knife.  The
+cuts were made without anaesthetic, and the resulting scars---called
+\textit{gaar}---were permanent, visible markers of adult male
+status.\footnote{Evans-Pritchard, E.~E., \textit{The Nuer: A
+  Description of the Modes of Livelihood and Political Institutions of
+  a Nilotic People}, Clarendon Press, 1940.}  The signal satisfies the
+formal properties of costly depth: the pain and risk of infection
+constitute genuine cost that cannot be faked (no one can acquire
+\textit{gaar} scars without enduring the cutting), and the permanence of
+the signal means that its depth is \emph{preserved over time}---it
+cannot be retracted or diminished.  By Theorem~\ref{thm:void-costless},
+void signals (mere words or gestures) have zero cost; the Nuer
+initiation achieves honesty precisely by requiring non-zero depth.
+\end{example}
+
+\subsection*{Discussion: Why Depth Cannot Be Faked}
+
+The examples above illustrate a crucial structural property of depth as
+a cost metric: depth is \emph{intrinsic} to the signal, not extrinsic.
+A potlatch chief cannot fake the destruction of a copper because the
+copper must actually be broken; a Nuer initiate cannot fake the
+scarification because the scars must actually be cut.  This
+intrinsicality is what distinguishes depth-as-cost from purely
+conventional costs (such as monetary fees, which can be borrowed,
+embezzled, or counterfeited).  In the formal framework, this property
+is captured by the fact that $\depth(s)$ is determined by the
+compositional structure of~$s$ itself, not by any external accounting
+mechanism.  A signal's cost is its complexity, and complexity cannot be
+counterfeited.
+
 \begin{theorem}[Trivial Composition is Costless]
 \label{thm:trivial-compose-costless}
 If $\operatorname{signalCost}(s_1) = 0$ and
@@ -167,6 +309,40 @@ Empty ritual (void composed with void, repeated endlessly) never
 generates genuine cost.  ``Going through the motions'' with no internal
 depth is formally costless.
 \end{remark}
+
+\begin{remark}[Connection to Religious Studies: The Five Pillars of Islam]
+The five daily prayers (\textit{salat}) of Islam exemplify iterated
+costly signalling in a religious context.  Each individual prayer has
+bounded cost: the time and cognitive effort required for the ablution
+(\textit{wudu}), the physical prostrations (\textit{ruku} and
+\textit{sujud}), and the recitation of Qur'anic passages.  By
+Theorem~\ref{thm:iteration-cost}, the total annual cost of
+\textit{salat} is linearly bounded by the number of iterations times
+the cost of a single prayer.  What makes this system particularly
+elegant from a signalling perspective is that the per-iteration cost is
+calibrated to be bearable---Islam explicitly forbids making worship
+unduly burdensome (\textit{la yukallifu Allahu nafsan illa wus'aha},
+Qur'an 2:286)---while the cumulative commitment over a lifetime is
+substantial enough to separate genuine believers from
+opportunists.\footnote{Cf.\ Sosis, R., ``Why aren't we all
+  Hutterites? Costly signaling theory and religious behavior,''
+  \textit{Human Nature}, 14(2), 2003, pp.~91--127.}
+\end{remark}
+
+\begin{example}[Daily Prayer as Iterated Signal]
+A Muslim who performs \textit{salat} five times daily for fifty years
+executes approximately $5 \times 365 \times 50 = 91{,}250$ iterations
+of the prayer signal.  By Theorem~\ref{thm:iteration-cost}, the total
+signal cost over a lifetime is bounded above by
+$91{,}250 \times \operatorname{signalCost}(\text{single prayer})$.
+This linear bound has an important implication: it means that the
+cumulative cost of religious observance grows \emph{predictably}, not
+explosively.  A community can calibrate its ritual demands to be
+sustainable across generations, which is exactly what we observe in
+the major world religions.  By contrast, if signal cost were
+superadditive (if each repetition made the next one more costly), no
+religious system could sustain iterative practice over decades.
+\end{example}
 
 \begin{theorem}[Single Repetition Cost]
 \label{thm:single-rep-cost}
@@ -237,6 +413,52 @@ signalling must come from \emph{non-void} signals---only signals with
 genuine depth can separate types.
 \end{remark}
 
+\subsection*{Discussion: The Ecology of Costly Signalling}
+
+Why do different societies calibrate signal costs so differently?  The
+Yanomam\"{o} demand chest-pounding duels; the Amish demand plain dress
+and technological renunciation; the Benedictines demand a lifetime of
+prayer, labour, and obedience.  From the perspective of IDT, these
+are all costly signals, but their \emph{depth profiles} differ
+dramatically.  The key insight from Sosis's comparative work is that
+the optimal signal cost depends on the cooperative ecology of the
+group: groups facing greater free-rider threats should evolve costlier
+signals, and groups whose cooperation yields greater per-capita
+benefits can afford to impose higher costs without losing members.
+
+This prediction has been empirically tested.  Sosis and
+Bressler~(2003) analysed the longevity of 277 communes founded in the
+nineteenth-century United States, comparing religious communes (which
+imposed costly ritual requirements) with secular communes (which
+typically did not).\footnote{Sosis, R.\ and Bressler, E.~R.,
+  ``Cooperation and commune longevity: a test of the costly signaling
+  theory of religion,'' \textit{Cross-Cultural Research}, 37(2), 2003,
+  pp.~211--239.}  They found that religious communes survived
+significantly longer than secular ones, and that within the religious
+category, communes imposing more costly requirements (dietary
+restrictions, distinctive dress, behavioural taboos) survived longer
+still.  Each additional costly requirement increased the predicted
+lifespan of the commune.
+
+\begin{example}[Kibbutzim and Religious Communes]
+The contrast between religious and secular kibbutzim in
+twentieth-century Israel provides a natural experiment in costly
+signalling.  Religious kibbutzim required members to observe Shabbat,
+keep kosher, and participate in daily prayer---all costly signals in
+the IDT sense, with non-trivial depth.  Secular kibbutzim, by
+contrast, relied primarily on ideological commitment, a signal whose
+depth is harder to verify externally.  Consistent with costly
+signalling theory, religious kibbutzim exhibited lower defection rates
+and greater economic cooperation.\footnote{Sosis, R.\ and Ruffle,
+  B.~J., ``Religious ritual and cooperation: testing for a
+  relationship on Israeli religious and secular kibbutzim,''
+  \textit{Current Anthropology}, 44(5), 2003, pp.~713--722.}
+By Theorem~\ref{thm:high-type-advantage}, genuinely committed members
+of religious kibbutzim bore these costs more efficiently than
+uncommitted members, producing exactly the type-separation that
+sustains long-term cooperation.
+\end{example}
+
 % ── §4. Interpretation Cost ──────────────────────────────────────────
 \section{Interpretation Cost and Audience Effects}
 \label{sec:ch3:interp-cost}
@@ -300,6 +522,48 @@ The simplest possible compound ritual (two atomic acts) has strictly
 bounded cost---complex enough to potentially separate types but simple
 enough to be tractable.
 \end{remark}
+
+\begin{remark}[Connection to Evolutionary Biology]
+The compound atomic cost theorem
+(Theorem~\ref{thm:compound-atomic-cost}) has a direct biological
+analogue in multi-component mating displays.  The peacock's courtship
+involves both a visual component (the iridescent tail fan, with its
+elaborate eyespot pattern) and an auditory component (a distinctive
+rattling call produced by vibrating the tail feathers).  Each component
+is approximately atomic in the IDT sense: a single, irreducible costly
+act.  The total display cost is bounded by the sum of the component
+costs, exactly as the theorem predicts.  Crucially, the two components
+are not redundant---they are received through different sensory channels
+and serve complementary verification functions.  The visual component
+signals genetic quality (symmetry, pigmentation); the auditory component
+signals current condition (vigour, muscular control).  The compound
+signal is more informative than either component alone, while remaining
+within the tractable cost bound of~$2$.\footnote{Loyau, A.\ et al.,
+  ``Iridescent structurally based coloration of eyespots correlates
+  with mating success in the peacock,'' \textit{Behavioral Ecology},
+  18(6), 2007, pp.~1123--1131.}
+\end{remark}
+
+\begin{example}[Marriage Ceremonies as Compound Signals]
+A traditional Hindu wedding (\textit{vivaha}) provides an instructive
+example of compound costly signalling.  The ceremony involves multiple
+individually costly acts: the exchange of garlands (\textit{jaimala}),
+signalling mutual acceptance; the sacred fire ritual (\textit{agni
+parikrama}), in which the couple circles the fire seven times while
+reciting vows; the application of vermilion (\textit{sindoor}) to the
+bride's hair parting; and the tying of the sacred thread
+(\textit{mangalsutra}).  Each act is approximately atomic---a single
+ritual gesture with bounded depth---and the total ceremony has bounded
+compound cost by Theorem~\ref{thm:compound-atomic-cost} applied
+iteratively.  The multi-component structure serves a dual purpose:
+it increases the total signal cost (making the commitment harder to
+fake) while distributing the cost across distinct symbolic registers
+(visual, verbal, kinesthetic, material), thereby making the signal
+legible to a diverse audience of witnesses with different interpretive
+repertoires.\footnote{Pandey, R., \textit{Hindu Sa\d{m}sk\={a}ras:
+  Socio-Religious Study of the Hindu Sacraments}, Motilal Banarsidass,
+  1969.}
+\end{example}
 
 % ── §5. Resonance and Cost ───────────────────────────────────────────
 \section{Resonance and Cost Interaction}
@@ -373,6 +637,53 @@ their cost.  A depth-3 ritual received by depth-5 minds produces at most
 depth-8 interpretations.  This is the formal ``budget'' of cultural
 transformation through signalling.
 \end{remark}
+
+\begin{remark}[Open Questions in Costly Signalling]
+Several questions remain open in the formal theory of costly depth
+signals, and we flag them here as directions for future work.
+First, can the \emph{single-crossing property}
+(Theorem~\ref{thm:high-type-advantage}) be weakened?  Our current
+formulation assumes a binary type space (high vs.\ low), but real
+signalling environments feature a continuum of types.  Extending the
+single-crossing result to a richer type space would require a graded
+notion of cost efficiency, perhaps indexed by a continuous depth
+parameter.  Second, what happens when signal cost is
+\emph{stochastic}?  In practice, the cost of a ritual performance
+varies across occasions: a fast during summer is more costly than a
+fast during winter; a pilgrimage in wartime is more costly than in
+peacetime.  A stochastic extension of IDT would model
+$\operatorname{signalCost}(s)$ as a random variable and derive
+probabilistic analogues of the theorems in this chapter.  Third, the
+interaction between \emph{signal cost and audience size} deserves
+further exploration: Theorem~\ref{thm:total-interp-cost} gives a
+linear bound, but empirical evidence suggests that audience effects may
+exhibit diminishing returns (a potlatch before 1000 witnesses is not
+ten times more effective than one before 100).
+\end{remark}
+
+\begin{example}[The Olympic Games as Multi-Level Costly Signal]
+The modern Olympic Games function as a costly signal at multiple
+levels simultaneously, illustrating the compositional structure that
+IDT formalises.  At the \emph{national} level, the host country bears
+enormous costs: infrastructure construction, security, and
+opportunity cost of diverted public funds.  These costs signal
+national prosperity and organisational capacity.  At the
+\emph{individual} level, each athlete bears years of training cost:
+the depth of their athletic signal is measured in thousands of hours
+of deliberate practice, dietary discipline, and foregone alternative
+careers.  At the \emph{spectator} level, attendees bear costs of
+travel, tickets, and time---signals of allegiance to their national
+team.  By the subadditivity theorem
+(Theorem~\ref{thm:cost-subadditive}), the total cost of the Olympic
+signal is bounded by the sum of these component costs, and by the
+interpretation filtration theorem
+(Theorem~\ref{thm:interp-filtration}), the cultural impact of the
+Games on any audience is bounded by the audience's existing
+sophistication plus the signal's depth.\footnote{For a sociological
+  analysis of the Olympics as costly signalling, see Roche, M.,
+  \textit{Mega-Events and Modernity: Olympics and Expos in the Growth
+  of Global Culture}, Routledge, 2000.}
+\end{example}
 
 % ── Summary ──────────────────────────────────────────────────────────
 \section*{Chapter Summary}

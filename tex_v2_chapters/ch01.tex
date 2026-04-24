@@ -1,0 +1,694 @@
+% ================================================================
+% CHAPTER 1: THE GEOMETRY OF IDEAS
+% ================================================================
+\chapter{The Geometry of Ideas}
+\label{ch:geometry}
+
+\epigraph{Whereof one cannot speak, thereof one must be silent.}{Ludwig Wittgenstein, \textit{Tractatus Logico-Philosophicus}, 7}
+
+\section{Why Embed Ideas in Hilbert Space?}
+
+The central question of this book is deceptively simple: \emph{can the
+relationships between ideas be given a geometry?} Not a metaphorical geometry
+--- not ``the landscape of ideas'' as a figure of speech --- but a genuine
+mathematical geometry, in which ideas are points (or vectors) in a space, their
+mutual affinity is measured by angles and distances, and the operations we
+perform on ideas (combining them, comparing them, transmitting them) correspond
+to well-defined geometric transformations.
+
+The answer we shall develop is: \emph{yes, and the natural geometry is that of
+a real Hilbert space.} An idea $a$ is mapped to a vector $\embed{a}$ in a
+Hilbert space $\Hspace$, the resonance between ideas becomes an inner product,
+and composition of ideas becomes vector addition. This simple pair of axioms
+yields a remarkably rich theory --- one in which the Cauchy--Schwarz inequality
+limits cross-cultural understanding, persuasion reduces to orthogonal
+projection, and Nash equilibria in communication games admit geometric
+characterization.
+
+But before we state the axioms, we must explain why this particular mathematical
+structure is the right one. This requires a brief tour through the history of
+attempts to ``geometrize meaning.''
+
+\subsection{Historical Antecedents}
+
+The idea that meanings have geometric structure is not new. It has appeared in
+at least four independent traditions, each approaching the problem from a
+different direction.
+
+\paragraph{Osgood's Semantic Differential (1957).}
+Charles Osgood, George Suci, and Percy Tannenbaum developed the \emph{semantic
+differential}, a technique for measuring the ``meaning'' of a concept by asking
+subjects to rate it on bipolar scales (good--bad, strong--weak, active--passive).
+Factor analysis of these ratings consistently revealed three principal
+dimensions --- evaluation, potency, and activity --- suggesting that meanings
+inhabit a low-dimensional space. Osgood's work was empirical rather than
+axiomatic: the geometry emerged from data, not from first principles. But it
+established the crucial insight that \emph{meaning has dimensionality}, and that
+the dimensionality is surprisingly low.
+
+\paragraph{G\"ardenfors's Conceptual Spaces (2000).}
+Peter G\"ardenfors proposed that concepts are represented as regions in a
+multi-dimensional ``conceptual space,'' with each dimension corresponding to a
+quality (color, size, pitch, etc.). The similarity between concepts is inversely
+related to their distance in this space. G\"ardenfors's framework is richer than
+Osgood's: it accommodates structured concepts (with correlations between
+dimensions), prototype effects, and conceptual change. But it remains primarily
+a framework for \emph{concepts} (categories applied to external objects) rather
+than for \emph{ideas} (propositions, theories, worldviews). IDT~v2 extends
+G\"ardenfors's geometric intuition from concepts to ideas.
+
+\paragraph{Latent Semantic Analysis (1990).}
+Scott Deerwester and colleagues introduced \emph{Latent Semantic Analysis}
+(LSA), which represents words and documents as vectors in a space derived from
+the singular value decomposition of a term-document matrix. LSA showed that
+purely distributional information --- which words co-occur in which contexts ---
+is sufficient to recover semantic relationships: synonyms cluster together,
+antonyms are separated, and analogical relationships appear as parallelogram
+structures. LSA provided the first large-scale evidence that semantic structure
+is genuinely geometric.
+
+\paragraph{Word2Vec and Neural Embeddings (2013).}
+Tomas Mikolov and colleagues demonstrated that neural network models trained on
+large text corpora produce word embeddings with remarkable algebraic properties:
+$\text{king} - \text{man} + \text{woman} \approx \text{queen}$. This ``word
+arithmetic'' suggests that the embedding space has genuine linear structure ---
+that semantic relationships correspond to vector operations. The explosion of
+work on neural embeddings (GloVe, BERT, GPT) has confirmed that distributional
+semantics yields embeddings with rich geometric properties. But these embeddings
+are learned from data, not derived from axioms. IDT~v2 asks: \emph{what axioms
+would make such embeddings principled?}
+
+\subsection{From Empirical to Axiomatic}
+
+Each of these traditions discovered geometric structure in meaning empirically.
+Osgood found it in factor analysis, G\"ardenfors postulated it theoretically,
+LSA extracted it from co-occurrence matrices, and word2vec learned it from
+neural networks. But none provided a set of \emph{axioms} that would explain
+\emph{why} meaning has geometric structure, or what constraints this structure
+must satisfy.
+
+IDT~v2 fills this gap. We begin with ideas as primitive objects, equipped with
+composition and a notion of void, and we postulate that there exists an embedding
+into a Hilbert space that preserves these structures. The theorems that follow
+are consequences of these axioms --- not of any particular dataset, not of any
+particular embedding algorithm, but of the \emph{structural requirements} that
+any meaning-preserving embedding must satisfy.
+
+This is the characteristic move of axiomatic mathematics: to identify the
+essential properties of a structure and derive consequences that hold for
+\emph{all} structures satisfying those properties. Just as group theory studies
+all groups (not just permutation groups or matrix groups), IDT~v2 studies all
+Hilbert embeddings of ideatic spaces (not just word2vec or GloVe or any
+particular implementation).
+
+
+\section{The Axioms of HilbertIdeaticSpace}
+
+We now state the axioms precisely. Throughout this book, $\IS$ denotes an
+ideatic space in the sense of IDT~v1: a set of ideas equipped with a
+binary composition operation $\compose$, an identity element $\void$ (the void),
+and a depth function $\depth : \IS \to \mathbb{N}$.
+
+\begin{definition}[Hilbert Ideatic Space]
+\label{def:hilbert-ideatic-space}
+A \textbf{Hilbert Ideatic Space} is a tuple $(\IS, \compose, \void, \depth,
+\Hspace, \varphi)$ where:
+\begin{enumerate}
+\item $(\IS, \compose, \void)$ is a monoid (ideas compose associatively, with
+$\void$ as identity);
+\item $\Hspace$ is a real Hilbert space;
+\item $\varphi : \IS \to \Hspace$ is a function (the \textbf{meaning embedding})
+satisfying:
+\begin{enumerate}
+\item $\embed{\void} = 0$ \hfill (void maps to the zero vector)
+\item $\embed{a \compose b} = \embed{a} + \embed{b}$ for all $a, b \in \IS$
+\hfill (composition maps to addition)
+\end{enumerate}
+\item $\depth : \IS \to \mathbb{N}$ is a subadditive function with $\depth(\void)
+= 0$.
+\end{enumerate}
+The \textbf{resonance strength} between ideas $a$ and $b$ is defined as:
+\[
+  \rs{a}{b} \;:=\; \ip{\embed{a}}{\embed{b}}_\Hspace.
+\]
+\end{definition}
+
+Let us unpack these axioms one by one, explaining both their mathematical
+content and their philosophical motivation.
+
+\begin{axiom}[Monoid Structure]
+\label{ax:monoid}
+$(\IS, \compose, \void)$ is a monoid: composition is associative, and $\void$
+is a two-sided identity.
+\end{axiom}
+
+This axiom is inherited from IDT~v1 and requires little additional justification.
+Ideas compose: one can combine the idea of ``natural selection'' with the idea
+of ``cultural transmission'' to form the idea of ``memetic evolution.'' This
+composition is associative (the order of combining three ideas does not matter,
+though the order of \emph{two} does). The void $\void$ is the empty idea --- the
+idea with no content --- which, when composed with any idea, leaves it unchanged.
+
+\begin{axiom}[Hilbert Space]
+\label{ax:hilbert}
+$\Hspace$ is a real Hilbert space: a complete inner product space over $\mathbb{R}$.
+\end{axiom}
+
+Why a Hilbert space, rather than a mere vector space, a Banach space, or a
+metric space? The answer is the inner product. The inner product gives us three
+things simultaneously: a notion of \emph{angle} (and hence of similarity and
+opposition), a notion of \emph{distance} (and hence of nearness and separation),
+and a notion of \emph{projection} (and hence of persuasion and influence). No
+weaker structure provides all three.
+
+The completeness requirement (that Cauchy sequences converge) is primarily
+technical: it ensures that limits of sequences of meanings exist within the
+space, so that we can discuss convergent processes of meaning-change. In
+finite-dimensional applications, completeness is automatic.
+
+\begin{axiom}[Void Embedding]
+\label{ax:void-embed}
+$\embed{\void} = 0$.
+\end{axiom}
+
+The void --- the idea with no content --- maps to the zero vector. This is the
+unique vector with zero norm (zero ``weight'' or ``significance'') and zero
+inner product with every other vector (zero resonance with everything). Silence,
+in the Hilbert space of meaning, is the origin.
+
+This axiom has deep philosophical resonance with Wittgenstein's famous dictum:
+``Whereof one cannot speak, thereof one must be silent.'' The void is precisely
+that about which nothing can be said --- and in the Hilbert space, it says
+nothing, resonates with nothing, and occupies no position except the origin.
+
+\begin{axiom}[Composition as Addition]
+\label{ax:compose-add}
+For all $a, b \in \IS$: $\embed{a \compose b} = \embed{a} + \embed{b}$.
+\end{axiom}
+
+This is the most consequential axiom of IDT~v2. It asserts that the embedding
+$\varphi$ is a \emph{monoid homomorphism} from $(\IS, \compose, \void)$ to
+$(\Hspace, +, 0)$: composition in the ideatic space corresponds to addition in
+the Hilbert space.
+
+What does this mean philosophically? It means that ideas \emph{add up} in
+meaning space. When you compose two ideas --- say, ``democracy'' and ``market
+economics'' --- the resulting composite idea occupies the position in meaning
+space that is the vector sum of the two components' positions. The meaning of
+the composite is, geometrically, the \emph{sum} of the meanings of the parts.
+
+\begin{interpretation}[Additivity and Compositionality]
+\label{interp:additivity}
+The composition-as-addition axiom is a strong form of \emph{compositionality}:
+the meaning of a complex expression is determined by the meanings of its parts
+and the mode of their combination. In IDT~v2, the ``mode of combination'' is
+always addition --- the simplest possible combining rule.
+
+This is a deliberate idealization. Real ideas do not always compose additively:
+irony, metaphor, and context-dependence all introduce non-linearities. But the
+linear approximation is the natural starting point, just as linear approximation
+is the natural starting point in physics (Hooke's law, Ohm's law, the harmonic
+oscillator). The non-linear refinements belong to the next generation of the
+theory.
+
+From the perspective of Frege's principle of compositionality, our axiom is a
+particularly clean implementation: the meaning function $\varphi$ is literally
+a homomorphism. Frege held that the meaning of a sentence is a function of the
+meanings of its parts; we make this precise by requiring that the function be
+addition. This is stronger than Frege's principle (which allows arbitrary
+functions), but the strength is precisely what gives the theory its power.
+
+The additivity axiom also connects to the tradition of \emph{distributional
+semantics}. The word2vec model, for instance, represents phrases approximately
+as sums of word vectors. Our axiom asserts that this is not merely an
+approximation but a structural requirement: any embedding that respects the
+monoid structure of ideas \emph{must} map composition to addition.
+\end{interpretation}
+
+
+\section{The Meaning Embedding as Homomorphism}
+
+The axioms of Definition~\ref{def:hilbert-ideatic-space} together imply that
+$\varphi$ is a monoid homomorphism. Let us record this explicitly.
+
+\begin{proposition}[$\varphi$ is a Monoid Homomorphism]
+\label{prop:phi-homomorphism}
+The embedding $\varphi : (\IS, \compose, \void) \to (\Hspace, +, 0)$ is a
+monoid homomorphism. That is:
+\begin{enumerate}
+\item $\embed{\void} = 0$ (preserves identity);
+\item $\embed{a \compose b} = \embed{a} + \embed{b}$ for all $a, b \in \IS$
+(preserves the operation).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Both properties are axioms (Axioms~\ref{ax:void-embed} and~\ref{ax:compose-add}).
+The proposition merely observes that these two axioms together constitute the
+definition of a monoid homomorphism from $(\IS, \compose, \void)$ to the
+additive monoid $(\Hspace, +, 0)$.
+
+In Lean~4, this is formalized as:
+\begin{lstlisting}
+theorem phi_monoid_hom (a b : Idea) :
+    φ (a ∘ b) = φ a + φ b := embed_compose a b
+\end{lstlisting}
+\end{proof}
+
+A monoid homomorphism preserves the algebraic structure of composition, but it
+need not be injective. Two distinct ideas may map to the same vector in
+$\Hspace$. This is not a defect but a feature: it allows the theory to model
+\emph{synonymy} (distinct ideas with the same meaning) and \emph{paraphrase}
+(different ways of expressing the same thought).
+
+\begin{definition}[Synonymy]
+\label{def:synonymy}
+Two ideas $a, b \in \IS$ are \textbf{synonymous} (in the Hilbert space model)
+if $\embed{a} = \embed{b}$. We write $a \equiv_\varphi b$.
+\end{definition}
+
+\begin{proposition}[Synonymy is a Congruence]
+\label{prop:synonymy-congruence}
+The relation $\equiv_\varphi$ is a congruence on $(\IS, \compose)$: if $a
+\equiv_\varphi a'$ and $b \equiv_\varphi b'$, then $a \compose b \equiv_\varphi
+a' \compose b'$.
+\end{proposition}
+
+\begin{proof}
+If $\embed{a} = \embed{a'}$ and $\embed{b} = \embed{b'}$, then:
+\[
+  \embed{a \compose b} = \embed{a} + \embed{b} = \embed{a'} + \embed{b'}
+  = \embed{a' \compose b'}.
+\]
+The first and third equalities use Axiom~\ref{ax:compose-add}; the middle
+equality uses the hypotheses.
+
+In Lean~4:
+\begin{lstlisting}
+theorem synonymy_congruence (ha : φ a = φ a') (hb : φ b = φ b') :
+    φ (a ∘ b) = φ (a' ∘ b') := by
+  simp [embed_compose, ha, hb]
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Synonymy and the Quotient Space]
+\label{interp:synonymy}
+The congruence $\equiv_\varphi$ allows us to form the quotient monoid $\IS /
+{\equiv_\varphi}$, in which synonymous ideas are identified. This quotient
+embeds \emph{injectively} into $\Hspace$, and its image is the set of ``realized
+meanings'' --- the vectors in $\Hspace$ that actually correspond to ideas.
+
+From a philosophical perspective, the quotient construction formalizes the
+distinction between \emph{sense} (Sinn) and \emph{reference} (Bedeutung) in
+Frege's philosophy of language. Two expressions may have different senses (they
+are distinct elements of $\IS$) but the same reference (they map to the same
+vector in $\Hspace$). The Hilbert space $\Hspace$ is the space of references;
+the ideatic space $\IS$ is the space of senses. The embedding $\varphi$ is the
+function that sends each sense to its reference.
+
+This also connects to Quine's thesis of the indeterminacy of translation. If
+the embedding $\varphi$ is not unique --- if there are multiple valid embeddings
+of the same ideatic space into Hilbert space --- then the ``meaning'' of an idea
+is not fully determined by its structural relationships. Different embeddings
+would identify different pairs of ideas as synonymous, leading to different
+quotient structures. This is precisely Quine's point: there is no fact of the
+matter about whether two expressions in different languages have the ``same
+meaning,'' because ``same meaning'' depends on the choice of embedding.
+\end{interpretation}
+
+
+\section{First Consequences of the Axioms}
+
+The axioms already yield several non-trivial consequences. We collect the most
+immediate ones here.
+
+\begin{proposition}[Iterated Composition]
+\label{prop:iterated-compose}
+For any idea $a \in \IS$ and any $n \in \mathbb{N}$, define $a^{\langle n
+\rangle}$ (the $n$-fold self-composition of $a$) inductively by $a^{\langle 0
+\rangle} = \void$ and $a^{\langle n+1 \rangle} = a \compose a^{\langle n
+\rangle}$. Then:
+\[
+  \embed{a^{\langle n \rangle}} = n \cdot \embed{a}.
+\]
+\end{proposition}
+
+\begin{proof}
+By induction on $n$. The base case $n = 0$: $\embed{a^{\langle 0 \rangle}} =
+\embed{\void} = 0 = 0 \cdot \embed{a}$. The inductive step: assuming
+$\embed{a^{\langle n \rangle}} = n \cdot \embed{a}$,
+\begin{align*}
+  \embed{a^{\langle n+1 \rangle}}
+  &= \embed{a \compose a^{\langle n \rangle}} \\
+  &= \embed{a} + \embed{a^{\langle n \rangle}} \\
+  &= \embed{a} + n \cdot \embed{a} \\
+  &= (n+1) \cdot \embed{a}.
+\end{align*}
+
+In Lean~4:
+\begin{lstlisting}
+theorem embed_composeN (a : Idea) (n : ℕ) :
+    φ (composeN a n) = n • φ a := by
+  induction n with
+  | zero => simp [composeN, embed_void, zero_smul]
+  | succ n ih => simp [composeN, embed_compose, ih, succ_nsmul]
+\end{lstlisting}
+\end{proof}
+
+This result has a beautiful geometric interpretation: repeating an idea $n$
+times moves you $n$ times as far along the same direction in meaning space. The
+meaning of ``justice, justice, justice'' is three times the vector of ``justice''
+--- it has three times the norm (three times the emphasis, three times the
+weight) but the same direction (the same qualitative meaning).
+
+\begin{proposition}[Resonance of Iterated Ideas]
+\label{prop:resonance-iterated}
+For any ideas $a, b \in \IS$ and $n, m \in \mathbb{N}$:
+\[
+  \rs{a^{\langle n \rangle}}{b^{\langle m \rangle}} = nm \cdot \rs{a}{b}.
+\]
+\end{proposition}
+
+\begin{proof}
+Direct computation:
+\begin{align*}
+  \rs{a^{\langle n \rangle}}{b^{\langle m \rangle}}
+  &= \ip{n \cdot \embed{a}}{m \cdot \embed{b}} \\
+  &= nm \cdot \ip{\embed{a}}{\embed{b}} \\
+  &= nm \cdot \rs{a}{b}.
+\end{align*}
+Here we used Proposition~\ref{prop:iterated-compose} and the bilinearity of the
+inner product.
+\end{proof}
+
+\begin{corollary}[Self-Resonance of Iterated Ideas]
+\label{cor:self-resonance-iterated}
+$\rs{a^{\langle n \rangle}}{a^{\langle n \rangle}} = n^2 \cdot \rs{a}{a}$.
+In other words, the ``weight'' of an idea grows quadratically with repetition.
+\end{corollary}
+
+\begin{proof}
+Set $b = a$ and $m = n$ in Proposition~\ref{prop:resonance-iterated}.
+\end{proof}
+
+\begin{interpretation}[Repetition and Emphasis]
+\label{interp:repetition}
+The quadratic growth of self-resonance under repetition has a striking
+interpretation in rhetoric and propaganda. When a message is repeated $n$
+times, its ``weight'' (self-resonance) does not merely double or triple ---
+it grows as $n^2$. This formalizes the intuition behind political slogans,
+advertising jingles, and religious mantras: repetition does not merely
+\emph{add} emphasis, it \emph{multiplies} it.
+
+This quadratic growth is a consequence of the linear embedding: if
+$\embed{a^{\langle n \rangle}} = n \cdot \embed{a}$, then the norm squared
+is $n^2 \nrm{\embed{a}}^2$. The non-linearity (quadratic growth of weight
+from linear growth of position) is characteristic of inner product spaces
+and distinguishes the Hilbert space model from simpler models (such as
+counting repetitions, which would give linear growth).
+
+In Bourdieu's terms, this suggests that cultural capital accumulates
+quadratically: an agent who repeats their message $n$ times acquires not
+$n$ but $n^2$ units of cultural weight. This accords with the observation
+that dominant cultural discourses are not merely more frequent but
+\emph{disproportionately} more influential than their frequency alone would
+predict.
+\end{interpretation}
+
+\begin{proposition}[Composition and Resonance]
+\label{prop:compose-resonance}
+For any ideas $a, b, c \in \IS$:
+\[
+  \rs{a \compose b}{c} = \rs{a}{c} + \rs{b}{c}.
+\]
+\end{proposition}
+
+\begin{proof}
+\begin{align*}
+  \rs{a \compose b}{c}
+  &= \ip{\embed{a \compose b}}{\embed{c}} \\
+  &= \ip{\embed{a} + \embed{b}}{\embed{c}} \\
+  &= \ip{\embed{a}}{\embed{c}} + \ip{\embed{b}}{\embed{c}} \\
+  &= \rs{a}{c} + \rs{b}{c},
+\end{align*}
+using linearity of the inner product in the first argument.
+
+In Lean~4:
+\begin{lstlisting}
+theorem rs_compose_left (a b c : Idea) :
+    rs (a ∘ b) c = rs a c + rs b c := by
+  simp [rs, embed_compose, inner_add_left]
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Linearity of Cultural Evaluation]
+\label{interp:linearity}
+Proposition~\ref{prop:compose-resonance} states that the resonance of a
+composite idea with any third idea is the \emph{sum} of the resonances of the
+parts. This is a strong claim about cultural evaluation: when a culture
+evaluates a composite idea (say, ``democratic socialism''), its evaluation
+is the sum of its evaluations of the parts (``democracy'' and ``socialism''
+separately).
+
+This linearity assumption is again an idealization. In practice, the
+combination of two ideas can produce emergent effects that are not captured by
+simple addition --- irony, paradox, and dialectical synthesis are all phenomena
+where the whole is more (or less, or different) than the sum of the parts. But
+the linear approximation provides a baseline against which these non-linear
+effects can be measured, just as linear regression provides a baseline against
+which non-linear relationships can be detected.
+
+The proposition also implies that resonance is a \emph{linear functional} of the
+first argument (for fixed second argument). In functional-analytic terms, each
+idea $c$ defines a continuous linear functional $\rs{\cdot}{c}$ on the image of
+$\varphi$. By the Riesz representation theorem, this functional is represented
+by the vector $\embed{c}$ --- which is precisely the definition we started with.
+This circularity is reassuring: it means the definition is \emph{consistent}
+with the ambient Hilbert space structure.
+\end{interpretation}
+
+
+\section{The Image of the Embedding}
+
+Not every vector in $\Hspace$ need be the image of an idea. The image
+$\varphi(\IS) = \{\embed{a} : a \in \IS\}$ is a subset of $\Hspace$ that
+inherits structure from both the ideatic space and the Hilbert space.
+
+\begin{proposition}[Image is an Additive Submonoid]
+\label{prop:image-submonoid}
+The image $\varphi(\IS)$ is an additive submonoid of $\Hspace$: it contains
+$0$ and is closed under addition.
+\end{proposition}
+
+\begin{proof}
+$0 = \embed{\void} \in \varphi(\IS)$. If $\embed{a}, \embed{b} \in
+\varphi(\IS)$, then $\embed{a} + \embed{b} = \embed{a \compose b} \in
+\varphi(\IS)$.
+\end{proof}
+
+The image need not be a subspace (it need not be closed under scalar
+multiplication) nor a closed subset (limits of images need not be images). These
+are important structural features:
+
+\begin{remark}[The Image Need Not Be a Subspace]
+\label{rmk:image-not-subspace}
+Since $\IS$ is a monoid, not a group, there is in general no idea $a^{-1}$ such
+that $a \compose a^{-1} = \void$. Correspondingly, $\varphi(\IS)$ need not be
+closed under negation: $-\embed{a}$ need not lie in the image. This means that
+for every idea $a$, there is a ``direction of meaning'' (namely $-\embed{a}$)
+that corresponds to no idea at all --- a meaning that is, as it were,
+\emph{unsayable}.
+
+Moreover, the image is not closed under scalar multiplication in general. The
+vector $\frac{1}{2}\embed{a}$ --- ``half'' of idea $a$ --- may correspond to no
+idea. You cannot take half a thought.
+\end{remark}
+
+\begin{interpretation}[Unsayable Directions]
+\label{interp:unsayable}
+The existence of directions in $\Hspace$ that are not in the image of $\varphi$
+gives precise mathematical content to the notion of the \emph{unsayable}.
+Wittgenstein distinguished between what can be \emph{said} (expressible in
+propositions) and what can only be \emph{shown} (manifest in the structure of
+language but not statable within it). In IDT~v2, the ``said'' corresponds to
+$\varphi(\IS)$ --- the set of realizable meanings --- while the ``shown''
+corresponds to the ambient structure of $\Hspace$ that is not captured by any
+particular idea.
+
+The negative direction $-\embed{a}$ is a particularly suggestive case. It
+represents the ``negation'' of $a$ in meaning space --- a direction of meaning
+that is maximally opposed to $a$. If this direction is not in the image of
+$\varphi$, then the negation of $a$ is \emph{unsayable}: one can say $a$, but
+there is no single idea that represents ``not $a$'' in the same geometric
+sense. This accords with the observation that negation in natural language is
+often parasitic on affirmation: ``not guilty'' derives its meaning from
+``guilty,'' and there is no single word that captures the ``opposite'' of
+a complex idea like ``Enlightenment rationalism.''
+
+This connects also to Derrida's notion of \emph{diff\'erance}: meaning is
+constituted by differences within a system, not by positive terms. The Hilbert
+space $\Hspace$ is the system of differences; the image $\varphi(\IS)$ is the
+set of positive terms. The structure of meaning is determined as much by what
+\emph{cannot} be said (the complement of $\varphi(\IS)$ in $\Hspace$) as by
+what can.
+\end{interpretation}
+
+
+\section{The Void as Origin}
+
+The void plays a distinguished role in the Hilbert space model. Let us collect
+its properties.
+
+\begin{proposition}[Properties of the Void]
+\label{prop:void-properties}
+The void $\void$ satisfies:
+\begin{enumerate}
+\item $\embed{\void} = 0$ (the zero vector);
+\item $\nrm{\embed{\void}} = 0$ (zero norm);
+\item $\rs{\void}{a} = 0$ for all $a \in \IS$ (zero resonance with everything);
+\item $d(\void, a) = \nrm{\embed{a}}$ for all $a \in \IS$ (distance from void
+equals norm).
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+(1) is Axiom~\ref{ax:void-embed}. For (2), $\nrm{0} = 0$ by definition of
+the norm. For (3), $\rs{\void}{a} = \ip{0}{\embed{a}} = 0$ by linearity. For
+(4), $d(\void, a) = \nrm{\embed{\void} - \embed{a}} = \nrm{0 - \embed{a}} =
+\nrm{\embed{a}}$.
+
+In Lean~4:
+\begin{lstlisting}
+theorem rs_void_left (a : Idea) : rs void a = 0 := by
+  simp [rs, embed_void, inner_zero_left]
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Silence and the Origin]
+\label{interp:silence}
+The void is the origin of meaning space. Every other idea $a$ is located at
+distance $\nrm{\embed{a}}$ from the void --- and this distance is precisely
+the idea's norm, its ``weight'' or ``significance.'' An idea with large norm
+is far from silence; an idea with small norm is close to it.
+
+This gives precise content to the intuition that some ideas are ``weightier''
+than others. The Communist Manifesto, Darwinian evolution, and the theory of
+general relativity are ideas of enormous norm --- they are far from the origin,
+they resonate strongly with themselves ($\rs{a}{a} = \nrm{\embed{a}}^2$), and
+they project significantly onto many other cultural vectors. A shopping list,
+by contrast, has small norm: it is close to the origin, weakly self-resonant,
+and projects insignificantly onto the great ideas of civilization.
+
+But norm is not the same as \emph{depth} (combinatorial complexity), as we
+shall see in Chapter~\ref{ch:depth-norm}. A haiku may have small depth (few
+compositional layers) but enormous norm (great semantic weight). A legal
+contract may have great depth (many nested clauses and conditions) but modest
+norm (limited cultural significance). The independence of these two measures is
+one of the key insights of the Hilbert space model.
+\end{interpretation}
+
+
+\section{Wittgenstein's Picture Theory and the Hilbert Space}
+
+We conclude this chapter with a philosophical discussion that frames the
+entire project.
+
+In the \emph{Tractatus Logico-Philosophicus}, Wittgenstein proposed that
+propositions are \emph{pictures} of reality: a proposition represents a possible
+state of affairs by sharing its ``logical form.'' The relationship between a
+proposition and what it represents is not one of resemblance but of
+\emph{structural correspondence}: the elements of the proposition are correlated
+with elements of reality, and the arrangement of elements in the proposition
+mirrors the arrangement of elements in reality.
+
+IDT~v2's Hilbert space embedding can be understood as a mathematical
+implementation of the picture theory. Ideas (propositions, theories, worldviews)
+are mapped to vectors in $\Hspace$, and these vectors ``picture'' the aspects
+of reality that the ideas are about. The inner product measures the degree of
+structural correspondence between two pictures: two ideas that picture the same
+aspect of reality (or closely related aspects) have a large positive inner
+product; two ideas that picture unrelated aspects have zero inner product; two
+ideas that picture contradictory aspects have a negative inner product.
+
+The composition axiom ($\embed{a \compose b} = \embed{a} + \embed{b}$) then
+says that combining two pictures corresponds to adding their vectors --- a
+natural operation if pictures are understood as representing \emph{features}
+of reality that can be superimposed.
+
+\begin{interpretation}[From Pictures to Vectors]
+\label{interp:wittgenstein}
+Wittgenstein's picture theory was revolutionary but ultimately unsatisfying:
+it told us \emph{that} propositions picture reality, but not \emph{how} to
+compute with pictures, measure their similarity, or analyze their composition.
+The Hilbert space model fills these gaps. Vectors are pictures we can compute
+with: we can measure their angle, compute their sum, project one onto another,
+and decompose them into orthogonal components.
+
+The passage from pictures to vectors is, in a sense, the passage from
+philosophy to mathematics. Wittgenstein saw that meaning has structure;
+IDT~v2 provides the tools to analyze that structure quantitatively.
+
+But Wittgenstein himself might have objected to this mathematization. In the
+\emph{Philosophical Investigations}, he abandoned the picture theory in favor
+of a view of meaning as \emph{use}: the meaning of a word is its use in a
+language game, not its correspondence to a picture or a vector. The tension
+between the ``picture'' (vector) view and the ``use'' (game-theoretic) view
+is, in fact, productive: Part~II of this book develops the game theory of
+meaning, showing how the geometric structure of Part~I interacts with
+strategic considerations of communication and persuasion. The two views are
+not contradictory but complementary, just as wave mechanics and matrix
+mechanics turned out to be equivalent formulations of quantum theory.
+\end{interpretation}
+
+\begin{example}[Three Ideas in the Plane]
+\label{ex:three-ideas}
+To build intuition, consider three ideas embedded in $\Hspace = \mathbb{R}^2$:
+\begin{itemize}
+\item $a$ = ``democracy,'' with $\embed{a} = (3, 1)$;
+\item $b$ = ``free markets,'' with $\embed{b} = (2, 2)$;
+\item $c$ = ``authoritarianism,'' with $\embed{c} = (-2, 1)$.
+\end{itemize}
+Then:
+\begin{align*}
+  \rs{a}{b} &= \ip{(3,1)}{(2,2)} = 6 + 2 = 8 > 0 \quad \text{(positive
+  resonance --- aligned)}, \\
+  \rs{a}{c} &= \ip{(3,1)}{(-2,1)} = -6 + 1 = -5 < 0 \quad \text{(negative
+  resonance --- opposed)}, \\
+  \rs{b}{c} &= \ip{(2,2)}{(-2,1)} = -4 + 2 = -2 < 0 \quad \text{(mildly
+  opposed)}.
+\end{align*}
+The composite idea $a \compose b$ = ``democratic free markets'' has embedding
+$(3,1) + (2,2) = (5,3)$, with norm $\sqrt{34} \approx 5.83$ --- greater than
+either component alone.
+
+The composition $a \compose c$ = ``democratic authoritarianism'' (an oxymoron,
+perhaps, but a genuine political concept in some analyses) has embedding
+$(3,1) + (-2,1) = (1,2)$, with norm $\sqrt{5} \approx 2.24$ --- \emph{less}
+than either component. The opposition between the components causes partial
+cancellation, reducing the weight of the composite idea. This is a geometric
+model of \emph{cognitive dissonance}: when you try to hold two opposing ideas
+simultaneously, the result has less weight than either alone.
+\end{example}
+
+\begin{example}[The Embedding Need Not Be Injective]
+\label{ex:non-injective}
+Consider two ideas: $a$ = ``the morning star'' and $b$ = ``the evening star.''
+These are distinct ideas (different senses, in Frege's terminology), but they
+refer to the same object (Venus). In a Hilbert embedding, they might satisfy
+$\embed{a} = \embed{b}$ --- they are synonymous in the embedding, even though
+they are distinct as ideas. The embedding captures reference (Bedeutung), not
+sense (Sinn).
+
+Alternatively, an embedding might assign them nearby but distinct vectors,
+capturing the fact that they have slightly different connotations even though
+they refer to the same object. The choice depends on the particular embedding
+and the granularity of meaning one wishes to capture.
+\end{example}
+
+\bigskip
+
+This chapter has laid the foundations: ideas embed in a Hilbert space, composition
+maps to addition, and the void maps to the origin. In the next chapter, we
+develop the theory of resonance --- the inner product between ideas --- and
+discover its deep connections to semiotics, cultural affinity, and the limits of
+understanding.

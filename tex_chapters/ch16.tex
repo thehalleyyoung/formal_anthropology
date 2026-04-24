@@ -1,0 +1,1078 @@
+% ============================================================
+%  Chapter 16 — Cooperative Composition and Gift Exchange
+% ============================================================
+\chapter{Cooperative Composition and Gift Exchange}
+\label{ch:cooperative}
+
+\begin{quote}
+\textit{``The gift not yet repaid debases the man who accepted it.''}\\
+--- Marcel Mauss, \textit{The Gift} (1925)
+\end{quote}
+
+\vspace{1em}
+
+\section{Introduction}
+
+Marcel Mauss's celebrated \textit{Essai sur le don} (1925) demonstrated that
+gift exchange is never merely economic: to give is to create obligation, to
+receive is to assume debt, and to reciprocate is to weave a social bond.
+In societies from the Trobriand Islands to the Pacific Northwest, the
+circulation of gifts constitutes a total social fact---simultaneously
+economic, juridical, moral, and aesthetic.\footnote{Mauss distinguished three
+obligations of the gift: to give, to receive, and to reciprocate. Each is
+indispensable; failure at any stage ruptures the social fabric.}
+
+In Ideatic Diffusion Theory, cooperation is \emph{composition}: when two agents
+contribute their ideas to a joint project, the result is $\compose(a, b)$.
+The order matters---gifts are not symmetric!---and the void $\void$
+contributes nothing.  This chapter formalizes cooperative game theory within
+ideatic space, establishing twenty theorems that characterize joint
+composition, multi-party projects, depth bounds on cooperative output, and
+resonance preservation under collaboration.
+
+The analogy between $\compose$ and gift-giving is precise.  Agent $a$
+``gives first,'' setting the frame of the exchange; agent $b$ reciprocates
+within that frame.  The result $\compose(a,b)$ is a compound idea whose
+depth is bounded by the sum of the contributors' depths---one cannot create
+profundity from banality---and whose resonance properties are inherited from
+the inputs.  When we extend to multi-party projects via iterated
+composition, we obtain a formal model of Malinowski's \textit{Kula ring}, of
+potlatch sequences, and of any process in which meaning accrues through
+sequential cooperative acts.\footnote{Bronislaw Malinowski's
+\textit{Argonauts of the Western Pacific} (1922) documented how shell
+valuables circulate through a ring of trading partners, each exchange adding
+a layer of social meaning.}
+
+We proceed as follows.  Section~\ref{sec:ch16-defs} introduces the core
+definitions---\texttt{jointCompose}, \texttt{symmetricJoint}, and
+\texttt{JointProject}---together with their Lean formalizations.
+Section~\ref{sec:ch16-void} establishes the role of void as the
+non-contributor.  Section~\ref{sec:ch16-assoc} proves associativity of
+multi-party cooperation.  Section~\ref{sec:ch16-resonance} explores
+resonance preservation.  Section~\ref{sec:ch16-depth} derives depth
+bounds on cooperative output.  Section~\ref{sec:ch16-multi} extends the
+analysis to multi-party and iterated cooperation.  Section~\ref{sec:ch16-concl}
+concludes.
+
+\subsection*{Mauss's Three Obligations and the Structure of Reciprocity}
+
+Mauss's analysis of gift exchange identified three fundamental
+obligations: the obligation \emph{to give}, the obligation \emph{to
+receive}, and the obligation \emph{to reciprocate}.  Each obligation is
+indispensable; failure at any stage ruptures the social bond.  In our
+formal framework, these three obligations map onto structural properties
+of composition.  The obligation to give corresponds to the act of
+contributing $a$ to a joint composition $\compose(a, b)$---the initiator
+must provide an input.  The obligation to receive corresponds to the
+requirement that the second argument $b$ accept the compositional frame
+established by $a$---compositionally, $b$ operates within the context
+set by $a$, which it cannot refuse without leaving the exchange entirely.
+The obligation to reciprocate corresponds to the non-triviality of $b$:
+reciprocation with $\void$ (Theorem~\ref{thm:void_joint_right}) leaves
+the initiator's gift unchanged, which is structurally equivalent to
+non-reciprocation.  A genuine return gift requires $b \neq \void$, so
+that $\compose(a, b) \neq a$.
+
+This three-fold structure reveals why gift exchange creates lasting
+social bonds in a way that market transactions do not.  A market
+transaction terminates at the moment of exchange: money for goods, and
+the obligation is discharged.  A gift, by contrast, creates an
+asymmetric temporal structure: the obligation to reciprocate persists
+until a counter-gift is offered, and the counter-gift itself creates a
+new obligation, generating an indefinitely extended chain of mutual
+obligation.  In compositional terms, the gift exchange generates an
+iterated sequence $\compose(a_1, \compose(b_1, \compose(a_2,
+\compose(b_2, \ldots))))$ that is structurally open-ended---there is no
+natural termination point, because each reciprocation is itself a gift
+that demands reciprocation.\footnote{This open-endedness distinguishes
+gift exchange from contract: a contract specifies termination conditions,
+while a gift relationship is, in principle, interminable.  See Marshall
+Sahlins, \textit{Stone Age Economics} (1972), Chapter 5.}
+
+\subsection*{Sahlins's Typology of Reciprocity}
+
+Marshall Sahlins, in \textit{Stone Age Economics} (1972), proposed a
+typology of reciprocity that maps naturally onto our compositional
+framework.  \emph{Generalized reciprocity} is the altruistic extreme:
+$a$ gives without expectation of return, corresponding to
+$\compose(a, \void)$---the gift is offered and the return is void.
+\emph{Balanced reciprocity} involves equivalent counter-gifts:
+$\compose(a, b)$ where $\depth(b) \approx \depth(a)$, so that the
+exchange is approximately symmetric in depth.  \emph{Negative
+reciprocity} is the exploitative extreme: one party attempts to extract
+maximum value while giving minimum in return, corresponding to
+$\compose(a, b)$ where $\depth(a) \gg \depth(b)$ or $\depth(b) \gg
+\depth(a)$, and the asymmetry is intentional rather than freely chosen.
+
+Sahlins arranged these types on a continuum correlated with social
+distance: generalized reciprocity prevails among close kin (parents
+give to children without expecting repayment), balanced reciprocity
+governs relations among trading partners and allies, and negative
+reciprocity characterizes dealings with strangers and enemies.  Our
+framework captures this continuum through the depth ratio
+$\depth(a)/\depth(b)$: values near 1 indicate balanced exchange,
+values much greater or less than 1 indicate asymmetric exchange, and
+the direction of asymmetry (which party contributes more depth)
+determines whether the exchange is generous or exploitative.
+
+\subsection*{Gregory, Weiner, and the Inalienability Problem}
+
+Chris Gregory's \textit{Gifts and Commodities} (1982) drew a sharp
+distinction between gift economies and commodity economies.  In a
+commodity economy, the exchange transfers \emph{alienable} objects
+between \emph{independent} parties.  In a gift economy, the exchange
+transfers \emph{inalienable} possessions between \emph{interdependent}
+parties.  The key difference is that the gift retains a connection to
+its giver: the \textit{hau} (spirit) of the gift, in Maori terms,
+compels reciprocation.
+
+Annette Weiner, in \textit{Inalienable Possessions} (1992), extended
+this analysis by identifying a paradoxical practice she called
+``keeping-while-giving.''  Certain treasured possessions---royal
+regalia, sacred heirlooms, clan emblems---circulate as gifts but are
+never fully alienated from their original owners.  The giver retains
+a claim on the object even after giving it away.  In our compositional
+framework, this corresponds to an idea $a$ that participates in
+composition $\compose(a, b)$ without being ``consumed'': $a$ remains
+available for future compositions even after its contribution to the
+current joint project.  This is structurally guaranteed by our model,
+since composition does not destroy its inputs---$a$ and $b$ continue
+to exist as elements of $\IS$ after $\compose(a, b)$ is computed.
+
+The inalienability of the gift maps onto the persistence of ideas in
+ideatic space.  When a scholar shares an idea through publication, the
+idea enters the public repertoire without leaving the scholar's
+repertoire---this is ``keeping-while-giving'' in the academic context.
+The formal framework captures this naturally: expansion adds an idea
+to the recipient's repertoire without removing it from the giver's.
+
+\subsection*{Modern Gift Exchange: From Blood to Code}
+
+The logic of gift exchange extends far beyond pre-modern societies.
+Richard Titmuss's \textit{The Gift Relationship} (1970) analyzed blood
+donation as a form of generalized reciprocity: donors give blood to
+strangers, expecting no direct return, motivated by solidarity with an
+abstract community.  In our terms, each blood donation is a contribution
+$a_{\text{blood}}$ to a joint project
+$\texttt{output}(\langle [a_1, a_2, \ldots, a_n] \rangle)$ whose
+output is the functioning of the healthcare system.  By
+Theorem~\ref{thm:empty_project_void}, the healthcare system without
+donors produces $\void$---nothing.  Each donor's contribution is
+indispensable in the aggregate.
+
+Open-source software represents another form of cooperative
+composition.  When a programmer contributes code to a public
+repository, they compose their work with that of other contributors:
+$\compose(\text{existing\_codebase}, \text{new\_contribution})$.  The
+Linux kernel, with its thousands of contributors over three decades,
+is a monumental joint project whose output is the iterated composition
+of individual contributions.  By
+Theorem~\ref{thm:iterated_self_cooperation_depth}, the depth of this
+project is bounded by the sum of individual depths---a bound that, for
+Linux, runs into the millions of person-years of intellectual investment.
+
+Jacques Derrida's \textit{Given Time} (1991) posed a radical
+philosophical challenge to the very concept of the gift.  Derrida
+argued that a true gift---one given without any expectation of return,
+without even the consciousness that one is giving---is structurally
+impossible within an economy of exchange.  The moment the gift is
+recognized as a gift, it enters the economy of obligation and ceases
+to be gratuitous.  In our framework, Derrida's argument translates to
+the observation that $\compose(a, b)$ is always structurally
+\emph{responsive}: the second argument $b$ is shaped by $a$, and the
+result $\compose(a, b)$ bears the trace of both contributions.  A
+``pure gift'' would require $\compose(a, b) = b$---that the giver's
+contribution leave no trace---which is precisely the void condition
+$a = \void$.  Derrida's paradox is thus that the only true gift is
+no gift at all.\footnote{Lewis Hyde's \textit{The Gift} (1983) offers
+a less paradoxical account, arguing that creative gifts---artworks,
+stories, scientific discoveries---circulate through communities in ways
+that create bonds of gratitude and obligation.  Hyde's ``gift economy''
+is closer to Mauss's balanced reciprocity than to Derrida's impossible
+ideal.}
+
+% ============================================================
+\section{Core Definitions}
+\label{sec:ch16-defs}
+
+We begin with the fundamental structures of cooperative composition.
+
+\begin{definition}[Joint Composition]
+\label{def:jointCompose}
+Let $a, b \in \IS$.  The \emph{joint composition} of $a$ and $b$ is
+\[
+  \texttt{jointCompose}(a, b) \;:=\; \compose(a, b).
+\]
+In Mauss's terms, agent $a$ gives first and agent $b$ reciprocates.
+The result is a shared compound idea.
+\end{definition}
+
+\begin{lstlisting}[caption={Joint composition in Lean}]
+def jointCompose (a b : I) : I := IdeaticSpace.compose a b
+\end{lstlisting}
+
+Joint composition is simply composition itself, but the naming emphasizes the
+cooperative framing: two agents are contributing sequentially to a shared
+outcome.  The asymmetry is essential.  In Mauss's analysis, the initiator of
+an exchange determines its moral character; the recipient responds within a
+framework already established.
+
+\begin{definition}[Symmetric Joint]
+\label{def:symmetricJoint}
+Two ideas $a, b$ are \emph{symmetrically joint} when the order of
+composition does not matter:
+\[
+  \texttt{symmetricJoint}(a, b) \;:\Longleftrightarrow\;
+  \compose(a, b) = \compose(b, a).
+\]
+\end{definition}
+
+\begin{lstlisting}[caption={Symmetric joint in Lean}]
+def symmetricJoint (a b : I) : Prop :=
+  IdeaticSpace.compose a b = IdeaticSpace.compose b a
+\end{lstlisting}
+
+Symmetric joints are rare.  In most real exchanges---ritual, economic,
+discursive---who gives first shapes the meaning of the entire exchange.
+The symmetric case corresponds to perfectly reciprocal partnerships where
+neither party holds agenda-setting power.
+
+\begin{definition}[Joint Project]
+\label{def:JointProject}
+A \emph{joint project} consists of a list of participants, each contributing
+an idea.  The project's \emph{output} is the left-fold of all contributions
+via composition, starting from $\void$:
+\[
+  \texttt{output}(p) \;:=\; \text{foldl}(\compose, \void, p.\text{participants}).
+\]
+The \emph{total depth} of a joint project is $\sum_{a \in p} \depth(a)$.
+\end{definition}
+
+\begin{lstlisting}[caption={Joint project structure in Lean}]
+structure JointProject (I : Type*) [IdeaticSpace I] where
+  participants : List I
+
+def JointProject.output (p : JointProject I) : I :=
+  p.participants.foldl IdeaticSpace.compose IdeaticSpace.void
+
+def JointProject.totalDepth (p : JointProject I) : N :=
+  depthSum p.participants
+\end{lstlisting}
+
+The left-fold semantics mean that the first contributor sets the initial
+frame (after void), and each subsequent contributor composes onto the
+accumulating result.  This models the sequential accretion of meaning in
+collaborative enterprises---from barn-raisings to co-authored papers.
+
+\begin{example}[The Kula Ring as Iterated Cooperative Composition]
+\label{ex:kula-ring}
+The Kula Ring, documented by Bronislaw Malinowski in \textit{Argonauts
+of the Western Pacific} (1922) and further analyzed by Nancy Munn in
+\textit{The Fame of Ganda} (1986), is among the best-studied systems of
+ceremonial gift exchange.  In the Kula, shell valuables (\textit{vaga},
+arm-shells, and \textit{mwali}, necklaces) circulate in opposite
+directions through a ring of trading partners spanning the islands of
+eastern Papua New Guinea.
+
+In our formal framework, the Kula Ring is an iterated joint project.
+Let $a_1, a_2, \ldots, a_n$ represent the traders arranged in a ring,
+and let $g_i$ represent the gift offered by trader $a_i$.  The
+composition $\compose(g_1, \compose(g_2, \ldots, \compose(g_{n-1},
+g_n)\ldots))$ represents the accumulated social meaning of the exchange
+cycle.  By Theorem~\ref{thm:gift_triangle_depth} (generalized to $n$
+parties), the depth of this composed meaning is bounded by
+$\sum_{i=1}^n \depth(g_i)$.
+
+What makes the Kula remarkable, from our formal perspective, is that
+the valuables themselves gain depth through circulation.  Munn showed
+that a shell's \emph{fame}---its social value---increases with each
+exchange, because the history of its previous owners becomes part of
+its meaning.  In IDT terms, the gift $g_i$ at step $i$ is not the
+same as the ``raw'' shell but $\compose(g_{i-1}, g_i)$: the shell
+\emph{composes with} each new exchange context.  The bounded depth of
+each step (by subadditivity) means that the shell's accumulated meaning
+grows at most linearly with the number of exchanges---but it does grow,
+and this growth is precisely what gives old, much-traveled shells their
+extraordinary prestige.
+\end{example}
+
+\begin{example}[Blood Donation as Generalized Reciprocity]
+\label{ex:titmuss}
+Richard Titmuss's \textit{The Gift Relationship} (1970) compared
+voluntary (British) and commercial (American) blood donation systems,
+arguing that the voluntary system produced higher-quality blood,
+greater supply reliability, and stronger social cohesion.  In IDT
+terms, the voluntary system models \emph{generalized reciprocity}
+(Sahlins's typology): each donor $a_i$ contributes to a joint project
+$\texttt{output}(\langle [a_1, \ldots, a_n] \rangle)$ without knowing
+or caring about the identity of the recipient.
+
+The key formal property is that generalized reciprocity requires
+$b = \void$ in the donor's local exchange: the donor gives
+($\compose(a_{\text{donor}}, \void) = a_{\text{donor}}$ by
+Theorem~\ref{thm:void_joint_right}) without receiving any direct
+counter-gift.  The ``return'' is not personal reciprocation but the
+existence of the system itself---the assurance that if the donor ever
+needs blood, others will give in the same spirit.  This is reciprocity
+displaced in time and social space: the counter-gift comes from the
+\emph{system}, not from any individual partner.
+
+Titmuss's finding that voluntary systems outperform commercial ones
+suggests that generalized reciprocity can be more efficient than
+balanced exchange when the ``commodity'' (blood) is difficult to verify
+for quality.  The formal insight is that when $\depth(a)$ is
+observable only imperfectly, the gift logic (which appeals to social
+bonds and moral obligation) may elicit higher-depth contributions than
+the market logic (which offers monetary compensation for a commodity
+whose depth---quality---is hard to price).
+\end{example}
+
+% ============================================================
+\section{The Void as Non-Contributor}
+\label{sec:ch16-void}
+
+Void is the identity element of composition, and in the cooperative context
+it represents non-participation: silence before or after a gift.
+
+\begin{theorem}[Void Contributes Nothing---Left (16.1)]
+\label{thm:void_joint_left}
+For all $b \in \IS$,
+\[
+  \texttt{jointCompose}(\void, b) = b.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Direct from the left-identity law of $\compose$: $\compose(\void, b) = b$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Silence before a gift changes nothing about the gift.  The Maussian
+interpretation is that non-participation at the outset imposes no frame on
+the exchange; the recipient's contribution stands alone.
+
+\begin{theorem}[Void Contributes Nothing---Right (16.2)]
+\label{thm:void_joint_right}
+For all $a \in \IS$,
+\[
+  \texttt{jointCompose}(a, \void) = a.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+From the right-identity law: $\compose(a, \void) = a$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A gift followed by silence is just the gift.  Reciprocation with void---an
+empty counter-gift---leaves the initiator's contribution unaltered.  This
+formalizes the asymmetry that Mauss identified: the absence of reciprocation
+does not annihilate the gift, but it leaves the social bond incomplete.
+
+\begin{theorem}[Void Symmetry (16.7)]
+\label{thm:void_symmetric_left}
+For all $a \in \IS$, $\texttt{symmetricJoint}(\void, a)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Both $\compose(\void, a)$ and $\compose(a, \void)$ equal $a$, so
+the equation holds trivially.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Void always commutes---silence is the universal symmetric partner.
+Non-participation is the one ``gift'' whose order never matters.
+This is both mathematically trivial and anthropologically significant:
+the absence of contribution creates no ordering conflict.
+
+\begin{theorem}[Void Symmetry---Self (16.8)]
+\label{thm:void_symmetric_self}
+$\texttt{symmetricJoint}(\void, \void)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+$\compose(\void, \void) = \void = \compose(\void, \void)$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+As Wittgenstein remarked, ``Whereof one cannot speak, thereof one must be
+silent''---and the order of two silences is immaterial.  This theorem, while
+trivial, anchors the degenerate case of the theory.
+
+% ============================================================
+\section{Associativity and Multi-Party Cooperation}
+\label{sec:ch16-assoc}
+
+The associativity of composition ensures that multi-party cooperation is
+well-defined regardless of how sub-coalitions are bracketed.
+
+\begin{theorem}[Associativity of Multi-Party Cooperation (16.3)]
+\label{thm:joint_assoc}
+For all $a, b, c \in \IS$,
+\[
+  \texttt{jointCompose}(\texttt{jointCompose}(a, b), c) \;=\;
+  \texttt{jointCompose}(a, \texttt{jointCompose}(b, c)).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Unfolds to $\compose(\compose(a,b), c) = \compose(a, \compose(b,c))$,
+which is the associativity axiom of $\compose$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+In a ritual with three participants, it doesn't matter whether $A$ and $B$
+cooperate first and then engage $C$, or $A$ engages a pre-formed $B$--$C$
+coalition.  The overall composite meaning is the same.  This is a powerful
+structural result: it means that multi-party cooperation is intrinsically
+well-defined, independent of the contingent order in which sub-coalitions
+form.\footnote{In cooperative game theory, associativity of the
+characteristic function is often assumed but rarely proved from first
+principles.  Here it follows from the algebraic structure of ideatic
+space.}
+
+\begin{theorem}[Four-Party Cooperation Associativity (16.18)]
+\label{thm:four_party_assoc}
+For all $a, b, c, d \in \IS$,
+\[
+  \texttt{jointCompose}(\texttt{jointCompose}(\texttt{jointCompose}(a, b), c), d) \;=\;
+  \texttt{jointCompose}(a, \texttt{jointCompose}(b, \texttt{jointCompose}(c, d))).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Iterated application of the associativity axiom of $\compose$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+In organizational theory, four-person teams can be sub-divided many ways:
+$(AB)(CD)$, $A(B(CD))$, $((AB)C)D$, and so on.  Associativity guarantees
+that all bracketings produce the same final product.  The insight extends to
+$n$-party cooperation by induction, establishing that the output of a
+\texttt{JointProject} is invariant under any re-bracketing of its participant
+list.
+
+\begin{theorem}[Empty Project Produces Void (16.9)]
+\label{thm:empty_project_void}
+\[
+  \texttt{output}(\langle [\ ] \rangle) = \void.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The fold over an empty list returns the initial accumulator $\void$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+An unfunded, unstaffed project yields silence.  This is the organizational
+analogue of the void identity: without participants, no meaning is produced.
+
+\begin{theorem}[Singleton Project Preserves Contribution (16.10)]
+\label{thm:singleton_project}
+For all $a \in \IS$,
+\[
+  \texttt{output}(\langle [a] \rangle) = a.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The fold computes $\compose(\void, a) = a$ by left-identity.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+A solo artisan's work is their own idea, unmediated by any collaborator.
+The project structure does not distort a lone contributor's output.
+
+\begin{example}[Open-Source Software as Cooperative Composition]
+\label{ex:open-source}
+Open-source software development provides a paradigmatic modern example
+of cooperative composition.  Consider the Linux kernel, initiated by
+Linus Torvalds in 1991 and developed collaboratively by thousands of
+contributors.  Each contribution---a patch, a driver, a subsystem---is
+composed with the existing codebase: the project output at time $t$ is
+$\texttt{output}(\langle [c_1, c_2, \ldots, c_t] \rangle)$, the
+left-fold composition of all contributions in chronological order.
+
+By Theorem~\ref{thm:empty_project_void}, the kernel before any
+contribution is $\void$: an empty project produces no output.  By
+Theorem~\ref{thm:singleton_project}, Torvalds's initial contribution
+$c_1$ is the project in its first form.  Each subsequent contribution
+$c_i$ composes with the accumulated result, and by
+Theorem~\ref{thm:joint_depth_bound}, the depth of the new output is
+bounded by the depth of the existing codebase plus the depth of the new
+contribution.
+
+The open-source model is structurally a gift economy: contributors
+``give'' their code to the project without receiving direct monetary
+compensation.  The counter-gift is the use of the project itself (a
+form of generalized reciprocity), the prestige associated with
+contribution (a form of symbolic capital in Bourdieu's sense), and the
+learning that comes from composing one's ideas with those of expert
+collaborators.  Eric Raymond's distinction between the ``cathedral''
+(centrally designed software) and the ``bazaar'' (decentralized
+open-source development) maps onto our framework as the difference
+between a single-composer project and a multi-party joint project with
+heterogeneous contributors and emergent compositional structure.
+\end{example}
+
+\begin{example}[Academic Co-authorship as Joint Composition]
+\label{ex:coauthorship}
+Academic co-authorship is a particularly transparent instance of joint
+composition.  When two scholars write a paper together, each brings
+their individual repertoire---their knowledge, methods, and
+theoretical commitments---and the resulting paper is $\compose(a, b)$
+where $a$ and $b$ represent the respective contributions.
+
+The order of composition (who is ``first author'') has both social and
+structural significance.  In many fields, first authorship signals
+primary intellectual contribution---the first author ``sets the frame''
+within which the second author's contribution is interpreted.  This
+maps precisely onto the asymmetry of $\compose(a, b) \neq \compose(b,
+a)$ in the general case (non-symmetric joints, per
+Definition~\ref{def:symmetricJoint}).
+
+By Theorem~\ref{thm:joint_depth_bound}, the depth of the co-authored
+paper is bounded by $\depth(a) + \depth(b)$: two scholars cannot
+produce a paper deeper than the sum of their individual intellectual
+capacities.  By Theorem~\ref{thm:trivial_cooperation}, if both
+contributions have depth zero, the joint paper has depth zero---
+shallow thinking combined with shallow thinking produces only shallow
+output.  This formalizes the common academic complaint that
+collaborations between mediocre researchers produce mediocre results:
+the depth bound is real, and no amount of collaboration can overcome
+the limitation of the inputs.
+\end{example}
+
+% ============================================================
+\section{Resonance Under Cooperation}
+\label{sec:ch16-resonance}
+
+Resonance---the fundamental relation of ideatic compatibility---behaves
+well under cooperative composition.  This section establishes that
+cooperation preserves, propagates, and in some cases strengthens resonance.
+
+\begin{theorem}[Resonant Partners Produce Resonant Outcomes (16.4)]
+\label{thm:resonant_partners_resonant_output}
+If $\text{resonates}(a_1, a_2)$ and $\text{resonates}(b_1, b_2)$, then
+\[
+  \text{resonates}\bigl(\texttt{jointCompose}(a_1, b_1),\;
+  \texttt{jointCompose}(a_2, b_2)\bigr).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Follows from the \texttt{resonance\_compose} lemma, which establishes
+that resonance is preserved under componentwise composition.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+When gift-givers are spiritually aligned---in Mauss's language, when the
+\textit{hau} (spirit of the gift) circulates freely---their combined gifts
+carry a resonance that mismatched givers cannot achieve.  This theorem
+formalizes the intuition that cultural consonance between cooperating parties
+produces consonant outcomes.
+
+\begin{theorem}[Reciprocal Exchange Resonance (16.15)]
+\label{thm:reciprocal_resonance}
+If $\text{resonates}(a, b)$, then
+\[
+  \text{resonates}\bigl(\texttt{jointCompose}(a, b),\;
+  \texttt{jointCompose}(b, a)\bigr).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Since $\text{resonates}(a, b)$ implies $\text{resonates}(b, a)$ by
+symmetry, applying \texttt{resonance\_compose} to the pairs
+$(a, b)$ and $(b, a)$ yields the result.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The counter-gift resonates with the gift when giver and receiver are in
+spiritual accord.  This is Mauss's central insight formalized: reciprocal
+exchange between resonant partners creates a \emph{cycle} of resonant
+meaning, regardless of which direction the gift flows.
+
+\begin{theorem}[Self-Resonance of Joint Output (16.11)]
+\label{thm:joint_self_resonance}
+For all $a, b \in \IS$,
+\[
+  \text{resonates}\bigl(\texttt{jointCompose}(a, b),\;
+  \texttt{jointCompose}(a, b)\bigr).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Self-resonance is a general property: every idea resonates with itself.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Any completed exchange, however imperfect, achieves internal coherence.
+This is the minimal condition for a meaningful cooperative outcome.
+
+\begin{theorem}[Right-Resonance Preservation (16.12)]
+\label{thm:joint_resonance_right}
+If $\text{resonates}(a, b)$, then for all $c$,
+$\text{resonates}\bigl(\texttt{jointCompose}(a, c),\; \texttt{jointCompose}(b, c)\bigr)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Follows from \texttt{resonance\_compose\_right}: resonant agents cooperating
+with the same partner produce resonant results.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Durkheim's insight that agents sharing collective consciousness produce
+similar ritual outcomes is formalized here: if $a$ and $b$ are culturally
+resonant, their joint works with any fixed third party $c$ will resonate.
+
+\begin{theorem}[Left-Resonance Preservation (16.13)]
+\label{thm:joint_resonance_left}
+If $\text{resonates}(a, b)$, then for all $c$,
+$\text{resonates}\bigl(\texttt{jointCompose}(c, a),\; \texttt{jointCompose}(c, b)\bigr)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+From \texttt{resonance\_compose\_left}: the same frame applied to resonant
+inputs produces resonant outputs.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Bourdieu's concept of habitus finds formal expression here: the same habitus
+(frame $c$) applied to resonant inputs produces resonant interpretations.
+The frame preserves the resonance of its inputs.
+
+\begin{remark}[The Asymmetry of Composition and Power in Gift Exchange]
+\label{rem:asymmetry-power}
+The non-commutativity of composition---$\compose(a, b) \neq \compose(b, a)$
+in general---has deep implications for the politics of gift exchange.
+In Mauss's analysis, the initiator of an exchange exercises a form of
+power: by giving first, the initiator establishes the ``frame'' within
+which the recipient must respond.  The Kwakiutl potlatch illustrates
+this dynamic: the chief who gives the most lavish feast establishes a
+standard that rivals must match or exceed, structuring the entire field
+of reciprocal obligation.
+
+In compositional terms, the asymmetry means that $\compose(a, b)$ bears
+the ``signature'' of $a$ more prominently than that of $b$: the first
+argument establishes the context, and the second argument operates
+within it.  When the depth of $a$ far exceeds the depth of $b$
+($\depth(a) \gg \depth(b)$), the joint output is dominated by $a$'s
+contribution---a formal model of the asymmetric gift that creates
+subordination rather than solidarity.  Pierre Bourdieu recognized this
+dynamic in \textit{The Logic of Practice} (1980): ``the gift that
+cannot be reciprocated creates a lasting asymmetry of obligation, which
+is another name for power.''
+
+The formal diagnosis of exploitative gift exchange is thus:
+$\depth(a) \gg \depth(b)$ combined with social pressure to accept the
+composition $\compose(a, b)$ as binding.  Development aid, with its
+attendant conditionalities, often takes this form: the donor's
+contribution sets a frame that the recipient cannot escape without
+rejecting the gift entirely.
+\end{remark}
+
+\begin{remark}[Connection to Chapter~14's Auction Theory]
+\label{rem:auction-connection}
+The cooperative composition framework of this chapter is the
+\emph{complement} of the competitive auction framework developed in
+Chapter~\ref{ch:auction}.  In an auction, agents compete to have their
+ideas selected; in cooperative composition, agents collaborate to
+produce a joint idea.  The two frameworks meet in the concept of the
+\emph{coalition}: a group of agents who cooperate internally while
+competing externally.
+
+Formally, the joint project $\texttt{output}(\langle [a_1, \ldots,
+a_k] \rangle)$ produces a composite idea that the coalition then
+``enters'' into the marketplace competition of
+Chapter~\ref{ch:marketplace} or ``bids'' in the auction of
+Chapter~\ref{ch:auction}.  The depth bound of
+Theorem~\ref{thm:joint_depth_bound} constrains the coalition's
+competitive capacity: no coalition can produce an output deeper than
+the sum of its members' depths, which limits the competitive advantage
+of collaboration.  This connection between cooperative and competitive
+frameworks mirrors the real-world dynamics of firms, political parties,
+and cultural movements: internal cooperation generates a collective
+product that then competes in the external marketplace of ideas.
+\end{remark}
+
+% ============================================================
+\section{Depth Bounds on Cooperative Output}
+\label{sec:ch16-depth}
+
+Depth measures interpretive complexity.  This section establishes that
+cooperative composition respects subadditivity: the complexity of a joint
+venture cannot exceed the total intellectual capital invested.
+
+\begin{theorem}[Depth Bound on Joint Output (16.5)]
+\label{thm:joint_depth_bound}
+For all $a, b \in \IS$,
+\[
+  \depth\bigl(\texttt{jointCompose}(a, b)\bigr) \;\leq\;
+  \depth(a) + \depth(b).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Direct from the subadditivity of depth under composition:
+$\depth(\compose(a,b)) \leq \depth(a) + \depth(b)$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+The complexity of a joint venture cannot exceed the total intellectual
+capital invested by both partners.  This is a fundamental resource constraint
+on cooperation: two partners of bounded depth can only produce output of
+bounded depth.  The analogy to economic production functions is precise---the
+output is bounded by the sum of inputs.
+
+\begin{theorem}[Joint With Self Equals ComposeN 2 (16.6)]
+\label{thm:joint_self_is_composeN2}
+For all $a \in \IS$,
+\[
+  \texttt{jointCompose}(a, a) = \texttt{composeN}(a, 2).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By definition, $\texttt{composeN}(a, 2) = \compose(a, \compose(a, \void))
+= \compose(a, a)$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Self-reinforcement through repeated practice is formally identical to
+composing an idea with itself.  In ritual theory, the repetition of a
+ceremony deepens its effect; here, the depth of the repeated composition is
+at most $2 \cdot \depth(a)$ by subadditivity.
+
+\begin{theorem}[Depth Zero Closure Under Cooperation (16.14)]
+\label{thm:trivial_cooperation}
+If $\depth(a) = 0$ and $\depth(b) = 0$, then
+$\depth\bigl(\texttt{jointCompose}(a, b)\bigr) = 0$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+From the depth-zero closure property of composition.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Shallow discourse combined with shallow discourse can never produce depth.
+This is the critical-theory insight that Adorno and Horkheimer might have
+appreciated: the culture industry's endless recombination of trivial content
+produces only trivial content.\footnote{Theodor Adorno and Max Horkheimer,
+\textit{Dialectic of Enlightenment} (1944), argued that mass culture
+recombines familiar elements without producing genuine novelty.}
+
+\begin{theorem}[Cooperation Monotonicity for Depth (16.17)]
+\label{thm:void_cooperation_depth}
+For all $a \in \IS$,
+$\depth\bigl(\texttt{jointCompose}(a, \void)\bigr) = \depth(a)$.
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Since $\compose(a, \void) = a$, the depth is preserved.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Free-riders (void contributors) don't add complexity to the joint output,
+but they don't reduce it either.  The depth of the project is unchanged
+by the presence or absence of non-contributing participants---a result with
+clear implications for team management and organizational design.
+
+\begin{remark}[The Spirit of the Gift (\textit{Hau}) as Resonance]
+\label{rem:hau-resonance}
+Mauss famously invoked the Maori concept of \textit{hau}---the ``spirit
+of the gift''---to explain why gifts must be reciprocated.  The
+\textit{hau} of an object compels its recipient to make a return; failure
+to reciprocate invites spiritual danger.  While Mauss's ethnographic
+interpretation has been debated (Marshall Sahlins offered an influential
+reinterpretation in \textit{Stone Age Economics}), the structural insight
+remains: something in the gift \emph{persists} beyond the physical
+transfer, creating an ongoing connection between giver and receiver.
+
+In our framework, the \textit{hau} maps naturally onto \emph{resonance}.
+When $a$ gives a gift $g$ to $b$, and $g$ resonates with $b$'s
+repertoire ($\text{resonates}(g, r_b)$ for some $r_b \in
+\mathbf{R}_b$), the gift creates a compositional connection:
+$\compose(g, r_b)$ is a new idea in $b$'s interpretive space that bears
+the trace of both the gift and the recipient's prior understanding.
+This resonance-trace is the formal analogue of the \textit{hau}: it is
+the structural mechanism by which the gift ``stays with'' the giver
+even after being transferred.
+
+Theorem~\ref{thm:resonant_partners_resonant_output} formalizes the
+positive dynamics of the \textit{hau}: when giver and receiver are in
+resonance, their joint compositions produce resonant outcomes.  The
+\textit{hau} circulates because resonance is preserved under
+composition: the spirit of the gift propagates through the exchange
+network as long as the partners remain culturally aligned.  When
+resonance breaks down---when the gift fails to resonate with the
+recipient's repertoire---the \textit{hau} is lost, and the gift becomes
+a mere commodity: an alienable object stripped of its spiritual
+connection to the giver.
+\end{remark}
+
+% ============================================================
+\section{Multi-Party Projects and Iterated Cooperation}
+\label{sec:ch16-multi}
+
+We now extend the analysis to multi-party projects, iterated
+self-cooperation, and the celebrated gift-exchange cycles of
+anthropological theory.
+
+\begin{theorem}[Joint Project Depth Sum Bound (16.16)]
+\label{thm:project_depth_bound}
+If every participant $a$ in project $p$ satisfies $\depth(a) \leq d$, then
+\[
+  \texttt{totalDepth}(p) \;\leq\; |p.\text{participants}| \cdot d.
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+The total depth is a sum of individual depths, each bounded by $d$.
+The sum of $n$ terms each at most $d$ is at most $n \cdot d$.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Total intellectual capital invested constrains what the project can achieve.
+This is the project-management analogue of the depth bound: a team of $n$
+members, each of bounded capability $d$, produces a project whose total
+complexity is at most $n \cdot d$.
+
+\begin{theorem}[Iterated Self-Cooperation Depth Bound (16.19)]
+\label{thm:iterated_self_cooperation_depth}
+For all $a \in \IS$ and $n \in \mathbb{N}$,
+\[
+  \depth\bigl(\texttt{composeN}(a, n)\bigr) \;\leq\; n \cdot \depth(a).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+By induction on $n$, using the subadditivity of depth at each step.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+Repeating a ritual $n$ times has bounded cumulative depth, growing at most
+linearly with repetitions.  This formalizes the intuition that practice
+deepens understanding, but at a rate bounded by the practitioner's own
+depth.  The logarithmic ``diminishing returns'' often observed in ritual
+practice are consistent with this linear upper bound.
+
+\begin{theorem}[Gift Exchange Triangle (16.20)]
+\label{thm:gift_triangle_depth}
+For all $a, b, c \in \IS$,
+\[
+  \depth\bigl(\texttt{jointCompose}(\texttt{jointCompose}(a, b), c)\bigr)
+  \;\leq\; \depth(a) + \depth(b) + \depth(c).
+\]
+\end{theorem}
+
+\noindent\textit{Proof sketch.}\quad
+Apply the depth bound twice: first to $\compose(a, b)$ and $c$, obtaining
+$\depth(\compose(\compose(a,b), c)) \leq \depth(\compose(a,b)) + \depth(c)$,
+then to $a$ and $b$, obtaining $\depth(\compose(a,b)) \leq \depth(a) +
+\depth(b)$.  Combining by transitivity yields the three-term bound.
+\hfill$\square$
+
+\medskip
+
+\noindent\textbf{Commentary.}
+This theorem formalizes Malinowski's Kula ring: gifts circulating through a
+ring of three partners have bounded total complexity, ensuring the exchange
+remains manageable.  The three-term depth bound generalizes to $n$-term
+bounds by induction (see Theorem~\ref{thm:iterated_self_cooperation_depth}),
+but the triangular case is particularly significant because it corresponds
+to the minimal non-trivial cycle of exchange.
+
+% ============================================================
+\section{From Mauss to the Digital Commons}
+\label{sec:ch16-digital-commons}
+
+The transition from Mauss's analysis of Melanesian shell exchange to
+contemporary digital gift economies is not as great a leap as it might
+appear.  The structural properties formalized in this chapter---identity,
+associativity, resonance preservation, depth subadditivity---hold
+regardless of whether the ``gifts'' are shell necklaces, blood, lines
+of code, or Wikipedia edits.  This section traces the formal continuities
+and examines what changes when gift exchange goes digital.
+
+\subsection{The Creative Commons as Compositional Infrastructure}
+
+The Creative Commons licensing system, founded in 2001, provides a
+legal framework for ``keeping-while-giving'' in the digital age.  When
+an author releases a work under a Creative Commons license, they give
+the work to the public while retaining certain rights (attribution,
+non-commercial use, share-alike).  In our framework, this is precisely
+Weiner's ``keeping-while-giving'': the idea $a$ enters the public
+repertoire via $\operatorname{expand}(\mathbf{R}_{\text{public}}, a)$
+without leaving the author's repertoire
+$\mathbf{R}_{\text{author}}$.
+
+The ``share-alike'' provision (CC BY-SA) has a particularly elegant
+formal interpretation.  It requires that any derivative work---any
+composition $\compose(a, b)$ that builds on the original---must itself
+be released under the same license.  This is a \emph{compositional
+constraint}: the predicate ``is licensed CC BY-SA'' is preserved under
+composition.  If $a$ is CC BY-SA and $b$ is composed with it, then
+$\compose(a, b)$ must also be CC BY-SA.  The share-alike condition
+thus propagates through the compositional network, ensuring that the
+gift economy of creative works is self-sustaining: each act of giving
+(releasing under CC BY-SA) constrains all future compositions to
+remain within the gift economy.
+
+\subsection{Wikipedia as a Multi-Party Joint Project}
+
+Wikipedia, with its hundreds of thousands of active editors, is perhaps
+the largest joint project in human history.  Each Wikipedia article is a
+joint project in our formal sense: $\texttt{output}(\langle [e_1, e_2,
+\ldots, e_n] \rangle)$, where $e_i$ is the $i$-th edit.  By
+Theorem~\ref{thm:empty_project_void}, an article before any edits is
+$\void$---the empty page.  By Theorem~\ref{thm:singleton_project}, the
+first edit $e_1$ establishes the article.  Each subsequent edit composes
+with the accumulated content, and the associativity of composition
+(Theorem~\ref{thm:joint_assoc}) ensures that the article's meaning is
+independent of how we bracket the editorial history.
+
+The ``edit war'' phenomenon---in which opposing editors repeatedly
+overwrite each other's contributions---reveals the limits of our
+compositional model.  In a strict edit war, the composition oscillates
+between $\compose(a, b)$ and $\compose(b, a)$, which are generically
+different (non-symmetric joints).  The resolution of edit wars through
+consensus mechanisms (talk pages, mediation, administrative fiat)
+corresponds to the social process of selecting a canonical composition
+order---a choice that our formal framework shows is structurally
+consequential, since the output depends on the order of contributions.
+
+\subsection{Cryptocurrency and the Gift-Commodity Boundary}
+
+The emergence of non-fungible tokens (NFTs) and digital collectibles
+blurs the boundary between gift and commodity economies in ways that
+our framework illuminates.  An artist who ``mints'' an NFT creates a
+digital artifact that functions simultaneously as a commodity (it has a
+market price) and a gift (it carries the ``aura'' of the creator,
+creating a personal connection between artist and collector).  The
+\textit{hau} of the NFT is its provenance: the blockchain record of
+its creation and subsequent transfers, which is formally analogous to
+the compositional history $\compose(a_1, \compose(a_2, \ldots))$ that
+accumulates social meaning through circulation.
+
+\paragraph{Extended proof discussion: The gift exchange triangle.}
+Theorem~\ref{thm:gift_triangle_depth}, the gift exchange triangle,
+merits a more detailed proof analysis.  The theorem states that for
+three participants $a, b, c$, the depth of $\compose(\compose(a, b),
+c)$ is at most $\depth(a) + \depth(b) + \depth(c)$.  The proof
+proceeds by two applications of subadditivity:
+\begin{enumerate}
+  \item First, $\depth(\compose(\compose(a, b), c)) \le
+    \depth(\compose(a, b)) + \depth(c)$ by direct subadditivity.
+  \item Second, $\depth(\compose(a, b)) \le \depth(a) + \depth(b)$
+    by subadditivity again.
+  \item Combining by transitivity of $\le$:
+    $\depth(\compose(\compose(a, b), c)) \le
+    (\depth(a) + \depth(b)) + \depth(c) =
+    \depth(a) + \depth(b) + \depth(c)$.
+\end{enumerate}
+This telescoping argument generalizes to $n$ participants by induction:
+for any joint project $\langle [a_1, \ldots, a_n] \rangle$, the depth
+of the output is at most $\sum_{i=1}^n \depth(a_i)$.  The inductive
+step uses exactly the same two-step argument, applying subadditivity to
+peel off the last participant and invoking the inductive hypothesis for
+the remaining $n-1$.
+
+The bound is tight when composition is ``depth-preserving''---i.e., when
+$\depth(\compose(a, b)) = \depth(a) + \depth(b)$.  Whether any
+non-trivial ideatic space achieves this equality is an open question.
+The bound is loose when composition is ``depth-absorbing''---i.e., when
+$\depth(\compose(a, b)) \ll \depth(a) + \depth(b)$, as when combining
+two redundant ideas produces nothing new.  The gap between the bound and
+the actual depth measures the degree of ``compositional redundancy''
+between the contributors---a quantity related to mutual information in
+information-theoretic terms.
+
+\paragraph{Extended proof discussion: Associativity and its
+computational significance.}
+The associativity theorem (Theorem~\ref{thm:joint_assoc}) is
+algebraically elementary---it follows directly from the associativity
+axiom of composition---but its computational and organizational
+significance is profound.  In a distributed computing context,
+associativity means that a multi-party computation can be parallelized:
+instead of computing $\compose(a_1, \compose(a_2, \compose(a_3,
+a_4)))$ sequentially (depth $O(n)$), we can compute
+$\compose(\compose(a_1, a_2), \compose(a_3, a_4))$ in parallel
+(depth $O(\log n)$).  The outputs are identical by associativity.
+
+In organizational terms, this means that hierarchical and flat team
+structures produce the same joint output.  A hierarchical organization
+computes $\compose(\compose(a_1, a_2), \compose(a_3, a_4))$---pairs
+cooperate and then their outputs are composed at the next level.  A
+flat organization computes $\compose(a_1, \compose(a_2, \compose(a_3,
+a_4)))$---each member contributes sequentially to an accumulating
+whole.  Associativity guarantees identical results, which means that
+the choice between hierarchical and flat structures is driven by
+considerations of communication cost and coordination overhead, not
+by the quality of the output.
+
+% ============================================================
+\section{Conclusion}
+\label{sec:ch16-concl}
+
+This chapter has established the formal foundations of cooperative
+composition in ideatic space.  Twenty theorems characterize the algebraic
+and metric properties of joint composition, multi-party projects, and
+iterated cooperation.
+
+The central results are:
+\begin{itemize}
+  \item \textbf{Identity:} Void contributes nothing
+    (Theorems~\ref{thm:void_joint_left}--\ref{thm:void_joint_right}).
+  \item \textbf{Associativity:} Multi-party cooperation is bracket-independent
+    (Theorems~\ref{thm:joint_assoc}--\ref{thm:four_party_assoc}).
+  \item \textbf{Resonance preservation:} Resonant partners produce resonant
+    outcomes (Theorems~\ref{thm:resonant_partners_resonant_output}--\ref{thm:joint_resonance_left}).
+  \item \textbf{Depth subadditivity:} Cooperative complexity cannot exceed
+    the sum of individual complexities (Theorems~\ref{thm:joint_depth_bound}--\ref{thm:gift_triangle_depth}).
+\end{itemize}
+
+Mauss's \textit{Essai sur le don} revealed that gift exchange is a total
+social fact.  Our formalization shows that it is also a total \emph{algebraic}
+fact: the structure of ideatic space---its identity, associativity, and
+subadditivity---completely determines the bounds and resonance properties
+of cooperative meaning-making.  In the next chapter, we turn to what happens
+when cooperation breaks down: the problem of bargaining over composition order.

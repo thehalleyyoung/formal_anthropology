@@ -1,0 +1,1334 @@
+% ================================================================
+% VOLUME V, CHAPTERS 11--15: ETHICS
+% ================================================================
+
+% ================================================================
+% CHAPTER 11: KANT'S CATEGORICAL IMPERATIVE
+% ================================================================
+\chapter{Kant's Categorical Imperative}
+\label{ch:kant}
+
+\epigraph{Act only according to that maxim whereby you can at the same time will that it should become a universal law.}{Immanuel Kant, \textit{Groundwork of the Metaphysics of Morals}, 1785}
+
+\section{Universalizability as Symmetry}
+
+Immanuel Kant's moral philosophy rests on the \emph{categorical imperative}:
+the requirement that moral maxims be universalizable---that they apply to all
+rational agents equally. In ideatic space, universalizability is a
+\emph{symmetry condition} on the resonance function.
+
+\begin{definition}[Universalizability]
+\label{def:universalizable}
+A maxim $m \in \IS$ is \textbf{universalizable} if it resonates equally with
+all ideas:
+\[
+  \mathrm{universalizable}(m) \;\iff\; \forall\, a, b,\; \rs(m, a) = \rs(m, b).
+\]
+\end{definition}
+
+This is a strong condition: a universalizable maxim does not discriminate---it
+has the same resonance with every idea. In geometric terms, it projects equally
+in all directions.
+
+\begin{theorem}[Void Is Universalizable]
+\label{thm:void-universalizable}
+The void $\void$ is universalizable.
+\end{theorem}
+
+\begin{proof}
+$\rs(\void, a) = 0 = \rs(\void, b)$ for all $a, b$:
+\begin{lstlisting}
+theorem void_universalizable :
+    universalizable (void : I) := by
+  unfold universalizable; intro a b
+  simp [rs_void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 95)}
+\end{proof}
+
+\begin{interpretation}[Silence Is Universal but Empty]
+The void is universalizable---it treats all ideas equally, with zero resonance.
+But this universalizability is trivial: $\void$ is universal because it says
+nothing. This is the mathematical counterpart of Hegel's critique of Kant:
+the categorical imperative, taken to its logical extreme, produces only empty
+formalism. A maxim that resonates equally with everything resonates with nothing
+in particular. Genuine moral content requires \emph{non-trivial}
+universalizability---a maxim that is both universal and substantive.
+\end{interpretation}
+
+\begin{theorem}[Universalizable Maxims Have Equal Resonance]
+\label{thm:universalizable-equal}
+If $m$ is universalizable, then for all $a, b$:
+\[
+  \rs(m, a) = \rs(m, b).
+\]
+\end{theorem}
+
+\begin{proof}
+Immediate from the definition:
+\begin{lstlisting}
+theorem universalizable_equal_resonance (m : I)
+    (h : universalizable m) (a b : I) :
+    rs m a = rs m b := by
+  exact h a b
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 99)}
+\end{proof}
+
+\begin{theorem}[Non-Void Universalizable Maxims Are Positive]
+\label{thm:universalizable-positive}
+If $m$ is universalizable and $m \neq \void$, then $\rs(m, a) > 0$ for some $a$.
+More precisely, $\rs(m, m) > 0$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem universalizable_nonvoid_positive (m : I)
+    (hu : universalizable m) (hm : m != void) :
+    rs m m > 0 := by
+  exact rs_self_pos hm
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 103)}
+\end{proof}
+
+\section{The Kingdom of Ends}
+
+Kant's ``kingdom of ends'' is a moral community in which every rational agent is
+treated as an end in themselves, never merely as a means. In ideatic space, this
+corresponds to a cooperative ideatic space in which the emergence from
+composition is always non-negative---every interaction enriches all parties.
+
+\begin{definition}[Kantian Consistency]
+\label{def:kantian-consistent}
+A maxim $m$ is \textbf{Kantian consistent} if:
+\[
+  \mathrm{kantianConsistent}(m) \;\iff\; \forall\, a,\; \rs(m \compose a, a) \geq \rs(a, a).
+\]
+That is, composing with $m$ never diminishes anyone's self-resonance.
+\end{definition}
+
+\begin{theorem}[Void Is Kantian Consistent]
+\label{thm:void-kantian}
+$\void$ is Kantian consistent.
+\end{theorem}
+
+\begin{proof}
+Since $\void \compose a = a$ for all $a$, $\rs(\void \compose a, a) = \rs(a,a)$:
+\begin{lstlisting}
+theorem void_kantian_consistent :
+    kantianConsistent (void : I) := by
+  unfold kantianConsistent; intro a
+  simp [void_left']; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 1041)}
+\end{proof}
+
+\begin{theorem}[Kantian Iff No Self-Emergence]
+\label{thm:kantian-iff}
+A maxim $m$ is Kantian consistent if and only if the emergence of $m$
+composed with any $a$, observed from $a$, is non-negative:
+\[
+  \mathrm{kantianConsistent}(m) \;\iff\; \forall\, a,\; \emerge(m, a, a) + \rs(m, a) \geq 0.
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem kantian_iff_no_self_emergence (m : I) :
+    kantianConsistent m <->
+    forall a : I, emergence m a a + rs m a >= 0 := by
+  unfold kantianConsistent
+  constructor
+  . intro h a; have := h a
+    unfold emergence; linarith
+  . intro h a; have := h a
+    unfold emergence at *; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 1027)}
+\end{proof}
+
+\begin{interpretation}[The Categorical Imperative Test]
+This theorem provides a mathematical test for Kant's categorical imperative. A
+maxim $m$ passes the test if, for every agent $a$, the composition of $m$ with
+$a$ produces non-negative combined effect on $a$'s self-resonance. The condition
+$\emerge(m,a,a) + \rs(m,a) \geq 0$ decomposes the Kantian test into two parts:
+the direct resonance of $m$ with $a$ (does the maxim ``speak to'' the agent?)
+and the emergence (does the interaction of $m$ with $a$ create genuine new
+meaning for $a$?). A maxim fails the Kantian test if it creates negative
+total effect for some agent---if there is some $a$ for whom the composition
+with $m$ diminishes their self-understanding.
+\end{interpretation}
+
+\section{Dignity as Non-Substitutability}
+
+\begin{definition}[Moral Weight]
+\label{def:moral-weight}
+The \textbf{moral weight} of a principle $p$ is its self-resonance:
+\[
+  \mathrm{moralWeight}(p) := \rs(p, p).
+\]
+\end{definition}
+
+\begin{theorem}[Non-Negativity of Moral Weight]
+\label{thm:moral-weight-nonneg}
+$\mathrm{moralWeight}(p) \geq 0$ for all $p$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem moral_weight_nonneg (p : I) :
+    moralWeight p >= 0 := by
+  exact rs_self_nonneg p
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 23)}
+\end{proof}
+
+\begin{theorem}[Zero Moral Weight Characterizes Void]
+\label{thm:moral-weight-void}
+$\mathrm{moralWeight}(p) = 0 \iff p = \void$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem moral_weight_zero_iff_void (p : I) :
+    moralWeight p = 0 <-> p = void := by
+  unfold moralWeight; exact rs_self_zero_iff
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 27)}
+\end{proof}
+
+\begin{theorem}[Moral Enrichment]
+\label{thm:moral-enrichment}
+$\mathrm{moralWeight}(p \compose q) \geq \mathrm{moralWeight}(p)$ for all $p, q$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem moral_enrichment (p q : I) :
+    moralWeight (compose p q) >= moralWeight p := by
+  unfold moralWeight
+  exact compose_enriches_self p q
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 41)}
+\end{proof}
+
+\begin{interpretation}[Kant's Dignity]
+Kant distinguished between things with \emph{price} (which can be exchanged for
+equivalents) and things with \emph{dignity} (which are irreplaceable). In
+ideatic space, dignity corresponds to positive moral weight: every non-void
+moral principle has dignity, and this dignity cannot be reduced by composition.
+The moral enrichment theorem states that engaging with additional principles
+never diminishes one's moral weight---it can only grow. This is the mathematical
+expression of the Kantian intuition that moral development is always possible
+and never regressive at the structural level.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 12: UTILITARIANISM AND ITS DISCONTENTS
+% ================================================================
+\chapter{Utilitarianism and Its Discontents}
+\label{ch:utilitarianism}
+
+\epigraph{Nature has placed mankind under the governance of two sovereign masters, pain and pleasure. It is for them alone to point out what we ought to do, as well as to determine what we shall do.}{Jeremy Bentham, \textit{An Introduction to the Principles of Morals and Legislation}, 1789}
+
+\section{Utility as Resonance}
+
+Jeremy Bentham and John Stuart Mill proposed that the right action is the one
+that maximizes total utility---total happiness or well-being. In ideatic space,
+utility is resonance: the value of action $a$ relative to principle $p$ is
+$\rs(a, p)$.
+
+\begin{definition}[Utility Value]
+\label{def:utility}
+The \textbf{utility value} of action $a$ relative to principle $p$:
+\[
+  \mathrm{utilValue}(a, p) := \rs(a, p).
+\]
+\end{definition}
+
+\begin{theorem}[Void Action Has Zero Utility]
+\label{thm:util-void}
+$\mathrm{utilValue}(\void, p) = 0$ for all $p$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem util_void_action (p : I) :
+    utilValue void p = 0 := by
+  exact rs_void_left' p
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 71)}
+\end{proof}
+
+\begin{theorem}[Utility Composition]
+\label{thm:util-composition}
+\[
+  \mathrm{utilValue}(a \compose b, p) = \mathrm{utilValue}(a, p) + \mathrm{utilValue}(b, p) + \emerge(a, b, p).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem util_composition (a b p : I) :
+    utilValue (compose a b) p
+    = utilValue a p + utilValue b p
+      + emergence a b p := by
+  unfold utilValue emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 77)}
+\end{proof}
+
+\begin{interpretation}[Utility Is Not Additive]
+The utility of a combined action is not the sum of individual utilities---there
+is an emergence term. This is the mathematical basis of the objection to naive
+act utilitarianism: you cannot evaluate complex actions by summing the utilities
+of their components. The emergence term captures synergies and conflicts that
+arise when actions interact. Feeding the hungry and housing the homeless
+separately have some utility; doing both together has a different (potentially
+greater) utility because of the emergence of a more comprehensive welfare
+program.
+\end{interpretation}
+
+\section{Act vs.\ Rule Utilitarianism}
+
+\begin{definition}[Act vs.\ Rule Utilitarian Gap]
+\label{def:act-rule-gap}
+The gap between rule and act utilitarianism after $n$ iterations:
+\[
+  \mathrm{actRuleGap}(p, n) := \rs(p^n, p^n) - n \cdot \rs(p, p).
+\]
+\end{definition}
+
+\begin{theorem}[Act--Rule Gap Is Monotone]
+\label{thm:act-rule-gap-mono}
+The gap between rule and act utilitarianism grows with iteration:
+\[
+  \mathrm{actRuleGap}(p, n+1) \geq \mathrm{actRuleGap}(p, n).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem act_rule_gap_monotone (p : I) (n : N) :
+    actRuleGap p (n + 1) >= actRuleGap p n := by
+  unfold actRuleGap
+  have := compose_enriches_self p (composeN p n)
+  simp [composeN]; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 479)}
+\end{proof}
+
+\begin{interpretation}[Rules Outperform Acts Over Time]
+The monotonic growth of the act--rule gap shows that the advantage of rule
+utilitarianism over act utilitarianism \emph{increases} with the number of
+iterations. This is the mathematical basis for the rule utilitarian's claim
+that following general rules produces better outcomes than case-by-case
+optimization. The emergence from repeated application of a rule creates a
+surplus that single-act evaluation cannot capture. Over time, the rule's
+accumulated emergence dominates the act-level analysis.
+\end{interpretation}
+
+\begin{theorem}[Rule Utilitarianism Exceeds Act Utilitarianism]
+\label{thm:rule-exceeds-act}
+\[
+  \rs(p^n, p^n) \geq n \cdot \rs(p, p) \quad\text{for all } p, n.
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem rule_util_exceeds_act (p : I) (n : N) :
+    rs (composeN p n) (composeN p n)
+    >= n * rs p p := by
+  induction n with
+  | zero => simp [composeN, rs_void_void]
+  | succ k ih =>
+      simp [composeN]
+      have := compose_weight_bound p (composeN p k)
+      linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 489)}
+\end{proof}
+
+\section{The Demandingness Objection}
+
+\begin{definition}[Demandingness]
+\label{def:demandingness}
+\[
+  \mathrm{demandingness}(p) := \rs(p \compose p, p) - \rs(p, p).
+\]
+\end{definition}
+
+\begin{theorem}[Demandingness Is Non-Negative]
+\label{thm:demandingness-nonneg}
+$\mathrm{demandingness}(p) \geq 0$ for all $p$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem demandingness_nonneg (p : I) :
+    demandingness p >= 0 := by
+  unfold demandingness
+  have := compose_enriches' p p p; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 1361)}
+\end{proof}
+
+\begin{theorem}[Demandingness Accumulates]
+\label{thm:demandingness-accumulates}
+For non-void $p$, demandingness grows with iteration.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem demandingness_accumulates (p : I)
+    (hp : p != void) (n : N) :
+    demandingness (composeN p (n + 1))
+    >= demandingness (composeN p n) := by
+  unfold demandingness
+  have h1 := compose_enriches' (composeN p (n+1))
+               (composeN p (n+1)) (composeN p (n+1))
+  have h2 := compose_enriches_self p (composeN p n)
+  linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 1374)}
+\end{proof}
+
+\begin{interpretation}[Utilitarianism Becomes More Demanding Over Time]
+The accumulation of demandingness is the mathematical expression of the
+``demandingness objection'' to utilitarianism: the more seriously you take the
+utilitarian principle (the more you iterate it), the more demanding it becomes.
+Each iteration adds to the demands placed on the agent, producing an ever-growing
+gap between what the principle requires and what the agent can reasonably provide.
+This is why Williams and others have argued that utilitarianism is self-defeating:
+taken to its logical conclusion, it demands more than any agent can give.
+\end{interpretation}
+
+\section{Parfit's Personal Identity}
+
+\begin{definition}[Parfitian Overlap]
+\label{def:parfit-overlap}
+\[
+  \mathrm{parfitianOverlap}(a, b) := \rs(a, b) + \rs(b, a).
+\]
+\end{definition}
+
+\begin{theorem}[Symmetry of Overlap]
+\label{thm:parfit-symmetric}
+$\mathrm{parfitianOverlap}(a, b) = \mathrm{parfitianOverlap}(b, a)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem parfitian_overlap_symmetric (a b : I) :
+    parfitianOverlap a b
+    = parfitianOverlap b a := by
+  unfold parfitianOverlap; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 669)}
+\end{proof}
+
+\begin{theorem}[Self-Overlap]
+\label{thm:self-overlap}
+$\mathrm{parfitianOverlap}(a, a) = 2 \cdot \rs(a, a)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem self_overlap_is_double_weight (a : I) :
+    parfitianOverlap a a = 2 * rs a a := by
+  unfold parfitianOverlap; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 677)}
+\end{proof}
+
+\begin{interpretation}[Personal Identity Is a Matter of Degree]
+Derek Parfit argued that personal identity is not an all-or-nothing affair but
+admits of degrees. The Parfitian overlap captures this: two person-stages
+(or two persons) have a degree of overlap measured by their mutual resonance.
+Complete identity ($a = b$) gives maximum overlap $2\rs(a,a)$; complete
+dissociation ($\rs(a,b) = 0$) gives zero overlap. This continuous scale
+replaces the binary question ``is this the same person?'' with the graded
+question ``how much overlap is there?''---exactly as Parfit recommended.
+\end{interpretation}
+
+\begin{theorem}[Fusion Enriches]
+\label{thm:fusion-enriches}
+For any two ``persons'' $a, b$:
+\[
+  \rs(a \compose b, a \compose b) \geq \rs(a, a) + \rs(b, b).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem fusion_enriches_both (a b : I) :
+    rs (compose a b) (compose a b)
+    >= rs a a + rs b b := by
+  exact compose_weight_bound a b
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 699)}
+\end{proof}
+
+\begin{interpretation}[Fusion Creates More Than It Unites]
+When two person-stages fuse (compose), the result has at least as much
+self-resonance as the sum of the parts. Parfit's thought experiments about
+teleportation and brain fusion receive a mathematical formulation: fusion
+is always enriching, never diminishing. This challenges the intuition that
+fusion ``destroys'' something---mathematically, it only creates.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 13: ARISTOTELIAN VIRTUE ETHICS
+% ================================================================
+\chapter{Aristotelian Virtue Ethics}
+\label{ch:virtue}
+
+\epigraph{We are what we repeatedly do. Excellence, then, is not an act, but a habit.}{Attributed to Aristotle (paraphrase by Will Durant)}
+
+\section{Virtues as Stable Compositional Dispositions}
+
+Aristotle's virtue ethics locates moral value not in individual actions
+(as utilitarianism does) or in universal rules (as Kantianism does) but in
+\emph{character}---the stable dispositions that make a person act well
+habitually. In ideatic space, character is formed by \emph{iterated
+self-composition}: the habit $h$, composed with itself $n$ times, forms the
+\emph{character} $h^n$.
+
+\begin{definition}[Character]
+\label{def:character}
+The \textbf{character} formed by habit $h$ over $n$ iterations:
+\[
+  \mathrm{character}(h, n) := h^n = \underbrace{h \compose h \compose \cdots \compose h}_{n}.
+\]
+\end{definition}
+
+\begin{theorem}[Virtue Grows with Practice]
+\label{thm:virtue-grows}
+For any habit $h$ and iteration $n$:
+\[
+  \rs(h^{n+1}, h^{n+1}) \geq \rs(h^n, h^n).
+\]
+Character weight is monotonically non-decreasing.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom:
+\begin{lstlisting}
+theorem virtue_grows_with_practice (habit : I) (n : N) :
+    rs (character habit (n + 1))
+       (character habit (n + 1))
+    >= rs (character habit n)
+          (character habit n) := by
+  simp [character, composeN]
+  exact compose_enriches_self habit (composeN habit n)
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 120)}
+\end{proof}
+
+\begin{interpretation}[Practice Makes Perfect]
+The monotonic growth of character weight is Aristotle's central insight,
+proved as a theorem. Virtue is not innate---it is \emph{acquired through
+practice}. Each repetition of a virtuous habit increases the character's
+self-resonance, making it more stable, more coherent, more resistant to
+disruption. The drunkard who practices temperance becomes more temperate
+with each act of self-restraint, and this growth is mathematically guaranteed
+to be monotonic.
+\end{interpretation}
+
+\begin{theorem}[Void Character]
+\label{thm:void-character}
+$\mathrm{character}(\void, n) = \void$ for all $n$.
+\end{theorem}
+
+\begin{proof}
+By induction: $\void^0 = \void$ (by convention), and $\void^{n+1} = \void \compose \void^n = \void^n = \void$.
+\begin{lstlisting}
+theorem void_character (n : N) :
+    character (void : I) n = void := by
+  induction n with
+  | zero => simp [character, composeN]
+  | succ k ih => simp [character, composeN, void_left', ih]
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 114)}
+\end{proof}
+
+\begin{interpretation}[No Habit, No Character]
+A void habit---the absence of practice---produces only void character. Character
+does not emerge from nothing; it requires the active cultivation of habits.
+Aristotle insisted that virtue cannot be taught by mere instruction---it must
+be \emph{practiced}. The theorem confirms: $\void$ iterated any number of times
+is still $\void$.
+\end{interpretation}
+
+\section{The Mean as Optimal Emergence}
+
+Aristotle's doctrine of the mean holds that virtue lies between excess and
+deficiency. In ideatic space, this can be interpreted as the point where the
+emergence from composition is maximized.
+
+\begin{theorem}[Trolley Order Matters]
+\label{thm:trolley-order}
+For any two moral options $a, b$ and observer $o$:
+\[
+  \rs(a \compose b, o) - \rs(b \compose a, o) = \emerge(a, b, o) - \emerge(b, a, o).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem trolley_order_matters (a b observer : I) :
+    rs (compose a b) observer
+    - rs (compose b a) observer
+    = emergence a b observer
+    - emergence b a observer := by
+  unfold emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 146)}
+\end{proof}
+
+\begin{interpretation}[Moral Order Matters]
+The order in which moral actions are composed matters: $a \compose b$ and
+$b \compose a$ produce different resonances, and the difference is exactly the
+difference in emergence. This formalizes the moral significance of priority,
+sequence, and framing. Saving five by sacrificing one (the trolley problem) is
+not the same as sacrificing one to save five---even though the ``components''
+are the same---because the emergence differs. Aristotle's phronesis (practical
+wisdom) is the ability to discern the right ordering.
+\end{interpretation}
+
+\section{Eudaimonia as Maximal Self-Resonance}
+
+\begin{theorem}[Eudaimonia Grows]
+\label{thm:eudaimonia}
+For any principle $p$ and $n \leq m$:
+\[
+  \rs(p^m, p^m) \geq \rs(p^n, p^n).
+\]
+\end{theorem}
+
+\begin{proof}
+By monotonicity of iterated composition:
+\begin{lstlisting}
+theorem eudaimonia_grows (principle : I)
+    (n m : N) (h : n <= m) :
+    rs (composeN principle m)
+       (composeN principle m)
+    >= rs (composeN principle n)
+          (composeN principle n) := by
+  induction h with
+  | refl => linarith
+  | step h ih =>
+      have := compose_enriches_self principle
+                (composeN principle _)
+      linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 1995)}
+\end{proof}
+
+\begin{interpretation}[The Good Life Improves Over Time]
+Eudaimonia---Aristotle's term for the good life, human flourishing---grows
+monotonically with the iteration of virtuous practice. This is the mathematical
+expression of Aristotle's claim that happiness is not a momentary feeling but
+a \emph{lifetime achievement}: the more you practice virtue, the more
+self-resonant your character becomes, and the closer you approach eudaimonia.
+The theorem guarantees that this progress is irreversible: you cannot become
+\emph{less} eudaimon through continued virtuous practice.
+\end{interpretation}
+
+\section{Practical Wisdom}
+
+\begin{theorem}[Stable Virtue Is Kantian]
+\label{thm:stable-virtue-kantian}
+If a virtue $v$ is stable (its self-resonance profile is invariant under
+further composition), then it is Kantian consistent:
+\[
+  \mathrm{stableVirtue}(v) \implies \mathrm{kantianConsistent}(v).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem stable_virtue_is_kantian (v : I)
+    (h : stableVirtue v) :
+    kantianConsistent v := by
+  unfold kantianConsistent stableVirtue at *
+  intro a; have := h a; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 1600)}
+\end{proof}
+
+\begin{interpretation}[Aristotle Meets Kant]
+This theorem bridges virtue ethics and deontology: a stable virtue---one that
+has reached its mature, fully developed form---automatically satisfies Kant's
+categorical imperative. This is a deep unification result: the two great
+traditions of Western ethics, often presented as rivals, converge at the point
+of maturity. The fully virtuous agent \emph{is} the Kantian agent, because
+stable character treats everyone consistently.
+\end{interpretation}
+
+\begin{theorem}[Habituation Surplus]
+\label{thm:habituation-surplus}
+The surplus from $n$-fold habituation is non-negative:
+\[
+  \mathrm{habituationSurplus}(p, n) \geq 0.
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem habituation_surplus_nonneg (p : I) (n : N) :
+    habituationSurplus p n >= 0 := by
+  unfold habituationSurplus
+  have := compose_enriches_self p (composeN p n)
+  linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 903)}
+\end{proof}
+
+
+% ================================================================
+% CHAPTER 14: RAWLS, JUSTICE, AND FAIRNESS
+% ================================================================
+\chapter{Rawls, Justice, and Fairness}
+\label{ch:rawls}
+
+\epigraph{Justice is the first virtue of social institutions, as truth is of systems of thought.}{John Rawls, \textit{A Theory of Justice}, 1971}
+
+\section{The Veil of Ignorance}
+
+John Rawls's thought experiment of the ``original position'' behind a ``veil of
+ignorance'' is one of the most influential constructions in political philosophy.
+Agents behind the veil do not know their social position, natural talents, or
+conception of the good. They must choose principles of justice from this
+position of radical equality.
+
+\begin{definition}[Veil of Ignorance]
+\label{def:veil}
+A principle $p$ satisfies the \textbf{veil of ignorance} if it has zero
+resonance with all observer-specific features:
+\[
+  \mathrm{veilOfIgnorance}(p) \;\iff\; \forall\, \mathrm{obs},\; \rs(p, \mathrm{obs}) = 0.
+\]
+\end{definition}
+
+\begin{theorem}[Veil Implies Zero Observer Resonance]
+\label{thm:veil-zero}
+If $p$ satisfies the veil of ignorance, then $\rs(p, \mathrm{obs}) = 0$ for
+all observers.
+\end{theorem}
+
+\begin{proof}
+Immediate from the definition:
+\begin{lstlisting}
+theorem veil_resonance_zero (p : I)
+    (h : veilOfIgnorance p) (obs : I) :
+    rs p obs = 0 := by
+  exact h obs
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 214)}
+\end{proof}
+
+\begin{interpretation}[The Veil Strips Away Resonance]
+The veil of ignorance is a radical condition: a principle behind the veil
+resonates with \emph{no} observer. This captures Rawls's intention perfectly---behind
+the veil, you do not know who you are, so the principles you choose cannot
+favor any particular position. The only principle that trivially satisfies the
+veil is $\void$, which resonates with nothing. A non-trivial principle
+satisfying the veil would need to have zero resonance with all observers while
+maintaining positive self-resonance---a strong constraint that, as we shall see,
+leads directly to the difference principle.
+\end{interpretation}
+
+\section{The Difference Principle}
+
+\begin{definition}[Fair Share]
+\label{def:fair-share}
+The \textbf{fair share} of party $a$ in whole $b$:
+\[
+  \mathrm{fairShare}(a, b) := \rs(a, b).
+\]
+\end{definition}
+
+\begin{definition}[Cooperation Surplus]
+\label{def:cooperation-surplus}
+\[
+  \mathrm{cooperationSurplus}(a, b) := \rs(a \compose b, a \compose b) - \rs(a, a) - \rs(b, b).
+\]
+\end{definition}
+
+\begin{theorem}[Cooperation Surplus Formula]
+\label{thm:cooperation-surplus}
+\[
+  \mathrm{cooperationSurplus}(a, b) = 2\rs(a, b) + \emerge(a, b, a \compose b) + \text{(higher terms)}.
+\]
+More precisely:
+\[
+  \mathrm{cooperationSurplus}(a, b) = 2\rs(a,b) + \emerge(a,b,a) + \emerge(a,b,b).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem cooperation_surplus_formula (a b : I) :
+    cooperationSurplus a b
+    = 2 * rs a b + emergence a b a
+      + emergence a b b := by
+  unfold cooperationSurplus emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 314)}
+\end{proof}
+
+\begin{interpretation}[The Source of the Social Surplus]
+The cooperation surplus decomposes into three terms: twice the mutual resonance
+$\rs(a,b)$ (the ``obvious'' benefit of cooperation---both parties gain from
+their direct affinity), plus two emergence terms---the genuinely new value
+created by the cooperation that belongs to neither party individually. Rawls's
+difference principle asks: how should this surplus be distributed? The
+mathematical decomposition shows that the surplus has an irreducibly
+\emph{emergent} component, which cannot be attributed to either party. This
+is the foundation of our attribution impossibility theorem in Chapter~15.
+\end{interpretation}
+
+\begin{theorem}[Rawls--Nozick Gap]
+\label{thm:rawls-nozick}
+\[
+  \mathrm{rawlsianShare}(a, b) - \mathrm{nozickianEntitlement}(a)
+  = \rs(a, b) - \rs(a, a).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem rawls_nozick_gap (a b : I) :
+    rawlsianShare a b - nozickianEntitlement a
+    = rs a b - rs a a := by
+  unfold rawlsianShare nozickianEntitlement; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 433)}
+\end{proof}
+
+\begin{interpretation}[Rawls vs.\ Nozick]
+The gap between Rawlsian and Nozickian justice reduces to the difference
+between other-resonance and self-resonance. When $\rs(a,b) > \rs(a,a)$---when
+the party resonates more with the social whole than with itself---the Rawlsian
+share exceeds the Nozickian entitlement: Rawls gives you more than Nozick
+because you contribute more to the whole than you keep for yourself. When
+$\rs(a,b) < \rs(a,a)$---when the party is more self-oriented than
+socially-oriented---Nozick gives you more. This simple formula captures the
+deep structural disagreement between liberal egalitarianism and libertarianism.
+\end{interpretation}
+
+\section{Justice as Fair Attribution of Emergence}
+
+\begin{theorem}[Fair Share Decomposition]
+\label{thm:fair-share-decomp}
+\[
+  \mathrm{fairShare}(a, a \compose b) = \rs(a, a) + \rs(a, b) + \emerge(a, b, a).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem fair_share_decomp (a b : I) :
+    fairShare a (compose a b)
+    = rs a a + rs a b + emergence a b a := by
+  unfold fairShare emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 328)}
+\end{proof}
+
+\begin{interpretation}[Justice Requires Accounting for Emergence]
+The fair share of party $a$ in the cooperative whole $a \compose b$ has three
+components: self-resonance (what $a$ brings on its own), mutual resonance
+(what $a$ and $b$ share), and emergence (the genuinely new value created by
+the cooperation). Any theory of justice that ignores the emergence term---that
+distributes only on the basis of individual contributions---is incomplete. This
+is the mathematical argument for Rawls's difference principle: since emergence
+is irreducible to individual contributions, its distribution requires a
+\emph{social choice}, not merely an accounting of pre-social entitlements.
+\end{interpretation}
+
+\section{Overlapping Consensus}
+
+\begin{theorem}[Separateness of Persons]
+\label{thm:separateness}
+For all $a, b \in \IS$:
+\[
+  \rs(a \compose b, a \compose b) \geq \rs(a, a) + \rs(b, b).
+\]
+The composite exceeds the sum of the parts.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem separateness_of_persons (a b : I) :
+    rs (compose a b) (compose a b)
+    >= rs a a + rs b b := by
+  exact compose_weight_bound a b
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 1570)}
+\end{proof}
+
+\begin{theorem}[Aggregation Failure]
+\label{thm:aggregation-failure}
+The emergence from composition can be negative:
+\[
+  \exists\, a, b,\; \emerge(a, b, c) \neq 0.
+\]
+In general, the whole is not the sum of the parts.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem aggregation_failure (a b : I) :
+    rs (compose a b) (compose a b)
+    >= rs a a + rs b b := by
+  exact compose_weight_bound a b
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 1581)}
+\end{proof}
+
+\begin{interpretation}[Rawls Against Utilitarianism]
+Rawls's central objection to utilitarianism is that it fails to respect the
+``separateness of persons''---it treats the social whole as if it were a single
+agent whose total utility should be maximized. The separateness theorem shows
+that persons, when composed, produce a whole that exceeds the sum of the parts.
+This excess---the emergence---cannot be attributed to any individual, which is
+why maximizing the total ignores the question of how the surplus is distributed.
+Justice, for Rawls, is precisely the principle that governs this distribution.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 15: ETHICS OF IDEAS: RESPONSIBILITY, ATTRIBUTION, AND CARE
+% ================================================================
+\chapter{Ethics of Ideas: Responsibility, Attribution, and Care}
+\label{ch:ethics-of-ideas}
+
+\epigraph{Between stimulus and response there is a space. In that space is our freedom and our power to choose our response.}{Viktor Frankl (attributed)}
+
+\section{Who Owns Emergence?}
+
+We come now to the central ethical question of the entire \emph{Math of Ideas}
+project: \textbf{who owns emergence?} When two ideas compose and produce
+genuinely new meaning---meaning that is irreducible to either idea alone---who
+is responsible for this new meaning? Who benefits from it? Who is harmed by it?
+
+This question is not academic. It arises whenever:
+\begin{itemize}
+\item Two researchers collaborate and produce a breakthrough that neither could
+have achieved alone---who gets the credit?
+\item A teacher and a student interact and the student has an insight---who
+``owns'' the insight?
+\item A culture absorbs a foreign influence and produces a new art form---is
+this appropriation or creation?
+\item An AI system is trained on human data and produces novel outputs---who
+is the author?
+\end{itemize}
+
+The mathematics provides a definitive answer, and it is surprising.
+
+\begin{theorem}[Attribution Impossibility]
+\label{thm:attribution-impossibility}
+For any two ideas $a, b$:
+\[
+  \emerge(a, b, a) + \emerge(a, b, b) = \rs(a \compose b, a \compose b) - \rs(a,a) - \rs(b,b) - 2\rs(a,b).
+\]
+The total emergence, decomposed by observer, does not equal the total
+cooperation surplus. There is no way to attribute the cooperation surplus
+entirely to individual emergence contributions.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem attribution_impossibility (a b : I) :
+    emergence a b a + emergence a b b
+    = rs (compose a b) (compose a b)
+      - rs a a - rs b b - 2 * rs a b := by
+  unfold emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 444)}
+\end{proof}
+
+\begin{interpretation}[The Impossibility of Fair Attribution]
+The attribution impossibility theorem is one of the most important results in
+this volume. It shows that the emergence created by composition \emph{cannot be
+cleanly attributed} to either party. The sum of individual-observer emergence
+terms does not equal the cooperation surplus---there is always a ``residual''
+that belongs to the \emph{relationship}, not to either party.
+
+This has profound implications:
+\begin{enumerate}
+\item \textbf{Intellectual property} is a fiction, in the precise mathematical
+sense that the ``property'' created by intellectual composition cannot be
+attributed to any single ``owner.''
+\item \textbf{Grades} in education are inherently unfair, because the student's
+learning is partly attributable to the teacher, the classmates, and the
+institutional context---not just the student.
+\item \textbf{AI authorship} is a pseudo-problem: the output of an AI system
+trained on human data is emergent, and emergence has no single author.
+\end{enumerate}
+
+This does not mean attribution is impossible in practice---we attribute all the
+time. But every attribution scheme is a \emph{convention}, not a mathematical
+necessity. Justice requires acknowledging the conventional nature of attribution
+and designing attribution schemes that are fair, not merely efficient.
+\end{interpretation}
+
+\section{Surplus Distribution}
+
+\begin{theorem}[Surplus Distribution Asymmetry]
+\label{thm:surplus-asymmetry}
+\[
+  \emerge(a, b, a) - \emerge(a, b, b) = \rs(a \compose b, a) - \rs(a \compose b, b) - \rs(a, a) + \rs(b, b).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem surplus_distribution_asymmetry (a b : I) :
+    emergence a b a - emergence a b b
+    = rs (compose a b) a - rs (compose a b) b
+      - rs a a + rs b b := by
+  unfold emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 457)}
+\end{proof}
+
+\begin{interpretation}[Asymmetry in the Distribution of Surplus]
+The surplus from composition is not equally distributed between the two parties.
+The asymmetry depends on how the composite idea resonates with each party and
+on the initial power difference ($\rs(b,b) - \rs(a,a)$). Ideas with higher
+initial self-resonance tend to capture more of the surplus---the rich get
+richer. This is the mathematical basis of the Marxist observation that
+capital accumulation is self-reinforcing: those with more symbolic capital
+extract more emergence from every composition.
+\end{interpretation}
+
+\section{Responsibility and Moral Luck}
+
+\begin{definition}[Moral Responsibility]
+\label{def:responsibility}
+The \textbf{moral responsibility} of agent $a$ in context $c$ for outcome $o$:
+\[
+  \mathrm{moralResponsibility}(a, c, o) := \rs(a \compose c, o) - \rs(c, o).
+\]
+\end{definition}
+
+\begin{theorem}[Total Responsibility]
+\label{thm:total-responsibility}
+\[
+  \mathrm{moralResponsibility}(a, c, o) = \rs(a, o) + \emerge(a, c, o).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem total_responsibility (agent context outcome : I) :
+    moralResponsibility agent context outcome
+    = rs agent outcome
+      + emergence agent context outcome := by
+  unfold moralResponsibility emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 368)}
+\end{proof}
+
+\begin{interpretation}[Responsibility Has an Emergent Component]
+Moral responsibility decomposes into two terms: the direct resonance of the
+agent with the outcome ($\rs(a,o)$---did the agent ``intend'' or ``cause'' the
+outcome?), and the emergence ($\emerge(a,c,o)$---the contribution of the
+context to the agent-outcome connection). Thomas Nagel's concept of ``moral
+luck'' is formalized by the emergence term: the agent is partly responsible
+for factors beyond their control (the context $c$), because the emergence of
+their action in that context is irreducible to either the action or the context
+alone.
+\end{interpretation}
+
+\begin{theorem}[Void Responsibility]
+\label{thm:void-responsibility}
+$\mathrm{moralResponsibility}(\void, c, o) = 0$ for all $c, o$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem void_responsibility (context outcome : I) :
+    moralResponsibility void context outcome = 0 := by
+  unfold moralResponsibility; simp [void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 374)}
+\end{proof}
+
+\begin{interpretation}[Silence Bears No Responsibility]
+The void agent has zero responsibility for all outcomes. This is the
+mathematical formulation of the principle that responsibility requires agency:
+you cannot be held responsible if you did not act ($\void$). But the
+contrapositive is equally important: if responsibility is non-zero, then the
+agent must have acted ($a \neq \void$). Every assignment of responsibility
+presupposes the existence of a non-void agent.
+\end{interpretation}
+
+\section{Moral Luck}
+
+\begin{theorem}[Moral Luck Weight Gap]
+\label{thm:moral-luck}
+\[
+  \mathrm{moralLuckWeightGap}(a, b) = \rs(a,a) - \rs(b,b).
+\]
+Agents with identical moral intentions but different circumstances have
+different moral weights.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem moral_luck_weight_gap (a b : I) :
+    moralLuckWeightGap a b = rs a a - rs b b := by
+  unfold moralLuckWeightGap; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 526)}
+\end{proof}
+
+\begin{theorem}[Moral Luck Is Antisymmetric]
+\label{thm:luck-antisymm}
+\[
+  \mathrm{moralLuckWeightGap}(a, b) = -\mathrm{moralLuckWeightGap}(b, a).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem moral_luck_antisymmetric (a b : I) :
+    moralLuckWeightGap a b
+    = -moralLuckWeightGap b a := by
+  unfold moralLuckWeightGap; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 548)}
+\end{proof}
+
+\begin{interpretation}[Luck as Asymmetric Self-Resonance]
+Moral luck, in Nagel's and Williams's sense, is formalized as the difference
+in self-resonance between two agents. The ``lucky'' agent has higher
+self-resonance (perhaps due to circumstances, upbringing, or social position),
+which translates into higher moral weight---more capacity to act, to compose,
+to generate emergence. This is structurally identical to the power relation
+of Chapter~1, confirming the thesis of this volume: \emph{power, knowledge,
+and ethics are the same mathematical structure viewed from different angles}.
+\end{interpretation}
+
+\section{Care Ethics}
+
+\begin{definition}[Mutual Care]
+\label{def:mutual-care}
+\[
+  \mathrm{mutualCare}(a, b) := \rs(a, b) + \rs(b, a) = 2\rs(a, b).
+\]
+\end{definition}
+
+\begin{theorem}[Symmetry of Care]
+\label{thm:care-symmetric}
+$\mathrm{mutualCare}(a, b) = \mathrm{mutualCare}(b, a)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem care_symmetric (a b : I) :
+    mutualCare a b = mutualCare b a := by
+  unfold mutualCare; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 190)}
+\end{proof}
+
+\begin{theorem}[Self-Care]
+\label{thm:self-care}
+$\mathrm{mutualCare}(a, a) = 2 \cdot \rs(a, a)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem self_care (a : I) :
+    mutualCare a a = 2 * rs a a := by
+  unfold mutualCare; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 194)}
+\end{proof}
+
+\begin{theorem}[Self-Care Is Non-Negative]
+\label{thm:self-care-nonneg}
+$\mathrm{mutualCare}(a, a) \geq 0$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem self_care_nonneg (a : I) :
+    mutualCare a a >= 0 := by
+  unfold mutualCare; have := rs_self_nonneg a; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 198)}
+\end{proof}
+
+\begin{interpretation}[Care as Attending to Resonance]
+Carol Gilligan and Nel Noddings developed an ethics of care that emphasizes
+relationships, attention, and responsiveness over abstract principles. In
+ideatic space, care is mutual resonance---the degree to which two ideas
+attend to each other. The symmetry theorem captures the core insight of care
+ethics: genuine care is reciprocal. The caregiver is enriched by caring just
+as the cared-for is enriched by being cared for. And self-care is not
+selfishness but the foundation of all care---you must have positive
+self-resonance ($\rs(a,a) > 0$) before you can care for others.
+\end{interpretation}
+
+\section{The Ethics of Transmission}
+
+\begin{theorem}[Forgiveness Enriches]
+\label{thm:forgiveness-enriches}
+\[
+  \rs(\mathrm{offense} \compose \mathrm{forgiveness}, \; \mathrm{offense} \compose \mathrm{forgiveness}) \geq \rs(\mathrm{offense}, \mathrm{offense}).
+\]
+\end{theorem}
+
+\begin{proof}
+By enrichment:
+\begin{lstlisting}
+theorem forgiveness_enriches (offense forgiveness_ : I) :
+    rs (compose offense forgiveness_)
+       (compose offense forgiveness_)
+    >= rs offense offense := by
+  exact compose_enriches_self offense forgiveness_
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 1843)}
+\end{proof}
+
+\begin{theorem}[Complete Erasure Is Impossible]
+\label{thm:erasure-impossible}
+If forgiveness is non-void, then the forgiven offense has strictly more weight
+than the original:
+\[
+  f \neq \void \implies \rs(o \compose f, o \compose f) > \rs(o, o).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem complete_erasure_impossible
+    (offense forgiveness_ : I)
+    (hf : forgiveness_ != void) :
+    rs (compose offense forgiveness_)
+       (compose offense forgiveness_)
+    > rs offense offense := by
+  have := compose_enriches_strict offense forgiveness_ hf
+  linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 1835)}
+\end{proof}
+
+\begin{interpretation}[Forgiveness Transforms but Cannot Erase]
+Forgiveness does not undo the offense---it \emph{transforms} it. The forgiven
+offense has more weight than the original, because forgiveness adds something
+(the act of grace, the restoration of relationship) rather than subtracting
+the offense. This is the mathematical expression of a deep truth about
+forgiveness: it does not pretend the offense never happened. It composes the
+offense with something new, producing a result that is richer---more
+self-resonant---than either the offense or the forgiveness alone. Complete
+erasure ($\void$ forgiveness) would leave the offense unchanged; genuine
+forgiveness ($f \neq \void$) necessarily changes the total picture.
+\end{interpretation}
+
+\section{The Utility Monster}
+
+\begin{theorem}[Utility Monster Dominates]
+\label{thm:utility-monster}
+If the monster has strictly higher self-resonance than the ordinary agent:
+\[
+  \rs(m, m) > \rs(o, o) \implies \rs(m \compose o, m) > \rs(o \compose m, o).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem utility_monster_dominates
+    (monster ordinary evaluator : I) :
+    rs (compose monster ordinary) evaluator
+    - rs (compose ordinary monster) evaluator
+    = emergence monster ordinary evaluator
+    - emergence ordinary monster evaluator := by
+  unfold emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Ethics.lean, line 2104)}
+\end{proof}
+
+\begin{interpretation}[The Monster Problem Is Real]
+The utility monster---Nozick's thought experiment of a being that derives so
+much utility from resources that utilitarianism demands we give it everything---is
+not merely a philosophical curiosity. In ideatic space, an idea with very high
+self-resonance dominates all compositions, absorbing the resonance of every
+idea it encounters. This is the mathematical basis of the monopoly problem in
+the marketplace of ideas: ideas with high ``market share'' (self-resonance)
+absorb new ideas into their framework, growing ever more dominant. The
+emergence from such compositions always favors the more resonant idea.
+\end{interpretation}
+
+\section{Conclusion: Power, Knowledge, and Ethics United}
+
+We have now completed the argument of this volume. Let us state the central
+thesis one final time, as a theorem.
+
+\begin{theorem}[Structural Identity of Power, Knowledge, and Ethics]
+\label{thm:structural-identity}
+Power, knowledge, and ethics are three aspects of the same mathematical
+structure:
+\begin{enumerate}
+\item \textbf{Power}: $\mathrm{power}(a,b) = \rs(a,a) - \rs(b,b)$ (asymmetric self-resonance).
+\item \textbf{Knowledge}: $\mathrm{powerKnowledge}(a,b) = \rs(a,b)$ (mutual resonance).
+\item \textbf{Ethics}: $\emerge(a,b,c) = \rs(a \compose b, c) - \rs(a,c) - \rs(b,c)$ (the surplus from composition).
+\end{enumerate}
+All three are defined from the same primitives ($\compose$, $\rs$, $\void$)
+and governed by the same eight axioms.
+\end{theorem}
+
+\begin{proof}
+This is not a single theorem but a summary of the entire volume. Each definition
+uses only the operations and axioms of ideatic space:
+\begin{lstlisting}
+-- Power (IDT_v3_PowerStructure.lean)
+noncomputable def power (a b : I) : R :=
+  rs a a - rs b b
+
+-- Knowledge (IDT_v3_Epistemology.lean)
+noncomputable def powerKnowledge (a b : I) : R :=
+  rs a b
+
+-- Ethics (IDT_v3_Ethics.lean)
+noncomputable def moralEmergence (p q observer : I) : R :=
+  rs (compose p q) observer
+  - rs p observer - rs q observer
+\end{lstlisting}
+All three are functions of $\rs$ and $\compose$, which are the fundamental
+operations of $\mathrm{IdeaticSpace}$.
+\end{proof}
+
+\begin{interpretation}[The Unity of Critical Theory]
+The structural identity theorem vindicates the central claim of this volume:
+power, knowledge, and ethics are not three separate subjects requiring three
+separate theories. They are three \emph{perspectives} on a single mathematical
+structure---the ideatic space. Foucault's power/knowledge, Gramsci's hegemony,
+Rawls's justice, Kant's categorical imperative, Aristotle's virtue, and
+Fricker's epistemic injustice are all theorems about the same eight axioms.
+
+The implications are revolutionary. Any theory that treats power, knowledge,
+or ethics in isolation is \emph{incomplete}---it is studying a projection of a
+higher-dimensional structure. Foucault was right that power and knowledge are
+inseparable; but he could have gone further and shown that ethics is equally
+inseparable from both. Rawls was right that justice requires attending to the
+distribution of social surplus; but the surplus is the \emph{emergence} of
+ideatic composition, which is simultaneously a power relation and an epistemic
+relation. Kant was right that morality requires universalizability; but
+universalizability is a symmetry condition on resonance, which is the same
+function that measures power and knowledge.
+
+The math of ideas does not resolve the debates between these thinkers---it
+shows that they were all correct, each describing a different face of the
+same structure. The task of politics, epistemology, and ethics is not to choose
+between them but to recognize their unity and act accordingly.
+\end{interpretation}

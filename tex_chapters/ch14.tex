@@ -1,0 +1,823 @@
+% ================================================================
+% Chapter 14: Ideatic Auctions and Ritual Economy
+% ================================================================
+
+\chapter{Ideatic Auctions and Ritual Economy}
+\label{ch:auction}
+
+\epigraph{Conspicuous consumption of valuable goods is a means of reputability
+to the gentleman of leisure.}{Thorstein Veblen,
+\textit{The Theory of the Leisure Class} (1899)}
+
+% ----------------------------------------------------------------
+\section{Introduction}
+% ----------------------------------------------------------------
+
+In many cultural contexts, ideas compete for interpretive priority through
+\emph{depth-based bidding}.  The potlatch of the Pacific Northwest Coast, in
+which rival chiefs destroy or give away enormous quantities of wealth to
+establish precedence, is the paradigmatic example: the deepest cultural
+contribution wins prestige.  But the pattern is far more widespread.
+The competitive almsgiving of medieval Christendom, the monumental
+architecture of Egyptian pharaohs, the conspicuous sacrifice in ancient
+temple economies, the academic citation game---all are forms of
+``auction'' where the most complex (deepest) offering wins.
+
+Veblen's theory of conspicuous consumption captures the demand side of this
+dynamic: prestige accrues to the display of costly (deep) goods.
+Bourdieu's concept of symbolic capital captures the supply side: cultural
+producers bid for status by offering complex cultural products to
+audiences whose capacity to appreciate them (their cultural capital)
+constrains the impact of even the most extravagant bid.\footnote{Bourdieu,
+\textit{La Distinction} (1979) and \textit{Les Règles de l'art} (1992).
+The ``field of cultural production'' is precisely our auction, with
+depth as the currency and resonance as the condition of successful
+reception.}
+
+This chapter formalizes ideatic auctions.  We introduce \emph{bid value}
+(depth), a \emph{maxDepthIdea} selector, and \emph{auction interpretation}
+(the winning bid composed with the receiver's background).  We prove
+eighteen theorems showing that void always loses, deeper bids win,
+composing bids is subadditive, and the winner's interpretation is bounded
+by audience capacity.
+
+% ----------------------------------------------------------------
+\section{Core Definitions}
+\label{sec:ch14-defs}
+% ----------------------------------------------------------------
+
+\begin{definition}[Bid Value]
+\label{def:bid-value}
+The \emph{bid value} of an idea $a$ is its depth:
+$\operatorname{bidValue}(a) = \depth(a)$.
+In the ritual economy, depth equals prestige equals bid amount.
+\end{definition}
+
+\begin{definition}[Maximum Depth Idea]
+\label{def:max-depth}
+Given a fallback idea and a list of bids, $\operatorname{maxDepthIdea}$
+selects the idea with the greatest depth via a left fold that keeps the
+deeper of each pair:
+\[
+  \operatorname{maxDepthIdea}(\text{best}, []) = \text{best}, \qquad
+  \operatorname{maxDepthIdea}(\text{best}, x :: \text{rest}) =
+  \begin{cases}
+    \operatorname{maxDepthIdea}(x, \text{rest}) & \text{if } \depth(x) \ge \depth(\text{best}), \\
+    \operatorname{maxDepthIdea}(\text{best}, \text{rest}) & \text{otherwise}.
+  \end{cases}
+\]
+\end{definition}
+
+\begin{lstlisting}[caption={Maximum depth idea selector in Lean~4}]
+def maxDepthIdea : I -> List I -> I
+  | best, []       => best
+  | best, x :: rest =>
+    if depth x >= depth best then maxDepthIdea x rest
+    else maxDepthIdea best rest
+\end{lstlisting}
+
+\begin{definition}[Auction Interpretation]
+\label{def:auction-interp}
+The \emph{auction interpretation} composes the receiver's background with
+the winning (deepest) bid:
+\[
+  \operatorname{auctionInterpret}(\text{bids}, \text{fallback}, \text{receiver})
+  = \text{receiver} \compose \operatorname{maxDepthIdea}(\text{fallback}, \text{bids}).
+\]
+The receiver's background mediates the winning bid: the audience does not
+absorb the winning idea raw but interprets it through their own cultural
+lens.
+\end{definition}
+
+% ----------------------------------------------------------------
+\section{Void as Non-Competitor}
+\label{sec:ch14-void}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Void Bid Value is Zero (14.1)]
+\label{thm:void-bid}
+The void idea has zero bid value: $\operatorname{bidValue}(\void) = 0$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\depth(\void) = 0$ by the void depth axiom.
+\end{proof}
+
+In the potlatch, offering nothing is the ultimate humiliation.  Zero depth
+equals zero cultural capital equals zero bidding power.  The formal basis of
+``losing face'': the chief who brings no gifts has bid $\void$ and receives
+zero prestige.  Mauss's \emph{obligation to give} is, at bottom, an
+obligation to bid non-void.\footnote{Mauss, \textit{Essai sur le don}
+(1925): ``To refuse to give, to fail to invite, just as to refuse to
+accept, is tantamount to declaring war; it is to reject the bond of
+alliance and commonality.''}
+
+\begin{theorem}[Void Loses to Any Bid (14.2)]
+\label{thm:void-loses}
+Given any bid $a$ and void as fallback, the maximum has non-negative depth:
+$\operatorname{bidValue}(\operatorname{maxDepthIdea}(\void, [a])) \ge 0$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Depth is always non-negative.
+\end{proof}
+
+Any cultural offering, no matter how shallow, beats silence.  This is the
+formal foundation of ``showing up'': participation is always at least as
+good as absence in competitive ritual.  The anthropological wisdom that
+``the worst thing you can do is not come'' is a theorem.
+
+\begin{theorem}[Deeper Beats Void (14.3)]
+\label{thm:deeper-void}
+If $\depth(a) \ge 1$, then $a$ beats void:
+$\depth(\operatorname{maxDepthIdea}(\void, [a])) \ge 1$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+When $\depth(a) \ge 1 \ge 0 = \depth(\void)$, the selector chooses $a$.
+\end{proof}
+
+In competitive gift-giving, the party who brings \emph{something} always
+outranks the party who brings nothing.  Mauss's obligation to give is
+structurally enforced: non-givers are structurally dominated.  Even the
+most modest gift---a single shell necklace, a handshake, a word of
+greeting---outbids silence.
+
+% ----------------------------------------------------------------
+\section{Selection Properties}
+\label{sec:ch14-selection}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Single Bidder Wins (14.4)]
+\label{thm:single-bidder}
+With only one bid, the winner is determined by comparison with the fallback:
+\[
+  \operatorname{maxDepthIdea}(\text{fallback}, [a]) =
+  \begin{cases}
+    a & \text{if } \depth(a) \ge \depth(\text{fallback}), \\
+    \text{fallback} & \text{otherwise}.
+  \end{cases}
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Direct unfolding of the definition with an empty remainder.
+\end{proof}
+
+A monopoly on cultural production---single priesthood, state media---means
+the sole producer always ``wins'' the auction (assuming their depth exceeds
+the fallback tradition).  Competition is absent; interpretation is
+determined unilaterally.  This is the formal structure of theocracy:
+one bidder, guaranteed victory.
+
+\begin{theorem}[Fallback Survives Empty Auction (14.5)]
+\label{thm:empty-auction}
+With no bids, the fallback wins:
+$\operatorname{maxDepthIdea}(\text{fallback}, []) = \text{fallback}$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The base case of the recursion.
+\end{proof}
+
+When no one competes, the status quo persists.  The ``default culture''
+(tradition, orthodoxy) wins by forfeit when no challenger appears.  This
+is the formal mechanism of cultural conservatism: in the absence of
+competing bids, the existing cultural framework is preserved intact.
+
+\begin{theorem}[Bid Value is Non-Negative (14.6)]
+\label{thm:bid-nonneg}
+All bids have non-negative value: $\operatorname{bidValue}(a) \ge 0$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Depth is a natural number.
+\end{proof}
+
+There are no ``negative contributions'' in ideatic space.  Every idea has
+non-negative complexity.  Even the most trivial cultural offering---a
+monosyllable, a blank canvas---has at least zero depth.  The floor of
+cultural value is zero, never negative.  This is a modeling choice with
+significant anthropological implications: we assume that ideas cannot
+\emph{destroy} depth, only fail to add it.\footnote{One could extend the
+model with signed depth to capture ``anti-ideas'' or cultural
+destruction, but the current axiomatization does not permit this.  The
+non-negativity of depth is one of IDT's stronger structural commitments.}
+
+% ----------------------------------------------------------------
+\section{Composition and Bidding}
+\label{sec:ch14-composition}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Composed Bid Subadditivity (14.7)]
+\label{thm:composed-bid}
+The bid value of composing two ideas is at most the sum of their bid values:
+\[
+  \operatorname{bidValue}(a \compose b)
+  \;\le\;
+  \operatorname{bidValue}(a) + \operatorname{bidValue}(b).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By subadditivity of depth.
+\end{proof}
+
+Combining two gifts into one package does not create more prestige than
+giving them separately.  The potlatch chief who presents a composite gift
+of blankets and copper shields gains at most the sum of their separate
+values.  Subadditivity prevents ``prestige inflation'' through bundling.
+This is the formal refutation of the marketing claim that ``the whole is
+greater than the sum of its parts''---in ideatic auctions, the whole is
+at most equal to the sum.
+
+\begin{example}[The Contemporary Art Market]
+\label{ex:art-market}
+The contemporary art market, epitomized by the auction houses Sotheby's
+and Christie's, provides a nearly literal instantiation of the ideatic
+auction.  When a painting by, say, Jean-Michel Basquiat is offered at
+auction, each bidder places a monetary bid that functions as a proxy for
+their valuation of the work's cultural depth.  The winning bidder---the
+one who values the work most highly (or who has the most resources to
+signal status)---acquires the right to ``interpret'' the work: to display
+it, to incorporate it into their collection narrative, to claim the
+prestige associated with ownership.
+
+Theorem~\ref{thm:composed-bid} applies directly: the prestige of
+displaying two works together (a Basquiat alongside a Warhol) is at most
+the sum of their individual prestige values.  Bundling artworks does not
+create prestige beyond the additive bound.  Theorem~\ref{thm:void-bid}
+explains why the artist who produces nothing (the rumored but never
+delivered masterpiece) commands zero prestige in the market, no matter
+how great their reputation.  And Theorem~\ref{thm:winner-bound} captures
+a well-known phenomenon in art criticism: the depth of an artwork's
+reception depends as much on the audience's sophistication ($\depth(r)$)
+as on the work itself.  A Rothko color field painting that elicits
+profound meditative experience in a viewer steeped in Abstract
+Expressionism may produce only bewilderment in a viewer without that
+background.\footnote{For the sociology of the art market, see Don Thompson,
+\textit{The \$12 Million Stuffed Shark} (2008); and Olav Velthuis,
+\textit{Talking Prices: Symbolic Meanings of Prices on the Market for
+Contemporary Art} (2005).}
+\end{example}
+
+\begin{remark}[Connection to Mechanism Design]
+\label{rem:mechanism-design}
+The ideatic auction framework connects to the broader theory of
+\emph{mechanism design}---the ``reverse engineering'' of game theory, in
+which the designer chooses the rules of the game to achieve a desired
+outcome.  In our setting, the ``mechanism'' is the cultural institution
+that determines how bids are solicited, evaluated, and rewarded.  The
+potlatch is one mechanism; the academic peer review system is another;
+the art auction is a third.  Each implements a different set of rules
+for depth-based competition, but all are subject to the same structural
+constraints: void bids lose, composition is subadditive, and reception
+is bounded.
+
+The mechanism design perspective suggests a normative question: what
+cultural institutions \emph{should} we design?  If the goal is to maximize
+the depth of the winning bid (cultural excellence), then the incentive
+compatibility of the Vickrey auction suggests that institutions should
+encourage participants to reveal their full depth---to ``bid'' their
+best work without strategic withholding.  Academic peer review, at its
+best, approximates this ideal: researchers submit their deepest work for
+evaluation by experts.  But peer review also suffers from well-known
+failures (bias, conservatism, the Matthew effect) that distort the
+depth-based selection process.  The mechanism design framework provides
+tools for diagnosing and correcting these failures.\footnote{For mechanism
+design applied to scientific institutions, see Partha Dasgupta and
+Paul David, ``Toward a New Economics of Science,'' \textit{Research
+Policy} 23:5 (1994), pp.\ 487--521.}
+\end{remark}
+
+\begin{theorem}[Void Composition Preserves Bid, Right (14.8)]
+\label{thm:void-bid-right}
+$\operatorname{bidValue}(a \compose \void) = \operatorname{bidValue}(a)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$a \compose \void = a$ by the void axiom.
+\end{proof}
+
+\begin{theorem}[Void Composition Preserves Bid, Left (14.9)]
+\label{thm:void-bid-left}
+$\operatorname{bidValue}(\void \compose a) = \operatorname{bidValue}(a)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\void \compose a = a$ by the void axiom.
+\end{proof}
+
+Adding ``nothing'' to a gift does not increase its prestige.  Padding a
+potlatch offering with empty gestures is structurally transparent---the
+audience sees through it.  Prefacing a gift with silence (the dramatic pause
+before the big reveal) adds nothing to the gift's structural depth.
+Ceremony may have psychological effects, but it is orthogonal to substance
+in the depth metric.
+
+\begin{example}[Medieval Relic Trade as Prestige Auction]
+\label{ex:relics}
+The medieval European trade in saints' relics provides a vivid historical
+example of the ideatic auction.  From the early Middle Ages through the
+Reformation, relics---bones, clothing, instruments of martyrdom, even
+phials of saints' blood---were objects of intense competition among
+churches, monasteries, and secular rulers.  A relic's ``bid value'' was
+its depth: the proximity of the relic to the original saint, the
+reliability of its provenance chain (\textit{translatio}), the number
+and quality of miracles attributed to it, and the liturgical traditions
+that had accumulated around it.
+
+The most prestigious relics---the Crown of Thorns acquired by Louis~IX
+for the Sainte-Chapelle, the relics of St.~James at Compostela, the
+Holy Blood of Bruges---were ``deep'' in precisely our technical sense:
+they were embedded in rich networks of narrative, ritual, and institutional
+memory.  Theorem~\ref{thm:void-bid} explains why a church without relics
+had zero prestige in the medieval devotional economy: it had bid void.
+Theorem~\ref{thm:composed-bid} explains why combining multiple minor
+relics (a practice known as \textit{relic bundling}) produced prestige at
+most equal to the sum of the individual relics' values---never more.
+
+The relic trade also illustrates Theorem~\ref{thm:winner-bound}: the
+prestige impact of even the most extraordinary relic was bounded by the
+receiving community's capacity to appreciate it.  A relic of the True
+Cross placed in a remote village chapel produced less cultural impact
+than the same relic placed in a great cathedral with an educated clergy
+capable of composing elaborate liturgical celebrations around it.  The
+relic's depth was constant, but $\depth(r)$---the receiver's depth---varied
+enormously.\footnote{On the relic trade, see Patrick Geary, \textit{Furta
+Sacra} (1978); and Charles Freeman, \textit{Holy Bones, Holy Dust: How
+Relics Shaped the History of Medieval Europe} (2011).}
+\end{example}
+
+% ----------------------------------------------------------------
+\section{Interpretation of Winning Bids}
+\label{sec:ch14-interp}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Winner's Interpretation Depth Bound (14.10)]
+\label{thm:winner-bound}
+The depth of the auction interpretation is bounded:
+\[
+  \depth(\operatorname{auctionInterpret}(\text{bids}, \text{fallback}, r))
+  \;\le\;
+  \depth(r) + \depth(\operatorname{maxDepthIdea}(\text{fallback}, \text{bids})).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By subadditivity applied to $r \compose \operatorname{maxDepthIdea}(\cdots)$.
+\end{proof}
+
+The cultural impact of the winning bid is bounded by the receiver's
+background plus the bid's depth.  Even the most extravagant potlatch is
+limited by the audience's capacity to appreciate it.  Bourdieu's insight
+that cultural capital constrains reception is formalized: a peasant
+watching a court ballet and a courtier watching the same performance
+produce interpretations of vastly different depth, not because the ballet
+differs but because $\depth(r)$ differs.\footnote{Bourdieu's analysis of
+aesthetic judgment in \textit{La Distinction} shows that reception of
+cultural goods is stratified by the receiver's accumulated cultural
+capital---our $\depth(r)$.}
+
+\begin{example}[Academic Citation as Depth-Based Bidding]
+\label{ex:citation}
+The academic publication system provides a modern instance of depth-based
+auction dynamics.  Each published paper is a ``bid'' in the marketplace
+of ideas, with its depth determined by the sophistication of its
+arguments, the breadth of its evidence, and the novelty of its
+contributions.  The ``auction'' takes place through peer review (the
+selection mechanism) and citation (the post-auction valuation).
+
+A paper's bid value ($\operatorname{bidValue}(a) = \depth(a)$) reflects
+its intellectual complexity.  Papers with greater depth tend to win the
+``auction'' of attention: they are published in more prestigious venues,
+cited more frequently, and exert greater influence on subsequent research.
+Theorem~\ref{thm:void-bid} captures a basic truth of academic life: a
+researcher who publishes nothing has zero academic prestige.
+Theorem~\ref{thm:composed-bid} applies to collaborative papers: the
+depth of a co-authored paper is at most the sum of the co-authors'
+individual depths, though it may be less due to coordination costs and
+redundancy.
+
+Theorem~\ref{thm:winner-bound} is particularly illuminating: the impact
+of a paper on a reader is bounded by the reader's own depth.  A
+groundbreaking paper in algebraic geometry will have enormous impact on a
+reader with deep mathematical background ($\depth(r)$ large) but minimal
+impact on a reader without the prerequisites ($\depth(r)$ small).  This
+is the formal basis of the ``prerequisites problem'' in education: students
+cannot absorb material that exceeds their background depth, regardless of
+the material's intrinsic quality.\footnote{On the sociology of academic
+citation, see Robert K.\ Merton, ``The Matthew Effect in Science,''
+\textit{Science} 159:3810 (1968), pp.\ 56--63; and Pierre Bourdieu,
+\textit{Homo Academicus} (1984).}
+\end{example}
+
+\begin{theorem}[Empty Auction Interpretation (14.11)]
+\label{thm:empty-interp}
+With no bids, the interpretation is the receiver composed with the fallback:
+$\operatorname{auctionInterpret}([], \text{fallback}, r) = r \compose \text{fallback}$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\operatorname{maxDepthIdea}(\text{fallback}, []) = \text{fallback}$.
+\end{proof}
+
+When no external cultural force competes, the receiver interprets only
+through their default framework.  Cultural isolation means self-referential
+interpretation: the audience, receiving no new bids, composes its background
+with tradition alone.
+
+\begin{theorem}[Void Receiver Gets Raw Winner (14.12)]
+\label{thm:void-receiver}
+If the receiver's background is void, the interpretation is just the winning
+bid:
+$\operatorname{auctionInterpret}(\text{bids}, \text{fallback}, \void) =
+\operatorname{maxDepthIdea}(\text{fallback}, \text{bids})$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\void \compose w = w$ by the void axiom.
+\end{proof}
+
+The ``blank slate'' receiver---the newborn, the cultural outsider---simply
+absorbs the winning idea without transformation.  Cultural naivety means
+unmediated reception.  This is the anthropological equivalent of ``going
+native'': the observer without pre-existing cultural categories receives the
+dominant cultural signal raw, unfiltered by prior interpretive
+frameworks.\footnote{The trope of the ethnographer ``going native'' (from
+Malinowski onward) captures precisely this: the field worker who sheds their
+own cultural background ($r \to \void$) receives the host culture's signals
+without the mediation of home categories.}
+
+\begin{example}[Social Media ``Likes'' as Micro-Auctions]
+\label{ex:social-media}
+Social media platforms implement a continuous, decentralized version of
+the ideatic auction.  Each post is a bid for attention, and the
+platform's algorithmic feed serves as the auctioneer, selecting the
+``deepest'' (most engaging) content for display.  The ``likes,''
+``shares,'' and ``retweets'' that follow are a form of post-auction
+valuation: the audience registers its interpretation of the winning bids.
+
+The depth-as-prestige identification
+(Definition~\ref{def:bid-value}) maps directly onto the platform's
+engagement metrics: content with greater depth (complexity, novelty,
+emotional resonance) tends to attract more engagement, which the
+platform interprets as higher value.  Theorem~\ref{thm:void-bid}
+explains why users who post nothing---``lurkers''---accumulate zero social
+media prestige.  Theorem~\ref{thm:void-loses} explains why any post, no
+matter how trivial, outperforms silence in the attention economy.
+
+However, the social media auction also reveals tensions in our framework.
+Platform algorithms optimize for \emph{engagement} rather than
+\emph{depth}, and the two do not always coincide: shallow, emotionally
+provocative content may generate more engagement than deep, nuanced
+analysis.  This suggests that real-world auctions may use metrics other
+than depth for bid evaluation---a limitation of the pure depth-as-prestige
+identification that our formalization makes explicit.\footnote{For the
+attention economy, see Tim Wu, \textit{The Attention Merchants} (2016);
+and Zeynep Tufekci, ``YouTube, the Great Radicalizer,'' \textit{The New
+York Times} (March 10, 2018).}
+\end{example}
+
+\begin{remark}[The Limits of Depth-as-Prestige Identification]
+\label{rem:depth-prestige}
+Definition~\ref{def:bid-value} identifies bid value with depth:
+$\operatorname{bidValue}(a) = \depth(a)$.  This identification is the
+central modeling choice of this chapter, and it deserves scrutiny.  In
+many cultural contexts, the identification is apt: prestige accrues to
+complexity, sophistication, and elaboration.  The Kwakiutl potlatch,
+the medieval cathedral, the academic monograph---all derive their
+prestige from depth.
+
+But there are important counterexamples.  Zen Buddhism values simplicity
+over complexity; the haiku achieves prestige through compression rather
+than elaboration; minimalist art (Judd, Andre, Flavin) stakes its claim
+on the refusal of depth.  In these contexts, prestige may be inversely
+related to depth, or orthogonal to it.  Our formalization captures only
+the ``maximalist'' regime in which deeper is more prestigious.  A more
+general framework might parameterize the bid-value function, allowing
+$\operatorname{bidValue}(a) = f(\depth(a))$ for some monotone (or even
+non-monotone) function~$f$, thereby accommodating both the potlatch
+(where $f$ is increasing) and the haiku (where $f$ might be decreasing
+above a threshold).
+\end{remark}
+
+% ----------------------------------------------------------------
+\section{Structural Auction Theorems}
+\label{sec:ch14-structural}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Iterated Bid Depth Bound (14.13)]
+\label{thm:iterated-bid}
+Repeating a bid $n$ times via composition yields depth at most
+$n \cdot \operatorname{bidValue}(a)$:
+\[
+  \operatorname{bidValue}(\compN{a}{n}) \;\le\; n \cdot \operatorname{bidValue}(a).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the iterated composition depth bound.
+\end{proof}
+
+Repetitive gift-giving---annual potlatch cycles, recurring tribute---has
+bounded cumulative prestige.  You cannot achieve infinite status through mere
+repetition.  The subadditivity of depth imposes diminishing returns:
+the $n$-th iteration of a potlatch adds at most $\depth(a)$, and the
+total is bounded by $n \cdot \depth(a)$.
+
+\begin{theorem}[Atomic Bid Bound (14.14)]
+\label{thm:atomic-bid}
+Atomic ideas have bid value at most one: if $a$ is atomic, then
+$\operatorname{bidValue}(a) \le 1$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the depth bound on atomic ideas.
+\end{proof}
+
+The simplest, most elemental cultural offerings---a single word, a basic
+gesture, a minimal ritual act---have minimal prestige value.  Prestige
+comes from complexity: the elaborate ceremony outranks the simple nod.
+This formalizes the anthropological observation that prestige goods are
+invariably \emph{complex} goods: the jade celt, the knotted quipu, the
+illuminated manuscript---all derive their prestige from depth, not from
+mere existence.
+
+\begin{theorem}[Resonant Bids Produce Resonant Interpretations (14.15)]
+\label{thm:resonant-bids}
+If two bids resonate, $b_1 \res b_2$, any common receiver produces resonant
+interpretations:
+\[
+  b_1 \res b_2
+  \;\Longrightarrow\;
+  (r \compose b_1) \res (r \compose b_2).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By left-composition preservation of resonance.
+\end{proof}
+
+Competing ritual systems that resonate---e.g., Catholic and Orthodox
+Christianity---produce resonant experiences in the same audience.  The laity
+perceives structural similarity even across competing institutions.  This
+is the formal basis of religious tolerance: if the competing bids resonate,
+the audience's interpretations will also resonate, reducing the perceived
+distance between rival systems.
+
+\begin{theorem}[Resonant Receivers Agree on Winner (14.16)]
+\label{thm:resonant-receivers}
+If two receivers resonate, $r_1 \res r_2$, and evaluate the same bid, their
+interpretations resonate:
+\[
+  r_1 \res r_2
+  \;\Longrightarrow\;
+  (r_1 \compose b) \res (r_2 \compose b).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By right-composition preservation of resonance.
+\end{proof}
+
+Members of the same culture watching the same potlatch produce resonant
+evaluations.  Cultural consensus on prestige is a structural consequence of
+shared background.  This is why prestige hierarchies are culture-specific:
+a Kwakiutl potlatch and a Parisian art auction assign prestige to different
+bids, but within each culture, members with resonant backgrounds agree on
+what is prestigious.
+
+\begin{theorem}[Bid Associativity (14.17)]
+\label{thm:bid-assoc}
+Composing bids is associative:
+$(a \compose b) \compose c = a \compose (b \compose c)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By associativity of the monoid.
+\end{proof}
+
+In a multi-stage potlatch (gifts given over successive days), the grouping of
+days does not affect the total composition.  The ``grand total'' of a
+festival is invariant under scheduling---structure trumps sequence.  Whether
+the chief gives blankets on Monday and copper shields on Tuesday, or reverses
+the order, the total compositional depth is the same (though the individual
+days' compositions may differ).
+
+\begin{remark}[Dynamic Auctions and Repeated Games]
+\label{rem:dynamic-auctions}
+The theorems in this chapter analyze \emph{static} auctions---single-round
+competitions in which bids are evaluated once.  But many cultural
+competitions are \emph{dynamic}: they unfold over time, with bids placed
+in successive rounds and outcomes depending on the history of previous
+bids.  The annual potlatch cycle, the multi-year academic tenure process,
+the lifelong artistic career---all are repeated auctions in which current
+bids are evaluated against the background of past performance.
+
+In a repeated auction, Theorem~\ref{thm:iterated-bid} provides the
+fundamental constraint: repeated bidding yields depth at most
+$n \cdot \depth(a)$, where $n$ is the number of rounds and $a$ is the
+bid.  This linear bound on cumulative prestige has important implications.
+It means that an artist who produces works of constant depth~$d$ in each
+of $n$ periods accumulates prestige at most $nd$---a linear growth rate
+that precludes the exponential prestige accumulation sometimes imagined
+in popular accounts of artistic genius.
+
+The theory of repeated games (Aumann, 1959; Friedman, 1971) shows that
+repeated interaction can sustain cooperative outcomes not possible in
+one-shot games.  In the ideatic setting, this suggests that repeated
+cultural competition can sustain \emph{norms} of depth: participants
+bid deeply not merely to win the current round but to maintain a reputation
+for depth that benefits them in future rounds.  The potlatch chief who
+underbids in one year risks being excluded from future exchanges---a
+dynamic incentive not captured by our static analysis but consistent with
+its structural constraints.\footnote{For repeated game theory, see Drew
+Fudenberg and Jean Tirole, \textit{Game Theory} (1991), ch.~5; and for
+applications to cultural institutions, see Avner Greif, \textit{Institutions
+and the Path to the Modern Economy} (2006).}
+\end{remark}
+
+\begin{theorem}[Depth-Zero Bid Composure (14.18)]
+\label{thm:zero-depth-comp}
+If both bidders have zero depth, their composition has zero depth:
+\[
+  \depth(a) = 0 \;\wedge\; \depth(b) = 0
+  \;\Longrightarrow\;
+  \depth(a \compose b) = 0.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By subadditivity, $\depth(a \compose b) \le \depth(a) + \depth(b) = 0$,
+and depth is non-negative, so $\depth(a \compose b) = 0$.
+\end{proof}
+
+Two culturally empty offerings combined produce nothing.  ``Nothing plus
+nothing is nothing''---the formal futility of combining shallow gestures.
+Two empty speeches, two blank canvases, two silent prayers: their
+composition is as void as each alone.  The potlatch chief who bundles
+two worthless gifts has still bid zero.
+
+\begin{lstlisting}[caption={Depth-zero composition in Lean~4}]
+theorem zero_depth_composition {a b : I}
+    (ha : depth a = 0) (hb : depth b = 0) :
+    depth (compose a b) = 0 := by
+  have h := depth_compose_le a b
+  omega
+\end{lstlisting}
+
+% ----------------------------------------------------------------
+\section{From Potlatch to Platform: Auctions Across Scales}
+\label{sec:ch14-across-scales}
+% ----------------------------------------------------------------
+
+The ideatic auction is a structural pattern that recurs across an
+extraordinary range of human institutions, from the smallest face-to-face
+community to the largest digital platform.  In this section, we trace the
+auction pattern across three scales---local, institutional, and
+global---showing how the theorems of this chapter apply at each level.
+
+\subsection{Local Auctions: Face-to-Face Prestige Competition}
+
+At the smallest scale, ideatic auctions occur in face-to-face interactions
+where individuals compete for interpretive priority through displays of
+cultural depth.  The dinner-party conversation, the academic seminar, the
+religious disputation---all are local auctions in which participants bid
+their ideas and the ``winner'' (the deepest contribution) sets the terms
+of subsequent discussion.
+
+Erving Goffman's interaction ritual theory (1967) provides the
+micro-sociological grounding for local auctions.\footnote{Erving Goffman,
+\textit{Interaction Ritual} (1967); and Randall Collins, \textit{Interaction
+Ritual Chains} (2004), which extends Goffman's framework to explain the
+accumulation of ``emotional energy'' through successful interaction
+rituals.}  In Goffman's framework, each participant in a social encounter
+presents a ``face''---a claimed social value---that is evaluated by others.
+The participant whose face is most successfully maintained wins the
+interaction's ``pot'' of emotional energy and social approval.  In our
+terms, each participant's ``face'' is their bid, and the depth of the
+bid determines its success.
+
+Theorem~\ref{thm:single-bidder} captures the dynamics of monopolized
+conversation: when one participant dominates (a single bidder), they
+win the auction by default, provided their depth exceeds the fallback
+(the conventional expectation).  Theorem~\ref{thm:void-bid} explains
+why silence (void bidding) is socially costly in most interaction
+contexts: the participant who says nothing forfeits the competition and
+risks ``losing face'' in Goffman's sense.
+
+\subsection{Institutional Auctions: Organized Cultural Competition}
+
+At the institutional scale, auctions are formalized through rules,
+procedures, and evaluation criteria.  The academic peer review system,
+the art exhibition jury, the literary prize committee, the religious
+ordination process---all are institutional auctions in which bids
+(papers, artworks, manuscripts, candidates) are evaluated by designated
+judges according to established criteria.
+
+Institutional auctions differ from local auctions in several respects
+that our framework captures.  First, the evaluation is \emph{delegated}:
+the ``receiver'' in Theorem~\ref{thm:winner-bound} is not the general
+public but a specialized panel with (typically) high $\depth(r)$.  This
+delegation increases the interpretive depth of the evaluation but also
+introduces potential biases (the panel's particular composition shapes
+which bids are recognized as ``deep'').
+
+Second, institutional auctions are often \emph{iterated}: the Nobel
+Prize is awarded annually, tenure reviews occur on a fixed schedule,
+art exhibitions recur seasonally.  Theorem~\ref{thm:iterated-bid}
+constrains the cumulative prestige of iterated bidding, while the
+repeated-game dynamics discussed in Remark~\ref{rem:dynamic-auctions}
+explain why institutional participants invest in reputation-building
+over time.
+
+Third, institutional auctions impose \emph{format constraints}: papers
+must follow certain conventions, artworks must fit exhibition spaces,
+candidates must meet eligibility criteria.  These constraints function
+as filters on the space of permissible bids, potentially excluding
+high-depth contributions that do not conform to institutional norms.
+The tension between format constraints and depth maximization is a
+perennial source of institutional controversy---from the Salon des
+Refusés (1863) to the replication crisis in psychology.
+
+\subsection{Global Auctions: Platforms and Markets}
+
+At the global scale, digital platforms have created auction mechanisms
+of unprecedented scope and speed.  Google's search algorithm ranks
+web pages by a depth-like metric (PageRank, which measures the
+structural centrality of a page in the link graph).  Amazon's
+recommendation system selects products through a form of collaborative
+filtering that implicitly auctions items for user attention.  TikTok's
+algorithmic feed is a continuous auction in which short video ``bids''
+compete for screen time based on engagement metrics that proxy for depth.
+
+These global auctions share the structural properties formalized in our
+theorems.  Void content receives zero engagement
+(Theorem~\ref{thm:void-bid}).  Deeper content tends to outperform
+shallower content (Theorem~\ref{thm:deeper-void}).  The impact of
+content on any given user is bounded by that user's background
+(Theorem~\ref{thm:winner-bound}).  And the composition of content
+(playlists, reading lists, curated feeds) is subadditive
+(Theorem~\ref{thm:composed-bid}).
+
+The global auction scale also introduces phenomena that push against our
+framework's assumptions.  Network effects can create ``viral'' content
+whose apparent depth is inflated by social contagion rather than
+intrinsic complexity.  Algorithmic curation may optimize for engagement
+rather than depth, creating incentives for ``clickbait''---content
+designed to exploit cognitive biases rather than demonstrate genuine
+cultural depth.  These phenomena suggest extensions of the framework
+in which the bid-value function incorporates social and algorithmic
+amplification factors beyond the intrinsic depth of the idea itself.
+
+\subsection{Cross-Scale Connections}
+
+The three scales of auction---local, institutional, and global---are not
+independent but mutually reinforcing.  An academic's success in local
+auctions (seminars, conferences) builds the reputation that enables
+success in institutional auctions (publications, grants, prizes), which
+in turn amplifies their presence in global auctions (media coverage,
+public intellectual status).  This cross-scale amplification is consistent
+with our framework: each level of auction is subject to the same
+structural constraints, and success at one level provides the depth
+(accumulated cultural capital) that enables competitive bidding at the
+next level.
+
+The cross-scale perspective also illuminates the historical transition
+from potlatch to platform.  The potlatch was a local auction embedded
+in a specific community; its prestige effects were geographically
+bounded.  The modern art market is an institutional auction with global
+reach; its prestige effects span continents.  The attention economy of
+social media is a global auction operating in real time; its prestige
+effects are instantaneous and worldwide.  At each stage, the auction's
+scope has expanded, but the structural constraints---subadditivity,
+void loss, bounded reception---remain invariant.  The potlatch chief
+and the TikTok influencer are subject to the same ideatic algebra.
+
+% ----------------------------------------------------------------
+\section{Conclusion}
+\label{sec:ch14-conclusion}
+% ----------------------------------------------------------------
+
+The ideatic auction formalizes a pervasive pattern in human cultural
+life: competition for interpretive priority through depth.  The
+structural results of this chapter---void always loses
+(Theorem~\ref{thm:void-bid}), composition is subadditive
+(Theorem~\ref{thm:composed-bid}), reception is bounded by audience
+capacity (Theorem~\ref{thm:winner-bound}), and zero-depth bids compose to
+zero (Theorem~\ref{thm:zero-depth-comp})---impose hard constraints on
+the ritual economy.
+
+These constraints connect to three major anthropological traditions.
+Mauss's gift theory is formalized through the obligation to bid non-void
+(Theorem~\ref{thm:void-bid}); Veblen's conspicuous consumption is
+captured by the depth-as-prestige identification
+(Definition~\ref{def:bid-value}); and Bourdieu's symbolic capital is
+reflected in the receiver-bounded interpretation
+(Theorem~\ref{thm:winner-bound}).
+
+In the final chapter of this sequence, we turn from competitive bidding
+to \emph{curation}: the receiver's active management of their own
+repertoire, connecting to museum theory, education policy, and the
+political economy of knowledge.

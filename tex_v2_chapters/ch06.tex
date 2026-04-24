@@ -1,0 +1,411 @@
+% ================================================================
+% CHAPTER 6: PAYOFFS AS INNER PRODUCTS
+% ================================================================
+\chapter{Payoffs as Inner Products}
+\label{ch:payoffs}
+
+\epigraph{In the beginning was the Word, and the Word was with God, and the
+Word was God.}{John 1:1}
+
+\section{The Meaning Game}
+
+We now make a fundamental shift in perspective. In Part~I, ideas were objects
+of contemplation: we studied their geometry, their distances, their resonances.
+In Part~II, ideas become \emph{strategic instruments}: they are signals sent by
+agents who seek to influence the beliefs and actions of others. The Hilbert
+space structure of Part~I provides the geometry; game theory provides the
+strategic logic.
+
+The basic setup is simple. There are two agents --- a \textbf{sender} and a
+\textbf{receiver} --- each holding an idea. The sender transmits a signal, and
+the receiver interprets the signal by composing it with their own prior belief.
+The payoff to each agent is the resonance between their own idea and the
+resulting interpretation.
+
+\begin{definition}[The Meaning Game]
+\label{def:meaning-game}
+A \textbf{meaning game} consists of:
+\begin{enumerate}
+\item A Hilbert ideatic space $(\IS, \compose, \void, \Hspace, \varphi)$;
+\item A \textbf{sender} with idea $s \in \IS$ (the \emph{signal});
+\item A \textbf{receiver} with idea $r \in \IS$ (the \emph{prior belief});
+\item The \textbf{interpretation}: the receiver's updated belief after receiving
+the signal is $r' = r \compose s$ (the composition of their prior with the
+signal);
+\item The \textbf{sender payoff}: $\payoff{S}{s, r} := \rs{s}{r \compose s}$;
+\item The \textbf{receiver payoff}: $\payoff{R}{s, r} := \rs{r}{r \compose s}$.
+\end{enumerate}
+\end{definition}
+
+The payoff structure is motivated by the idea that each agent benefits from
+the interpretation (the updated belief $r \compose s$) to the extent that it
+resonates with their own idea. The sender wants the interpretation to resonate
+with the signal they sent; the receiver wants the interpretation to resonate
+with their prior belief.
+
+\begin{remark}[Why These Payoffs?]
+\label{rmk:payoff-motivation}
+The choice of payoff $\rs{s}{r \compose s}$ rather than, say,
+$\rs{s}{r}$ (direct resonance between signal and prior) deserves comment.
+The direct resonance $\rs{s}{r}$ measures pre-existing agreement between
+sender and receiver, which is not under either agent's control. The payoff
+$\rs{s}{r \compose s}$ measures how well the \emph{interpreted} message
+resonates with the sender's intention --- and this \emph{does} depend on the
+signal choice. It is the resonance between what was meant and what was
+understood.
+\end{remark}
+
+
+\section{The Payoff Decomposition}
+
+The key result of this chapter decomposes each agent's payoff into two terms
+with clear interpretations.
+
+\begin{theorem}[Sender Payoff Decomposition]
+\label{thm:sender-payoff}
+The sender's payoff decomposes as:
+\[
+  \payoff{S}{s, r} = \rs{s}{s} + \rs{s}{r}.
+\]
+That is: sender payoff $=$ self-resonance $+$ cross-resonance.
+\end{theorem}
+
+\begin{proof}
+\begin{align*}
+  \payoff{S}{s, r}
+  &= \rs{s}{r \compose s} \\
+  &= \ip{\embed{s}}{\embed{r \compose s}} \\
+  &= \ip{\embed{s}}{\embed{r} + \embed{s}} \\
+  &= \ip{\embed{s}}{\embed{r}} + \ip{\embed{s}}{\embed{s}} \\
+  &= \rs{s}{r} + \rs{s}{s}.
+\end{align*}
+
+In Lean~4:
+\begin{lstlisting}
+theorem sender_payoff (s r : Idea) :
+    rs s (r ∘ s) = rs s s + rs s r := by
+  simp [rs, embed_compose, inner_add_right]
+\end{lstlisting}
+\end{proof}
+
+\begin{theorem}[Receiver Payoff Decomposition]
+\label{thm:receiver-payoff}
+The receiver's payoff decomposes as:
+\[
+  \payoff{R}{s, r} = \rs{r}{r} + \rs{r}{s}.
+\]
+That is: receiver payoff $=$ self-resonance $+$ cross-resonance.
+\end{theorem}
+
+\begin{proof}
+\begin{align*}
+  \payoff{R}{s, r}
+  &= \rs{r}{r \compose s} \\
+  &= \ip{\embed{r}}{\embed{r} + \embed{s}} \\
+  &= \ip{\embed{r}}{\embed{r}} + \ip{\embed{r}}{\embed{s}} \\
+  &= \rs{r}{r} + \rs{r}{s}.
+\end{align*}
+\end{proof}
+
+\begin{interpretation}[The Anatomy of Communicative Success]
+\label{interp:payoff}
+The payoff decomposition is one of the most striking results in IDT~v2. It
+reveals that each agent's payoff from communication has \emph{exactly two
+components}:
+
+\begin{enumerate}
+\item \textbf{Self-resonance} ($\rs{s}{s}$ or $\rs{r}{r}$): your own conviction
+--- the weight you bring to the interaction. This is independent of the other
+agent; it is your ``baseline'' payoff from holding your idea.
+
+\item \textbf{Cross-resonance} ($\rs{s}{r}$ or $\rs{r}{s}$): the degree of
+pre-existing agreement between sender and receiver. This is symmetric by
+Theorem~\ref{thm:resonance-symmetry}: the cross-resonance benefit is the
+\emph{same} for both agents.
+\end{enumerate}
+
+The immediate consequence is a \textbf{fundamental insight about communication}:
+\emph{your payoff from communication equals your own conviction plus how much
+the other person already agrees with you.} Communication benefits both parties
+equally from the ``agreement'' component ($\rs{s}{r}$ appears in both payoffs),
+and additionally rewards each party in proportion to their own conviction.
+
+This has profound implications for the dynamics of discourse:
+
+\paragraph{Echo chambers.} In an echo chamber, $\rs{s}{r} \gg 0$: sender and
+receiver already agree strongly. Both get large payoffs, reinforcing the
+behavior of communicating within the echo chamber. The payoff formula explains
+why echo chambers are so psychologically rewarding: not only do you feel good
+about your own ideas ($\rs{s}{s}$), but the other person's agreement provides
+an \emph{additional} boost ($\rs{s}{r}$).
+
+\paragraph{Adversarial communication.} When $\rs{s}{r} < 0$, the
+cross-resonance term is negative. The sender's payoff can still be positive
+(if $\rs{s}{s} > |\rs{s}{r}|$), but it is reduced by the receiver's
+disagreement. This explains why arguing with hostile audiences is costly even
+when your own conviction is high: the negative cross-resonance erodes your
+payoff.
+
+\paragraph{Preaching to the void.} When $r = \void$ (the receiver has no prior
+belief), $\rs{s}{\void} = 0$ and the sender's payoff reduces to $\rs{s}{s}$
+--- pure self-resonance. You benefit only from your own conviction; there is
+no agreement to amplify it. This is the mathematical model of ``talking to
+oneself'' or ``shouting into the void.''
+\end{interpretation}
+
+\begin{theorem}[Total Payoff]
+\label{thm:total-payoff}
+The \textbf{total payoff} of the meaning game is:
+\[
+  \payoff{S}{} + \payoff{R}{} = \rs{s}{s} + \rs{r}{r} + 2\rs{s}{r}
+  = \rs{s \compose r}{s \compose r} = w(s \compose r)^2.
+\]
+\end{theorem}
+
+\begin{proof}
+Adding the two payoff decompositions:
+\begin{align*}
+  \payoff{S}{} + \payoff{R}{}
+  &= (\rs{s}{s} + \rs{s}{r}) + (\rs{r}{r} + \rs{r}{s}) \\
+  &= \rs{s}{s} + \rs{r}{r} + 2\rs{s}{r} \\
+  &= w(s \compose r)^2,
+\end{align*}
+using the norm expansion formula (Theorem~\ref{thm:norm-expansion}).
+
+In Lean~4:
+\begin{lstlisting}
+theorem total_payoff (s r : Idea) :
+    rs s (r ∘ s) + rs r (r ∘ s) = rs (s ∘ r) (s ∘ r) := by
+  simp [rs, embed_compose, inner_add_left, inner_add_right]
+  ring
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[Communication as Norm Squared]
+\label{interp:total}
+The total payoff of the meaning game equals the \emph{squared norm} of the
+composite idea $s \compose r$. This is a remarkable result: it says that the
+total value of a communicative exchange equals the weight of the shared
+understanding that results from it.
+
+When the shared understanding is weighty ($w(s \compose r)$ is large), both
+parties benefit. When it is light ($w(s \compose r)$ is small), neither benefits
+much. And when the composition cancels ($s$ and $r$ are perfectly opposed,
+yielding $w(s \compose r) = 0$), the total payoff is zero: the exchange
+produces no value for either party.
+
+This connects to Habermas's theory of \emph{communicative action}: successful
+communication creates a shared ``lifeworld'' (Lebenswelt) of mutual
+understanding. In IDT~v2, this lifeworld is the composite idea $s \compose r$,
+and its weight $w(s \compose r)^2$ is the total value of the communicative
+exchange. Habermas's normative ideal of ``undistorted communication'' would
+correspond, in this model, to a game where both parties' signals are authentic
+(they signal their true ideas) and the resulting composite has maximum weight.
+\end{interpretation}
+
+
+\section{Payoff Comparison: Sender vs.\ Receiver}
+
+Who benefits more from communication --- the sender or the receiver?
+
+\begin{proposition}[Payoff Difference]
+\label{prop:payoff-diff}
+\[
+  \payoff{S}{} - \payoff{R}{} = \rs{s}{s} - \rs{r}{r} = w(s)^2 - w(r)^2.
+\]
+The sender benefits more if and only if $w(s) > w(r)$: the agent with the
+weightier idea gets the higher payoff.
+\end{proposition}
+
+\begin{proof}
+$\payoff{S}{} - \payoff{R}{} = (\rs{s}{s} + \rs{s}{r}) - (\rs{r}{r} + \rs{r}{s})
+= \rs{s}{s} - \rs{r}{r}$, using $\rs{s}{r} = \rs{r}{s}$.
+\end{proof}
+
+\begin{interpretation}[The Advantage of Conviction]
+\label{interp:conviction-advantage}
+Proposition~\ref{prop:payoff-diff} reveals a stark truth: \emph{in the meaning
+game, conviction is power}. The agent with the weightier idea (higher
+self-resonance) always gets the higher payoff, regardless of the degree of
+pre-existing agreement. The cross-resonance term $\rs{s}{r}$ is symmetric
+and benefits both agents equally; only the self-resonance term differs, and it
+favors the more convicted agent.
+
+This formalizes a phenomenon well-known in rhetoric and politics: confident,
+forceful communication (high $w(s)$) is rewarded disproportionately, independent
+of its truth or wisdom. A demagogue with enormous conviction ($w(s) \gg w(r)$)
+always ``wins'' the meaning game against a moderate with less conviction, even if
+the moderate's ideas have more merit in some external sense. The Hilbert space
+model captures the structural advantage of conviction without endorsing it
+normatively.
+
+In Bourdieu's terminology, self-resonance is a form of \emph{symbolic capital}:
+the capacity to make one's ideas count in the cultural field. Agents with high
+symbolic capital (high norm) benefit more from every interaction, creating a
+self-reinforcing dynamic: those who start with more symbolic capital
+accumulate more payoff, which (in a dynamic model) may translate into even
+more capital. The ``rich get richer'' dynamic in cultural production has a
+geometric foundation in the Hilbert space model.
+\end{interpretation}
+
+
+\section{Strategic Signal Choice}
+
+We now consider the sender's strategic problem: given the receiver's prior $r$,
+what signal $s$ maximizes the sender's payoff?
+
+\begin{theorem}[Optimal Signal]
+\label{thm:optimal-signal}
+If the sender can choose any signal $s$ with $\nrm{\embed{s}} \leq M$ (a
+``budget constraint'' on signal weight), the optimal signal is:
+\[
+  \embed{s^*} = M \cdot \frac{\embed{r}}{\nrm{\embed{r}}} + M \cdot \hat{e},
+\]
+where $\hat{e}$ is any unit vector. In particular, any signal pointing in the
+direction of $\embed{r}$ achieves at least as much payoff as a signal of the same
+weight pointing in any other direction.
+
+More precisely, for fixed $\nrm{\embed{s}} = M$, the sender's payoff
+$\payoff{S}{} = M^2 + M \cdot \nrm{\embed{r}} \cdot \cos\alpha$, where
+$\alpha$ is the angle between $\embed{s}$ and $\embed{r}$. This is maximized
+when $\alpha = 0$ (signal parallel to receiver's prior):
+\[
+  \payoff{S}{\max} = M^2 + M \cdot \nrm{\embed{r}}.
+\]
+\end{theorem}
+
+\begin{proof}
+The sender's payoff is $\payoff{S}{} = \rs{s}{s} + \rs{s}{r} = M^2 +
+\ip{\embed{s}}{\embed{r}}$. For fixed $\nrm{\embed{s}} = M$, the term
+$\ip{\embed{s}}{\embed{r}}$ is maximized when $\embed{s}$ is parallel to
+$\embed{r}$ (by Cauchy--Schwarz), yielding $\ip{\embed{s}}{\embed{r}} = M \cdot
+\nrm{\embed{r}}$. The maximum payoff is thus $M^2 + M \cdot \nrm{\embed{r}}$.
+
+In Lean~4:
+\begin{lstlisting}
+theorem optimal_signal_payoff (hM : ‖φ s‖ = M)
+    (hr : φ r ≠ 0) :
+    rs s s + rs s r ≤ M ^ 2 + M * ‖φ r‖ := by
+  simp [rs]
+  have h1 : inner (φ s) (φ s) = M ^ 2 := by rw [real_inner_self_eq_norm_sq, hM]
+  have h2 : inner (φ s) (φ r) ≤ M * ‖φ r‖ := by
+    calc inner (φ s) (φ r) ≤ ‖φ s‖ * ‖φ r‖ := real_inner_le_norm _ _
+    _ = M * ‖φ r‖ := by rw [hM]
+  linarith
+\end{lstlisting}
+\end{proof}
+
+\begin{interpretation}[The Panderer's Dilemma]
+\label{interp:panderer}
+The optimal signal theorem reveals a troubling strategic logic:
+\emph{the optimal signal is always in the direction of the receiver's prior}.
+To maximize payoff, the sender should tell the receiver what they want to hear.
+This is the ``panderer's dilemma'': strategic communication incentivizes
+flattering the receiver's beliefs rather than communicating truth.
+
+The result is driven by the cross-resonance term $\rs{s}{r}$, which is maximized
+when $\embed{s}$ is parallel to $\embed{r}$. A sender who sends a signal
+orthogonal to the receiver's prior gets zero cross-resonance (no agreement
+bonus); a sender who sends a signal opposed to the receiver gets negative
+cross-resonance (an agreement penalty).
+
+In political terms, this is a model of \emph{populism}: the optimal political
+message (in terms of payoff) is the one that most closely mirrors the electorate's
+existing beliefs, regardless of its truth or wisdom. The model does not predict
+that all communication is pandering --- a sender may have reasons beyond payoff
+to send a truthful signal --- but it shows that the \emph{strategic incentive}
+always favors pandering.
+
+The only escape from the panderer's dilemma, within this model, is to change the
+payoff function. If the sender's payoff depended on some external criterion of
+truth rather than resonance with the receiver, the incentive to pander would
+vanish. This connects to the philosophical distinction between \emph{rhetoric}
+(the art of persuasion, which rewards pandering) and \emph{dialectic} (the art
+of truth-seeking, which penalizes it).
+\end{interpretation}
+
+
+\section{The Symmetric Meaning Game}
+
+\begin{definition}[Symmetric Meaning Game]
+\label{def:symmetric-game}
+A meaning game is \textbf{symmetric} if both agents simultaneously choose
+signals and interpret the other's signal. Agent $i$ has idea $a_i$ and receives
+signal $a_j$ from agent $j$. Agent $i$'s payoff is:
+\[
+  \payoff{i}{} = \rs{a_i}{a_i \compose a_j} = \rs{a_i}{a_i} + \rs{a_i}{a_j}.
+\]
+\end{definition}
+
+\begin{theorem}[Symmetric Game Is Not Zero-Sum]
+\label{thm:not-zero-sum}
+The symmetric meaning game is not zero-sum in general. The total payoff is:
+\[
+  \payoff{1}{} + \payoff{2}{} = \rs{a_1}{a_1} + \rs{a_2}{a_2} + 2\rs{a_1}{a_2}
+  = w(a_1 \compose a_2)^2.
+\]
+This is positive unless $a_1 \compose a_2 \equiv_\varphi \void$.
+\end{theorem}
+
+\begin{proof}
+Sum the payoffs: $(\rs{a_1}{a_1} + \rs{a_1}{a_2}) + (\rs{a_2}{a_2} +
+\rs{a_2}{a_1}) = \rs{a_1}{a_1} + \rs{a_2}{a_2} + 2\rs{a_1}{a_2} =
+w(a_1 \compose a_2)^2 \geq 0$.
+\end{proof}
+
+\begin{interpretation}[Communication Creates Value]
+\label{interp:value-creation}
+The non-zero-sum nature of the meaning game is fundamental. Communication is
+not a zero-sum competition where one party's gain is the other's loss.
+Rather, communication \emph{creates value}: the total payoff $w(a_1 \compose
+a_2)^2$ is positive whenever the composite idea has non-zero weight. Both
+parties benefit from the exchange (though not necessarily equally --- the
+more convicted party benefits more, as shown in Proposition~\ref{prop:payoff-diff}).
+
+The total value created is maximized when the ideas are perfectly aligned
+($w(a_1 \compose a_2)^2 = (w(a_1) + w(a_2))^2$) and minimized when they are
+perfectly opposed ($w(a_1 \compose a_2)^2 \approx 0$). Orthogonal ideas create
+an intermediate amount of value ($w(a_1 \compose a_2)^2 = w(a_1)^2 + w(a_2)^2$
+--- the Pythagorean theorem).
+
+This connects to the economic theory of \emph{gains from trade}: just as
+voluntary exchange creates surplus (both parties end up better off), voluntary
+communication creates meaning (both parties end up with higher-weight
+interpretations). The ``gains from communication'' are measured by
+$w(a_1 \compose a_2)^2$ and are positive whenever the ideas do not completely
+cancel.
+\end{interpretation}
+
+\begin{example}[Payoffs in Academic Discourse]
+\label{ex:academic}
+Consider an academic conference where three scholars present ideas embedded in
+$\mathbb{R}^3$:
+\begin{align*}
+  \embed{a_1} &= (4, 0, 0) \quad \text{(specialist in dimension 1)}, \\
+  \embed{a_2} &= (3, 3, 0) \quad \text{(bridging dimensions 1--2)}, \\
+  \embed{a_3} &= (0, 0, 5) \quad \text{(specialist in dimension 3)}.
+\end{align*}
+Payoff matrix (sender payoff in each cell):
+\begin{center}
+\begin{tabular}{c|ccc}
+$\payoff{S}{}$ & $r = a_1$ & $r = a_2$ & $r = a_3$ \\
+\hline
+$s = a_1$ & -- & $16 + 12 = 28$ & $16 + 0 = 16$ \\
+$s = a_2$ & $18 + 12 = 30$ & -- & $18 + 0 = 18$ \\
+$s = a_3$ & $25 + 0 = 25$ & $25 + 0 = 25$ & -- \\
+\end{tabular}
+\end{center}
+Scholar $a_2$ (the bridge-builder) gets the highest payoff when addressing
+$a_1$ (payoff 30), because they share dimension 1. Scholar $a_3$ gets equal
+payoffs regardless of audience (payoff 25), because they are orthogonal to
+everyone --- a mathematical model of the isolated specialist who can talk
+to anyone equally (in)effectively.
+\end{example}
+
+\bigskip
+
+This chapter has established the game-theoretic framework for communication in
+Hilbert space: payoffs decompose into self-resonance (conviction) plus
+cross-resonance (agreement), communication creates value, and the optimal
+signal --- for purely strategic agents --- mirrors the receiver's prior. In
+Chapter~\ref{ch:nash}, we study the equilibrium structure of these games.

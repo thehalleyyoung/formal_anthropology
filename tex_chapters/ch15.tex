@@ -1,0 +1,1061 @@
+% ================================================================
+% Chapter 15: Repertoire Curation and Museum Theory
+% ================================================================
+
+\chapter{Repertoire Curation and Museum Theory}
+\label{ch:curation}
+
+\epigraph{The cultural arbitrary which a system of education transmits,
+reproduces, and inculcates is \emph{always} the cultural arbitrary of the
+dominant classes.}{Pierre Bourdieu and Jean-Claude Passeron,
+\textit{La Reproduction} (1970)}
+
+% ----------------------------------------------------------------
+\section{Introduction}
+% ----------------------------------------------------------------
+
+The preceding chapters have treated the receiver as a fixed entity---a
+repertoire passively awaiting signals.  But receivers are not passive.
+Every mind \emph{curates} its repertoire: selecting which ideas to retain,
+which to discard, and which new ideas to admit.  The museum curator
+choosing which artifacts to display, the teacher designing a syllabus, the
+censor deciding which books to ban, the autodidact selecting their next
+reading---all are engaged in the same structural operation: filtering and
+expanding a repertoire according to some criterion.
+
+Bourdieu's concept of \emph{cultural capital}---the accumulated, curated
+stock of ideas that determines one's interpretive capacity---is the
+sociological correlate of the repertoire.  Cultural capital is not merely
+\emph{possessed}; it is actively \emph{managed}.  The bourgeois family
+curates its children's education; the academy curates its canon; the state
+curates the national curriculum.  Each act of curation is simultaneously
+an act of inclusion and exclusion, of memory and forgetting.\footnote{On the
+politics of canon formation, see John Guillory, \textit{Cultural Capital:
+The Problem of Literary Canon Formation} (1993).  Guillory argues that the
+literary canon is a form of cultural capital whose curation serves class
+reproduction---a thesis that our formal framework substantiates.}
+
+This chapter formalizes repertoire curation and expansion.  We introduce
+$\operatorname{curate}$---filtering a repertoire by a predicate---and
+$\operatorname{expand}$---adding a new idea to the front.  We then prove
+eighteen theorems that connect these operations to museum theory, education
+policy, censorship dynamics, and the political economy of knowledge.
+
+\subsection*{The Museum Without Walls}
+
+Andr\'{e} Malraux's \textit{Le Mus\'{e}e imaginaire} (1947) introduced the
+revolutionary idea of a ``museum without walls'': through photographic
+reproduction, every artwork becomes available to every viewer regardless
+of geography.  Malraux argued that this technological shift fundamentally
+altered the nature of curation---the curator was no longer the gatekeeper
+of a physical collection but an \emph{editor} assembling a virtual
+repertoire from the totality of world art.  In our formal framework,
+Malraux's insight translates directly: the advent of cheap reproduction
+means that the set $\IS$ available for curation expands dramatically, but
+the curatorial predicate $p$ remains the structural bottleneck.  The
+museum without walls does not eliminate curation; it makes curation
+\emph{more necessary}, because the uncurated set has grown beyond any
+individual's capacity to survey.\footnote{Malraux's argument anticipates
+the information-overload problems of the digital age.  When every image
+is available online, the curatorial function becomes \emph{more} valuable,
+not less.  The ``museum without walls'' is, in our terms, a repertoire
+of effectively infinite cardinality---making the choice of predicate $p$
+the decisive act.}
+
+Tony Bennett's \textit{The Birth of the Museum} (1995) offered a
+complementary perspective, analyzing museums as \emph{disciplinary
+institutions} in the Foucauldian sense.  For Bennett, the museum does not
+merely curate knowledge; it produces docile subjects by training visitors
+to see the world through the museum's organizing categories.  The
+repertoire $\mathbf{R}$ displayed by a museum is not a neutral selection
+but a \emph{technology of citizenship}, shaping the visitor's own
+repertoire through repeated exposure.  Bennett's analysis maps onto our
+formal framework as follows: the museum's displayed repertoire
+$\operatorname{curate}(\mathbf{R}_{\text{total}}, p_{\text{institutional}})$
+becomes the basis for the visitor's expansion operations.  The visitor
+expands their personal repertoire $\mathbf{R}_{\text{visitor}}$ by
+elements drawn from the museum's curated display, so that institutional
+curation upstream constrains individual expansion downstream.
+
+\subsection*{Education as Repertoire Building}
+
+The connection between curation and education runs deeper than analogy.
+John Dewey's progressive pedagogy, articulated in \textit{Democracy and
+Education} (1916), conceived of education as the guided expansion of
+experience---a process we formalize as iterated application of
+$\operatorname{expand}$.  Dewey rejected the ``banking model'' in which
+knowledge is deposited into passive minds; instead, he argued that
+education must be an active process of inquiry in which the learner
+selects (curates) their experiences.  The Deweyan student is simultaneously
+expanding and curating: each new experience is an expansion, and the
+reflective evaluation of that experience is a curation step that
+determines which elements persist in the repertoire.
+
+Paulo Freire radicalized Dewey's insight in \textit{Pedagogy of the
+Oppressed} (1968), arguing that the ``banking model'' of education is
+itself a form of oppressive curation.  When the teacher controls all
+expansion operations---deciding which ideas enter the student's
+repertoire---and the student has no voice in the curatorial predicate $p$,
+education becomes domination.  Freire's alternative, ``problem-posing
+education,'' gives the student co-authorship over both operations:
+the student participates in deciding what to learn
+($\operatorname{expand}$) and how to evaluate what has been learned
+($\operatorname{curate}$).  In our formal terms, Freirean liberation
+consists in democratizing the predicate $p$---transferring curatorial
+authority from the oppressor to the community of learners.
+
+\subsection*{Censorship as Negative Curation}
+
+If education is positive curation---selecting \emph{for} inclusion---then
+censorship is negative curation: selecting \emph{for exclusion}.  The
+\textit{Index Librorum Prohibitorum}, maintained by the Catholic Church
+from 1559 to 1966, was among the most systematic curatorial operations
+in history.  The Index defined a predicate
+$p_{\text{Index}}(r) = \texttt{false}$ for thousands of works by
+Copernicus, Galileo, Descartes, Hume, Voltaire, and others, effectively
+curating the Catholic intellectual repertoire by negation.  The structural
+consequence, formalized in our Theorem~\ref{thm:curate-length}, is
+clear: $|\operatorname{curate}(\mathbf{R}_{\text{Catholic}},
+p_{\text{Index}})| < |\mathbf{R}_{\text{Catholic}}|$.  The censored
+repertoire is strictly smaller---and therefore, by
+Theorem~\ref{thm:curated-interp}, generates strictly fewer
+interpretations of any signal.
+
+Contemporary book banning---from school library challenges in the United
+States to internet censorship in authoritarian regimes---follows the same
+structural logic.  Each banned book is an element removed from the
+communal repertoire; each act of censorship narrows the society's
+interpretive capacity.  The formal framework makes precise what civil
+libertarians assert intuitively: censorship makes us collectively dumber,
+in the strict sense of reducing the number of available interpretations.
+
+\subsection*{The Canon Wars}
+
+The ``canon wars'' of the 1980s and 1990s---the debate over whether
+Western universities should center their curricula on the ``Great Books''
+of the Western tradition or expand to include non-Western and minority
+voices---are, in IDT terms, a dispute about the appropriate predicate
+$p$.  Defenders of the traditional canon (Allan Bloom's \textit{The
+Closing of the American Mind}, 1987; Harold Bloom's \textit{The Western
+Canon}, 1994) argued for a predicate that privileged aesthetic excellence
+as judged by established critical traditions.  Advocates of multicultural
+expansion (Henry Louis Gates Jr., bell hooks, Edward Said) argued that
+the traditional predicate systematically excluded the cultural
+productions of women, people of color, and non-Western societies.
+
+Our formal framework illuminates both sides of the debate.  The
+traditionalists are correct that some curatorial predicate is necessary
+(Theorem~\ref{thm:universal-curate}: universal acceptance is not
+curation at all, and the resulting repertoire is unnavigable).  The
+multiculturalists are correct that a narrow predicate reduces
+interpretive capacity (Theorem~\ref{thm:curated-interp}: fewer retained
+ideas means fewer interpretations of any signal).  The resolution, if
+there is one, lies in designing predicates that balance navigability
+against breadth---a problem our theorems frame precisely but do not
+solve, because the choice of $p$ is irreducibly political.
+
+\subsection*{Digital Curation and the Paradox of Choice}
+
+The digital age has introduced a new species of curation: algorithmic
+recommendation.  Spotify's Discover Weekly, YouTube's recommendation
+engine, and TikTok's For You page all implement curatorial predicates
+$p_{\text{algorithm}}$ that filter the vast ideatic space of available
+content into a personalized repertoire for each user.  These algorithms
+curate at a scale and speed impossible for any human curator, processing
+millions of items to produce a feed of dozens.  The structural properties
+are identical to those of the museum curator: the algorithm filters
+($\operatorname{curate}$), the user absorbs ($\operatorname{expand}$),
+and the resulting repertoire determines interpretive capacity.
+
+Barry Schwartz's \textit{The Paradox of Choice} (2004) identified the
+psychological cost of excessive options: when the uncurated set $\IS$ is
+too large, individuals become paralyzed, anxious, and dissatisfied.
+Schwartz's paradox is, in our terms, a consequence of the gap between
+$|\IS|$ and human cognitive capacity to evaluate curatorial predicates.
+The algorithm resolves this paradox by imposing a predicate on the user's
+behalf---but at the cost of surrendering curatorial autonomy to an opaque
+system whose predicate $p_{\text{algorithm}}$ is optimized for engagement
+metrics rather than interpretive depth.  The formal question becomes:
+does algorithmic curation increase or decrease
+$\operatorname{depthSum}(\mathbf{R}_{\text{user}})$?  Our theorems
+(Theorem~\ref{thm:curated-depthsum}) show that curation can only
+\emph{reduce} total depth; whether the algorithm's curation reduces
+depth less than the user's own imperfect curation is an empirical
+question that the formal framework poses but cannot answer
+\textit{a priori}.
+
+% ----------------------------------------------------------------
+\section{Core Definitions}
+\label{sec:ch15-defs}
+% ----------------------------------------------------------------
+
+\begin{definition}[Curation]
+\label{def:curate}
+To \emph{curate} a repertoire $\mathbf{R}$ is to filter it by a Boolean
+predicate $p$:
+\[
+  \operatorname{curate}(\mathbf{R}, p)
+  \;=\; [r \in \mathbf{R} \mid p(r) = \texttt{true}].
+\]
+This models selective retention: the museum curator choosing artifacts, the
+teacher choosing concepts, the censor choosing permitted ideas.
+\end{definition}
+
+\begin{definition}[Expansion]
+\label{def:expand}
+To \emph{expand} a repertoire $\mathbf{R}$ with a new idea $a$ is to
+prepend it:
+\[
+  \operatorname{expand}(\mathbf{R}, a) \;=\; a :: \mathbf{R}.
+\]
+This models learning: acquiring a new concept, encountering a new artifact,
+absorbing a new cultural input.
+\end{definition}
+
+\begin{lstlisting}[caption={Curation and expansion in Lean~4}]
+def curate (rep : List I) (p : I -> Bool) : List I :=
+  rep.filter p
+
+def expand (rep : List I) (new_idea : I) : List I :=
+  new_idea :: rep
+\end{lstlisting}
+
+\begin{definition}[Interpretation]
+\label{def:interpret-ch15}
+When a receiver with repertoire $\mathbf{R}$ encounters signal $s$, they
+produce interpretations:
+\[
+  \operatorname{interpret}(\mathbf{R}, s)
+  \;=\; [r_1 \compose s,\; r_2 \compose s,\; \dots,\; r_n \compose s].
+\]
+\end{definition}
+
+The interplay of curation, expansion, and interpretation is the central
+drama of this chapter.  Curation \emph{reduces} the repertoire (and hence
+the number and depth of possible interpretations); expansion
+\emph{increases} it.  The structural question is: how do these operations
+compose, and what invariants do they preserve?
+
+\begin{example}[The Alexandrian Library as Curation Catastrophe]
+\label{ex:alexandria}
+The Library of Alexandria, founded in the third century BCE under the
+Ptolemaic dynasty, represented the ancient world's most ambitious attempt
+at \emph{anti-curation}: the aspiration to collect every written work in
+existence.  In our formal terms, the Alexandrian project sought to
+approximate $\mathbf{R}_{\text{Alexandria}} \approx \IS_{\text{written}}$
+---a repertoire equal to the entire space of written ideas.  By
+Theorem~\ref{thm:universal-curate}, this amounts to the identity
+curation $\operatorname{curate}(\IS, \lambda x.\, \texttt{true}) = \IS$,
+which is structurally equivalent to no curation at all.
+
+The destruction of the Library---whether by fire, neglect, or
+conquest---constitutes the most famous curation catastrophe in history.
+The curatorial predicate shifted from $\lambda x.\, \texttt{true}$
+(preserve everything) to something far more restrictive, dictated by the
+contingencies of survival: which scrolls happened to be copied, which
+survived the fires, which were translated into Arabic or Latin.  The
+resulting repertoire $\mathbf{R}_{\text{surviving}}$ is a strict subset
+of $\mathbf{R}_{\text{Alexandria}}$, and by
+Theorem~\ref{thm:curated-depthsum},
+$\operatorname{depthSum}(\mathbf{R}_{\text{surviving}}) \le
+\operatorname{depthSum}(\mathbf{R}_{\text{Alexandria}})$.  The lost
+depth---the works of Sappho, Aristotle's second book of the
+\textit{Poetics}, countless treatises on mathematics, astronomy, and
+philosophy---represents an irrecoverable reduction in humanity's
+interpretive capacity.
+\end{example}
+
+\begin{example}[The Chinese Imperial Examination as Repertoire Filter]
+\label{ex:keju}
+The Chinese imperial examination system (\textit{k\={e}j\v{u}}),
+operational from 605 CE to 1905, was among the longest-running and most
+consequential curatorial operations in human history.  The examinations
+required mastery of a fixed canon: the Four Books and Five Classics of
+Confucian literature.  In formal terms, the examination defined a
+curatorial predicate $p_{\text{k\={e}j\v{u}}}$ that accepted ideas
+consonant with the Confucian classics and rejected all others.  Every
+aspiring official curated their personal repertoire according to this
+predicate: $\mathbf{R}_{\text{scholar}} = \operatorname{curate}(
+\mathbf{R}_{\text{available}}, p_{\text{k\={e}j\v{u}}})$.
+
+The system's strength was its meritocratic inclusiveness: any man
+(and, in rare cases, any woman) could in principle expand their
+repertoire sufficiently to pass.  Its weakness was the narrowness of the
+predicate: by the late imperial period, the ``eight-legged essay''
+format had ossified the curatorial criterion to the point where
+$p_{\text{k\={e}j\v{u}}}$ rejected virtually all modern scientific and
+technological ideas.  When Western ideas arrived in force in the
+nineteenth century, the Qing dynasty possessed a governing class whose
+repertoires had been curated for literary elegance and moral philosophy
+but systematically stripped of empirical science.  The result was a
+catastrophic mismatch between the curated repertoire and the signals
+arriving from the industrializing West.
+\end{example}
+
+% ----------------------------------------------------------------
+\section{Curation Fundamentals}
+\label{sec:ch15-curation}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Curation Preserves Membership (15.1)]
+\label{thm:curate-subset}
+Every element of the curated repertoire was in the original:
+\[
+  \forall\, x \in \operatorname{curate}(\mathbf{R}, p),\quad x \in \mathbf{R}.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By the property of list filtering: every element of
+$\operatorname{filter}(p, \mathbf{R})$ belongs to $\mathbf{R}$.
+\end{proof}
+
+A museum can only display what it owns.  Curation is selection, not
+creation---the formal basis of the archivist's constraint.  You cannot
+curate what you do not have.  This seemingly obvious fact has deep
+implications for cultural policy: any canon-formation exercise is bounded
+by the existing cultural stock.  A national curriculum can only draw from
+the ideas already present in the culture; it cannot conjure new ones through
+the act of selection.\footnote{This distinguishes curation from
+\emph{creation}.  In our model, creation is the introduction of a genuinely
+new element $a \in \IS$ not already in the repertoire; curation is the
+selection among existing elements.  The two operations have fundamentally
+different structural properties.}
+
+\begin{theorem}[Curation Reduces Length (15.2)]
+\label{thm:curate-length}
+The curated repertoire is never longer than the original:
+\[
+  |\operatorname{curate}(\mathbf{R}, p)| \;\le\; |\mathbf{R}|.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Filtering can only remove elements, never add them.
+\end{proof}
+
+Curation only removes---it never inflates.  A censored library is always
+smaller than the uncensored original.  This formalizes the ``information
+loss'' inherent in any act of selection.  Every curatorial decision is,
+structurally, a decision to \emph{forget}.
+
+\begin{theorem}[Vacuous Curation is Empty (15.3)]
+\label{thm:vacuous-curate}
+Filtering by a predicate that rejects everything yields the empty list:
+$\operatorname{curate}(\mathbf{R}, \lambda x.\, \texttt{false}) = []$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+No element passes the filter.
+\end{proof}
+
+Total censorship---rejecting every idea---produces cultural void.  This is
+the formal limit of suppression: complete censorship equals complete cultural
+erasure.  The totalitarian ideal of the \emph{tabula rasa}---erasing all
+prior culture to build anew---is structurally equivalent to reducing the
+repertoire to the empty list.  Pol Pot's ``Year Zero,'' Mao's Cultural
+Revolution, the \emph{damnatio memoriae} of the Roman Senate: all are
+attempts at vacuous curation.\footnote{The historical record suggests that
+vacuous curation is never perfectly achieved: underground literature,
+oral tradition, and material culture survive even the most thorough
+purges.  The theorem describes the \emph{structural limit}, not the
+empirical reality.}
+
+\begin{theorem}[Universal Curation is Identity (15.4)]
+\label{thm:universal-curate}
+Filtering by a predicate that accepts everything yields the original:
+$\operatorname{curate}(\mathbf{R}, \lambda x.\, \texttt{true}) = \mathbf{R}$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Every element passes the filter.
+\end{proof}
+
+A museum that displays everything is just a warehouse.  ``Curating'' with no
+selection criterion is structurally equivalent to no curation at all.  This
+is the formal basis of the distinction between the \emph{archive}
+(everything preserved) and the \emph{exhibition} (a curated selection).
+The uncurated repertoire is the Borgesian library: complete, but
+unnavigable.\footnote{Jorge Luis Borges, ``The Library of Babel'' (1941).
+Borges's infinite library contains every possible book but is useless
+precisely because it lacks curation.}
+
+\begin{remark}[Connection to Information Theory: Channel Capacity]
+\label{rem:channel-capacity}
+The duality between curation (reducing the repertoire) and universal
+acceptance (identity) has a precise analogue in Shannon's information
+theory.  A communication channel with capacity $C$ can transmit at most
+$C$ bits per second reliably; attempting to transmit more introduces
+errors.  Similarly, a cognitive agent with finite processing capacity
+can only maintain and effectively deploy a repertoire of bounded size.
+The curatorial predicate $p$ functions as a \emph{channel code},
+selecting which elements of the vast ideatic space $\IS$ to retain
+within the agent's finite capacity.
+
+Shannon's noisy channel coding theorem states that optimal codes exist
+which achieve the capacity bound---but finding them is computationally
+hard.  The analogous statement for curation is: for any cognitive
+capacity $C$, there exists an optimal predicate $p^*$ that maximizes
+$\operatorname{depthSum}(\operatorname{curate}(\mathbf{R}, p^*))$
+subject to $|\operatorname{curate}(\mathbf{R}, p^*)| \le C$.  The
+curator's dilemma is that this optimal predicate is, in general,
+intractable to compute---hence the irreducibly judgmental character of
+curatorial work.  No algorithm can replace the curator's taste, for
+the same reason that no algorithm can efficiently find optimal channel
+codes in the general case.
+\end{remark}
+
+\begin{example}[Spotify's Recommendation Algorithm as Automated Curation]
+\label{ex:spotify}
+Spotify's recommendation engine curates from a catalog of over 100
+million tracks.  Its predicate $p_{\text{Spotify}}$ is a learned function
+of the user's listening history, demographic data, audio features, and
+collaborative filtering across millions of users.  In our framework,
+each weekly ``Discover Weekly'' playlist is a curated repertoire:
+$\mathbf{R}_{\text{playlist}} = \operatorname{curate}(
+\mathbf{R}_{\text{catalog}}, p_{\text{Spotify}})$.
+
+By Theorem~\ref{thm:curate-subset}, every recommended track was already
+in the catalog; the algorithm creates nothing new.  By
+Theorem~\ref{thm:curate-length}, the playlist is vastly shorter than the
+catalog---typically 30 tracks from 100 million.  The crucial question is
+whether the algorithmic predicate selects for depth or for familiarity.
+Empirical evidence suggests that recommendation algorithms optimize for
+engagement (clicks, completions, saves), which correlates imperfectly
+with interpretive depth.  The result is a ``filter bubble'' in which the
+user's curated repertoire converges to a narrow region of ideatic space,
+reducing the diversity of interpretive possibilities available when
+encountering novel signals.
+\end{example}
+
+% ----------------------------------------------------------------
+\section{Expansion Fundamentals}
+\label{sec:ch15-expansion}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Expansion Increases Length (15.5)]
+\label{thm:expand-length}
+Adding a new idea increases the repertoire by exactly one:
+\[
+  |\operatorname{expand}(\mathbf{R}, a)| = |\mathbf{R}| + 1.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Prepending one element increases list length by one.
+\end{proof}
+
+Each learning event adds exactly one new schema.  Education is
+\emph{incremental}---you learn one thing at a time.  This constrains
+theories of ``epiphany'' or ``gestalt shift'' to be single-idea additions
+in the formal model.  The Humboldt-ian ideal of \emph{Bildung}---the
+gradual, systematic expansion of the mind---is structurally captured by
+iterated application of $\operatorname{expand}$.
+
+\begin{theorem}[New Idea is in Expanded Repertoire (15.6)]
+\label{thm:new-idea-mem}
+The newly added idea belongs to the expanded repertoire:
+$a \in \operatorname{expand}(\mathbf{R}, a)$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The new idea is the head of the list.
+\end{proof}
+
+What you learn, you possess.  The student who has been taught a concept
+\emph{has} that concept in their repertoire.  This is the structural basis
+of education as repertoire expansion: successful pedagogy is precisely the
+operation $\operatorname{expand}(\mathbf{R}_{\text{student}}, a_{\text{lesson}})$.
+
+\begin{theorem}[Old Ideas Survive Expansion (15.7)]
+\label{thm:old-survive}
+All ideas in the original repertoire remain in the expanded version:
+\[
+  \forall\, x \in \mathbf{R},\quad x \in \operatorname{expand}(\mathbf{R}, a).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+The original list is the tail of the expanded list.
+\end{proof}
+
+Learning does not erase prior knowledge.  The student who learns calculus
+still remembers arithmetic.  Expansion is \emph{monotone}---repertoires only
+grow.  This is an important modeling assumption: in our framework, forgetting
+requires an explicit curation step (filtering out the unwanted idea), not
+mere neglect.  The distinction between passive forgetting and active
+censorship is, in IDT, the distinction between non-operation and
+curation.\footnote{In cognitive science, the debate between ``decay'' and
+``interference'' theories of forgetting maps onto our distinction between
+curation (active removal) and repertoire stagnation (non-expansion).}
+
+% ----------------------------------------------------------------
+\section{Curation and Interpretation}
+\label{sec:ch15-curate-interp}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Curated Interpretation is Sublist (15.8)]
+\label{thm:curated-interp}
+Interpreting a curated repertoire gives at most as many interpretations as
+the full repertoire:
+\[
+  |\operatorname{interpret}(\operatorname{curate}(\mathbf{R}, p), s)|
+  \;\le\;
+  |\operatorname{interpret}(\mathbf{R}, s)|.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$|\operatorname{interpret}(\cdot, s)| = |\cdot|$ (interpretation preserves
+length), and $|\operatorname{curate}(\mathbf{R}, p)| \le |\mathbf{R}|$.
+\end{proof}
+
+A censored mind produces fewer interpretations.  The number of possible
+readings of a text is bounded by the reader's (curated) repertoire size.
+A narrower education yields fewer perspectives---the formal basis of the
+humanist argument for breadth in the curriculum.  The liberally educated
+mind, with its expansive repertoire, generates more interpretations than
+the narrowly trained specialist.
+
+\begin{remark}[Censorship as Curation with Political Consequences]
+\label{rem:censorship-political}
+The connection between curation and censorship deserves sustained
+attention, because the formal equivalence conceals a crucial normative
+distinction.  The museum curator and the government censor both apply
+predicates to repertoires, but they differ in three respects: (1) the
+scope of application (one collection vs.\ an entire society), (2) the
+coercive power backing the predicate (aesthetic judgment vs.\ legal
+penalty), and (3) the reversibility of the operation (the deaccessioned
+painting can be reacquired; the burned book is gone forever).
+
+Our formal framework captures the \emph{structural} identity of these
+operations while remaining silent on their normative valence.  This is
+a feature, not a bug: the theorems show that the same mathematical
+constraints govern benign curation and malign censorship, which means
+that arguments about the \emph{structural} effects of censorship need
+not appeal to contested moral premises.
+Theorem~\ref{thm:curated-interp}---that curation reduces interpretive
+capacity---is value-neutral as a mathematical fact, but devastating as
+an argument against censorship: it shows that \emph{any} censorship,
+regardless of its motivation, reduces the society's collective capacity
+to interpret signals.
+\end{remark}
+
+\begin{theorem}[Empty Curation Yields No Interpretation (15.9)]
+\label{thm:empty-curate-interp}
+If curation removes everything, there are no interpretations:
+\[
+  \operatorname{interpret}(\operatorname{curate}(\mathbf{R},
+  \lambda x.\, \texttt{false}), s) = [].
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By Theorem~\ref{thm:vacuous-curate}, the curated repertoire is empty,
+and mapping over the empty list yields the empty list.
+\end{proof}
+
+The culturally emptied mind cannot interpret anything.  Total censorship
+followed by signal reception equals zero interpretive output.  This is the
+``blank slate after brainwashing'' theorem: the totalitarian regime that
+succeeds in erasing all prior culture leaves its subjects incapable of
+interpreting \emph{any} signal, including its own propaganda.  The self-
+defeating nature of complete censorship is a structural theorem.
+
+% ----------------------------------------------------------------
+\section{Expansion and Interpretation}
+\label{sec:ch15-expand-interp}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Expanded Interpretation Adds One (15.10)]
+\label{thm:expanded-interp}
+Interpreting an expanded repertoire produces one more interpretation than
+the original:
+\[
+  |\operatorname{interpret}(\operatorname{expand}(\mathbf{R}, a), s)|
+  \;=\;
+  |\operatorname{interpret}(\mathbf{R}, s)| + 1.
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Expansion adds one element; interpretation preserves length.
+\end{proof}
+
+Each new idea in the repertoire adds exactly one new interpretive
+possibility.  Education's return is precisely one new perspective per concept
+learned---the fundamental unit of \emph{Bildung}.  The marginal return on
+education, measured in interpretive possibilities, is constant: one concept
+in, one new interpretation out.
+
+\begin{theorem}[Expansion Interpretation Structure (15.11)]
+\label{thm:expand-structure}
+Interpreting an expanded repertoire prepends the new interpretation:
+\[
+  \operatorname{interpret}(\operatorname{expand}(\mathbf{R}, a), s)
+  \;=\;
+  (a \compose s) :: \operatorname{interpret}(\mathbf{R}, s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By definition: $\operatorname{expand}(\mathbf{R}, a) = a :: \mathbf{R}$,
+and mapping over a cons is $f(a) :: \operatorname{map}(f, \mathbf{R})$.
+\end{proof}
+
+The new concept's interpretation appears first, followed by all prior
+interpretations unchanged.  Learning adds a new lens without distorting
+existing ones---the ``additive'' model of education.  This is structurally
+optimistic: new knowledge does not corrupt old knowledge.  The Baconian
+vision of knowledge as cumulative finds formal support here.
+
+\begin{theorem}[Void Expansion Doesn't Change Interpretations (15.12)]
+\label{thm:void-expansion}
+Adding void to the repertoire adds the raw signal $s$ as a new interpretation:
+\[
+  \operatorname{interpret}(\operatorname{expand}(\mathbf{R}, \void), s)
+  \;=\;
+  s :: \operatorname{interpret}(\mathbf{R}, s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\void \compose s = s$ by the void axiom, so the new interpretation is $s$
+itself.
+\end{proof}
+
+Adding ``empty receptivity''---the Keatsian \emph{negative capability}---to
+one's repertoire adds the raw signal as a new interpretation.  The
+educationally valuable ``empty slot'' lets you see the signal unmediated.
+This is the formal justification for intellectual humility: maintaining a
+void element in one's repertoire ensures that one always has access to the
+unfiltered signal, free from the bias of pre-existing categories.\footnote{Keats's
+concept of ``negative capability''---``being in uncertainties, mysteries,
+doubts, without any irritable reaching after fact and reason''---is
+precisely the act of maintaining $\void$ in the repertoire: a position of
+receptivity that produces the raw signal as interpretation.}
+
+\begin{lstlisting}[caption={Void expansion raw signal in Lean~4}]
+theorem void_expansion_raw_signal (rep : List I) (s : I) :
+    interpret (expand rep void) s = s :: interpret rep s := by
+  simp [expanded_interp_structure, void_left]
+\end{lstlisting}
+
+% ----------------------------------------------------------------
+\section{DepthSum Bounds}
+\label{sec:ch15-depthsum}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Curated DepthSum Bound (15.13)]
+\label{thm:curated-depthsum}
+The depth sum of a curated repertoire is at most the depth sum of the
+original:
+\[
+  \operatorname{depthSum}(\operatorname{curate}(\mathbf{R}, p))
+  \;\le\;
+  \operatorname{depthSum}(\mathbf{R}).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on $\mathbf{R}$.  At each step, if the element passes the
+filter, both sides include $\depth(r)$; if it fails, only the right side
+includes it, maintaining the inequality.
+\end{proof}
+
+Curation can only \emph{reduce} total cultural depth.  A museum that hides
+artifacts loses depth; a censored library is shallower than the uncensored
+one.  Information destruction is irreversible in the depth metric.  This
+theorem has stark implications for cultural policy: every act of censorship
+is a permanent reduction in the society's total interpretive capacity.  The
+censored ideas' depth is \emph{lost}, not merely hidden.
+
+\begin{theorem}[Expanded DepthSum (15.14)]
+\label{thm:expanded-depthsum}
+Expanding the repertoire adds exactly the new idea's depth:
+\[
+  \operatorname{depthSum}(\operatorname{expand}(\mathbf{R}, a))
+  \;=\;
+  \depth(a) + \operatorname{depthSum}(\mathbf{R}).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\operatorname{expand}(\mathbf{R}, a) = a :: \mathbf{R}$, and
+$\operatorname{depthSum}(a :: \mathbf{R}) = \depth(a) +
+\operatorname{depthSum}(\mathbf{R})$.
+\end{proof}
+
+Each new idea adds exactly its depth to the total cultural capital.
+Education is a \emph{linear} accumulation of depth---Bourdieu's cultural
+capital grows additively with each new acquisition.  The student who learns
+a concept of depth $d$ increases their total cultural capital by exactly $d$.
+This linearity is both empowering (every lesson counts) and sobering (there
+are no shortcuts---depth must be earned one idea at a time).
+
+\begin{theorem}[Void Expansion DepthSum (15.15)]
+\label{thm:void-expansion-depth}
+Adding void to the repertoire does not change depthSum:
+\[
+  \operatorname{depthSum}(\operatorname{expand}(\mathbf{R}, \void))
+  \;=\;
+  \operatorname{depthSum}(\mathbf{R}).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\depth(\void) = 0$, so $0 + \operatorname{depthSum}(\mathbf{R}) =
+\operatorname{depthSum}(\mathbf{R})$.
+\end{proof}
+
+Adding ``nothing'' to one's cultural stock adds zero depth.  The void is
+costless to maintain in the repertoire---the formal basis of ``keeping an
+open mind'' being free in the depth metric.  Intellectual humility (carrying
+$\void$ in one's repertoire) costs nothing and gains the benefit of raw
+signal access (Theorem~\ref{thm:void-expansion}).
+
+\begin{example}[Museum Deaccessioning Controversies]
+\label{ex:deaccessioning}
+Museum deaccessioning---the practice of removing works from a permanent
+collection, typically through sale---illustrates the irreversibility of
+curation in practice.  When the Berkshire Museum in 2017 proposed selling
+Norman Rockwell paintings and Hudson River School landscapes to fund
+operational costs, the art world erupted.  The controversy turns on a
+formal point: deaccessioning applies a new predicate
+$p_{\text{financial}}$ (``does this work justify its storage and
+insurance costs?'') to a repertoire that was originally curated by a
+different predicate $p_{\text{aesthetic}}$ (``does this work have
+artistic merit?'').
+
+By Theorem~\ref{thm:curate-idempotent}, re-curating by the same
+predicate has no effect.  But curating by a \emph{different} predicate
+compounds the restriction:
+$\operatorname{curate}(\operatorname{curate}(\mathbf{R},
+p_{\text{aesthetic}}), p_{\text{financial}})$ yields a repertoire that
+satisfies \emph{both} predicates, and is therefore (in general) strictly
+smaller than either single-predicate curation.  The lost works satisfy
+$p_{\text{aesthetic}}$ but not $p_{\text{financial}}$; they are
+aesthetically valuable but financially burdensome.  The museum's
+cultural depth (Theorem~\ref{thm:curated-depthsum}) shrinks by the sum
+of the deaccessioned works' depths.
+
+The deaccessioning debate thus reduces to a question about predicate
+ordering: should financial predicates ever override aesthetic ones in
+cultural institutions?  Our framework does not answer this normative
+question, but it precisely quantifies the cost: each deaccessioned work
+reduces $\operatorname{depthSum}$ by exactly $\depth(r_{\text{sold}})$,
+and this reduction is permanent once the work enters a private collection.
+\end{example}
+
+% ----------------------------------------------------------------
+\section{Structural Curation Theorems}
+\label{sec:ch15-structural}
+% ----------------------------------------------------------------
+
+\begin{theorem}[Double Curation is Single Curation (15.16)]
+\label{thm:curate-idempotent}
+Curating a curated repertoire by the same predicate is idempotent:
+\[
+  \operatorname{curate}(\operatorname{curate}(\mathbf{R}, p), p)
+  \;=\;
+  \operatorname{curate}(\mathbf{R}, p).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\operatorname{filter}(p, \operatorname{filter}(p, \mathbf{R}))
+= \operatorname{filter}(p \wedge p, \mathbf{R})
+= \operatorname{filter}(p, \mathbf{R})$
+since $p \wedge p = p$.
+\end{proof}
+
+Censoring an already-censored library by the same criterion has no further
+effect.  The ``diminishing returns'' of redundant censorship---once you have
+removed all ``heretical'' books, removing them again changes nothing.  This
+idempotency result has practical implications for bureaucratic censorship:
+the second censor applying the same criteria as the first is structurally
+redundant, a waste of institutional resources.  Totalitarian regimes that
+layer censorship committees atop each other (with identical mandates) achieve
+nothing beyond the first pass.\footnote{Historical examples include the
+multiple overlapping censorship bodies of the Soviet Union (\textit{Glavlit},
+\textit{Goskomizdat}, Party committees), each applying essentially the same
+ideological filter.  Our theorem shows this redundancy is structural, not
+merely bureaucratic.}
+
+\begin{theorem}[Expand Then Curate Accepting (15.17)]
+\label{thm:expand-curate-accept}
+If the new idea passes the predicate, expanding then curating keeps it:
+\[
+  p(a) = \texttt{true}
+  \;\Longrightarrow\;
+  \operatorname{curate}(\operatorname{expand}(\mathbf{R}, a), p)
+  = a :: \operatorname{curate}(\mathbf{R}, p).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Filtering $a :: \mathbf{R}$ with $p$: since $p(a) = \texttt{true}$,
+$a$ is kept, and the tail is filtered as usual.
+\end{proof}
+
+If a newly acquired idea passes the censorship test, it survives curation.
+``Approved learning'' is permanent---the accepted idea stays in the
+repertoire through subsequent curation rounds.  This is the formal basis
+of canonical inclusion: once an idea is admitted to the canon (passes the
+predicate), it persists through all future curation by the same criterion.
+Dante, admitted to the Western canon, survives every subsequent round of
+canon revision that uses the same evaluative framework.
+
+\begin{theorem}[Expand Then Curate Rejecting (15.18)]
+\label{thm:expand-curate-reject}
+If the new idea fails the predicate, expanding then curating removes it:
+\[
+  p(a) = \texttt{false}
+  \;\Longrightarrow\;
+  \operatorname{curate}(\operatorname{expand}(\mathbf{R}, a), p)
+  = \operatorname{curate}(\mathbf{R}, p).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Filtering $a :: \mathbf{R}$ with $p$: since $p(a) = \texttt{false}$,
+$a$ is discarded, and the tail is filtered as before.
+\end{proof}
+
+Ideas that fail the censorship test are immediately purged.  The
+``forbidden knowledge'' theorem: learning something that the regime rejects
+is structurally equivalent to never having learned it, after curation.  This
+formalizes the futility of teaching banned concepts in totalitarian
+educational systems---the student may \emph{encounter} the forbidden idea
+(via $\operatorname{expand}$), but the subsequent curation step erases it
+from the repertoire as if the encounter never happened.
+
+The theorem is disturbing in its implications.  If $p$ represents the
+ideological filter of a totalitarian state, then
+$\operatorname{curate}(\operatorname{expand}(\mathbf{R}, a_{\text{forbidden}}), p)
+= \operatorname{curate}(\mathbf{R}, p)$: the forbidden idea leaves no trace.
+The dissident's effort to teach subversive ideas is, under perfect
+censorship, structurally null.  Of course, perfect censorship is an
+idealization---but the theorem shows what perfect censorship would
+\emph{mean}: structural erasure of dissent.
+
+\paragraph{Extended proof discussion.}
+The expand-then-curate-rejecting theorem (15.18) merits careful
+reflection on its proof structure, because it reveals a deep asymmetry
+between expansion and curation.  The proof proceeds by case analysis on
+the head of the list $a :: \mathbf{R}$.  When $p(a) = \texttt{false}$,
+the filter function skips the head and recurses on the tail, producing
+exactly $\operatorname{filter}(p, \mathbf{R})$.  The key insight is that
+the filter is \emph{memoryless}: it does not record that an element was
+tested and rejected.  There is no ``trace'' of the rejected idea in the
+output.  This memorylessness is what makes censorship structurally
+complete in the formal model: the curated repertoire contains no evidence
+that anything was removed.
+
+Contrast this with real-world censorship, where the act of banning a
+book often draws attention to it (the ``Streisand effect'').  The
+discrepancy arises because real censorship operates in a social context
+where the \emph{act} of curation is itself observable as a signal.  In
+our model, the curatorial operation is transparent to downstream
+consumers of the repertoire: they see only
+$\operatorname{curate}(\mathbf{R}, p)$, not the pair
+$(\mathbf{R}, p)$.  Modeling censorship-awareness would require a
+second-order theory in which agents can observe and interpret curatorial
+predicates as signals---a direction we leave for future work.
+
+\begin{remark}[The Filter Bubble Problem]
+\label{rem:filter-bubble}
+Eli Pariser's concept of the ``filter bubble'' (\textit{The Filter
+Bubble}, 2011) describes the phenomenon in which algorithmic curation
+progressively narrows an individual's information environment.  In our
+formal terms, a filter bubble arises when the curatorial predicate is
+\emph{adaptive}: $p_{t+1}$ is a function of
+$\operatorname{curate}(\mathbf{R}, p_t)$.  If the algorithm curates
+based on what the user has previously consumed, and the user consumes
+only what is curated, a feedback loop emerges.
+
+Formally, let $p_0$ be the initial predicate, and define
+$\mathbf{R}_{t+1} = \operatorname{curate}(\mathbf{R}_t, p_t)$ where
+$p_t$ depends on $\mathbf{R}_{t-1}$.  By Theorem~\ref{thm:curate-length},
+$|\mathbf{R}_{t+1}| \le |\mathbf{R}_t|$, so the sequence
+$\{|\mathbf{R}_t|\}$ is non-increasing.  If $p_t$ ever strictly
+rejects an element of $\mathbf{R}_t$, the repertoire shrinks
+\emph{irreversibly} (assuming no external expansion).  The filter
+bubble is thus a monotone descent in repertoire size: once an idea is
+filtered out, the adaptive predicate---which learns from the filtered
+repertoire---has no way to ``rediscover'' it.  This is the formal
+diagnosis of the filter bubble: adaptive curation without external
+expansion converges to a fixed point of minimal repertoire that merely
+confirms the user's existing ideas.
+
+Pariser's solution---deliberate exposure to diverse viewpoints---is
+formally an $\operatorname{expand}$ operation that injects ideas outside
+the current curated repertoire, breaking the feedback loop by
+introducing elements that the adaptive predicate has not yet evaluated.
+The interplay between Theorems~\ref{thm:expand-curate-accept}
+and~\ref{thm:expand-curate-reject} then determines whether these
+injected ideas survive subsequent curation rounds.
+\end{remark}
+
+\begin{lstlisting}[caption={Expand-then-curate in Lean~4}]
+theorem expand_curate_removes {new_idea : I} {p : I -> Bool}
+    (hp : p new_idea = false) (rep : List I) :
+    curate (expand rep new_idea) p = curate rep p := by
+  simp [expand, curate, List.filter, hp]
+\end{lstlisting}
+
+% ----------------------------------------------------------------
+\section{The Politics of Repertoire}
+\label{sec:ch15-politics}
+% ----------------------------------------------------------------
+
+The theorems of this chapter, though stated in the neutral language of
+predicates and lists, have inescapably political implications.  Every act
+of curation is an exercise of power: the power to determine what ideas
+are available for interpretation, and therefore what interpretations are
+possible.  This section draws out the political consequences of the
+formal framework.
+
+\subsection{Who Holds the Predicate?}
+
+The central political question of repertoire curation is: \emph{who
+chooses the predicate $p$?}  In a democratic society, the answer is
+ideally ``the community of interpreters themselves,'' through mechanisms
+such as democratic curriculum design, public library governance, and
+editorial independence.  In authoritarian regimes, the predicate is
+imposed by the state: a single party, a censorship bureau, or a
+supreme leader determines what ideas are admitted to the national
+repertoire.
+
+The formal framework reveals that this difference is not merely
+quantitative (how much censorship) but qualitative (who controls the
+structural operation).  The predicate $p$ is a \emph{function}, and the
+choice of function space matters: a community that can choose from a
+rich space of predicates (diverse curricula, multiple publishers,
+independent media) has a structurally different curatorial capacity than
+one restricted to a single state-imposed predicate.
+
+\subsection{Curation and Inequality}
+
+Bourdieu's analysis of cultural capital implies that curation is
+unevenly distributed.  The children of the bourgeoisie enter school
+with repertoires already curated by family exposure to art, literature,
+and cosmopolitan experience.  The children of the working class enter
+with repertoires curated by material necessity.  The school then applies
+a uniform predicate---the curriculum---to both groups, but the
+\emph{expansion} operations are different: the bourgeois child
+encounters new ideas that resonate with an already-curated repertoire,
+while the working-class child encounters ideas for which no resonating
+elements exist in their current repertoire.
+
+Formally, if $\mathbf{R}_{\text{bourgeois}}$ already contains elements
+that resonate with the curriculum's new ideas, then expansion is
+``sticky''---the new ideas compose meaningfully with existing ones,
+producing high-depth interpretations.  If
+$\mathbf{R}_{\text{working}}$ lacks such resonating elements, expansion
+still adds the new idea (Theorem~\ref{thm:new-idea-mem}), but the
+interpretive compositions it enables may have lower depth due to the
+absence of resonant partners.  Educational inequality is thus a
+\emph{compositional} phenomenon: it arises not from differential access
+to ideas per se, but from differential resonance between new ideas and
+existing repertoires.
+
+\subsection{Repertoire Diversity as Public Good}
+
+A society's collective repertoire---the union of all individual
+repertoires---determines its collective interpretive capacity.  If every
+citizen curates by the same predicate (ideological conformity), the
+collective repertoire is no larger than a single individual's.  If
+citizens curate by diverse predicates (ideological pluralism), the
+collective repertoire is the union of many differently curated subsets,
+and is therefore larger.
+
+This suggests a formal argument for intellectual diversity as a public
+good: a society with diverse curatorial predicates has a strictly larger
+collective repertoire, and therefore a strictly greater collective
+capacity to interpret novel signals.  When an unprecedented crisis
+arrives---a pandemic, an economic shock, a technological disruption---the
+society with a diverse repertoire has more interpretive resources to draw
+upon than the homogeneous society.  Censorship, which imposes a uniform
+predicate, is thus a structural risk factor for societal fragility:
+it reduces the diversity of interpretive resources available when they
+are most needed.
+
+\paragraph{Extended proof discussion: Depth bounds and curatorial
+composition.}
+The interaction between depth bounds and iterated curation
+deserves more detailed analysis.  Consider a sequence of curations
+$\operatorname{curate}(\operatorname{curate}(\mathbf{R}, p_1), p_2)$.
+By Theorem~\ref{thm:curated-depthsum} applied twice:
+\[
+  \operatorname{depthSum}(\operatorname{curate}(
+    \operatorname{curate}(\mathbf{R}, p_1), p_2))
+  \;\le\;
+  \operatorname{depthSum}(\operatorname{curate}(\mathbf{R}, p_1))
+  \;\le\;
+  \operatorname{depthSum}(\mathbf{R}).
+\]
+Each curation pass can only decrease depth, so iterated curation by
+different predicates produces a monotone-decreasing sequence of depth
+sums.  This means that the order of application does not matter for the
+\emph{direction} of the inequality (both orderings lose depth), but it
+may matter for the \emph{amount} of depth lost.
+
+Specifically, if $p_1$ removes deep elements and $p_2$ removes shallow
+elements, the total depth loss is the sum of the depths of all removed
+elements.  But if $p_1$ removes some elements that $p_2$ would also have
+removed, the compound curation $\operatorname{curate}(\cdot, p_1 \wedge
+p_2)$---applying both predicates simultaneously---may yield a different
+depth sum than either sequential application.  The key structural
+insight is that $\operatorname{curate}(\operatorname{curate}(\mathbf{R},
+p_1), p_2) = \operatorname{curate}(\mathbf{R}, p_1 \wedge p_2)$
+when both predicates are applied to the same elements, which follows
+from the fact that $\operatorname{filter}(p_2,
+\operatorname{filter}(p_1, \mathbf{R})) =
+\operatorname{filter}(p_1 \wedge p_2, \mathbf{R})$ for any list
+$\mathbf{R}$.  This filter-conjunction lemma is the formal basis of the
+observation that layered censorship (first political, then moral, then
+aesthetic) is equivalent to a single pass with a conjunctive predicate.
+
+% ----------------------------------------------------------------
+\section{Conclusion}
+\label{sec:ch15-conclusion}
+% ----------------------------------------------------------------
+
+Repertoire curation, formalized in IDT, reveals the structural anatomy of
+cultural management.  Curation is subtractive
+(Theorem~\ref{thm:curate-length}), idempotent
+(Theorem~\ref{thm:curate-idempotent}), and depth-reducing
+(Theorem~\ref{thm:curated-depthsum}).  Expansion is additive
+(Theorem~\ref{thm:expand-length}), monotone
+(Theorem~\ref{thm:old-survive}), and depth-increasing
+(Theorem~\ref{thm:expanded-depthsum}).  The interaction of the two---expand
+then curate---is determined entirely by whether the new idea passes the
+filter (Theorems~\ref{thm:expand-curate-accept}
+and~\ref{thm:expand-curate-reject}).
+
+These results connect to four domains of cultural practice.  In
+\emph{museum theory}, curation is the fundamental operation of exhibition
+design---and our theorems show that it is structurally subtractive.  In
+\emph{education policy}, expansion is the mechanism of \emph{Bildung},
+and each lesson adds exactly one interpretive possibility.  In
+\emph{censorship dynamics}, vacuous curation produces cultural void
+(Theorem~\ref{thm:vacuous-curate}), and the expand-then-curate-rejecting
+result (Theorem~\ref{thm:expand-curate-reject}) formalizes the structural
+erasure of dissent.  In \emph{Bourdieu's sociology}, cultural capital grows
+linearly with expansion (Theorem~\ref{thm:expanded-depthsum}) and can only
+shrink through curation (Theorem~\ref{thm:curated-depthsum}).
+
+The five chapters of this sequence---marketplace competition
+(Chapter~\ref{ch:marketplace}), stable matching
+(Chapter~\ref{ch:matching}), coalition value
+(Chapter~\ref{ch:coalition}), ideatic auction
+(Chapter~\ref{ch:auction}), and repertoire curation---together provide a
+comprehensive game-theoretic framework for cultural dynamics within
+Ideatic Diffusion Theory.  Each chapter isolates a different mode of
+cultural interaction---competition, pairing, cooperation, bidding,
+management---and derives structural constraints that hold across all
+instantiations of the IDT axioms.  The resulting picture is one of
+\emph{bounded cultural possibility}: every mode of interaction is
+constrained by subadditivity, identity, and resonance, the three pillars
+on which the theory rests.

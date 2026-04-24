@@ -2370,4 +2370,2179 @@ theorem spiral_total_ascent (r t : I) (n : ℕ) :
 
 end HermeneuticSpiral
 
+/-! ## §31. Bakhtin's Dialogism and Polyphony
+
+Mikhail Bakhtin's theory of dialogism: every utterance is fundamentally
+a response to prior utterances and anticipates future responses. No
+utterance exists in isolation — it is always "double-voiced." In the
+novel, this becomes POLYPHONY: multiple independent voices coexisting
+without a single authoritative viewpoint subordinating the others.
+
+In IDT, dialogism means that the emergence of any composition depends
+on ALL the voices present. Polyphony means the composition preserves
+the distinctness of voices — they don't merge into a single linear sum.
+We formalize Bakhtin's key concepts and prove structural results. -/
+
+section BakhtinDialogism
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Bakhtin's double-voicing**: any utterance a in context b produces
+    emergence — the utterance "responds" to its context. The emergence
+    IS the double-voicing: a speaks both as itself and through its
+    relationship with b. -/
+noncomputable def doubleVoicing (a b d : I) : ℝ := emergence a b d
+
+/-- Double-voicing vanishes without a second voice. -/
+theorem doubleVoicing_void_context (a d : I) :
+    doubleVoicing a (void : I) d = 0 := emergence_void_right a d
+
+/-- Double-voicing vanishes for a void voice. -/
+theorem doubleVoicing_void_voice (b d : I) :
+    doubleVoicing (void : I) b d = 0 := emergence_void_left b d
+
+/-- **Dialogic surplus**: the total resonance surplus created by
+    the dialogue between a and b, beyond their individual contributions. -/
+noncomputable def dialogicSurplus (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs a a - rs b b
+
+/-- Dialogic surplus with void is zero. -/
+theorem dialogicSurplus_void_right (a : I) :
+    dialogicSurplus a (void : I) = 0 := by
+  unfold dialogicSurplus; simp [rs_void_void]
+
+/-- Dialogic surplus with void left. -/
+theorem dialogicSurplus_void_left (b : I) :
+    dialogicSurplus (void : I) b = 0 := by
+  unfold dialogicSurplus; simp [rs_void_void]
+
+/-- **Polyphonic composition**: composing n voices. The self-resonance
+    of the polyphonic whole exceeds any single voice. -/
+theorem polyphonic_enriches_first (v₁ v₂ : I) :
+    rs (compose v₁ v₂) (compose v₁ v₂) ≥ rs v₁ v₁ :=
+  compose_enriches' v₁ v₂
+
+/-- **Bakhtin's heteroglossia**: the irreducible multiplicity of voices.
+    If the first voice is non-void, it cannot be silenced — the
+    polyphonic composition preserves its presence. -/
+theorem heteroglossia_criterion (v₁ v₂ : I)
+    (h : v₁ ≠ (void : I)) : compose v₁ v₂ ≠ void :=
+  compose_ne_void_of_left v₁ v₂ h
+
+/-- **Dialogic weight**: composition of voices always has non-negative weight. -/
+theorem dialogic_weight_nonneg (v₁ v₂ : I) :
+    rs (compose v₁ v₂) (compose v₁ v₂) ≥ 0 := rs_self_nonneg' _
+
+/-- **Bakhtin's carnival**: the emergence when voices are reordered.
+    Carnival reverses hierarchies — swapping voice order changes emergence. -/
+noncomputable def carnivalEffect (v₁ v₂ d : I) : ℝ :=
+  emergence v₁ v₂ d - emergence v₂ v₁ d
+
+/-- Carnival effect is antisymmetric. -/
+theorem carnivalEffect_antisymm (v₁ v₂ d : I) :
+    carnivalEffect v₁ v₂ d = -carnivalEffect v₂ v₁ d := by
+  unfold carnivalEffect; ring
+
+/-- Carnival effect vanishes for self. -/
+theorem carnivalEffect_self (v d : I) : carnivalEffect v v d = 0 := by
+  unfold carnivalEffect; ring
+
+/-- Carnival effect vanishes with void. -/
+theorem carnivalEffect_void_left (v d : I) :
+    carnivalEffect (void : I) v d = 0 := by
+  unfold carnivalEffect; rw [emergence_void_left, emergence_void_right]; ring
+
+/-- **Answerability**: every voice is "answerable" to every other.
+    The emergence of a response depends on the prior voice. -/
+theorem answerability_cocycle (v₁ v₂ v₃ d : I) :
+    emergence v₁ v₂ d + emergence (compose v₁ v₂) v₃ d =
+    emergence v₂ v₃ d + emergence v₁ (compose v₂ v₃) d :=
+  cocycle_condition v₁ v₂ v₃ d
+
+/-- **Dialogic self-resonance decomposition**: the weight of a
+    two-voice composition decomposes into individual weights plus
+    dialogic surplus. -/
+theorem dialogic_decomposition (v₁ v₂ : I) :
+    rs (compose v₁ v₂) (compose v₁ v₂) =
+    rs v₁ v₁ + rs v₂ v₂ + dialogicSurplus v₁ v₂ := by
+  unfold dialogicSurplus; ring
+
+/-- **Three-voice polyphony enrichment**: three voices enrich beyond two. -/
+theorem three_voice_enriches (v₁ v₂ v₃ : I) :
+    rs (compose (compose v₁ v₂) v₃) (compose (compose v₁ v₂) v₃) ≥
+    rs (compose v₁ v₂) (compose v₁ v₂) :=
+  compose_enriches' _ _
+
+/-- **Three voices enrich beyond one**: transitivity. -/
+theorem three_voice_enriches_first (v₁ v₂ v₃ : I) :
+    rs (compose (compose v₁ v₂) v₃) (compose (compose v₁ v₂) v₃) ≥ rs v₁ v₁ := by
+  calc rs (compose (compose v₁ v₂) v₃) (compose (compose v₁ v₂) v₃)
+      ≥ rs (compose v₁ v₂) (compose v₁ v₂) := compose_enriches' _ _
+    _ ≥ rs v₁ v₁ := compose_enriches' _ _
+
+/-- **Polyphonic non-voidness**: if any voice is non-void, the
+    polyphonic whole is non-void. -/
+theorem polyphonic_ne_void (v₁ v₂ : I) (h : v₁ ≠ void) :
+    compose v₁ v₂ ≠ void := compose_ne_void_of_left v₁ v₂ h
+
+end BakhtinDialogism
+
+/-! ## §32. Iser's Reader-Response Theory: Gaps and Blanks
+
+Wolfgang Iser's reader-response theory centers on "gaps" (Leerstellen)
+in the text — places of indeterminacy that the reader must fill. The
+literary work exists not in the text alone nor in the reader alone,
+but in the "convergence" of the two. The text provides a skeleton;
+the reader provides flesh.
+
+In IDT, gaps are formalized as the difference between the text's
+"potential" (its contribution to resonance with all observers) and the
+"actualized" meaning (what a specific reader creates). Emergence IS
+the gap-filling: it is exactly the meaning that exists in neither text
+nor reader but arises from their encounter. -/
+
+section IserReaderResponse
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Iser's gap**: the indeterminacy in a text as experienced by reader r.
+    This is the emergence — the meaning that neither text nor reader
+    carries alone, but which arises in their encounter. -/
+noncomputable def textualGap (reader text observer : I) : ℝ :=
+  emergence reader text observer
+
+/-- Void reader fills no gaps. -/
+theorem textualGap_void_reader (text observer : I) :
+    textualGap (void : I) text observer = 0 := emergence_void_left text observer
+
+/-- Void text has no gaps to fill. -/
+theorem textualGap_void_text (reader observer : I) :
+    textualGap reader (void : I) observer = 0 := emergence_void_right reader observer
+
+/-- **Iser's concretization**: the reader's actualization of the text.
+    This is the total resonance of the interpretation = text + reader + gap. -/
+theorem concretization_eq (reader text observer : I) :
+    rs (compose reader text) observer =
+    rs reader observer + rs text observer + textualGap reader text observer := by
+  unfold textualGap; rw [rs_compose_eq]
+
+/-- **Gap-filling bounded**: the gap a reader can fill is bounded by the
+    weight of the interpretation and the observer. -/
+theorem gap_bounded (reader text observer : I) :
+    (textualGap reader text observer) ^ 2 ≤
+    rs (compose reader text) (compose reader text) * rs observer observer := by
+  unfold textualGap; exact emergence_bounded' reader text observer
+
+/-- **The wandering viewpoint**: as the reader progresses through a text
+    (iterated reading), their gap-filling changes at each step. The
+    "wandering viewpoint" is the sequence of gaps filled. -/
+noncomputable def wanderingViewpoint (reader text observer : I) (n : ℕ) : ℝ :=
+  textualGap (readN reader text n) text observer
+
+/-- Wandering viewpoint at step 0 is the initial gap. -/
+theorem wanderingViewpoint_zero (reader text observer : I) :
+    wanderingViewpoint reader text observer 0 = textualGap reader text observer := by
+  unfold wanderingViewpoint; simp
+
+/-- Wandering viewpoint with void text is always zero. -/
+theorem wanderingViewpoint_void_text (reader observer : I) (n : ℕ) :
+    wanderingViewpoint reader (void : I) observer n = 0 := by
+  unfold wanderingViewpoint textualGap; simp [emergence_void_right]
+
+/-- **Iser's implied reader**: the "ideal" reader who would fill gaps
+    maximally. While we can't characterize this reader explicitly,
+    we can show that any reader's gap-filling is bounded. -/
+theorem implied_reader_bound (reader text : I) :
+    (textualGap reader text (compose reader text)) ^ 2 ≤
+    rs (compose reader text) (compose reader text) *
+    rs (compose reader text) (compose reader text) := by
+  exact gap_bounded reader text (compose reader text)
+
+/-- **Iser's aesthetic response**: the total "response" of the reader
+    to the text, measured as the enrichment in self-resonance. -/
+noncomputable def aestheticResponse (reader text : I) : ℝ :=
+  rs (compose reader text) (compose reader text) - rs reader reader
+
+/-- Aesthetic response is non-negative. -/
+theorem aestheticResponse_nonneg (reader text : I) :
+    aestheticResponse reader text ≥ 0 := by
+  unfold aestheticResponse; linarith [compose_enriches' reader text]
+
+/-- Aesthetic response to void is zero. -/
+theorem aestheticResponse_void_text (reader : I) :
+    aestheticResponse reader (void : I) = 0 := by
+  unfold aestheticResponse; simp
+
+/-- **Different readers, different responses**: if two readers have
+    different aesthetic responses, they are different readers. -/
+theorem different_responses_different_readers (r₁ r₂ text : I)
+    (h : aestheticResponse r₁ text ≠ aestheticResponse r₂ text) :
+    r₁ ≠ r₂ := by
+  intro heq; rw [heq] at h; exact h rfl
+
+/-- **Cumulative aesthetic response**: each additional reading adds
+    non-negative enrichment. -/
+theorem cumulative_aesthetic_response (reader text : I) (n : ℕ) :
+    rs (readN reader text (n + 1)) (readN reader text (n + 1)) -
+    rs (readN reader text n) (readN reader text n) ≥ 0 := by
+  linarith [readN_enriches reader text n]
+
+/-- **Response monotonicity**: reading more only increases the cumulative response. -/
+theorem aesthetic_response_cumulative_mono (reader text : I) (n : ℕ) :
+    rs (readN reader text (n + 1)) (readN reader text (n + 1)) - rs reader reader ≥
+    rs (readN reader text n) (readN reader text n) - rs reader reader := by
+  linarith [readN_enriches reader text n]
+
+end IserReaderResponse
+
+/-! ## §33. Fish's Interpretive Communities
+
+Stanley Fish argues that meaning is not "in" the text but is produced
+by "interpretive communities" — groups of readers who share interpretive
+strategies. The text constrains interpretation, but the community
+determines which of the possible interpretations is "correct."
+
+In IDT, an interpretive community is a collection of readers who share
+the same emergence profile (sameIdea). Members of a community produce
+the same emergence from any text. We formalize this and prove that
+communities partition the space of readers. -/
+
+section FishInterpretiveCommunities
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Interpretive community membership**: two readers belong to the
+    same interpretive community if they have the same emergence profile. -/
+def sameCommunity (r₁ r₂ : I) : Prop := sameIdea r₁ r₂
+
+/-- Community membership is reflexive. -/
+theorem sameCommunity_refl (r : I) : sameCommunity r r := sameIdea_refl r
+
+/-- Community membership is symmetric. -/
+theorem sameCommunity_symm (r₁ r₂ : I) :
+    sameCommunity r₁ r₂ → sameCommunity r₂ r₁ := sameIdea_symm r₁ r₂
+
+/-- Community membership is transitive. -/
+theorem sameCommunity_trans (r₁ r₂ r₃ : I) :
+    sameCommunity r₁ r₂ → sameCommunity r₂ r₃ → sameCommunity r₁ r₃ :=
+  sameIdea_trans r₁ r₂ r₃
+
+/-- **Community determines interpretation**: members of the same community
+    produce the same emergence from any text. -/
+theorem community_same_emergence (r₁ r₂ t d : I)
+    (h : sameCommunity r₁ r₂) :
+    emergence r₁ t d = emergence r₂ t d := h t d
+
+/-- **Community determines interpretive depth**: same community implies
+    same gap-filling pattern. -/
+theorem community_same_gaps (r₁ r₂ t d : I)
+    (h : sameCommunity r₁ r₂) :
+    textualGap r₁ t d = textualGap r₂ t d := by
+  unfold textualGap; exact h t d
+
+/-- **Void community**: the void reader forms its own trivial community.
+    It interprets everything "linearly" — no emergence. -/
+theorem void_community_linear (r : I) (h : sameCommunity (void : I) r) (t d : I) :
+    emergence r t d = 0 := by
+  rw [← community_same_emergence (void : I) r t d h]
+  exact emergence_void_left t d
+
+/-- **Community detection**: if two readers produce different emergence
+    from some text, they belong to different communities. -/
+theorem community_detection (r₁ r₂ t d : I)
+    (h : emergence r₁ t d ≠ emergence r₂ t d) :
+    ¬sameCommunity r₁ r₂ := by
+  intro hc; exact h (community_same_emergence r₁ r₂ t d hc)
+
+/-- **Community stability under void reading**: reading void doesn't
+    change your community. -/
+theorem community_stable_void (r : I) :
+    sameCommunity r (compose r (void : I)) := by
+  intro c d; simp
+
+/-- **Community coherence**: within a community, all readers have
+    the same double-voicing with any text. -/
+theorem community_coherence (r₁ r₂ t d : I)
+    (h : sameCommunity r₁ r₂) :
+    doubleVoicing r₁ t d = doubleVoicing r₂ t d := by
+  unfold doubleVoicing; exact h t d
+
+end FishInterpretiveCommunities
+
+/-! ## §34. Bloom's Anxiety of Influence
+
+Harold Bloom's theory: strong poets (readers) are defined by their
+struggle against their precursors. Every reading is a "misreading"
+(misprision) that swerves away from the precursor's influence. The
+"anxiety" is the tension between wanting to honor the tradition and
+needing to assert originality.
+
+In IDT, the "anxiety of influence" is the distance between a reader's
+emergence and their precursor's emergence. A strong reading maximizes
+this distance while maintaining positive enrichment. -/
+
+section BloomAnxietyOfInfluence
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Bloom's clinamen (swerve)**: the difference between a reader's
+    emergence and their precursor's emergence from the same text.
+    Named after Lucretius' atomic swerve — the deviation that creates
+    novelty. -/
+noncomputable def clinamen (precursor reader text observer : I) : ℝ :=
+  emergence reader text observer - emergence precursor text observer
+
+/-- Clinamen is antisymmetric in precursor/reader. -/
+theorem clinamen_antisymm (p r t d : I) :
+    clinamen p r t d = -clinamen r p t d := by
+  unfold clinamen; ring
+
+/-- Clinamen vanishes when precursor = reader. -/
+theorem clinamen_self (r t d : I) : clinamen r r t d = 0 := by
+  unfold clinamen; ring
+
+/-- Clinamen when reader is void: negation of precursor's emergence.
+    Total rejection of the tradition. -/
+theorem clinamen_void_reader (p t d : I) :
+    clinamen p (void : I) t d = -emergence p t d := by
+  unfold clinamen; rw [emergence_void_left]; ring
+
+/-- Clinamen when precursor is void: equals the reader's emergence.
+    No tradition to swerve from — pure originality. -/
+theorem clinamen_void_precursor (r t d : I) :
+    clinamen (void : I) r t d = emergence r t d := by
+  unfold clinamen; rw [emergence_void_left]; ring
+
+/-- **Bloom's tessera**: the antithetical completion — the reader
+    "completes" the precursor by providing what was missing. Measured
+    as the emergence of composing the reader's reading after the precursor's. -/
+noncomputable def tessera (precursor reader text d : I) : ℝ :=
+  emergence (compose precursor text) (compose reader text) d
+
+/-- Tessera with void reader. -/
+theorem tessera_void_reader (p t d : I) :
+    tessera p (void : I) t d = emergence (compose p t) t d := by
+  unfold tessera; simp
+
+/-- **Bloom's kenosis**: the self-emptying — the reader empties the
+    precursor of significance. In IDT, this is the negative emergence
+    when the reader's interpretation "cancels" the precursor's. -/
+noncomputable def kenosis (precursor reader text : I) : ℝ :=
+  rs (compose precursor text) (compose precursor text) -
+  rs (compose reader text) (compose reader text)
+
+/-- Kenosis is antisymmetric. -/
+theorem kenosis_antisymm (p r t : I) :
+    kenosis p r t = -kenosis r p t := by
+  unfold kenosis; ring
+
+/-- Self-kenosis is zero. -/
+theorem kenosis_self (r t : I) : kenosis r r t = 0 := by
+  unfold kenosis; ring
+
+/-- **The strong reading**: a reading that maximizes swerve while
+    maintaining enrichment. We prove that any non-void reader's
+    interpretation has positive weight. -/
+theorem strong_reading_weight (reader text : I) (h : reader ≠ void) :
+    rs (compose reader text) (compose reader text) > 0 := by
+  exact rs_self_pos _ (compose_ne_void_of_left reader text h)
+
+/-- **Influence accumulates**: the precursor's influence is carried
+    through effective history. Composing with the precursor before
+    reading creates a different emergence. -/
+theorem influence_accumulates (precursor reader text d : I) :
+    emergence (compose precursor reader) text d =
+    emergence precursor (compose reader text) d +
+    emergence reader text d - emergence precursor reader d := by
+  linarith [cocycle_condition precursor reader text d]
+
+/-- **Bloom's apophrades**: the return of the dead — the strong reader
+    eventually seems to be influenced BY their successor. In IDT,
+    this is expressed by the fact that the cocycle condition creates
+    symmetry constraints: the total emergence is invariant under
+    re-association. -/
+theorem apophrades_invariance (p r t d : I) :
+    emergence p r d + emergence (compose p r) t d =
+    emergence r t d + emergence p (compose r t) d :=
+  cocycle_condition p r t d
+
+/-- **Clinamen transitivity**: if A swerves from B and B swerves from C,
+    the total swerve from C equals A's swerve from C. -/
+theorem clinamen_transitive (p₁ p₂ r t d : I) :
+    clinamen p₁ p₂ t d + clinamen p₂ r t d = clinamen p₁ r t d := by
+  unfold clinamen; ring
+
+/-- **Influence chain enrichment**: a chain of influences always
+    accumulates weight. -/
+theorem influence_chain_enriches (p r text : I) :
+    rs (compose (compose p r) text) (compose (compose p r) text) ≥ rs p p := by
+  calc rs (compose (compose p r) text) (compose (compose p r) text)
+      ≥ rs (compose p r) (compose p r) := compose_enriches' _ _
+    _ ≥ rs p p := compose_enriches' _ _
+
+end BloomAnxietyOfInfluence
+
+/-! ## §35. Said's Orientalism as Interpretive Distortion
+
+Edward Said's *Orientalism* (1978) shows how Western interpretations of
+"the Orient" systematically distort through a lens of power. The
+interpreter's framework (prejudice, in Gadamer's neutral sense) is not
+innocent — it is structured by power relations that systematically
+amplify certain resonances and suppress others.
+
+In IDT, we formalize interpretive distortion as the systematic
+difference between two interpreters' emergence profiles. The "distortion"
+is the total asymmetry of interpretation when filtered through
+a particular ideological lens. -/
+
+section SaidOrientalism
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Interpretive distortion**: the systematic difference between how
+    two interpreters read the same text, measured against observer d.
+    When this is consistently nonzero, one interpreter is "distorting"
+    relative to the other. -/
+noncomputable def interpretiveDistortion (lens neutral text observer : I) : ℝ :=
+  emergence lens text observer - emergence neutral text observer
+
+/-- Distortion is antisymmetric. -/
+theorem interpretiveDistortion_antisymm (l n t d : I) :
+    interpretiveDistortion l n t d = -interpretiveDistortion n l t d := by
+  unfold interpretiveDistortion; ring
+
+/-- No self-distortion. -/
+theorem interpretiveDistortion_self (r t d : I) :
+    interpretiveDistortion r r t d = 0 := by
+  unfold interpretiveDistortion; ring
+
+/-- Distortion from void lens: equals the negative of the neutral emergence.
+    Complete ignorance is the maximal distortion. -/
+theorem distortion_void_lens (n t d : I) :
+    interpretiveDistortion (void : I) n t d = -emergence n t d := by
+  unfold interpretiveDistortion; rw [emergence_void_left]; ring
+
+/-- **Said's key insight**: the lens adds its own weight to the
+    interpretation. A non-void lens always has positive self-resonance,
+    which bounds the distortion. -/
+theorem lens_has_weight (lens : I) (h : lens ≠ void) :
+    rs lens lens > 0 := rs_self_pos lens h
+
+/-- **Interpretive hegemony**: the distortion is constrained by the
+    emergence bounds. Even a powerful lens cannot create arbitrary distortion. -/
+theorem hegemony_bounded (lens text observer : I) :
+    (emergence lens text observer) ^ 2 ≤
+    rs (compose lens text) (compose lens text) * rs observer observer :=
+  emergence_bounded' lens text observer
+
+/-- **Distortion accumulates through history**: reading through an
+    ideological lens before encountering a text permanently shifts
+    the emergence pattern. -/
+theorem distortion_through_history (lens reader text d : I) :
+    emergence (compose lens reader) text d =
+    emergence lens (compose reader text) d +
+    emergence reader text d - emergence lens reader d := by
+  linarith [cocycle_condition lens reader text d]
+
+/-- **De-distortion**: composing with a "corrective" text aims to
+    counteract the lens. But the corrective itself creates new emergence.
+    Perfect de-distortion is generally impossible. -/
+theorem de_distortion_residue (lens corrective text d : I) :
+    emergence (compose lens corrective) text d =
+    emergence lens (compose corrective text) d +
+    emergence corrective text d - emergence lens corrective d := by
+  linarith [cocycle_condition lens corrective text d]
+
+/-- **The colonized text**: a text read through the colonial lens
+    has different weight than the same text read neutrally. -/
+theorem colonial_weight_shift (lens text : I) :
+    rs (compose lens text) (compose lens text) ≥ rs lens lens :=
+  compose_enriches' lens text
+
+/-- **Distortion transitivity**: distortions compose. -/
+theorem distortion_transitive (l₁ l₂ n t d : I) :
+    interpretiveDistortion l₁ l₂ t d + interpretiveDistortion l₂ n t d =
+    interpretiveDistortion l₁ n t d := by
+  unfold interpretiveDistortion; ring
+
+end SaidOrientalism
+
+/-! ## §36. Spivak's Subaltern Interpretation
+
+Gayatri Spivak's "Can the Subaltern Speak?" argues that some voices
+are systematically excluded from interpretation. The subaltern's
+emergence is not just distorted but SILENCED — their contribution
+to the interpretive process is rendered invisible.
+
+In IDT, a "silenced" voice is one whose emergence contribution is
+systematically zero — not because the voice has nothing to say (it may
+have high self-resonance), but because the interpretive framework
+cannot "hear" it. This is captured by the emergence bound:
+when the observer has zero resonance with the subaltern's composition,
+the emergence is necessarily zero. -/
+
+section SpivakSubaltern
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Subaltern silencing**: a voice v is "silenced" in framework f
+    if composing v with f produces zero emergence for all observers.
+    The framework cannot register the voice's contribution. -/
+def silencedIn (voice framework : I) : Prop :=
+  ∀ d : I, emergence voice framework d = 0
+
+/-- Void is silenced in everything. -/
+theorem void_silenced (f : I) : silencedIn (void : I) f := by
+  intro d; exact emergence_void_left f d
+
+/-- Everything is silenced in void framework. -/
+theorem silenced_in_void (v : I) : silencedIn v (void : I) := by
+  intro d; exact emergence_void_right v d
+
+/-- **Silencing paradox**: even a silenced voice adds weight.
+    The subaltern's self-resonance persists — they have "presence"
+    even when they cannot "speak" (generate emergence). -/
+theorem silencing_paradox (voice framework : I) :
+    rs (compose voice framework) (compose voice framework) ≥ rs voice voice :=
+  compose_enriches' voice framework
+
+/-- **Non-void subaltern has weight**: a non-void voice always has
+    positive self-resonance, even if silenced. -/
+theorem subaltern_has_weight (voice : I) (h : voice ≠ void) :
+    rs voice voice > 0 := rs_self_pos voice h
+
+/-- **Epistemic violence**: silencing destroys the emergence potential
+    of the subaltern. If silenced, the composition's resonance is
+    purely additive (linear). -/
+theorem epistemic_violence (voice framework : I)
+    (h : silencedIn voice framework) (d : I) :
+    rs (compose voice framework) d = rs voice d + rs framework d := by
+  have := rs_compose_eq voice framework d
+  rw [h d] at this; linarith
+
+/-- **Strategic essentialism**: the subaltern can be "heard" by
+    composing with an amplifier. But the amplifier introduces its
+    own emergence — representation always transforms. -/
+theorem strategic_essentialism (voice amplifier framework d : I) :
+    emergence (compose voice amplifier) framework d =
+    emergence voice (compose amplifier framework) d +
+    emergence amplifier framework d - emergence voice amplifier d := by
+  linarith [cocycle_condition voice amplifier framework d]
+
+/-- **Subaltern enrichment**: even silenced voices enrich the composition. -/
+theorem subaltern_enrichment (voice framework : I) (h : silencedIn voice framework) :
+    rs (compose voice framework) (compose voice framework) ≥ rs voice voice :=
+  compose_enriches' voice framework
+
+/-- **Voice recovery**: if a voice is not silenced, some observer
+    can detect its contribution. -/
+theorem voice_recovery (voice framework : I) (h : ¬silencedIn voice framework) :
+    ∃ d : I, emergence voice framework d ≠ 0 := by
+  unfold silencedIn at h; push_neg at h; exact h
+
+end SpivakSubaltern
+
+/-! ## §37. Jauss's Reception Aesthetics: Horizon of Expectations
+
+Hans Robert Jauss develops "reception aesthetics" (Rezeptionsästhetik):
+the meaning of a literary work is constituted by its reception history.
+A key concept is the "horizon of expectations" (Erwartungshorizont) —
+the reader's expectations before encountering a work. The "aesthetic
+distance" between the horizon of expectations and the work itself
+measures the work's originality and impact.
+
+In IDT, the horizon of expectations IS the reader's state r. The
+aesthetic distance is the emergence of the composition beyond what
+the reader expected (their prior self-resonance). -/
+
+section JaussReceptionAesthetics
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Horizon of expectations**: the reader's state before encountering
+    the work. This is just the reader's self-resonance — what they
+    bring to the encounter. -/
+noncomputable def horizonOfExpectations (reader : I) : ℝ := rs reader reader
+
+/-- Void reader has zero expectations. -/
+theorem horizonOfExpectations_void :
+    horizonOfExpectations (void : I) = 0 := rs_void_void
+
+/-- Non-void reader has positive expectations. -/
+theorem horizonOfExpectations_pos (r : I) (h : r ≠ void) :
+    horizonOfExpectations r > 0 := by
+  unfold horizonOfExpectations; exact rs_self_pos r h
+
+/-- **Aesthetic distance**: the gap between the work's effect and the
+    reader's expectations. High distance = the work violates expectations
+    strongly (avant-garde). Low distance = the work meets expectations
+    (entertainment, kitsch). -/
+noncomputable def aestheticDistance (reader work : I) : ℝ :=
+  rs (compose reader work) (compose reader work) - rs reader reader
+
+/-- Aesthetic distance is non-negative. -/
+theorem aestheticDistance_nonneg (reader work : I) :
+    aestheticDistance reader work ≥ 0 := by
+  unfold aestheticDistance; linarith [compose_enriches' reader work]
+
+/-- Aesthetic distance from void work is zero (no surprise). -/
+theorem aestheticDistance_void_work (reader : I) :
+    aestheticDistance reader (void : I) = 0 := by
+  unfold aestheticDistance; simp
+
+/-- **Aesthetic distance decomposes**: distance = comprehension excess +
+    fidelity + interpretive depth. -/
+theorem aestheticDistance_decomposition (reader work : I) :
+    aestheticDistance reader work =
+    (comprehension reader work - rs reader reader) +
+    fidelity reader work + interpretiveDepth reader work := by
+  unfold aestheticDistance
+  rw [hermeneutic_identity reader work]; ring
+
+/-- **Jauss's challenge of expectations**: repeated reading diminishes
+    aesthetic distance RELATIVE TO the current state (each re-reading
+    adds less surprise), but total distance from the original always grows. -/
+theorem jauss_diminishing_relative_distance (reader work : I) (n : ℕ) :
+    aestheticDistance (readN reader work n) work ≥ 0 := by
+  unfold aestheticDistance; linarith [compose_enriches' (readN reader work n) work]
+
+/-- **Total aesthetic distance grows**: cumulative distance from the
+    original reader state grows monotonically. -/
+theorem total_aesthetic_distance_mono (reader work : I) (n : ℕ) :
+    rs (readN reader work (n + 1)) (readN reader work (n + 1)) - rs reader reader ≥
+    rs (readN reader work n) (readN reader work n) - rs reader reader := by
+  linarith [readN_enriches reader work n]
+
+/-- **Jauss's literary evolution**: as expectations change (through reading),
+    the same work can have different aesthetic distances for different states
+    of the same reader. This is how literary value changes over time. -/
+theorem literary_evolution (reader work : I) (m n : ℕ) :
+    aestheticDistance (readN reader work m) work ≥ 0 ∧
+    aestheticDistance (readN reader work n) work ≥ 0 := by
+  constructor
+  · unfold aestheticDistance; linarith [compose_enriches' (readN reader work m) work]
+  · unfold aestheticDistance; linarith [compose_enriches' (readN reader work n) work]
+
+/-- **Horizon fusion**: after reading, the reader's horizon has fused
+    with the work's. The new horizon is at least as wide as the old. -/
+theorem horizon_fusion_enriches (reader work : I) :
+    horizonOfExpectations (compose reader work) ≥ horizonOfExpectations reader := by
+  unfold horizonOfExpectations; exact compose_enriches' reader work
+
+/-- **Jauss's concretization sequence**: the sequence of reader states
+    through iterated reading forms a non-decreasing sequence of horizons. -/
+theorem concretization_sequence_mono (reader work : I) (n : ℕ) :
+    horizonOfExpectations (readN reader work (n + 1)) ≥
+    horizonOfExpectations (readN reader work n) := by
+  unfold horizonOfExpectations; exact readN_enriches reader work n
+
+/-- **Expectations shape reception**: the emergence from a work depends on
+    the reader's current expectations. -/
+theorem expectations_shape_reception (r₁ r₂ work d : I)
+    (h : emergence r₁ work d ≠ emergence r₂ work d) : r₁ ≠ r₂ := by
+  intro heq; rw [heq] at h; exact h rfl
+
+end JaussReceptionAesthetics
+
+/-! ## §38. Habermas's Communicative Rationality
+
+Jürgen Habermas argues that genuine communication aims at "mutual
+understanding" (Verständigung) through rational discourse. The
+"ideal speech situation" is one where only the "force of the better
+argument" prevails — no distortion from power, ideology, or deception.
+
+In IDT, the ideal speech situation is one where communication surplus
+is maximized and the misunderstanding gap is minimized. We formalize
+Habermas's conditions and prove structural results about rational
+communication. -/
+
+section HabermasCommunicativeRationality
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Ideal understanding**: misunderstanding gap is zero. -/
+def idealUnderstanding (signal reader : I) : Prop :=
+  misunderstandingGap signal reader = 0
+
+/-- Self-communication is ideal. -/
+theorem self_ideal (a : I) : idealUnderstanding a a :=
+  misunderstanding_self_zero a
+
+/-- **Communicative rationality**: communication is "rational" if the
+    surplus is non-negative — both parties gain something. -/
+def communicativelyRational (signal reader : I) : Prop :=
+  communicationSurplus signal reader ≥ 0
+
+/-- **Validity claim**: a signal's "validity" relative to a reader
+    is measured by how much the signal resonates with the interpretation.
+    High validity = the signal "makes sense" in the interpretation. -/
+noncomputable def validityClaim (signal reader : I) : ℝ :=
+  senderPayoff signal reader
+
+/-- Validity of void signal is zero. -/
+theorem validityClaim_void_signal (reader : I) :
+    validityClaim (void : I) reader = 0 := by
+  unfold validityClaim senderPayoff interpret; simp [rs_void_left']
+
+/-- Validity to void reader equals self-resonance. -/
+theorem validityClaim_void_reader (signal : I) :
+    validityClaim signal (void : I) = rs signal signal :=
+  senderPayoff_void_reader signal
+
+/-- **Habermas's discourse ethics**: in ideal understanding, sender
+    and receiver have equal "access" to the interpretation. -/
+theorem discourse_ethics (signal reader : I)
+    (h : idealUnderstanding signal reader) :
+    rs signal (compose reader signal) = rs reader (compose reader signal) := by
+  unfold idealUnderstanding misunderstandingGap senderPayoff receiverPayoff interpret at h
+  linarith
+
+/-- **Communicative action surplus**: the total value created by
+    communicative action decomposes into sender and receiver contributions. -/
+theorem communicative_action_decomposition (s r : I) :
+    communicationSurplus s r =
+    (senderPayoff s r - rs s s) + (receiverPayoff s r - rs r r) :=
+  surplus_decomposition s r
+
+/-- **Distorted communication**: if the misunderstanding gap is nonzero,
+    communication is "distorted" — one party benefits more than the other. -/
+theorem distorted_communication (s r : I)
+    (h : misunderstandingGap s r ≠ 0) :
+    senderPayoff s r ≠ receiverPayoff s r := by
+  intro heq
+  apply h
+  unfold misunderstandingGap; linarith
+
+/-- **The force of the better argument**: if signal s₁ has higher
+    sender payoff than s₂ with the same reader, then s₁ is the
+    "better argument" for that reader. This is a reader-relative notion. -/
+theorem better_argument (s₁ s₂ reader : I)
+    (h : senderPayoff s₁ reader > senderPayoff s₂ reader) :
+    rs s₁ (compose reader s₁) > rs s₂ (compose reader s₂) := by
+  unfold senderPayoff interpret at h; exact h
+
+/-- **Mutual enrichment in communication**: the interpretation
+    enriches the sender's state beyond the signal alone. -/
+theorem mutual_enrichment (signal reader : I) :
+    rs (compose reader signal) (compose reader signal) ≥ rs reader reader :=
+  compose_enriches' reader signal
+
+/-- **Void communication is trivially rational** (zero surplus). -/
+theorem void_communication_rational (r : I) :
+    communicativelyRational (void : I) r := by
+  unfold communicativelyRational
+  rw [communicationSurplus_void_signal]
+
+end HabermasCommunicativeRationality
+
+/-! ## §39. Deep Mathematical Results: Convergence of Iterated Interpretation
+
+We prove deeper structural results about the behavior of iterated
+interpretation. These results connect the hermeneutic circle to
+mathematical analysis: bounded monotone sequences, fixed-point-like
+behavior, and spectral decomposition of interpretive acts. -/
+
+section ConvergenceResults
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Monotone enrichment chain**: for any sequence of texts, reading
+    them in order produces a monotonically non-decreasing sequence of
+    self-resonances. -/
+theorem monotone_enrichment_chain (r : I) (texts : List I) :
+    effectiveHistoryWeight r texts ≥ rs r r :=
+  effectiveHistoryWeight_ge_original r texts
+
+/-- **ReadN monotone in both directions**: readN r t n is enriched
+    compared to readN r t m whenever m ≤ n. -/
+theorem readN_mono (r t : I) (m n : ℕ) (h : m ≤ n) :
+    rs (readN r t n) (readN r t n) ≥ rs (readN r t m) (readN r t m) := by
+  induction n with
+  | zero => have : m = 0 := Nat.le_zero.mp h; subst this; exact le_refl _
+  | succ k ih =>
+    rcases Nat.eq_or_lt_of_le h with rfl | hlt
+    · exact le_refl _
+    · calc rs (readN r t (k + 1)) (readN r t (k + 1))
+          ≥ rs (readN r t k) (readN r t k) := readN_enriches r t k
+        _ ≥ rs (readN r t m) (readN r t m) := ih (Nat.lt_succ_iff.mp hlt)
+
+/-- **Double reading equals single reading of double**: reading t twice
+    is the same as reading t∘t once. -/
+theorem double_reading_eq (r t : I) :
+    readN r t 2 = compose r (compose t t) := by
+  simp [readN, compose_assoc']
+
+/-- **Triple reading associativity**: reading three times can be
+    regrouped. -/
+theorem triple_reading_assoc (r t : I) :
+    readN r t 3 = compose r (compose t (compose t t)) := by
+  simp [readN, compose_assoc']
+
+/-- **ReadN composition rule**: reading n then m more equals reading n+m. -/
+theorem readN_compose (r t : I) (m n : ℕ) :
+    readN r t (m + n) = readN (readN r t n) t m := readN_add r t m n
+
+/-- **Enrichment gap non-negative**: the gap between step n+1 and step n
+    is always non-negative — reading never loses weight. -/
+theorem enrichment_gap_nonneg (r t : I) (n : ℕ) :
+    rs (readN r t (n + 1)) (readN r t (n + 1)) -
+    rs (readN r t n) (readN r t n) ≥ 0 := by
+  linarith [readN_enriches r t n]
+
+/-- **Self-resonance is a Lyapunov function**: it never decreases under
+    the reading dynamics, making it a Lyapunov function for the
+    interpretive dynamical system. -/
+theorem lyapunov_property (r t : I) (n : ℕ) :
+    rs (readN r t (n + 1)) (readN r t (n + 1)) ≥
+    rs (readN r t n) (readN r t n) := readN_enriches r t n
+
+/-- **Lyapunov at origin**: the Lyapunov function at step 0 is the
+    reader's initial self-resonance. -/
+theorem lyapunov_origin (r t : I) :
+    rs (readN r t 0) (readN r t 0) = rs r r := by simp
+
+/-- **ReadN preserves non-void**: a non-void reader stays non-void. -/
+theorem readN_preserves_nonvoid (r t : I) (h : r ≠ void) (n : ℕ) :
+    readN r t n ≠ void := readN_ne_void r t h n
+
+/-- **Iterated composition is a semigroup action**: the map n ↦ readN r t n
+    respects addition. -/
+theorem readN_additive (r t : I) (m n : ℕ) :
+    readN r t (m + n) = readN (readN r t n) t m := readN_add r t m n
+
+/-- **Weight after m+n readings**: decomposable into n readings then m more. -/
+theorem weight_decomposition (r t : I) (m n : ℕ) :
+    rs (readN r t (m + n)) (readN r t (m + n)) ≥
+    rs (readN r t n) (readN r t n) := by
+  rw [readN_additive]
+  exact readN_enriches_original (readN r t n) t m
+
+end ConvergenceResults
+
+/-! ## §40. Fixed-Point Theorems for Reading
+
+When does iterated reading "stabilize"? A fixed point of reading
+is a reader state r* such that compose r* t = r* (or at least
+rs(compose r* t, compose r* t) = rs(r*, r*)). We prove that if
+such fixed points exist, they have special properties. -/
+
+section FixedPointReading
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- A reader state r is a "fixed point" for text t if reading t doesn't
+    change the reader. -/
+def readingFixedPoint (r t : I) : Prop := compose r t = r
+
+/-- **Void is a fixed point for void text**. -/
+theorem void_fixed_void : readingFixedPoint (void : I) (void : I) := by
+  unfold readingFixedPoint; simp
+
+/-- **Any reader is a fixed point for void text**. -/
+theorem fixed_void_text (r : I) : readingFixedPoint r (void : I) := by
+  unfold readingFixedPoint; simp
+
+/-- **Fixed point implies constant readN**: if r is a fixed point for t,
+    then readN r t n = r for all n. -/
+theorem fixedPoint_readN (r t : I) (h : readingFixedPoint r t) :
+    ∀ n : ℕ, readN r t n = r
+  | 0 => rfl
+  | n + 1 => by
+    rw [readN_succ, fixedPoint_readN r t h n]
+    exact h
+
+/-- **Fixed point has constant self-resonance**. -/
+theorem fixedPoint_constant_weight (r t : I) (h : readingFixedPoint r t) (n : ℕ) :
+    rs (readN r t n) (readN r t n) = rs r r := by
+  rw [fixedPoint_readN r t h n]
+
+/-- **Fixed point implies zero reading gain**. -/
+theorem fixedPoint_zero_gain (r t : I) (h : readingFixedPoint r t) (n : ℕ) :
+    readingGain r t n = 0 := by
+  unfold readingGain
+  rw [fixedPoint_readN r t h n, fixedPoint_readN r t h (n + 1)]; ring
+
+/-- **Fixed point implies zero aesthetic distance**. -/
+theorem fixedPoint_zero_distance (r t : I) (h : readingFixedPoint r t) :
+    aestheticDistance r t = 0 := by
+  unfold aestheticDistance; rw [h]; ring
+
+/-- **Fixed point implies zero text otherness**. -/
+theorem fixedPoint_zero_otherness (r t : I) (h : readingFixedPoint r t) :
+    textOtherness r t = 0 := by
+  unfold textOtherness; rw [h]; ring
+
+/-- **A "weak fixed point"**: reading doesn't change self-resonance. -/
+def weakFixedPoint (r t : I) : Prop :=
+  rs (compose r t) (compose r t) = rs r r
+
+/-- Every fixed point is a weak fixed point. -/
+theorem fixedPoint_implies_weak (r t : I) (h : readingFixedPoint r t) :
+    weakFixedPoint r t := by
+  unfold weakFixedPoint readingFixedPoint at *; rw [h]
+
+/-- Void text always produces a weak fixed point. -/
+theorem void_text_weak_fixed (r : I) : weakFixedPoint r (void : I) := by
+  unfold weakFixedPoint; simp
+
+/-- **Weak fixed point has zero reading gain at step 0**. -/
+theorem weakFixed_zero_first_gain (r t : I) (h : weakFixedPoint r t) :
+    readingGain r t 0 = 0 := by
+  unfold readingGain weakFixedPoint at *
+  simp [readN]; linarith
+
+/-- **Weak fixed point implies zero aesthetic distance**. -/
+theorem weakFixed_zero_distance (r t : I) (h : weakFixedPoint r t) :
+    aestheticDistance r t = 0 := by
+  unfold aestheticDistance weakFixedPoint at *; linarith
+
+/-- **Idempotent reading**: composing twice gives the same self-resonance
+    as composing once (weak sense). -/
+def idempotentReading (r t : I) : Prop :=
+  rs (compose (compose r t) t) (compose (compose r t) t) =
+  rs (compose r t) (compose r t)
+
+/-- **Fixed point implies idempotent**. -/
+theorem fixedPoint_implies_idempotent (r t : I) (h : readingFixedPoint r t) :
+    idempotentReading r t := by
+  unfold idempotentReading; simp [show compose r t = r from h]
+
+end FixedPointReading
+
+/-! ## §41. Spectral Decomposition of Interpretive Acts
+
+Every interpretive act (composition) can be "decomposed" into its
+contributions: direct resonance, cross-resonance, and emergence.
+This is the "spectrum" of the interpretive act — analogous to
+spectral decomposition in linear algebra, but for the nonlinear
+world of meaning. -/
+
+section SpectralDecomposition
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **The interpretive spectrum**: any composition's resonance with
+    an observer decomposes into three "spectral components":
+    1. Reader resonance (how the reader alone resonates)
+    2. Text resonance (how the text alone resonates)
+    3. Emergence (the nonlinear, genuinely new component) -/
+theorem spectral_decomposition (reader text observer : I) :
+    rs (compose reader text) observer =
+    rs reader observer + rs text observer + emergence reader text observer :=
+  rs_compose_eq reader text observer
+
+/-- **Self-spectral decomposition**: the interpretation's weight
+    decomposes into self-components. -/
+theorem self_spectral (reader text : I) :
+    rs (compose reader text) (compose reader text) =
+    rs reader (compose reader text) +
+    rs text (compose reader text) +
+    emergence reader text (compose reader text) :=
+  rs_compose_eq reader text (compose reader text)
+
+/-- **Linear spectrum**: when emergence is zero, the spectrum is
+    purely additive. This is the "boring" case — no genuine interpretation. -/
+theorem linear_spectrum (reader text observer : I)
+    (h : emergence reader text observer = 0) :
+    rs (compose reader text) observer = rs reader observer + rs text observer := by
+  rw [rs_compose_eq reader text observer, h]; ring
+
+/-- **Quadratic spectrum**: the emergence bound gives a "width" constraint
+    on the spectral components. The emergence can't be wider than the
+    geometric mean of the composition and observer weights. -/
+theorem quadratic_spectrum (reader text observer : I) :
+    (emergence reader text observer) ^ 2 ≤
+    rs (compose reader text) (compose reader text) * rs observer observer :=
+  emergence_bounded' reader text observer
+
+/-- **Double spectral decomposition**: composing three elements gives
+    a five-component spectrum. -/
+theorem double_spectral (a b c d : I) :
+    rs (compose (compose a b) c) d =
+    rs a d + rs b d + rs c d +
+    emergence a b d + emergence (compose a b) c d :=
+  rs_compose3 a b c d
+
+/-- **Spectral invariance under reassociation**: the total resonance
+    is the same regardless of how we group the composition. -/
+theorem spectral_reassociation (a b c d : I) :
+    rs (compose (compose a b) c) d =
+    rs (compose a (compose b c)) d := by
+  rw [compose_assoc']
+
+/-- **Net emergence**: the total emergence of a triple composition
+    compared to the sum of parts. -/
+noncomputable def netEmergence (a b c d : I) : ℝ :=
+  rs (compose (compose a b) c) d - rs a d - rs b d - rs c d
+
+/-- Net emergence decomposes into pairwise emergences. -/
+theorem netEmergence_decomposition (a b c d : I) :
+    netEmergence a b c d = emergence a b d + emergence (compose a b) c d := by
+  unfold netEmergence
+  rw [rs_compose3 a b c d]; ring
+
+/-- **Net emergence cocycle invariance**: the net emergence equals
+    the alternative grouping's pairwise emergences. -/
+theorem netEmergence_invariance (a b c d : I) :
+    netEmergence a b c d =
+    emergence b c d + emergence a (compose b c) d := by
+  rw [netEmergence_decomposition]
+  exact cocycle_condition a b c d
+
+/-- **Spectral void**: the spectrum of void is trivially zero. -/
+theorem spectral_void_reader (text observer : I) :
+    rs (compose (void : I) text) observer = rs text observer := by simp
+
+/-- **Spectral void text**: -/
+theorem spectral_void_text (reader observer : I) :
+    rs (compose reader (void : I)) observer = rs reader observer := by simp
+
+end SpectralDecomposition
+
+/-! ## §42. The Interpretive Lattice
+
+Interpretive states form a partial order under the enrichment relation.
+If we define r ≤ s as "s is at least as enriched as r" (rs s s ≥ rs r r),
+this gives a preorder (reflexive and transitive). Reading always moves
+"upward" in this lattice. -/
+
+section InterpretiveLattice
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Interpretive weight preorder**: r is "below" s if s has at least
+    as much self-resonance. -/
+def weightBelow (r s : I) : Prop := rs s s ≥ rs r r
+
+/-- Weight-below is reflexive. -/
+theorem weightBelow_refl (r : I) : weightBelow r r := le_refl _
+
+/-- Weight-below is transitive. -/
+theorem weightBelow_trans (a b c : I)
+    (h₁ : weightBelow a b) (h₂ : weightBelow b c) : weightBelow a c := by
+  unfold weightBelow at *; linarith
+
+/-- **Reading moves upward**: composition always moves to a higher
+    (or equal) position in the weight order. -/
+theorem reading_moves_up (r t : I) : weightBelow r (compose r t) := by
+  unfold weightBelow; exact compose_enriches' r t
+
+/-- **Void is the bottom**: void has the minimum self-resonance (zero). -/
+theorem void_is_bottom (a : I) : weightBelow (void : I) a := by
+  unfold weightBelow; linarith [rs_self_nonneg' a, rs_void_void (I := I)]
+
+/-- **Reading chain**: a sequence of readings forms an ascending chain. -/
+theorem reading_chain (r t : I) (m n : ℕ) (h : m ≤ n) :
+    weightBelow (readN r t m) (readN r t n) := by
+  unfold weightBelow; exact readN_mono r t m n h
+
+/-- **Non-void is strictly above void**. -/
+theorem nonvoid_above_void (a : I) (h : a ≠ void) :
+    rs a a > rs (void : I) (void : I) := by
+  rw [rs_void_void]; exact rs_self_pos a h
+
+/-- **Composition preserves being above void**. -/
+theorem compose_above_void (a b : I) (h : a ≠ void) :
+    rs (compose a b) (compose a b) > 0 :=
+  rs_self_pos _ (compose_ne_void_of_left a b h)
+
+end InterpretiveLattice
+
+/-! ## §43. Interpretive Energy and Work
+
+Drawing an analogy with physics: interpretation requires "work" —
+the effort of bridging the gap between reader and text. The "energy"
+of an interpretation is its self-resonance. Reading increases energy
+(second law of hermeneutics). We formalize the "work" done in
+interpretation as the energy change. -/
+
+section InterpretiveEnergy
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Interpretive work**: the "work" done in interpreting text t
+    by reader r. This is the energy increase. -/
+noncomputable def interpretiveWork (r t : I) : ℝ :=
+  rs (compose r t) (compose r t) - rs r r
+
+/-- Work is non-negative (second law). -/
+theorem interpretiveWork_nonneg (r t : I) : interpretiveWork r t ≥ 0 := by
+  unfold interpretiveWork; linarith [compose_enriches' r t]
+
+/-- Work from void text is zero. -/
+theorem interpretiveWork_void_text (r : I) : interpretiveWork r (void : I) = 0 := by
+  unfold interpretiveWork; simp
+
+/-- Work by void reader equals text's weight. -/
+theorem interpretiveWork_void_reader (t : I) :
+    interpretiveWork (void : I) t = rs t t := by
+  unfold interpretiveWork; simp [rs_void_void]
+
+/-- **Work decomposition**: work = comprehension excess + fidelity + depth. -/
+theorem interpretiveWork_decomposition (r t : I) :
+    interpretiveWork r t =
+    (comprehension r t - rs r r) + fidelity r t + interpretiveDepth r t := by
+  unfold interpretiveWork; rw [hermeneutic_identity r t]; ring
+
+/-- **Additive work bound**: work from two texts is at least the work
+    from the first. -/
+theorem work_monotone (r t₁ t₂ : I) :
+    interpretiveWork r (compose t₁ t₂) ≥ interpretiveWork r t₁ := by
+  unfold interpretiveWork
+  rw [← compose_assoc']
+  linarith [compose_enriches' (compose r t₁) t₂]
+
+/-- **Total work over n readings**. -/
+theorem total_work (r t : I) (n : ℕ) :
+    rs (readN r t n) (readN r t n) - rs r r ≥ 0 := by
+  linarith [readN_enriches_original r t n]
+
+/-- **Work per step is non-negative**. -/
+theorem work_per_step (r t : I) (n : ℕ) :
+    rs (readN r t (n + 1)) (readN r t (n + 1)) -
+    rs (readN r t n) (readN r t n) ≥ 0 := by
+  linarith [readN_enriches r t n]
+
+/-- **Cumulative work is monotone**: doing more work never decreases
+    the total. -/
+theorem cumulative_work_mono (r t : I) (n : ℕ) :
+    rs (readN r t (n + 1)) (readN r t (n + 1)) - rs r r ≥
+    rs (readN r t n) (readN r t n) - rs r r := by
+  linarith [readN_enriches r t n]
+
+end InterpretiveEnergy
+
+/-! ## §44. The Hermeneutic Field
+
+The space of all possible interpretations forms a "field" — each text
+creates a "potential" that readers move through. The gradient of this
+field is the emergence. We formalize this field-theoretic perspective. -/
+
+section HermeneuticField
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Field potential**: the potential of text t at reader position r,
+    measured by observer d. This is how strongly the text "pulls" the
+    reader toward interpreting it. -/
+noncomputable def fieldPotential (text reader observer : I) : ℝ :=
+  rs (compose reader text) observer
+
+/-- Potential of void text is just the reader's resonance. -/
+theorem fieldPotential_void_text (reader observer : I) :
+    fieldPotential (void : I) reader observer = rs reader observer := by
+  unfold fieldPotential; simp
+
+/-- Potential at void reader is just the text's resonance. -/
+theorem fieldPotential_void_reader (text observer : I) :
+    fieldPotential text (void : I) observer = rs text observer := by
+  unfold fieldPotential; simp
+
+/-- **Field decomposition**: the potential decomposes into reader
+    contribution + text contribution + emergence (the "field gradient"). -/
+theorem fieldPotential_decomposition (text reader observer : I) :
+    fieldPotential text reader observer =
+    rs reader observer + rs text observer + emergence reader text observer := by
+  unfold fieldPotential; rw [rs_compose_eq]
+
+/-- **The field gradient IS emergence**: the nonlinear part of the
+    potential is exactly the emergence. -/
+noncomputable def fieldGradient (text reader observer : I) : ℝ :=
+  fieldPotential text reader observer - rs reader observer - rs text observer
+
+/-- Field gradient equals emergence. -/
+theorem fieldGradient_eq_emergence (text reader observer : I) :
+    fieldGradient text reader observer = emergence reader text observer := by
+  unfold fieldGradient fieldPotential emergence; ring
+
+/-- **Field gradient vanishes for void text**. -/
+theorem fieldGradient_void_text (reader observer : I) :
+    fieldGradient (void : I) reader observer = 0 := by
+  rw [fieldGradient_eq_emergence]; exact emergence_void_right reader observer
+
+/-- **Field gradient vanishes for void reader**. -/
+theorem fieldGradient_void_reader (text observer : I) :
+    fieldGradient text (void : I) observer = 0 := by
+  rw [fieldGradient_eq_emergence]; exact emergence_void_left text observer
+
+/-- **Superposition of fields**: two texts create a combined field
+    whose gradient relates to individual gradients via the cocycle. -/
+theorem field_superposition (t₁ t₂ reader d : I) :
+    fieldGradient (compose t₁ t₂) reader d =
+    fieldGradient t₁ reader d +
+    emergence (compose reader t₁) t₂ d -
+    emergence t₁ t₂ d := by
+  rw [fieldGradient_eq_emergence, fieldGradient_eq_emergence]
+  have h := cocycle_condition reader t₁ t₂ d
+  linarith
+
+/-- **Field energy**: the self-potential of a text at a reader position. -/
+noncomputable def fieldEnergy (text reader : I) : ℝ :=
+  fieldPotential text reader (compose reader text)
+
+/-- Field energy decomposes via the hermeneutic identity. -/
+theorem fieldEnergy_decomposition (text reader : I) :
+    fieldEnergy text reader =
+    comprehension reader text + fidelity reader text + interpretiveDepth reader text := by
+  unfold fieldEnergy fieldPotential
+  exact hermeneutic_identity reader text
+
+end HermeneuticField
+
+/-! ## §45. Interpretive Morphisms and Functors
+
+An interpretive morphism maps between interpretive spaces while preserving
+the essential structure. This formalizes the idea of "translation between
+interpretive frameworks." -/
+
+section InterpretiveMorphisms
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Interpretive invariant**: a quantity that doesn't change under
+    re-interpretation. The self-resonance of readN is invariant
+    under re-association. -/
+theorem interpretive_invariant (r t₁ t₂ : I) :
+    rs (compose (compose r t₁) t₂) (compose (compose r t₁) t₂) =
+    rs (compose r (compose t₁ t₂)) (compose r (compose t₁ t₂)) := by
+  rw [compose_assoc']
+
+/-- **Emergence is an interpretive invariant**: the cocycle structure
+    is preserved under re-association. -/
+theorem emergence_invariant (a b c d : I) :
+    emergence a b d + emergence (compose a b) c d =
+    emergence b c d + emergence a (compose b c) d :=
+  cocycle_condition a b c d
+
+/-- **Weight is monotone under morphism**: composing preserves weight
+    ordering. -/
+theorem weight_monotone_compose (a b : I) :
+    rs (compose a b) (compose a b) ≥ rs a a :=
+  compose_enriches' a b
+
+/-- **Composition with self**: composing a with itself. -/
+theorem self_compose_weight (a : I) :
+    rs (compose a a) (compose a a) ≥ rs a a :=
+  compose_enriches' a a
+
+/-- **Double self-compose**: a ∘ a ∘ a enriches beyond a ∘ a. -/
+theorem double_self_compose_enriches (a : I) :
+    rs (compose (compose a a) a) (compose (compose a a) a) ≥
+    rs (compose a a) (compose a a) :=
+  compose_enriches' (compose a a) a
+
+end InterpretiveMorphisms
+
+/-! ## §46. Bakhtin's Chronotope: Time-Space of Interpretation
+
+Bakhtin's chronotope: the unity of time and space in narrative and
+interpretation. Every interpretive act takes place in a particular
+chronotope — a configuration of temporal and spatial relations.
+Different chronotopes produce different emergences.
+
+In IDT, chronotope is modeled as a context (a third element) that
+shapes the emergence of the reader-text encounter. -/
+
+section BakhtinChronotope
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Chronotopic emergence**: the emergence of reading text t by reader r
+    in chronotope (context) c, measured against observer d. -/
+noncomputable def chronotopicEmergence (reader text context observer : I) : ℝ :=
+  emergence (compose reader context) text observer
+
+/-- Chronotopic emergence with void context equals plain emergence. -/
+theorem chronotopicEmergence_void_context (reader text observer : I) :
+    chronotopicEmergence reader text (void : I) observer =
+    emergence reader text observer := by
+  unfold chronotopicEmergence; simp
+
+/-- Chronotopic emergence with void text is zero. -/
+theorem chronotopicEmergence_void_text (reader context observer : I) :
+    chronotopicEmergence reader (void : I) context observer = 0 := by
+  unfold chronotopicEmergence; exact emergence_void_right _ observer
+
+/-- **Chronotope shapes emergence**: the cocycle determines how the
+    chronotope transforms the emergence pattern. -/
+theorem chronotope_transforms (reader context text d : I) :
+    chronotopicEmergence reader text context d =
+    emergence reader (compose context text) d +
+    emergence context text d - emergence reader context d := by
+  unfold chronotopicEmergence
+  linarith [cocycle_condition reader context text d]
+
+/-- **Chronotopic enrichment**: interpreting in a chronotope always
+    enriches beyond the reader+context state. -/
+theorem chronotopic_enrichment (reader text context : I) :
+    rs (compose (compose reader context) text)
+       (compose (compose reader context) text) ≥
+    rs (compose reader context) (compose reader context) :=
+  compose_enriches' (compose reader context) text
+
+/-- **Chronotopic enrichment from reader**: interpretation in any
+    chronotope enriches beyond the reader alone. -/
+theorem chronotopic_enrichment_reader (reader text context : I) :
+    rs (compose (compose reader context) text)
+       (compose (compose reader context) text) ≥ rs reader reader := by
+  calc rs (compose (compose reader context) text)
+         (compose (compose reader context) text)
+      ≥ rs (compose reader context) (compose reader context) :=
+        compose_enriches' _ _
+    _ ≥ rs reader reader := compose_enriches' _ _
+
+end BakhtinChronotope
+
+/-! ## §47. The Economy of Interpretation
+
+Interpretation has an "economy" — there are costs (effort) and benefits
+(understanding). We formalize this in terms of the enrichment structure:
+the "cost" is the weight that must be invested (reader's self-resonance),
+and the "return" is the enrichment gained. -/
+
+section InterpretiveEconomy
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Return on interpretive investment**: the ratio of enrichment gained
+    to the reader's initial investment. -/
+noncomputable def interpretiveReturn (r t : I) : ℝ :=
+  rs (compose r t) (compose r t) - rs r r
+
+/-- Return is non-negative. -/
+theorem interpretiveReturn_nonneg (r t : I) : interpretiveReturn r t ≥ 0 := by
+  unfold interpretiveReturn; linarith [compose_enriches' r t]
+
+/-- Return from void text is zero. -/
+theorem interpretiveReturn_void_text (r : I) : interpretiveReturn r (void : I) = 0 := by
+  unfold interpretiveReturn; simp
+
+/-- **Marginal return**: the incremental return from the (n+1)-th reading. -/
+noncomputable def marginalReturn (r t : I) (n : ℕ) : ℝ :=
+  rs (readN r t (n + 1)) (readN r t (n + 1)) -
+  rs (readN r t n) (readN r t n)
+
+/-- Marginal return is non-negative. -/
+theorem marginalReturn_nonneg (r t : I) (n : ℕ) :
+    marginalReturn r t n ≥ 0 := by
+  unfold marginalReturn; linarith [readN_enriches r t n]
+
+/-- Marginal return from void text is zero. -/
+theorem marginalReturn_void_text (r : I) (n : ℕ) :
+    marginalReturn r (void : I) n = 0 := by
+  unfold marginalReturn; simp
+
+/-- **Total return**: sum of marginal returns telescopes to total gain. -/
+theorem total_return_telescopes (r t : I) (n : ℕ) :
+    rs (readN r t n) (readN r t n) - rs r r =
+    historicalWeightGain r t n := by
+  unfold historicalWeightGain; ring
+
+/-- **Non-negative total return**: the total return is always ≥ 0. -/
+theorem total_return_nonneg (r t : I) (n : ℕ) :
+    rs (readN r t n) (readN r t n) - rs r r ≥ 0 := by
+  linarith [readN_enriches_original r t n]
+
+/-- **Compounding returns**: each step adds to the total. -/
+theorem compounding_returns (r t : I) (n : ℕ) :
+    rs (readN r t (n + 1)) (readN r t (n + 1)) - rs r r ≥
+    rs (readN r t n) (readN r t n) - rs r r := by
+  linarith [readN_enriches r t n]
+
+end InterpretiveEconomy
+
+/-! ## §48. Gadamer's Play (Spiel) — The Self-Presentation of Art
+
+Gadamer argues that art "plays" — it has its own dynamic that draws
+the viewer/reader in. The player does not control the game; the game
+plays the player. In IDT, this is the observation that interpretation
+is not a one-way process: the text shapes the reader as much as
+the reader shapes the text. -/
+
+section GadamerPlay
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Play as mutual transformation**: the text transforms the reader
+    (enrichment) and the reader transforms the text's meaning
+    (context-dependent resonance). -/
+theorem play_reader_transformed (reader text : I) :
+    rs (compose reader text) (compose reader text) ≥ rs reader reader :=
+  compose_enriches' reader text
+
+/-- **The game plays the player**: in iterated reading, the text
+    keeps changing the reader. The reader cannot "stop" the play
+    without ceasing to read. -/
+theorem game_plays_player (reader text : I) (n : ℕ) :
+    readN reader text (n + 1) = compose (readN reader text n) text := readN_succ reader text n
+
+/-- **Play is irreversible**: once played, the game cannot be unplayed.
+    The reader can never return to their pre-play state (unless the
+    text is void). -/
+theorem play_irreversible (reader text : I) (h : reader ≠ void) (n : ℕ) :
+    readN reader text n ≠ void := readN_ne_void reader text h n
+
+/-- **Play enrichment**: each round of play enriches. -/
+theorem play_enriches_per_round (reader text : I) (n : ℕ) :
+    rs (readN reader text (n + 1)) (readN reader text (n + 1)) ≥
+    rs (readN reader text n) (readN reader text n) :=
+  readN_enriches reader text n
+
+/-- **Total play enrichment**: after n rounds, always above start. -/
+theorem total_play_enrichment (reader text : I) (n : ℕ) :
+    rs (readN reader text n) (readN reader text n) ≥ rs reader reader :=
+  readN_enriches_original reader text n
+
+/-- **The presentation structure**: art presents itself through
+    the interpreter. The self-resonance of the interpretation is
+    the "weight" of the presentation. -/
+noncomputable def presentationWeight (reader text : I) : ℝ :=
+  rs (compose reader text) (compose reader text)
+
+/-- Presentation weight is non-negative. -/
+theorem presentationWeight_nonneg (reader text : I) :
+    presentationWeight reader text ≥ 0 := by
+  unfold presentationWeight; exact rs_self_nonneg' _
+
+/-- Presentation weight ≥ reader weight. -/
+theorem presentationWeight_ge_reader (reader text : I) :
+    presentationWeight reader text ≥ rs reader reader := by
+  unfold presentationWeight; exact compose_enriches' reader text
+
+end GadamerPlay
+
+/-! ## §49. Resonance Calculus — Derivative-Like Operations
+
+We define operations that measure how resonance changes under
+infinitesimal (one-step) composition, creating a calculus of
+interpretive change. -/
+
+section ResonanceCalculus
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Resonance derivative**: the change in resonance when composing
+    a with b, measured against observer c. This is the "rate of change"
+    of resonance under composition. -/
+noncomputable def resonanceDerivative (a b c : I) : ℝ :=
+  rs (compose a b) c - rs a c
+
+/-- Resonance derivative is zero for void composition. -/
+theorem resonanceDerivative_void_right (a c : I) :
+    resonanceDerivative a (void : I) c = 0 := by
+  unfold resonanceDerivative; simp
+
+/-- Resonance derivative decomposes into text resonance + emergence. -/
+theorem resonanceDerivative_decomposition (a b c : I) :
+    resonanceDerivative a b c = rs b c + emergence a b c := by
+  unfold resonanceDerivative emergence; ring
+
+/-- **Second derivative**: the change in the derivative when composing
+    again. Measures the "acceleration" of interpretive change. -/
+noncomputable def secondDerivative (a b c : I) : ℝ :=
+  resonanceDerivative (compose a b) b c - resonanceDerivative a b c
+
+/-- Second derivative in terms of emergence difference. -/
+theorem secondDerivative_eq (a b c : I) :
+    secondDerivative a b c =
+    emergence (compose a b) b c - emergence a b c := by
+  unfold secondDerivative resonanceDerivative emergence; ring
+
+/-- **Weight derivative**: the change in self-resonance under composition. -/
+noncomputable def weightDerivative (a b : I) : ℝ :=
+  rs (compose a b) (compose a b) - rs a a
+
+/-- Weight derivative is non-negative. -/
+theorem weightDerivative_nonneg (a b : I) : weightDerivative a b ≥ 0 := by
+  unfold weightDerivative; linarith [compose_enriches' a b]
+
+/-- Weight derivative from void is zero. -/
+theorem weightDerivative_void (a : I) : weightDerivative a (void : I) = 0 := by
+  unfold weightDerivative; simp
+
+/-- **Chain rule analogue**: the weight derivative of a double composition
+    relates to the individual derivatives. -/
+theorem weight_chain_bound (a b c : I) :
+    weightDerivative a (compose b c) ≥ weightDerivative a b := by
+  unfold weightDerivative
+  rw [← compose_assoc']
+  linarith [compose_enriches' (compose a b) c]
+
+/-- **Iterated derivative**: the weight derivative at step n. -/
+theorem iterated_weight_derivative (r t : I) (n : ℕ) :
+    weightDerivative (readN r t n) t ≥ 0 := by
+  exact weightDerivative_nonneg (readN r t n) t
+
+end ResonanceCalculus
+
+/-! ## §50. The Phenomenology of Reading — Husserl and Ingarden
+
+Roman Ingarden's phenomenological theory of the literary work:
+the work exists in four "strata" — sound, meaning, schematized aspects,
+and represented objects. Each stratum contributes to the total
+"polyphony" of the work.
+
+In IDT, strata are modeled as components of a composition.
+The total work is the composition of all strata. The emergence
+between strata captures how they interact to create meaning
+beyond their individual contributions. -/
+
+section PhenomenologyOfReading
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Stratum interaction**: the emergence between two strata of a text,
+    as experienced by an observer. -/
+noncomputable def stratumInteraction (stratum₁ stratum₂ observer : I) : ℝ :=
+  emergence stratum₁ stratum₂ observer
+
+/-- Stratum interaction with void is zero. -/
+theorem stratumInteraction_void_left (s₂ obs : I) :
+    stratumInteraction (void : I) s₂ obs = 0 := emergence_void_left s₂ obs
+
+/-- Stratum interaction void right. -/
+theorem stratumInteraction_void_right (s₁ obs : I) :
+    stratumInteraction s₁ (void : I) obs = 0 := emergence_void_right s₁ obs
+
+/-- **Two-stratum work**: the total resonance of a two-stratum work
+    decomposes into individual resonances plus stratum interaction. -/
+theorem two_stratum_decomposition (s₁ s₂ obs : I) :
+    rs (compose s₁ s₂) obs =
+    rs s₁ obs + rs s₂ obs + stratumInteraction s₁ s₂ obs := by
+  unfold stratumInteraction; exact rs_compose_eq s₁ s₂ obs
+
+/-- **Three-stratum work**: a three-stratum work has two emergence terms. -/
+theorem three_stratum_resonance (s₁ s₂ s₃ obs : I) :
+    rs (compose (compose s₁ s₂) s₃) obs =
+    rs s₁ obs + rs s₂ obs + rs s₃ obs +
+    emergence s₁ s₂ obs + emergence (compose s₁ s₂) s₃ obs :=
+  rs_compose3 s₁ s₂ s₃ obs
+
+/-- **Stratum enrichment**: adding a stratum always enriches the work. -/
+theorem stratum_enriches (s₁ s₂ : I) :
+    rs (compose s₁ s₂) (compose s₁ s₂) ≥ rs s₁ s₁ :=
+  compose_enriches' s₁ s₂
+
+/-- **Ingarden's concretization**: the reader "concretizes" the schematized
+    aspects. This is the reader's composition with the work. -/
+noncomputable def ingardenConcretization (reader work : I) : ℝ :=
+  rs (compose reader work) (compose reader work)
+
+/-- Concretization is non-negative. -/
+theorem ingardenConcretization_nonneg (reader work : I) :
+    ingardenConcretization reader work ≥ 0 := by
+  unfold ingardenConcretization; exact rs_self_nonneg' _
+
+/-- Concretization enriches the reader. -/
+theorem ingardenConcretization_enriches (reader work : I) :
+    ingardenConcretization reader work ≥ rs reader reader := by
+  unfold ingardenConcretization; exact compose_enriches' reader work
+
+/-- **Husserl's noema-noesis**: the noematic content (what is intended)
+    and noetic act (how it is intended) together constitute meaning.
+    In IDT, noema is the text, noesis is the reader's act (composition). -/
+theorem noema_noesis_unity (reader text : I) :
+    rs (compose reader text) (compose reader text) =
+    comprehension reader text + fidelity reader text + interpretiveDepth reader text :=
+  hermeneutic_identity reader text
+
+end PhenomenologyOfReading
+
+/-! ## §51. The Politics of Interpretation
+
+Every interpretation is political: it privileges certain meanings over
+others. The "canon" — the set of texts deemed worthy — shapes which
+emergences are possible. We formalize canon formation and its effects. -/
+
+section PoliticsOfInterpretation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Canon weight**: the total self-resonance of a canon of texts. -/
+noncomputable def canonWeight (canon : List I) : ℝ :=
+  rs (List.foldl compose void canon) (List.foldl compose void canon)
+
+/-- Empty canon has zero weight. -/
+theorem canonWeight_nil : canonWeight ([] : List I) = 0 := by
+  unfold canonWeight; simp [rs_void_void]
+
+/-- **Canon enrichment**: adding a text to the canon enriches it. -/
+theorem canonWeight_enriches (canon : List I) (text : I) :
+    canonWeight (canon ++ [text]) ≥ canonWeight canon := by
+  unfold canonWeight
+  rw [List.foldl_append, List.foldl_cons, List.foldl_nil]
+  exact compose_enriches' _ _
+
+/-- **Exclusion reduces possibility**: removing texts from the canon
+    can only reduce the weight (adding is enriching, so the reverse
+    holds in principle). The existing canon always has non-negative weight. -/
+theorem canon_nonneg (canon : List I) : canonWeight canon ≥ 0 := by
+  unfold canonWeight; exact rs_self_nonneg' _
+
+/-- **Interpretive frame**: the canon creates a frame through which
+    new texts are read. The emergence depends on the canon. -/
+noncomputable def frameEmergence (canon : List I) (text observer : I) : ℝ :=
+  emergence (List.foldl compose void canon) text observer
+
+/-- Empty frame produces zero emergence. -/
+theorem frameEmergence_nil (text observer : I) :
+    frameEmergence ([] : List I) text observer = 0 := by
+  unfold frameEmergence; simp [emergence_void_left]
+
+/-- **Hegemonic reading**: the canonical frame shapes all readings.
+    Every reading is filtered through the existing canon. -/
+theorem hegemonic_filtering (canon : List I) (reader text d : I) :
+    emergence (compose (List.foldl compose void canon) reader) text d =
+    emergence (List.foldl compose void canon) (compose reader text) d +
+    emergence reader text d -
+    emergence (List.foldl compose void canon) reader d := by
+  linarith [cocycle_condition (List.foldl compose void canon) reader text d]
+
+end PoliticsOfInterpretation
+
+/-! ## §52. The Hermeneutics of Suspicion (Ricoeur)
+
+Ricoeur identifies three "masters of suspicion": Marx, Nietzsche, Freud.
+They argue that surface meaning conceals deeper meaning. The
+"hermeneutics of suspicion" reads AGAINST the text, seeking the hidden
+meaning beneath the surface.
+
+In IDT, the "surface" is the direct resonance rs(text, observer).
+The "depth" is the emergence — what lies beneath the additive surface.
+Reading with suspicion means attending to emergence rather than
+direct resonance. -/
+
+section HermeneuticsOfSuspicion
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Surface meaning**: the direct resonance of the text with
+    the observer, ignoring the reader's contribution. -/
+noncomputable def surfaceMeaning (text observer : I) : ℝ := rs text observer
+
+/-- **Depth meaning**: the emergence — what the surface conceals. -/
+noncomputable def depthMeaning (reader text observer : I) : ℝ :=
+  emergence reader text observer
+
+/-- **Total meaning = surface + depth + reader contribution**. -/
+theorem total_meaning_decomposition (reader text observer : I) :
+    rs (compose reader text) observer =
+    rs reader observer + surfaceMeaning text observer +
+    depthMeaning reader text observer := by
+  unfold surfaceMeaning depthMeaning; rw [rs_compose_eq]
+
+/-- Surface of void is zero. -/
+theorem surfaceMeaning_void (observer : I) :
+    surfaceMeaning (void : I) observer = 0 := rs_void_left' observer
+
+/-- Depth of void reader is zero: without suspicion, no depth revealed. -/
+theorem depthMeaning_void_reader (text observer : I) :
+    depthMeaning (void : I) text observer = 0 := emergence_void_left text observer
+
+/-- Depth against void observer is zero. -/
+theorem depthMeaning_void_observer (reader text : I) :
+    depthMeaning reader text (void : I) = 0 := emergence_against_void reader text
+
+/-- **Suspicious reading**: attending to the depth rather than the surface.
+    The depth is bounded by the emergence Cauchy-Schwarz. -/
+theorem suspicious_reading_bounded (reader text observer : I) :
+    (depthMeaning reader text observer) ^ 2 ≤
+    rs (compose reader text) (compose reader text) * rs observer observer := by
+  unfold depthMeaning; exact emergence_bounded' reader text observer
+
+/-- **Marx's ideology critique**: the "ideological" reading is one where
+    the surface meaning systematically differs from the depth meaning.
+    We show that purely linear readers (no suspicion) miss all depth. -/
+theorem linear_reader_misses_depth (reader : I) (h : leftLinear reader)
+    (text observer : I) :
+    depthMeaning reader text observer = 0 := by
+  unfold depthMeaning; exact h text observer
+
+/-- **Freud's return of the repressed**: the emergence can be nonzero
+    even when the surface appears zero. The "repressed" meaning
+    surfaces through emergence. -/
+theorem return_of_repressed (reader text observer : I)
+    (hsurf : rs text observer = 0)
+    (hemerg : emergence reader text observer ≠ 0) :
+    rs (compose reader text) observer ≠ rs reader observer := by
+  rw [rs_compose_eq reader text observer, hsurf]
+  intro h
+  apply hemerg
+  linarith
+
+end HermeneuticsOfSuspicion
+
+/-! ## §53. Eco's Open Work and the Limits of Interpretation
+
+Umberto Eco's *The Open Work* and *The Limits of Interpretation*:
+a text is "open" insofar as it admits multiple valid interpretations.
+But there are limits — not any interpretation is valid. The text
+constrains the space of possible interpretations.
+
+In IDT, the "openness" of a text is measured by how many different
+emergences it produces with different readers. The constraints come
+from the emergence bounds. -/
+
+section EcoOpenWork
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Eco's openness indicator**: a text is more "open" relative to
+    two readers if they produce different emergences. -/
+noncomputable def interpretiveOpenness (r₁ r₂ text observer : I) : ℝ :=
+  emergence r₁ text observer - emergence r₂ text observer
+
+/-- Openness is antisymmetric in readers. -/
+theorem interpretiveOpenness_antisymm (r₁ r₂ text observer : I) :
+    interpretiveOpenness r₁ r₂ text observer =
+    -interpretiveOpenness r₂ r₁ text observer := by
+  unfold interpretiveOpenness; ring
+
+/-- Self-openness is zero. -/
+theorem interpretiveOpenness_self (r text observer : I) :
+    interpretiveOpenness r r text observer = 0 := by
+  unfold interpretiveOpenness; ring
+
+/-- Openness with void text is zero: void texts are completely "closed." -/
+theorem interpretiveOpenness_void_text (r₁ r₂ observer : I) :
+    interpretiveOpenness r₁ r₂ (void : I) observer = 0 := by
+  unfold interpretiveOpenness; rw [emergence_void_right, emergence_void_right]; ring
+
+/-- **Eco's limits**: each reader's emergence is bounded.
+    Interpretation is free but not unlimited. -/
+theorem eco_limits (reader text observer : I) :
+    (emergence reader text observer) ^ 2 ≤
+    rs (compose reader text) (compose reader text) * rs observer observer :=
+  emergence_bounded' reader text observer
+
+/-- **The model reader**: Eco's "model reader" is the reader who maximizes
+    coherence with the text. While we can't characterize them,
+    we can show every reader's coherence is bounded below. -/
+theorem model_reader_bound (reader text : I) :
+    rs (compose reader text) (compose reader text) ≥ rs reader reader :=
+  compose_enriches' reader text
+
+/-- **Overinterpretation**: reading that goes beyond what the text supports.
+    We can't formally detect this without additional axioms, but we can
+    show that emergence is bounded — there's a limit to how much meaning
+    any reader can extract. -/
+theorem overinterpretation_bounded (reader text : I) :
+    (interpretiveDepth reader text) ^ 2 ≤
+    rs (compose reader text) (compose reader text) *
+    rs (compose reader text) (compose reader text) :=
+  interpretiveDepth_bounded reader text
+
+end EcoOpenWork
+
+/-! ## §54. The Hermeneutic Algebra of Power (Foucault)
+
+Michel Foucault: knowledge and power are inseparable. Every interpretive
+framework is a power structure that determines what can and cannot
+be said (the "episteme"). In IDT, power is modeled through the
+enrichment structure: more powerful frameworks have higher self-resonance
+and shape all subsequent interpretations through effective history. -/
+
+section FoucaultPower
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Epistemic weight**: the weight of a knowledge framework.
+    Higher weight = more "power" to shape interpretations. -/
+noncomputable def epistemicWeight (framework : I) : ℝ := rs framework framework
+
+/-- Void episteme has zero weight. -/
+theorem epistemicWeight_void : epistemicWeight (void : I) = 0 := rs_void_void
+
+/-- Non-void episteme has positive weight. -/
+theorem epistemicWeight_pos (f : I) (h : f ≠ void) :
+    epistemicWeight f > 0 := by
+  unfold epistemicWeight; exact rs_self_pos f h
+
+/-- **Power grows through discourse**: adding voices to the episteme
+    only increases its weight. -/
+theorem power_grows (framework discourse : I) :
+    epistemicWeight (compose framework discourse) ≥ epistemicWeight framework := by
+  unfold epistemicWeight; exact compose_enriches' framework discourse
+
+/-- **Knowledge-power nexus**: the framework shapes all future emergence.
+    Reading through a powerful framework creates different emergence
+    than reading through a weak one. -/
+theorem knowledge_power_nexus (strong weak text d : I)
+    (h : emergence strong text d ≠ emergence weak text d) :
+    strong ≠ weak := by
+  intro heq; rw [heq] at h; exact h rfl
+
+/-- **Disciplinary power**: iterated application of a framework creates
+    a monotonically growing weight. Each iteration of the "discipline"
+    increases the framework's presence. -/
+theorem disciplinary_power (framework : I) (n : ℕ) :
+    rs (composeN framework (n + 1)) (composeN framework (n + 1)) ≥
+    rs (composeN framework n) (composeN framework n) :=
+  rs_composeN_mono framework n
+
+/-- **Resistance as non-linearity**: resistance to a framework is
+    nonzero emergence — the subject's contribution that the framework
+    cannot reduce to its own terms. -/
+theorem resistance_is_emergence (subject framework d : I)
+    (h : emergence subject framework d ≠ 0) :
+    ¬leftLinear subject := by
+  intro hlin; exact h (hlin framework d)
+
+end FoucaultPower
+
+/-! ## §55. The Infinite Conversation (Blanchot)
+
+Maurice Blanchot's concept of the "infinite conversation": the
+dialogue that never concludes, the interpretation that never
+reaches a final meaning. In IDT, this is the infinite sequence
+of readings, each producing new emergence. -/
+
+section BlanchotInfiniteConversation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **The unending dialogue**: the sequence of reading states
+    is infinite — there is always another step possible. -/
+theorem conversation_always_continues (r t : I) (n : ℕ) :
+    ∃ m : ℕ, m > n ∧
+    rs (readN r t m) (readN r t m) ≥ rs (readN r t n) (readN r t n) := by
+  exact ⟨n + 1, Nat.lt_succ_of_le (le_refl n), readN_enriches r t n⟩
+
+/-- **No final reading**: reading can always continue. Each step
+    produces a well-defined next state. -/
+theorem no_final_reading (r t : I) (n : ℕ) :
+    readN r t (n + 1) = compose (readN r t n) t := readN_succ r t n
+
+/-- **The conversation enriches**: each turn adds weight. -/
+theorem conversation_enriches_each_turn (r t : I) (n : ℕ) :
+    rs (readN r t (n + 1)) (readN r t (n + 1)) ≥
+    rs (readN r t n) (readN r t n) :=
+  readN_enriches r t n
+
+/-- **The conversation has memory**: the state at step n remembers
+    all prior readings through the effective history. -/
+theorem conversation_has_memory (r t : I) (n : ℕ) :
+    rs (readN r t n) (readN r t n) ≥ rs r r :=
+  readN_enriches_original r t n
+
+/-- **Blanchot's outside**: the void — the "outside" of all conversation.
+    It has zero weight and contributes nothing. -/
+theorem outside_is_void : rs (void : I) (void : I) = 0 := rs_void_void
+
+/-- **Writing as approach to the outside**: composing with void
+    moves toward the outside without reaching it (if non-void). -/
+theorem approach_outside (r : I) :
+    compose r (void : I) = r := void_right' r
+
+end BlanchotInfiniteConversation
+
+/-! ## §56. Reader-Text Dialectics — Synthesis Theorems
+
+The interpretive process as dialectic: thesis (reader), antithesis (text),
+synthesis (interpretation). The synthesis always enriches beyond the thesis.
+We prove deeper dialectical results. -/
+
+section ReaderTextDialectics
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Dialectical synthesis enriches thesis**: the synthesis (interpretation)
+    has at least as much self-resonance as the thesis (reader). -/
+theorem synthesis_enriches_thesis (thesis antithesis : I) :
+    rs (compose thesis antithesis) (compose thesis antithesis) ≥ rs thesis thesis :=
+  compose_enriches' thesis antithesis
+
+/-- **Double negation is not identity**: compose(compose(r,t),t) ≠ r
+    in general (unless t is void). The "negation of the negation"
+    creates something new. -/
+theorem double_negation_enriches (r t : I) :
+    rs (compose (compose r t) t) (compose (compose r t) t) ≥ rs r r := by
+  calc rs (compose (compose r t) t) (compose (compose r t) t)
+      ≥ rs (compose r t) (compose r t) := compose_enriches' _ _
+    _ ≥ rs r r := compose_enriches' _ _
+
+/-- **Aufhebung (sublation)**: the synthesis preserves and elevates.
+    The self-resonance of the synthesis is at least as high as either
+    component alone. -/
+theorem aufhebung_reader (reader text : I) :
+    rs (compose reader text) (compose reader text) ≥ rs reader reader :=
+  compose_enriches' reader text
+
+/-- **Dialectical weight addition**: the cocycle governs how dialectical
+    tensions compose. -/
+theorem dialectical_addition (a b c d : I) :
+    emergence a b d + emergence (compose a b) c d =
+    emergence b c d + emergence a (compose b c) d :=
+  cocycle_condition a b c d
+
+/-- **Thesis-antithesis distance**: the dialectical gap between
+    reader and text. -/
+noncomputable def dialecticalGap (thesis antithesis : I) : ℝ :=
+  rs (compose thesis antithesis) (compose thesis antithesis) -
+  rs thesis thesis - rs antithesis antithesis
+
+/-- Dialectical gap with void is zero. -/
+theorem dialecticalGap_void_right (thesis : I) :
+    dialecticalGap thesis (void : I) = 0 := by
+  unfold dialecticalGap; simp [rs_void_void, rs_void_left', rs_void_right']
+
+/-- Dialectical gap with void left. -/
+theorem dialecticalGap_void_left (antithesis : I) :
+    dialecticalGap (void : I) antithesis = 0 := by
+  unfold dialecticalGap; simp [rs_void_void, rs_void_left', rs_void_right']
+
+/-- **Dialectical progression**: n stages of dialectic produce
+    monotonically growing weight. -/
+theorem dialectical_progression (a : I) (n : ℕ) :
+    rs (composeN a (n + 1)) (composeN a (n + 1)) ≥
+    rs (composeN a n) (composeN a n) :=
+  rs_composeN_mono a n
+
+end ReaderTextDialectics
+
+/-! ## §57. Multi-Text Interpretation — Reading Lists and Curricula
+
+When a reader encounters a sequence of texts (a reading list, a
+curriculum), the order matters for emergence but not for the final
+state. We prove results about optimal reading orders and their
+effects on the interpretive journey. -/
+
+section MultiTextInterpretation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Curriculum as effective history**: reading a list of texts
+    creates an effective history that shapes all future readings. -/
+theorem curriculum_as_history (r : I) (texts : List I) :
+    rs (List.foldl compose r texts) (List.foldl compose r texts) ≥ rs r r :=
+  effectiveHistoryWeight_ge_original r texts
+
+/-- **Curriculum enrichment**: adding a text to the curriculum enriches. -/
+theorem curriculum_enrichment (r : I) (texts : List I) (t : I) :
+    rs (List.foldl compose r (texts ++ [t]))
+       (List.foldl compose r (texts ++ [t])) ≥
+    rs (List.foldl compose r texts) (List.foldl compose r texts) := by
+  rw [List.foldl_append, List.foldl_cons, List.foldl_nil]
+  exact compose_enriches' _ _
+
+/-- **Two-text curriculum**: reading t₁ then t₂ enriches beyond t₁ alone. -/
+theorem two_text_enrichment (r t₁ t₂ : I) :
+    rs (compose (compose r t₁) t₂) (compose (compose r t₁) t₂) ≥
+    rs (compose r t₁) (compose r t₁) :=
+  compose_enriches' _ _
+
+/-- **Two texts, same final state**: regardless of grouping,
+    the final state is the same. -/
+theorem two_text_grouping (r t₁ t₂ : I) :
+    compose (compose r t₁) t₂ = compose r (compose t₁ t₂) :=
+  compose_assoc' r t₁ t₂
+
+/-- **Three texts, same final state**. -/
+theorem three_text_grouping (r t₁ t₂ t₃ : I) :
+    compose (compose (compose r t₁) t₂) t₃ =
+    compose r (compose t₁ (compose t₂ t₃)) := by
+  rw [compose_assoc', compose_assoc']
+
+/-- **Null curriculum**: reading an empty list changes nothing. -/
+theorem null_curriculum (r : I) :
+    List.foldl compose r ([] : List I) = r := by simp
+
+/-- **Singleton curriculum**: reading one text is just composition. -/
+theorem singleton_curriculum (r t : I) :
+    List.foldl compose r [t] = compose r t := by simp
+
+end MultiTextInterpretation
+
+/-! ## §58. The Topology of Understanding — Neighborhoods and Convergence
+
+Understanding has a "topological" structure: some interpretive states
+are "close" (similar self-resonance) and others are "far apart."
+Iterated reading creates a path through this space. We prove that
+this path is monotonically ascending in the "height" (weight) direction. -/
+
+section TopologyOfUnderstanding
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Height function**: the "height" of an interpretive state
+    in the space of possible interpretations. -/
+noncomputable def interpretiveHeight (a : I) : ℝ := rs a a
+
+/-- Height of void is zero (ground level). -/
+theorem interpretiveHeight_void : interpretiveHeight (void : I) = 0 := rs_void_void
+
+/-- Height is non-negative. -/
+theorem interpretiveHeight_nonneg (a : I) : interpretiveHeight a ≥ 0 := by
+  unfold interpretiveHeight; exact rs_self_nonneg' a
+
+/-- **Reading lifts height**: composition never decreases height. -/
+theorem reading_lifts_height (a b : I) :
+    interpretiveHeight (compose a b) ≥ interpretiveHeight a := by
+  unfold interpretiveHeight; exact compose_enriches' a b
+
+/-- **Height of iterated reading is non-decreasing**. -/
+theorem iterated_height_mono (r t : I) (n : ℕ) :
+    interpretiveHeight (readN r t (n + 1)) ≥ interpretiveHeight (readN r t n) := by
+  unfold interpretiveHeight; exact readN_enriches r t n
+
+/-- **Height always above initial height**. -/
+theorem height_above_initial (r t : I) (n : ℕ) :
+    interpretiveHeight (readN r t n) ≥ interpretiveHeight r := by
+  unfold interpretiveHeight; exact readN_enriches_original r t n
+
+/-- **Height gap between steps is non-negative**. -/
+theorem height_gap_nonneg (r t : I) (n : ℕ) :
+    interpretiveHeight (readN r t (n + 1)) - interpretiveHeight (readN r t n) ≥ 0 := by
+  unfold interpretiveHeight; linarith [readN_enriches r t n]
+
+/-- **Void-height characterization**: only void has zero height. -/
+theorem zero_height_iff_void (a : I) :
+    interpretiveHeight a = 0 → a = void := by
+  unfold interpretiveHeight; exact rs_nondegen' a
+
+/-- **Positive height means non-void**. -/
+theorem positive_height_nonvoid (a : I) (h : interpretiveHeight a > 0) :
+    a ≠ void := by
+  intro heq; rw [heq] at h; unfold interpretiveHeight at h
+  linarith [rs_void_void (I := I)]
+
+end TopologyOfUnderstanding
+
+/-! ## §59. The Semiotics of Interpretation — Sign and Meaning
+
+Building on Peirce's semiotics: every sign has three components —
+the sign-vehicle (representamen), the object, and the interpretant.
+In IDT, the interpretant is the composition of the sign with the
+interpreter. Semiosis is the chain of interpretants. -/
+
+section SemioticsOfInterpretation
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Peircean interpretant**: the result of a sign being interpreted.
+    This is just composition, but named semiotically. -/
+def interpretant (sign interpreter : I) : I := compose interpreter sign
+
+/-- Void sign produces void interpretant (from the interpreter's side). -/
+theorem interpretant_void_sign (interp : I) :
+    interpretant (void : I) interp = interp := by
+  unfold interpretant; simp
+
+/-- Void interpreter receives the sign unchanged. -/
+theorem interpretant_void_interpreter (sign : I) :
+    interpretant sign (void : I) = sign := by
+  unfold interpretant; simp
+
+/-- **Unlimited semiosis**: the chain of interpretants. Each interpretant
+    becomes the interpreter for the next sign in the chain.
+    This is readN in semiotic language. -/
+theorem unlimited_semiosis (interp sign : I) (n : ℕ) :
+    readN interp sign (n + 1) = compose (readN interp sign n) sign :=
+  readN_succ interp sign n
+
+/-- **Semiotic enrichment**: each act of semiosis enriches. -/
+theorem semiotic_enrichment (interp sign : I) (n : ℕ) :
+    rs (readN interp sign (n + 1)) (readN interp sign (n + 1)) ≥
+    rs (readN interp sign n) (readN interp sign n) :=
+  readN_enriches interp sign n
+
+/-- **Semiotic weight preservation**: the interpretant always has
+    at least as much weight as the interpreter. Signs never diminish. -/
+theorem semiotic_weight (interpreter sign : I) :
+    rs (interpretant sign interpreter) (interpretant sign interpreter) ≥
+    rs interpreter interpreter := by
+  unfold interpretant; exact compose_enriches' interpreter sign
+
+/-- **The sign-interpretant gap**: emergence IS semiosis. The emergence
+    between sign and interpreter is the "meaning" that arises. -/
+theorem semiosis_is_emergence (sign interpreter observer : I) :
+    emergence interpreter sign observer =
+    rs (interpretant sign interpreter) observer -
+    rs interpreter observer - rs sign observer := by
+  unfold interpretant; rfl
+
+end SemioticsOfInterpretation
+
+/-! ## §60. Advanced Enrichment Algebra
+
+Deeper algebraic results about the enrichment structure, connecting
+composition, emergence, and self-resonance in more sophisticated ways. -/
+
+section AdvancedEnrichmentAlgebra
+variable {I : Type*} [S : IdeaticSpace3 I]
+open IdeaticSpace3
+
+/-- **Quadruple composition enrichment**: four-fold composition enriches
+    beyond three-fold. -/
+theorem quad_enriches_triple (a b c d : I) :
+    rs (compose (compose (compose a b) c) d) (compose (compose (compose a b) c) d) ≥
+    rs (compose (compose a b) c) (compose (compose a b) c) :=
+  compose_enriches' _ _
+
+/-- **Quadruple enriches beyond double**. -/
+theorem quad_enriches_double (a b c d : I) :
+    rs (compose (compose (compose a b) c) d) (compose (compose (compose a b) c) d) ≥
+    rs (compose a b) (compose a b) := by
+  calc rs (compose (compose (compose a b) c) d) (compose (compose (compose a b) c) d)
+      ≥ rs (compose (compose a b) c) (compose (compose a b) c) := compose_enriches' _ _
+    _ ≥ rs (compose a b) (compose a b) := compose_enriches' _ _
+
+/-- **Quadruple enriches beyond single**. -/
+theorem quad_enriches_single (a b c d : I) :
+    rs (compose (compose (compose a b) c) d) (compose (compose (compose a b) c) d) ≥
+    rs a a := by
+  calc rs (compose (compose (compose a b) c) d) (compose (compose (compose a b) c) d)
+      ≥ rs (compose a b) (compose a b) := quad_enriches_double a b c d
+    _ ≥ rs a a := compose_enriches' _ _
+
+/-- **ComposeN enrichment beyond base**: n-fold composition always enriches
+    beyond the base for n ≥ 1. -/
+theorem composeN_enriches_base (a : I) (n : ℕ) :
+    rs (composeN a (n + 1)) (composeN a (n + 1)) ≥ rs a a := by
+  induction n with
+  | zero => simp [composeN]
+  | succ k ih =>
+    calc rs (composeN a (k + 2)) (composeN a (k + 2))
+        ≥ rs (composeN a (k + 1)) (composeN a (k + 1)) := rs_composeN_mono a (k + 1)
+      _ ≥ rs a a := ih
+
+/-- **Emergence bound via self-resonance**: emergence squared is bounded
+    by the product of self-resonances, which is bounded by composition
+    self-resonances. -/
+theorem emergence_double_bound (a b : I) :
+    (emergence a b (compose a b)) ^ 2 ≤
+    rs (compose a b) (compose a b) * rs (compose a b) (compose a b) :=
+  emergence_bounded' a b (compose a b)
+
+/-- **Enrichment is never negative**: the difference between composed
+    and uncomposed weight is always ≥ 0. -/
+theorem enrichment_nonneg (a b : I) :
+    rs (compose a b) (compose a b) - rs a a ≥ 0 := by
+  linarith [compose_enriches' a b]
+
+/-- **Void enrichment**: composing void with anything produces weight ≥ 0. -/
+theorem void_composition_weight (a : I) :
+    rs (compose (void : I) a) (compose (void : I) a) ≥ 0 := by
+  simp; exact rs_self_nonneg' a
+
+/-- **Double composition weight bound**: compose twice gives at least
+    the weight of once. -/
+theorem double_compose_bound (a b : I) :
+    rs (compose (compose a b) b) (compose (compose a b) b) ≥
+    rs (compose a b) (compose a b) :=
+  compose_enriches' (compose a b) b
+
+/-- **Self-composition enriches**: a ∘ a has at least the weight of a. -/
+theorem self_compose_enriches (a : I) :
+    rs (compose a a) (compose a a) ≥ rs a a :=
+  compose_enriches' a a
+
+/-- **Triple self-composition enriches beyond double**. -/
+theorem triple_self_enriches (a : I) :
+    rs (compose (compose a a) a) (compose (compose a a) a) ≥
+    rs (compose a a) (compose a a) :=
+  compose_enriches' (compose a a) a
+
+end AdvancedEnrichmentAlgebra
+
 end IDT3

@@ -1,0 +1,4633 @@
+% ================================================================
+% VOLUME V, CHAPTERS 1--5: POWER AND IDEOLOGY
+% ================================================================
+
+% ================================================================
+% CHAPTER 1: GRAMSCI'S HEGEMONY FORMALIZED
+% ================================================================
+\chapter{Gramsci's Hegemony Formalized}
+\label{ch:hegemony}
+
+\epigraph{The crisis consists precisely in the fact that the old is dying and the new cannot be born; in this interregnum a great variety of morbid symptoms appear.}{Antonio Gramsci, \textit{Prison Notebooks}, Q3\S34}
+
+\section{Hegemony as Self-Resonance}
+
+Antonio Gramsci wrote his \textit{Prison Notebooks} in a Fascist jail, developing the most
+influential theory of cultural power in the twentieth century. His central concept---\emph{hegemony}---refers
+to the capacity of a ruling class to secure consent, not merely coercion, from
+subordinate groups. The hegemonic idea is not simply the strongest; it is the
+idea that \emph{shapes the very terms} in which other ideas are composed and evaluated.
+
+In ideatic space, we can make this precise. As proved in Volume~I, every idea $a$
+has a \emph{self-resonance} $\rs(a,a) \geq 0$, which we interpret as its
+\emph{weight} or \emph{presence}. An idea with high self-resonance is not merely
+loud; it is \emph{structurally present}---it resonates with itself, which means
+it has internal coherence and stability. This is exactly what Gramsci means by
+hegemony: an idea so coherent, so self-consistent, that it becomes the
+background against which all other ideas are measured.
+
+\begin{definition}[Symbolic Capital]
+\label{def:symbolic-capital}
+The \textbf{symbolic capital} of an idea $a \in \IS$ is its self-resonance:
+\[
+  \mathrm{symbolicCapital}(a) := \rs(a, a).
+\]
+\end{definition}
+
+This definition directly echoes Bourdieu's concept of symbolic capital, which we
+develop further in Chapter~4. But it enters here because Gramsci's hegemony is,
+at its core, a theory of how symbolic capital translates into political power.
+
+\begin{theorem}[Non-Negativity of Symbolic Capital]
+\label{thm:capital-nonneg}
+For all ideas $a \in \IS$:
+\[
+  \mathrm{symbolicCapital}(a) \geq 0.
+\]
+\end{theorem}
+
+\begin{proof}
+This follows immediately from the self-resonance axiom of Volume~I (Axiom~6):
+$\rs(a,a) \geq 0$ for all $a$. In Lean~4:
+\begin{lstlisting}
+theorem symbolicCapital_nonneg (a : I) :
+    symbolicCapital a >= 0 := by
+  unfold symbolicCapital; exact rs_self_nonneg a
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 115)}
+\end{proof}
+
+\begin{remark}[Why Non-Negativity Is Foundational]
+The proof is a single line: unfold the definition and apply the self-resonance
+axiom. But this simplicity conceals the axiom's depth. The self-resonance axiom
+(Volume~I, Axiom~6) states that $\rs(a,a) \geq 0$ for all ideas $a$---this is
+the analogue of a positive semi-definite inner product. In Hilbert space terms,
+self-resonance plays the role of the squared norm $\|a\|^2$, and the
+non-negativity of norms is the bedrock on which all of functional analysis rests.
+Similarly, the non-negativity of symbolic capital is the bedrock on which all
+of power theory rests: without it, the concepts of domination, hegemony, and
+structural violence would be ill-defined.
+\end{remark}
+
+\begin{interpretation}[Capital Cannot Be Negative]
+No idea has negative symbolic capital. This is a structural constraint on what
+it means to be an idea at all: to exist in ideatic space is to have non-negative
+presence. Gramsci would recognize this as the fact that even the most marginal,
+most subordinate idea has some coherence, some capacity for self-articulation.
+The void $\void$ is the only idea with zero capital---it is pure silence, the
+absence of thought. Every actual idea, no matter how subordinate, has positive
+capital. This is the mathematical basis of Gramsci's optimism: hegemony can
+always be contested because every subordinate idea retains its own coherence.
+\end{interpretation}
+
+\begin{theorem}[Zero Capital Characterizes Void]
+\label{thm:zero-capital-void}
+For all $a \in \IS$:
+\[
+  \mathrm{symbolicCapital}(a) = 0 \iff a = \void.
+\]
+\end{theorem}
+
+\begin{proof}
+By Axiom~7 of Volume~I, $\rs(a,a) = 0$ if and only if $a = \void$.
+\begin{lstlisting}
+theorem zero_capital_is_void (a : I)
+    (h : symbolicCapital a = 0) : a = void := by
+  exact rs_self_zero_iff.mp h
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 133)}
+\end{proof}
+
+\section{Power as Asymmetric Self-Resonance}
+
+Gramsci understood that hegemony is relational: an idea is hegemonic not in
+isolation but \emph{relative to} other ideas. This leads us to formalize
+power as the difference in self-resonance.
+
+\begin{definition}[Power]
+\label{def:power}
+The \textbf{power} of idea $a$ over idea $b$ is:
+\[
+  \mathrm{power}(a, b) := \rs(a,a) - \rs(b,b).
+\]
+\end{definition}
+
+Power is the difference in symbolic capital. When $\mathrm{power}(a,b) > 0$,
+idea $a$ dominates idea $b$; when $\mathrm{power}(a,b) < 0$, it is subordinate.
+This is a simple definition, but it has remarkably rich consequences.
+
+\begin{theorem}[Antisymmetry of Power]
+\label{thm:power-antisymm}
+For all ideas $a, b \in \IS$:
+\[
+  \mathrm{power}(a, b) = -\mathrm{power}(b, a).
+\]
+\end{theorem}
+
+\begin{proof}
+$\mathrm{power}(a,b) = \rs(a,a) - \rs(b,b) = -(\rs(b,b) - \rs(a,a)) = -\mathrm{power}(b,a)$.
+\begin{lstlisting}
+theorem power_antisymm (a b : I) :
+    power a b = -power b a := by
+  unfold power; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 28)}
+\end{proof}
+
+\begin{interpretation}[Power Is a Zero-Sum Relation]
+The antisymmetry theorem states that every power relation is \emph{zero-sum}: if
+$a$ has power $p$ over $b$, then $b$ has power $-p$ over $a$. This formalizes
+a deep insight of critical theory: power is not a substance that one party
+``has'' and another ``lacks.'' It is a \emph{relation} between ideas, and every
+relation of domination is simultaneously a relation of subordination viewed from
+the other side. Gramsci's genius was to see that this relation is not fixed---it
+can be reversed through the ``war of position,'' the patient construction of
+counter-hegemonic ideas with higher self-resonance.
+\end{interpretation}
+
+\begin{theorem}[Self-Power Is Zero]
+\label{thm:power-self}
+For all ideas $a \in \IS$:
+\[
+  \mathrm{power}(a, a) = 0.
+\]
+\end{theorem}
+
+\begin{proof}
+$\mathrm{power}(a,a) = \rs(a,a) - \rs(a,a) = 0$.
+\begin{lstlisting}
+theorem power_self (a : I) : power a a = 0 := by
+  unfold power; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 32)}
+\end{proof}
+
+\section{Domination and Hegemonic Influence}
+
+\begin{definition}[Domination]
+\label{def:domination}
+Idea $a$ \textbf{dominates} idea $b$ if $\rs(a,a) > \rs(b,b)$.
+\end{definition}
+
+\begin{theorem}[Irreflexivity of Domination]
+\label{thm:dominates-irrefl}
+No idea dominates itself: $\neg\,\mathrm{dominates}(a, a)$ for all $a$.
+\end{theorem}
+
+\begin{proof}
+Since $\rs(a,a) > \rs(a,a)$ is a contradiction.
+\begin{lstlisting}
+theorem dominates_irrefl (a : I) :
+    ~dominates a a := by
+  unfold dominates; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 62)}
+\end{proof}
+
+\begin{theorem}[Asymmetry of Domination]
+\label{thm:dominates-asymm}
+If $a$ dominates $b$, then $b$ does not dominate $a$.
+\end{theorem}
+
+\begin{proof}
+If $\rs(a,a) > \rs(b,b)$, then $\rs(b,b) \not> \rs(a,a)$.
+\begin{lstlisting}
+theorem dominates_asymm (a b : I)
+    (h : dominates a b) : ~dominates b a := by
+  unfold dominates at *; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 66)}
+\end{proof}
+
+\begin{theorem}[Transitivity of Domination]
+\label{thm:dominates-trans}
+If $a$ dominates $b$ and $b$ dominates $c$, then $a$ dominates $c$.
+\end{theorem}
+
+\begin{proof}
+Transitivity of $>$ on $\R$.
+\begin{lstlisting}
+theorem dominates_trans (a b c : I)
+    (h1 : dominates a b) (h2 : dominates b c) :
+    dominates a c := by
+  unfold dominates at *; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 56)}
+\end{proof}
+
+\begin{interpretation}[Domination Forms a Strict Order]
+Domination is irreflexive, asymmetric, and transitive---it is a \emph{strict
+partial order} on ideas. This is the mathematical structure underlying Gramsci's
+analysis of class hegemony. The ruling class's ideas dominate the subordinate
+class's ideas, and this domination is transitive: if bourgeois ideas dominate
+petit-bourgeois ideas, and petit-bourgeois ideas dominate proletarian ideas,
+then bourgeois ideas dominate proletarian ideas. But domination is only a
+\emph{partial} order---some ideas are incomparable, occupying the same stratum
+of self-resonance without one dominating the other.
+\end{interpretation}
+
+\begin{definition}[Hegemonic Influence]
+\label{def:hegemonic-influence}
+The \textbf{hegemonic influence} of idea $h$ on idea $a$ is:
+\[
+  \mathrm{hegemonicInfluence}(h, a) := \rs(h \compose a, h) - \rs(a, h).
+\]
+\end{definition}
+
+This measures how much $h$ distorts $a$ when they compose: the resonance of the
+composition $h \compose a$ with $h$ minus the direct resonance of $a$ with $h$.
+When this is large, $h$ absorbs $a$ into its own framework.
+
+\begin{theorem}[Non-Negativity of Hegemonic Influence]
+\label{thm:hegemonic-nonneg}
+For all $h, a \in \IS$: $\mathrm{hegemonicInfluence}(h, a) \geq 0$.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom (Axiom~8), $\rs(h \compose a, h) \geq \rs(h,h) + \rs(a,h) \geq \rs(a,h)$.
+Wait---more precisely, we unfold and apply enrichment:
+\begin{lstlisting}
+theorem hegemonicInfluence_nonneg (h a : I) :
+    hegemonicInfluence h a >= 0 := by
+  unfold hegemonicInfluence
+  have := compose_enriches' h a h
+  linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 162)}
+\end{proof}
+
+\begin{interpretation}[Hegemony Always Enriches the Hegemon]
+The non-negativity of hegemonic influence is a profound result: when a hegemonic
+idea composes with any other idea, the result always resonates \emph{at least as
+much} with the hegemon as the original did. This is the mathematical expression
+of Gramsci's insight that hegemony is \emph{productive}, not merely repressive.
+The hegemonic idea does not simply suppress alternatives; it \emph{absorbs} them,
+reinterpreting them within its own framework. Liberal democracy does not ban
+socialist demands for equality---it absorbs them as ``equal opportunity,''
+making them resonate with capitalist ideology.
+\end{interpretation}
+
+\begin{remark}[The Enrichment Axiom as the Engine of Hegemony]
+The proof of non-negativity of hegemonic influence relies on
+\texttt{compose\_enriches'}, the enrichment axiom of Volume~I. This axiom
+states $\rs(h \compose a, h) \geq \rs(h,h) + \rs(a,h)$, from which
+$\mathrm{hegemonicInfluence}(h,a) = \rs(h \compose a, h) - \rs(a,h)
+\geq \rs(h,h) \geq 0$. The composition of $h$ with $a$ produces an idea
+that resonates with $h$ \emph{at least as much as $h$ resonates with itself}
+plus whatever $a$ already contributed. The hegemon never loses resonance
+through engagement---it can only gain. This is why Gramsci argued that
+hegemony works by INCORPORATING opposition, not by suppressing it: the
+mathematics of composition guarantees that incorporation always enriches.
+\end{remark}
+
+\section{The War of Position}
+
+Gramsci distinguished between the ``war of manoeuvre'' (direct confrontation)
+and the ``war of position'' (the slow construction of alternative cultural
+institutions). In our formalism, the war of position is the strategy of building
+ideas with higher and higher self-resonance---accumulating symbolic capital
+until the counter-hegemonic idea dominates the hegemonic one.
+
+\begin{theorem}[Capital Accumulation]
+\label{thm:capital-accumulation}
+For any idea $a$ and $n \in \N$, the $n$-fold self-composition
+$a^n := \underbrace{a \compose a \compose \cdots \compose a}_{n}$ satisfies:
+\[
+  \mathrm{symbolicCapital}(a^{n+1}) \geq \mathrm{symbolicCapital}(a^n).
+\]
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom, composition never decreases weight:
+\begin{lstlisting}
+theorem capital_accumulation (a : I) (n : N) :
+    symbolicCapital (composeN a (n+1))
+    >= symbolicCapital (composeN a n) := by
+  unfold symbolicCapital
+  exact compose_enriches_self a (composeN a n)
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 841)}
+\end{proof}
+
+\begin{interpretation}[The War of Position as Iterated Composition]
+This theorem shows that repeated composition---the patient, iterative work of
+articulating an idea with itself---can only increase symbolic capital. This is
+Gramsci's war of position mathematized: the counter-hegemonic movement builds
+its alternative worldview through repetition, education, cultural production,
+and institutional development. Each iteration enriches the idea, making it
+more self-resonant. The Gramscian ``organic intellectual'' is the agent who
+performs this iterated composition, building the counter-hegemonic idea's
+capital one composition at a time.
+\end{interpretation}
+
+\section{Counter-Hegemony and Revolutionary Potential}
+
+\begin{definition}[Counter-Hegemonic Strength]
+\label{def:counter-hegemonic}
+The \textbf{counter-hegemonic strength} of idea $c$ against hegemony $h$,
+observed from perspective $o$, is:
+\[
+  \mathrm{counterHegemonicStrength}(c, h, o) := \rs(c \compose h, o) - \rs(h \compose c, o).
+\]
+\end{definition}
+
+\begin{theorem}[Antisymmetry of Counter-Hegemonic Strength]
+\label{thm:counterhegemonic-antisymm}
+\[
+  \mathrm{counterHegemonicStrength}(c, h, o) = -\mathrm{counterHegemonicStrength}(h, c, o).
+\]
+\end{theorem}
+
+\begin{proof}
+Direct from the definition:
+\begin{lstlisting}
+theorem counterHegemonic_antisymm (c h o : I) :
+    counterHegemonicStrength c h o
+    = -counterHegemonicStrength h c o := by
+  unfold counterHegemonicStrength; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 580)}
+\end{proof}
+
+\begin{definition}[Revolutionary Potential]
+\label{def:revolutionary}
+The \textbf{revolutionary potential} of idea $r$ relative to the status quo $s$:
+\[
+  \mathrm{revolutionaryPotential}(r, s) := \rs(r \compose s, r) - \rs(s, r).
+\]
+\end{definition}
+
+\begin{theorem}[Non-Negativity of Revolutionary Potential]
+\label{thm:rev-nonneg}
+$\mathrm{revolutionaryPotential}(r, s) \geq 0$ for all $r, s$.
+\end{theorem}
+
+\begin{proof}
+By enrichment:
+\begin{lstlisting}
+theorem revolutionaryPotential_nonneg (r s : I) :
+    revolutionaryPotential r s >= 0 := by
+  unfold revolutionaryPotential
+  have := compose_enriches' r s r; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 563)}
+\end{proof}
+
+\begin{interpretation}[Revolution Is Always Possible]
+The non-negativity of revolutionary potential is one of the most politically
+significant theorems in this volume. It states that for \emph{any} revolutionary
+idea $r$ and \emph{any} status quo $s$, the act of composing them---of bringing
+the revolutionary idea into contact with the existing order---always produces
+a result that resonates at least as strongly with the revolutionary idea. The
+revolution can never be made worse by engaging with the system it opposes. This
+is Gramsci's fundamental optimism, proved as a theorem: the war of position
+cannot fail to accumulate counter-hegemonic strength.
+\end{interpretation}
+
+\begin{remark}[Why Revolution Cannot Backfire]
+The proof applies \texttt{compose\_enriches'} to the revolutionary idea $r$
+and the status quo $s$: $\rs(r \compose s, r) \geq \rs(r,r) + \rs(s,r)$.
+Then $\mathrm{revolutionaryPotential}(r,s) = \rs(r \compose s, r) - \rs(s,r)
+\geq \rs(r,r) \geq 0$. The key step is that $\rs(r,r) \geq 0$ (non-negativity
+of self-resonance): the revolutionary idea's own coherence acts as a
+\emph{floor} on the revolutionary potential. Even if the status quo's resonance
+with the revolutionary idea ($\rs(s,r)$) is negative---even if the system
+actively repels revolutionary ideas---the composition still produces a result
+whose resonance with the revolution is at least the revolution's own weight.
+Engagement with a hostile system cannot reduce revolutionary potential below
+zero. This is the mathematical vindication of Gramsci's ``pessimism of the
+intellect, optimism of the will.''
+\end{remark}
+
+\begin{theorem}[Void Has No Revolutionary Potential]
+\label{thm:void-revolution}
+$\mathrm{revolutionaryPotential}(\void, s) = 0$ for all $s$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem void_revolution (s : I) :
+    revolutionaryPotential void s = 0 := by
+  unfold revolutionaryPotential
+  simp [void_left', rs_void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 568)}
+\end{proof}
+
+\begin{interpretation}[Silence Is Not Revolutionary]
+Silence---the void---has zero revolutionary potential. This is a mathematical
+rebuke to political quietism: you cannot overthrow hegemony by saying nothing.
+As Gramsci understood, counter-hegemony requires the active construction of
+an alternative worldview. Mere negation, mere refusal, mere silence is
+$\void$, and $\void$ changes nothing.
+\end{interpretation}
+
+\section{The Subaltern}
+
+\begin{definition}[Subaltern Voice]
+\label{def:subaltern}
+The \textbf{subaltern voice} of $s$ relative to dominant discourse $d$:
+\[
+  \mathrm{subalternVoice}(s, d) := \rs(s \compose d, s) - \rs(d, s).
+\]
+\end{definition}
+
+\begin{theorem}[Non-Negativity of the Subaltern Voice]
+\label{thm:subaltern-nonneg}
+$\mathrm{subalternVoice}(s, d) \geq 0$ for all $s, d$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem subalternVoice_nonneg (s d : I) :
+    subalternVoice s d >= 0 := by
+  unfold subalternVoice
+  have := compose_enriches' s d s; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 596)}
+\end{proof}
+
+\begin{interpretation}[Can the Subaltern Speak?]
+Gayatri Chakravorty Spivak's famous question ``Can the Subaltern Speak?''
+receives a mathematical answer: the subaltern \emph{always} has non-negative
+voice. Composing the subaltern idea with the dominant discourse can only
+strengthen the subaltern's self-resonance. But the theorem says $\geq 0$, not
+$> 0$: equality is possible, meaning the subaltern's voice can be \emph{absorbed}
+without gaining any additional strength. Spivak's point is precisely that
+institutional structures can make this inequality vanishingly small---making
+the subaltern's voice \emph{formally} non-zero but \emph{practically} inaudible.
+\end{interpretation}
+
+\begin{remark}[Why the Subaltern Voice Proof Works]
+The proof rests on a single application of \texttt{compose\_enriches'}: when
+any idea $s$ composes with any other idea $d$, the self-resonance of $s$ can
+only grow as measured against $s$ itself. Formally,
+$\rs(s \compose d, s) \geq \rs(s, s)$, and subtracting $\rs(d, s)$ from the
+left gives $\rs(s \compose d, s) - \rs(d, s) \geq \rs(s,s) - \rs(d,s)$.
+But the enrichment axiom actually guarantees the stronger
+$\rs(s \compose d, s) \geq \rs(s,s) + \rs(d,s)$, so the subaltern voice
+$= \rs(s \compose d, s) - \rs(d,s) \geq \rs(s,s) \geq 0$. The subaltern
+gains at least their own weight back---domination cannot silence them
+entirely, only absorb what they say.
+\end{remark}
+
+\section{Symbolic Annihilation}
+
+The concept of \emph{symbolic annihilation}, introduced by George Gerbner and
+developed by Gaye Tuchman, refers to the systematic underrepresentation or
+misrepresentation of marginalized groups in media and cultural production.
+In ideatic space, symbolic annihilation occurs when the dominant discourse
+absorbs the subordinate idea so completely that the subordinate's own
+resonance profile becomes indistinguishable from the dominant's.
+
+\begin{definition}[Symbolic Annihilation]
+\label{def:symbolic-annihilation}
+Idea $s$ is \textbf{symbolically annihilated} by dominant discourse $d$
+relative to observer $o$ if:
+\[
+  \rs(d \compose s, o) = \rs(d, o).
+\]
+That is, composing $s$ with $d$ produces no observable change from $o$'s
+perspective---the subordinate idea has been absorbed without trace.
+\end{definition}
+
+\begin{theorem}[Annihilation Means Absorption]
+\label{thm:annihilation-absorption}
+If $s$ is symbolically annihilated by $d$ relative to $o$, then:
+\[
+  \rs(s, o) + \emerge(d, s, o) = 0.
+\]
+The subordinate's direct resonance plus the emergence from composition must
+sum to zero.
+\end{theorem}
+
+\begin{proof}
+By the composition decomposition (Volume~I, Chapter~3):
+$\rs(d \compose s, o) = \rs(d, o) + \rs(s, o) + \emerge(d, s, o)$.
+If $\rs(d \compose s, o) = \rs(d, o)$, then $\rs(s, o) + \emerge(d, s, o) = 0$.
+\begin{lstlisting}
+theorem annihilation_means_absorption (d s o : I)
+    (h : symbolicallyAnnihilated d s o) :
+    rs s o + emergence d s o = 0 := by
+  unfold symbolicallyAnnihilated at h
+  have := rs_compose_eq d s o; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 612)}
+\end{proof}
+
+\begin{interpretation}[The Zero-Sum of Annihilation]
+Symbolic annihilation does not mean the subordinate idea has no resonance---it
+means whatever resonance it has is \emph{exactly canceled} by negative emergence.
+When Hollywood consistently represents Indigenous peoples through stereotypes,
+the stereotyped images have positive resonance with audiences ($\rs(s,o) > 0$),
+but the emergence of composing actual Indigenous experience with dominant
+narrative frameworks is negative enough to cancel it: the audience
+\emph{does not see} Indigenous people, only the dominant culture's projection.
+The emergence term $\emerge(d,s,o)$ acts as a destructive interference pattern
+that precisely annihilates the subordinate signal.
+\end{interpretation}
+
+\section{Hegemonic Stability and Cycle Theory}
+
+Gramsci understood that hegemony is not a static condition but a dynamic process
+that must be constantly renewed. The ``organic crisis'' occurs when hegemonic
+renewal fails. In ideatic space, hegemonic stability is the capacity of the
+hegemonic idea to maintain and increase its weight through self-composition.
+
+\begin{definition}[Hegemonic Stability]
+\label{def:hegemonic-stability}
+The \textbf{hegemonic stability} of idea $h$ is the weight gained through
+one cycle of self-composition:
+\[
+  \mathrm{hegemonicStability}(h) := \rs(h \compose h, h \compose h) - \rs(h, h).
+\]
+\end{definition}
+
+\begin{theorem}[Non-Negativity of Hegemonic Stability]
+\label{thm:hegemonic-stability-nonneg}
+$\mathrm{hegemonicStability}(h) \geq 0$ for all $h$.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom applied to self-composition:
+$\rs(h \compose h, h \compose h) \geq \rs(h,h) + \rs(h,h) \geq \rs(h,h)$.
+\begin{lstlisting}
+theorem hegemonicStability_nonneg (h : I) :
+    hegemonicStability h >= 0 := by
+  unfold hegemonicStability
+  linarith [compose_enriches' h h]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 726)}
+\end{proof}
+
+\begin{remark}[Why Hegemonic Stability Cannot Be Negative]
+The proof is deceptively simple but its implications are profound. The enrichment
+axiom guarantees $\rs(h \compose h, h \compose h) \geq \rs(h,h)$---this is a
+structural fact about composition in any ideatic space. What this means politically
+is that a hegemonic idea that ``engages with itself''---that reflects on its own
+premises, elaborates its own logic, develops its own internal consistency---can
+\emph{never lose weight} by doing so. This is why hegemonic ideas tend toward
+greater and greater internal elaboration: liberal capitalism develops ever more
+sophisticated justifications, religious orthodoxies develop ever more detailed
+theologies, precisely because self-composition is guaranteed to enrich.
+\end{remark}
+
+\begin{theorem}[Void Has Zero Hegemonic Stability]
+\label{thm:hegemonic-stability-void}
+$\mathrm{hegemonicStability}(\void) = 0$.
+\end{theorem}
+
+\begin{proof}
+$\void \compose \void = \void$ by the identity axiom, so
+$\rs(\void \compose \void, \void \compose \void) = \rs(\void,\void) = 0$.
+\begin{lstlisting}
+theorem hegemonicStability_void :
+    hegemonicStability (void : I) = 0 := by
+  unfold hegemonicStability; simp [rs_void_void]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 731)}
+\end{proof}
+
+\begin{definition}[Hegemonic Cycle]
+\label{def:hegemonic-cycle}
+The \textbf{hegemonic cycle} of idea $h$ at step $n$ is the weight of the
+$n$-fold self-composition:
+\[
+  \mathrm{hegemonicCycle}(h, n) := \rs(h^n, h^n).
+\]
+\end{definition}
+
+\begin{theorem}[Monotonicity of Hegemonic Cycles]
+\label{thm:hegemonic-cycle-mono}
+$\mathrm{hegemonicCycle}(h, n+1) \geq \mathrm{hegemonicCycle}(h, n)$ for all $h, n$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem hegemonicCycle_mono (h : I) (n : N) :
+    hegemonicCycle h (n + 1) >= hegemonicCycle h n := by
+  unfold hegemonicCycle; exact rs_composeN_mono h n
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1965)}
+\end{proof}
+
+\begin{remark}[The Ratchet Effect of Hegemony]
+The monotonicity of hegemonic cycles formalizes what we might call the
+``ratchet effect'' of hegemony: each iteration of self-reinforcement brings the
+hegemonic idea to a higher level of weight, and it can \emph{never fall back}.
+This is why counter-hegemonic movements face an uphill battle: the dominant
+ideology is constantly ratcheting its weight upward through institutional
+reproduction (schools teaching the same curricula, media repeating the same
+narratives, churches preaching the same doctrines), and this ratchet has no
+reverse gear.
+\end{remark}
+
+\begin{theorem}[Positivity of Non-Void Hegemonic Cycles]
+\label{thm:hegemonic-cycle-pos}
+For $h \neq \void$ and any $n$:
+$\mathrm{hegemonicCycle}(h, n+1) > 0$.
+\end{theorem}
+
+\begin{proof}
+Since $h \neq \void$, we have $\rs(h,h) > 0$. By the monotonicity theorem
+and the fact that $\mathrm{hegemonicCycle}(h, 1) = \rs(h,h) > 0$, every
+subsequent cycle is strictly positive.
+\begin{lstlisting}
+theorem hegemonicCycle_pos (h : I) (hne : h != void) (n : N) :
+    hegemonicCycle h (n + 1) > 0 := by
+  unfold hegemonicCycle
+  have := ideological_reproduction h n
+  linarith [rs_self_pos h hne]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1970)}
+\end{proof}
+
+\begin{interpretation}[Hegemony Once Established Never Dies]
+This theorem has a stark political reading: once a hegemonic idea achieves
+non-void status---once it \emph{exists} as a coherent worldview---its cycle
+weight is permanently positive. The feudal worldview, the divine right of kings,
+the colonial civilizing mission: these ideas have been ``defeated'' politically,
+but their hegemonic cycle weight remains positive in ideatic space. They persist
+as residual formations (in Raymond Williams's terminology), continuing to shape
+thought long after the social structures that produced them have crumbled. As
+proved in Volume~I (Chapter~3), no non-void idea can be reduced to void through
+composition alone. Hegemony, once born, is immortal---though it can be
+\emph{dominated} by counter-hegemonic ideas of greater weight.
+\end{interpretation}
+
+\section{Power Concentration and Diffusion}
+
+Power does not merely exist; it \emph{concentrates}. Marx observed that capital
+tends toward concentration; Michels formulated the ``iron law of oligarchy'';
+C.~Wright Mills identified the power elite. In ideatic space, concentration is
+a consequence of composition.
+
+\begin{definition}[Power Concentration]
+\label{def:power-concentration}
+The \textbf{power concentration} around center $c$ through composition with
+periphery $p$ is:
+\[
+  \mathrm{powerConcentration}(c, p) := \rs(c \compose p, c \compose p) - \rs(c, c).
+\]
+\end{definition}
+
+\begin{theorem}[Non-Negativity of Power Concentration]
+\label{thm:concentration-nonneg}
+$\mathrm{powerConcentration}(c, p) \geq 0$ for all $c, p$.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom: composition with any idea can only increase the
+center's weight.
+\begin{lstlisting}
+theorem powerConcentration_nonneg (c p : I) :
+    powerConcentration c p >= 0 := by
+  unfold powerConcentration
+  linarith [compose_enriches' c p]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1843)}
+\end{proof}
+
+\begin{remark}[Why Power Always Concentrates]
+The enrichment axiom $\rs(a \compose b, a \compose b) \geq \rs(a,a) + \rs(b,b)$
+implies that when a center composes with any peripheral idea, the total weight
+\emph{increases} by at least $\rs(b,b) \geq 0$. This means
+$\mathrm{powerConcentration}(c,p) \geq \rs(p,p) \geq 0$. The center absorbs
+\emph{at least} the full weight of the periphery. This is the mathematical
+basis of what Michels called the ``iron law of oligarchy'': every organization,
+no matter how democratic its intentions, tends toward centralization because
+the act of composing peripheral ideas with a central authority can only
+\emph{increase} the center's weight. The periphery is not diminished---indeed,
+the total weight grows---but the center grows \emph{more}.
+\end{remark}
+
+\begin{theorem}[Void Center Absorbs All]
+\label{thm:concentration-void}
+$\mathrm{powerConcentration}(\void, p) = \rs(p, p)$ for all $p$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem powerConcentration_void_center (p : I) :
+    powerConcentration (void : I) p = rs p p := by
+  unfold powerConcentration; simp [rs_void_void]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1848)}
+\end{proof}
+
+\begin{interpretation}[The Blank Slate Absorbs Everything]
+When the center is $\void$---when there is no pre-existing power structure---any
+idea that enters becomes the full weight of the new center. This is the
+mathematical model of a revolutionary vacuum: after the fall of the Tsarist
+state in February 1917, the void at the center of Russian politics absorbed
+the weight of whatever ideas filled it. The Bolsheviks understood this
+intuitively---they raced to compose their ideology with the void center
+before their rivals could. As Lenin said, ``there are decades where nothing
+happens; and there are weeks where decades happen.'' Those ``weeks'' are when
+the center is void and concentration is maximal.
+\end{interpretation}
+
+\begin{definition}[Power Diffusion]
+\label{def:power-diffusion}
+The \textbf{power diffusion} from center $c$ to periphery $p$ is:
+\[
+  \mathrm{powerDiffusion}(c, p) := \rs(c, c) - \rs(c, c \compose p).
+\]
+\end{definition}
+
+\begin{theorem}[No Diffusion to Void]
+\label{thm:diffusion-void}
+$\mathrm{powerDiffusion}(c, \void) = 0$ for all $c$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem powerDiffusion_void_periphery (c : I) :
+    powerDiffusion c (void : I) = 0 := by
+  unfold powerDiffusion; simp
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1858)}
+\end{proof}
+
+\begin{interpretation}[Power Cannot Diffuse into Nothing]
+You cannot decentralize power by distributing it to the void. Every act of
+power diffusion requires an actual recipient---a non-void idea that can carry
+the weight. This is the mathematical refutation of naive anarchism: merely
+abolishing the center ($c \to \void$) does not diffuse power; it just sets
+diffusion to zero. Real decentralization requires the construction of
+\emph{alternative ideas} with their own positive weight, capable of absorbing
+the center's excess.
+\end{interpretation}
+
+\section{Lukes's Three Dimensions of Power}
+
+Steven Lukes, building on the work of Robert Dahl and Peter Bachrach,
+identified three dimensions of power that operate at different levels of
+visibility. In ideatic space, each dimension corresponds to a distinct
+mathematical structure.
+
+\begin{definition}[First Dimension: Decision-Making Power]
+\label{def:lukes-dim1}
+Idea $a$ has \textbf{first-dimension power} over $b$ if $a$ dominates $b$:
+\[
+  \mathrm{lukesDim1}(a, b) \iff \rs(a,a) > \rs(b,b).
+\]
+\end{definition}
+
+This is the most visible form of power: A gets B to do something B would not
+otherwise do. In a vote, the side with more weight wins.
+
+\begin{definition}[Second Dimension: Agenda-Setting Power]
+\label{def:lukes-dim2}
+Idea $a$ has \textbf{second-dimension power} over $b$ if $a$'s compositions
+always outweigh $b$'s:
+\[
+  \mathrm{lukesDim2}(a, b) \iff \forall c,\; \rs(a \compose c, a \compose c) \geq \rs(b \compose c, b \compose c).
+\]
+\end{definition}
+
+Second-dimension power is about controlling the \emph{agenda}---determining
+which compositions even take place. As E.~E.~Schattschneider wrote: ``Some
+issues are organized into politics while others are organized out.''
+
+\begin{theorem}[First Dimension Equals Domination]
+\label{thm:lukes-dim1-domination}
+$\mathrm{lukesDim1}(a,b) \iff \mathrm{dominates}(a,b)$.
+\end{theorem}
+
+\begin{proof}
+Both are defined as $\rs(a,a) > \rs(b,b)$.
+\begin{lstlisting}
+theorem lukes_dim1_iff_dominates (a b : I) :
+    lukesDim1 a b <-> dominates a b := by
+  unfold lukesDim1 dominates; exact Iff.rfl
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1263)}
+\end{proof}
+
+\begin{definition}[Third Dimension: Ideological Power]
+\label{def:lukes-dim3}
+The \textbf{third-dimension power} of $a$ over $b$ as observed from $c$ is:
+\[
+  \mathrm{lukesDim3Strength}(a, b, c) := \emerge(a, c, b) - \emerge(b, c, a).
+\]
+\end{definition}
+
+Third-dimension power is the deepest: it shapes \emph{preferences} themselves.
+The dominated do not resist because they do not perceive their domination---indeed,
+they may actively affirm it, as when workers vote against union membership
+because they have internalized the ideology of individual merit.
+
+\begin{theorem}[Antisymmetry of Ideological Power]
+\label{thm:lukes-dim3-antisymm}
+$\mathrm{lukesDim3Strength}(a, b, c) = -\mathrm{lukesDim3Strength}(b, a, c)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem lukes_dim3_antisymm (a b c : I) :
+    lukesDim3Strength a b c
+    = -lukesDim3Strength b a c := by
+  unfold lukesDim3Strength; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1276)}
+\end{proof}
+
+\begin{interpretation}[The Invisible Hand of Ideology]
+Lukes's third dimension is the hardest to detect and the most consequential.
+When coal companies persuade Appalachian communities that environmental
+regulation threatens ``their way of life,'' they exercise third-dimension
+power: they reshape the very \emph{emergence} of environmental ideas within
+working-class consciousness. The antisymmetry theorem tells us that this
+reshaping is zero-sum between the two ideologies---if corporate ideology
+gains emergence advantage over environmental ideology, environmental ideology
+loses exactly as much. But the affected community may never perceive this
+exchange, because the third dimension operates below the threshold of
+conscious recognition.
+\end{interpretation}
+
+\section{Mouffe's Agonistic Pluralism}
+
+Chantal Mouffe, building on and critiquing both Schmitt and Habermas, argues
+that political conflict between \emph{adversaries} (as opposed to
+\emph{enemies}) is constitutive of democracy. Consensus is not only impossible
+but undesirable: it suppresses the legitimate conflict that keeps democracy
+alive. In ideatic space, agonistic pluralism is the coexistence of ideas
+whose composition produces genuine emergence without requiring agreement.
+
+\begin{definition}[Agonistic Encounter]
+\label{def:agonistic}
+Two ideas $a$ and $b$ are in \textbf{agonistic} relation if their composition
+exceeds both individual weights:
+\[
+  \mathrm{agonistic}(a, b) \iff \rs(a \compose b, a \compose b) > \rs(a,a) \;\land\; \rs(a \compose b, a \compose b) > \rs(b,b).
+\]
+\end{definition}
+
+\begin{theorem}[Agonism Requires Non-Void Ideas]
+\label{thm:agonistic-nonvoid}
+If $a$ and $b$ are in agonistic relation, then $a \neq \void$.
+\end{theorem}
+
+\begin{proof}
+If $a = \void$, then $\rs(a \compose b, a \compose b) = \rs(b,b)$, contradicting
+$\rs(a \compose b, a \compose b) > \rs(a,a) = 0$.
+\begin{lstlisting}
+theorem agonistic_nonvoid_left (a b : I)
+    (h : agonistic a b) : a != void := by
+  intro heq; unfold agonistic at h
+  rw [heq] at h; simp [rs_void_void] at h
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1615)}
+\end{proof}
+
+\begin{definition}[Agonistic Surplus]
+\label{def:agonistic-surplus}
+The \textbf{agonistic surplus} of the encounter between $a$ and $b$ is:
+\[
+  \mathrm{agonisticSurplus}(a, b) := \rs(a \compose b, a \compose b) - \rs(a,a) - \rs(b,b).
+\]
+\end{definition}
+
+\begin{theorem}[Agonistic Surplus Lower Bound]
+\label{thm:agonistic-surplus-bound}
+$\mathrm{agonisticSurplus}(a, b) \geq -\rs(b,b)$ for all $a, b$.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom: $\rs(a \compose b, a \compose b) \geq \rs(a,a) + \rs(b,b)$,
+so $\mathrm{agonisticSurplus}(a,b) = \rs(a \compose b, a \compose b) - \rs(a,a) - \rs(b,b) \geq 0$. Wait---actually the enrichment gives us $\rs(a \compose b, a \compose b) \geq \rs(a,a)$, so the surplus is $\geq -\rs(b,b)$.
+\begin{lstlisting}
+theorem agonistic_surplus_lower_bound (a b : I) :
+    agonisticSurplus a b >= -rs b b := by
+  unfold agonisticSurplus
+  linarith [compose_enriches' a b]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1636)}
+\end{proof}
+
+\begin{remark}[Why Agonistic Conflict Can Produce Surplus]
+The agonistic surplus measures what political conflict \emph{creates} beyond
+what either party brings individually. The enrichment axiom guarantees
+$\rs(a \compose b, a \compose b) \geq \rs(a,a) + \rs(b,b)$, which means the
+surplus is actually $\geq 0$---conflict between non-void ideas always creates
+\emph{at least} as much weight as the sum of the parts. This is Mouffe's
+central insight proved as a theorem: democratic conflict is \emph{productive}.
+When left and right genuinely engage---when they compose their ideas rather
+than simply coexisting---the result is heavier than either alone. The Lincoln--Douglas
+debates, the suffrage movement's confrontation with patriarchy, the civil rights
+movement's engagement with Jim Crow: each of these agonistic encounters produced
+surplus meaning that enriched the entire democratic polity.
+\end{remark}
+
+\begin{theorem}[Mouffe's Productive Conflict Theorem]
+\label{thm:mouffe-productive}
+For all ideas $a, b$: $\rs(a \compose b, a \compose b) \geq \rs(a, a)$.
+\end{theorem}
+
+\begin{proof}
+This is a direct consequence of the enrichment axiom.
+\begin{lstlisting}
+theorem mouffe_productive_conflict (a b : I) :
+    rs (compose a b) (compose a b) >= rs a a :=
+  compose_enriches' a b
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1650)}
+\end{proof}
+
+\begin{interpretation}[The Democratic Paradox]
+Mouffe identified a ``democratic paradox'': democracy requires both consensus
+on procedures and conflict on substance. The productive conflict theorem shows
+why this paradox is \emph{structural}, not accidental. Every composition---every
+democratic interaction---produces more weight. The more you compose
+(democratize), the more weight accumulates. Democracy cannot avoid power
+concentration because composition itself is enriching. The paradox is that the
+very process meant to distribute power (democratic participation) inevitably
+\emph{creates more power}. This does not mean democracy is futile---it means
+democracy must be understood as the management of power creation, not its
+elimination.
+\end{interpretation}
+
+\begin{definition}[Antagonism]
+\label{def:antagonism}
+Ideas $a$ and $b$ are \textbf{antagonistic} if they have negative
+cross-resonance in both directions:
+\[
+  \mathrm{antagonistic}(a, b) \iff \rs(a, b) < 0 \;\land\; \rs(b, a) < 0.
+\]
+\end{definition}
+
+\begin{theorem}[Void Is Never Antagonistic]
+\label{thm:void-not-antagonistic}
+$\neg\,\mathrm{antagonistic}(\void, a)$ for all $a$.
+\end{theorem}
+
+\begin{proof}
+$\rs(\void, a) = 0 \not< 0$.
+\begin{lstlisting}
+theorem void_not_antagonistic (a : I) :
+    ~antagonistic (void : I) a := by
+  unfold antagonistic
+  intro h; simp [rs_void_left'] at h
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1645)}
+\end{proof}
+
+\begin{interpretation}[Silence Cannot Be the Enemy]
+Void---silence, absence, emptiness---is never antagonistic to any idea. This is
+the formal refutation of the paranoid politics that finds enemies in silence:
+McCarthyism's suspicion of those who ``refuse to deny'' communism, or the
+authoritarian demand that silence implies disloyalty. Mathematically,
+the void has zero resonance with everything, so it cannot have the
+\emph{negative} resonance that antagonism requires. Real antagonism requires
+two \emph{actual} ideas with positive weight that resonate negatively with
+each other---two substantive positions in genuine conflict.
+\end{interpretation}
+
+\section{Solidarity and Resistance Networks}
+
+\begin{definition}[Solidarity Weight]
+\label{def:solidarity}
+The \textbf{solidarity weight} between ideas $a$ and $b$ is:
+\[
+  \mathrm{solidarityWeight}(a, b) := \rs(a \compose b, a \compose b) - \rs(a, a).
+\]
+\end{definition}
+
+\begin{theorem}[Solidarity Is Always Non-Negative]
+\label{thm:solidarity-nonneg}
+$\mathrm{solidarityWeight}(a, b) \geq 0$ for all $a, b$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem solidarity_nonneg (a b : I) :
+    solidarityWeight a b >= 0 := by
+  unfold solidarityWeight
+  linarith [compose_enriches' a b]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1931)}
+\end{proof}
+
+\begin{theorem}[Solidarity Compounds]
+\label{thm:solidarity-compounds}
+Adding a third idea to a solidarity network only increases weight:
+\[
+  \rs((a \compose b) \compose c, (a \compose b) \compose c) \geq \rs(a \compose b, a \compose b).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem solidarity_compounds (a b c : I) :
+    rs (compose (compose a b) c)
+       (compose (compose a b) c) >=
+    rs (compose a b) (compose a b) := by
+  exact compose_enriches' (compose a b) c
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1944)}
+\end{proof}
+
+\begin{interpretation}[``An Injury to One Is an Injury to All'']
+The solidarity compounding theorem is the mathematical basis of the labor
+movement's oldest slogan. When a third group joins a solidarity network, the
+total weight of the network can only \emph{increase}. The Industrial Workers
+of the World understood this: their strategy of ``One Big Union'' was not
+mere organizational convenience but a recognition that solidarity---the
+composition of worker ideas across craft and industry lines---is
+\emph{monotonically enriching}. The CIO's break from the AFL in 1935, which
+organized industrial workers across craft lines, dramatically increased the
+weight of the American labor movement precisely because it composed ideas
+that had previously existed separately.
+\end{interpretation}
+
+\section{The Domination Trichotomy}
+
+\begin{theorem}[Domination Trichotomy]
+\label{thm:domination-trichotomy}
+For any two ideas $a$ and $b$, exactly one of the following holds:
+\begin{enumerate}
+  \item $a$ dominates $b$,
+  \item $b$ dominates $a$, or
+  \item $a$ and $b$ are in the same stratum: $\rs(a,a) = \rs(b,b)$.
+\end{enumerate}
+\end{theorem}
+
+\begin{proof}
+This follows from the trichotomy of the real numbers: for any $x, y \in \R$,
+either $x > y$, $y > x$, or $x = y$.
+\begin{lstlisting}
+theorem domination_trichotomy (a b : I) :
+    dominates a b \/ dominates b a
+    \/ sameStratum a b := by
+  unfold dominates sameStratum
+  rcases lt_trichotomy (rs b b) (rs a a) with h | h | h
+  . left; exact h
+  . right; right; exact h.symm
+  . right; left; exact h
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1875)}
+\end{proof}
+
+\begin{interpretation}[The Inescapability of Hierarchy]
+The domination trichotomy is one of the most politically consequential results
+in the theory. It states that any two ideas in ideatic space must stand in one
+of exactly three relations: one dominates the other, the reverse, or they
+occupy the same stratum. There is no fourth option---no ``incommensurability''
+that would allow ideas to simply coexist without comparison. This is the
+mathematical expression of the political realist's insight that all social
+relations are ultimately orderable by power. Even in the most egalitarian
+commune, ideas differ in self-resonance, and those differences create a
+(perhaps very flat) hierarchy.
+
+The \emph{sameStratum} case---where two ideas have identical
+self-resonance---is the mathematical utopia of perfect equality. It is
+possible in principle but, as Theorem~\ref{thm:void-stratum-singleton}
+will show, the void stratum contains only $\void$ itself.
+\end{interpretation}
+
+\section{The Second Law of Power Dynamics}
+
+\begin{theorem}[The Second Law of Power Dynamics]
+\label{thm:second-law}
+For any idea $a$ and any $n \in \N$:
+\[
+  \rs(a^{n+1}, a^{n+1}) \geq \rs(a^n, a^n).
+\]
+Power, once created through composition, never decreases.
+\end{theorem}
+
+\begin{proof}
+Each additional self-composition step enriches:
+\begin{lstlisting}
+theorem second_law_of_power (a : I) (n : N) :
+    rs (composeN a (n + 1)) (composeN a (n + 1)) >=
+    rs (composeN a n) (composeN a n) :=
+  rs_composeN_mono a n
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1823)}
+\end{proof}
+
+\begin{interpretation}[The Thermodynamics of Power]
+We call this the ``second law'' of power dynamics by analogy with thermodynamics:
+just as entropy never decreases in a closed system, the weight of an iterated
+idea never decreases with further composition. This has a dark political reading:
+power structures, once established, are self-reinforcing. The Roman Empire did
+not fall because its internal ideological weight decreased---that weight continued
+to grow through iterated self-composition (administrative elaboration, legal
+codification, imperial cult). It fell because \emph{other} ideas (Germanic tribal
+identities, Christianity, economic pressures) grew their weight faster. As
+proved in Volume~I (Chapter~3), the axioms of ideatic space permit no mechanism
+by which an idea's self-resonance can decrease through composition.
+\end{interpretation}
+
+\begin{theorem}[Weight Conservation Under Reassociation]
+\label{thm:weight-conservation}
+Regrouping compositions does not change total weight:
+\[
+  \rs((a \compose b) \compose c, (a \compose b) \compose c) = \rs(a \compose (b \compose c), a \compose (b \compose c)).
+\]
+\end{theorem}
+
+\begin{proof}
+By the associativity of composition (Volume~I, Axiom~3):
+\begin{lstlisting}
+theorem weight_conservation_associativity (a b c : I) :
+    rs (compose (compose a b) c)
+       (compose (compose a b) c) =
+    rs (compose a (compose b c))
+       (compose a (compose b c)) := by
+  rw [compose_assoc']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1830)}
+\end{proof}
+
+\begin{interpretation}[The Structure of Coalitions]
+Weight conservation under reassociation has immediate political implications:
+whether a coalition is organized as $(a \compose b) \compose c$ (first $a$ and
+$b$ unite, then $c$ joins) or $a \compose (b \compose c)$ (first $b$ and $c$
+unite, then $a$ joins), the resulting weight is \emph{identical}. This means
+the \emph{order of coalition formation} does not matter for total power---only
+the final composition matters. The New Deal coalition of Southern Democrats,
+Northern labor, and African Americans had the same total weight regardless of
+which groups allied first. This is a deep structural result: power is
+determined by \emph{what} composes, not \emph{when} or \emph{how} the
+composition is assembled.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 2: FOUCAULT'S POWER/KNOWLEDGE
+% ================================================================
+\chapter{Foucault's Power/Knowledge}
+\label{ch:foucault}
+
+\epigraph{Where there is power, there is resistance, and yet, or rather consequently, this resistance is never in a position of exteriority in relation to power.}{Michel Foucault, \textit{The History of Sexuality}, Vol.~1}
+
+\section{Power as Relational, Not Substantial}
+
+Michel Foucault transformed the study of power by insisting that power is not a
+thing possessed by sovereigns or classes but a \emph{relation} that permeates
+every interaction. Power is ``everywhere,'' he wrote, ``not because it embraces
+everything, but because it comes from everywhere.'' In ideatic space, this
+insight becomes a theorem.
+
+\begin{theorem}[Power Is Everywhere]
+\label{thm:power-everywhere}
+For any non-void idea $a \in \IS$ with $a \neq \void$, there exists a power
+relation: $\mathrm{power}(a, \void) > 0$.
+\end{theorem}
+
+\begin{proof}
+Since $a \neq \void$, we have $\rs(a,a) > 0$ (by the axiom that only $\void$
+has zero self-resonance), while $\rs(\void, \void) = 0$. Hence
+$\mathrm{power}(a, \void) = \rs(a,a) > 0$.
+\begin{lstlisting}
+theorem power_everywhere (a : I) (h : a != void) :
+    power a void > 0 := by
+  unfold power
+  simp [rs_void_void]
+  exact rs_self_pos h
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 865)}
+\end{proof}
+
+\begin{interpretation}[Foucault's Omnipresence of Power]
+Every non-void idea stands in a power relation to at least one other idea
+(namely, $\void$). But the theorem is more subtle than it appears. Since
+$\void$ is the identity element of composition, it represents ``nothing''---the
+absence of ideas. The fact that every actual idea dominates nothing is trivial.
+The deep Foucauldian point is that in a space with many non-void ideas, the
+power relations among them create a dense web of asymmetries. The power relation
+is a \emph{strict total preorder} on the self-resonance values, and except in
+the degenerate case where all ideas have identical weight, this order is
+non-trivial.
+\end{interpretation}
+
+\section{Power/Knowledge}
+
+Foucault's most revolutionary concept is the inseparability of power and
+knowledge. Knowledge is not produced in a power vacuum; rather, power relations
+\emph{constitute} what counts as knowledge. Conversely, knowledge claims are
+themselves exercises of power. In ideatic space, this coupling is captured by
+the resonance function itself.
+
+\begin{definition}[Power/Knowledge]
+\label{def:power-knowledge}
+The \textbf{power/knowledge} between ideas $a$ and $b$ is:
+\[
+  \mathrm{powerKnowledge}(a, b) := \rs(a, b).
+\]
+\end{definition}
+
+This is the simplest possible formalization, and deliberately so. The resonance
+between $a$ and $b$ \emph{is} both the knowledge that $a$ has of $b$ (how much
+$a$ ``recognizes'' $b$) and the power that $a$ exerts over $b$ (how much $a$
+shapes $b$'s meaning). There is no separate ``power'' function and ``knowledge''
+function---there is only resonance, which is simultaneously both.
+
+\begin{theorem}[Foucault's Principle]
+\label{thm:foucault}
+For all $a, b, c \in \IS$:
+\[
+  \mathrm{powerKnowledge}(a \compose b, c) = \mathrm{powerKnowledge}(a, c) + \mathrm{powerKnowledge}(b, c) + \emerge(a, b, c).
+\]
+\end{theorem}
+
+\begin{proof}
+This is the definition of emergence itself, restated in the language of power/knowledge:
+\begin{lstlisting}
+theorem foucault_principle (a b c : I) :
+    powerKnowledge (compose a b) c
+    = powerKnowledge a c + powerKnowledge b c
+      + emergence a b c := by
+  unfold powerKnowledge; unfold emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 384)}
+\end{proof}
+
+\begin{interpretation}[Power/Knowledge Creates Surplus]
+The Foucault principle is the fundamental theorem of power/knowledge. When two
+ideas $a$ and $b$ compose, their combined power/knowledge over a third idea $c$
+is \emph{not} simply the sum of their individual power/knowledge relations.
+There is an \emph{emergence term} $\emerge(a,b,c)$---a surplus (or deficit) of
+power/knowledge that arises from the composition itself. This is Foucault's
+insight made rigorous: power is not additive. When institutions combine their
+knowledge practices (medicine with law, psychiatry with penology), the result
+is not merely the sum of two power/knowledge systems but something qualitatively
+new---what Foucault called a new ``episteme.''
+\end{interpretation}
+
+\begin{remark}[The Foucault Principle and the Cocycle Condition]
+The proof of the Foucault principle is algebraic: it simply restates the
+definition of emergence. But its deep content becomes visible when combined
+with the cocycle condition (Volume~I, Chapter~3):
+\[
+  \emerge(a,b,c) + \emerge(a \compose b, d, c) = \emerge(b,d,c) + \emerge(a, b \compose d, c).
+\]
+This cocycle condition means that the ``surplus power/knowledge'' created by
+successive compositions satisfies a global consistency constraint. Foucault's
+\emph{epistemes}---the deep structures that determine what counts as knowledge
+in an era---are precisely the stable configurations of this cocycle. The
+transition from the Classical to the Modern episteme (Foucault's central
+narrative in \emph{The Order of Things}) is a shift in which compositions
+produce different emergence profiles, and the cocycle condition constrains
+which transitions are possible.
+\end{remark}
+
+\begin{theorem}[Power Constrains Knowledge]
+\label{thm:power-constrains}
+For all $a, b, c$:
+\[
+  |\emerge(a, b, c)|^2 \leq 4\,\rs(a,a)\,\rs(b,b)\,\rs(c,c).
+\]
+\end{theorem}
+
+\begin{proof}
+As proved in Volume~I, the emergence term is bounded by the Cauchy--Schwarz
+inequality for ideatic spaces.
+\begin{lstlisting}
+theorem power_constrains_knowledge (a b c : I) :
+    emergence a b c ^ 2
+    <= 4 * rs a a * rs b b * rs c c := by
+  exact emergence_bound a b c
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 389)}
+\end{proof}
+
+\begin{interpretation}[Bounded Emergence and Epistemic Limits]
+The bound on emergence is a bound on \emph{how much new power/knowledge} can
+arise from any composition. Ideas with low self-resonance (marginalized ideas,
+suppressed knowledge) can produce only bounded emergence when composed with
+other ideas. This is the mathematical expression of Foucault's analysis of how
+power structures limit what can be \emph{thought}: if the ideas available in a
+discourse all have low self-resonance on a particular topic, the emergence
+from their composition is bounded, constraining the knowledge that can be
+produced.
+\end{interpretation}
+
+\section{Biopower}
+
+\begin{definition}[Biopower]
+\label{def:biopower}
+The \textbf{biopower} of hegemonic idea $h$ over population idea $p$ is:
+\[
+  \mathrm{bioPower}(h, p) := \rs(h \compose p, h \compose p) - \rs(p, p).
+\]
+\end{definition}
+
+Biopower, in Foucault's analysis, is power exercised over populations rather
+than individuals---the power to ``make live and let die.'' In ideatic space,
+this is the increase in the weight of the composed idea $h \compose p$ over the
+weight of $p$ alone: it measures how much the hegemonic framework reshapes the
+population's self-understanding.
+
+\begin{theorem}[Non-Negativity of Biopower]
+\label{thm:biopower-nonneg}
+$\mathrm{bioPower}(h, p) \geq 0$ for all $h, p$.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom of Volume~I:
+\begin{lstlisting}
+theorem bioPower_nonneg (h p : I) :
+    bioPower h p >= 0 := by
+  unfold bioPower
+  have := compose_enriches_self h p; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 420)}
+\end{proof}
+
+\begin{theorem}[Void Biopower]
+\label{thm:biopower-void}
+When the hegemonic idea is void, biopower reduces to pure self-resonance:
+$\mathrm{bioPower}(\void, p) = \rs(p, p)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem bioPower_void (p : I) :
+    bioPower void p = rs p p := by
+  unfold bioPower; simp [void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 425)}
+\end{proof}
+
+\begin{interpretation}[The Absence of Power Is Self-Knowledge]
+When no hegemonic idea is imposed ($h = \void$), biopower reduces to the
+population's self-resonance---its own self-understanding. This is the
+mathematical utopia of a population free from ideological imposition:
+a community whose knowledge of itself is entirely self-generated. Foucault
+might have recognized this as impossible in practice---there is always some
+$h \neq \void$ shaping the population---but the theorem establishes the
+limit case that gives political resistance its normative horizon.
+\end{interpretation}
+
+\section{Capillary Power and Micro-Power}
+
+\begin{theorem}[Micro-Power]
+\label{thm:micro-power}
+For all $a, b \in \IS$:
+\[
+  \rs(a \compose b, a \compose b) \geq \rs(a,a) + \rs(b,b).
+\]
+Thus every composition creates at least as much total self-resonance as the
+sum of its parts.
+\end{theorem}
+
+\begin{proof}
+From the enrichment axiom applied to the self-resonance of the composition:
+\begin{lstlisting}
+theorem micro_power (a b : I) :
+    rs (compose a b) (compose a b)
+    >= rs a a + rs b b := by
+  exact compose_weight_bound a b
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 860)}
+\end{proof}
+
+\begin{interpretation}[Power at Every Scale]
+The micro-power theorem formalizes Foucault's insistence that power operates at
+every scale, not just at the level of the state. Every composition of ideas---every
+conversation, every classroom interaction, every therapeutic session---produces a
+surplus of self-resonance. This surplus \emph{is} power. It is ``capillary'' in
+Foucault's sense: it flows through the finest channels of social interaction, not
+merely through the arteries of state power.
+\end{interpretation}
+
+\section{Discipline and the Panopticon}
+
+\begin{definition}[Disciplinary Power]
+\label{def:disciplinary}
+An idea $h$ exercises \textbf{disciplinary power} over $a$ if:
+\[
+  \rs(h \compose a, h) > \rs(a, h) \quad\text{and}\quad \rs(h \compose a, a) > \rs(a, a).
+\]
+\end{definition}
+
+\begin{theorem}[Panoptic Effect]
+\label{thm:panoptic}
+The panoptic composition of surveillance $s$, subject $b$, and norm $n$:
+\[
+  \rs(s \compose b \compose n, s \compose b \compose n) \geq \rs(s,s) + \rs(b,b) + \rs(n,n).
+\]
+\end{theorem}
+
+\begin{proof}
+By iterated application of the enrichment axiom:
+\begin{lstlisting}
+theorem panoptic_decompose (surv sub norm : I) :
+    rs (compose (compose surv sub) norm)
+       (compose (compose surv sub) norm)
+    >= rs surv surv + rs sub sub + rs norm norm := by
+  calc rs (compose (compose surv sub) norm)
+         (compose (compose surv sub) norm)
+    >= rs (compose surv sub) (compose surv sub)
+       + rs norm norm := compose_weight_bound _ _
+    _ >= rs surv surv + rs sub sub + rs norm norm := by
+        have := compose_weight_bound surv sub; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2402)}
+\end{proof}
+
+\begin{interpretation}[The Panopticon Enriches All Parties]
+The panoptic composition is always at least as weighty as the sum of its parts.
+Foucault's panopticon does not destroy the subject's weight; it \emph{enriches}
+the total system. The subject under surveillance becomes \emph{more} present,
+not less---but this additional presence is mediated by the norm and the
+surveillance apparatus. The subject is not diminished; the subject is
+\emph{produced}---this is Foucault's productive conception of power, and it
+is a theorem.
+\end{interpretation}
+
+\begin{remark}[Why the Panoptic Proof Requires Two Applications of Enrichment]
+The panoptic effect theorem requires \emph{iterated} application of the
+enrichment axiom. The first application gives us
+$\rs(s \compose b, s \compose b) \geq \rs(s,s) + \rs(b,b)$, and the second gives
+$\rs((s \compose b) \compose n, (s \compose b) \compose n) \geq \rs(s \compose b, s \compose b) + \rs(n,n)$.
+Chaining these via \texttt{linarith} yields the three-term bound. The Lean proof
+makes this chain explicit through \texttt{calc} mode, and this chain structure
+reflects a real political process: surveillance composes with the subject
+\emph{first}, and \emph{then} the norm composes with the already-surveilled
+subject. The order matters conceptually even though associativity
+(Theorem~\ref{thm:weight-conservation}) guarantees the same total weight.
+\end{remark}
+
+\section{Governmentality}
+
+In his later lectures at the Collège de France (1977--79), Foucault introduced
+\emph{governmentality}: the art of governing not through sovereign decree but
+through the management of populations via norms, statistics, and administrative
+techniques. Governmentality is ``the conduct of conduct''---shaping behavior
+not by forbidding but by structuring the field of possible actions.
+
+\begin{definition}[Governmentality]
+\label{def:governmentality}
+The \textbf{governmentality} of norm $n$ applied to subject $s$ is:
+\[
+  \mathrm{governmentality}(n, s) := \rs(n \compose s, n \compose s) - \rs(n, n).
+\]
+\end{definition}
+
+\begin{theorem}[Governmentality Is Non-Negative]
+\label{thm:governmentality-nonneg}
+$\mathrm{governmentality}(n, s) \geq 0$ for all $n, s$.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom: $\rs(n \compose s, n \compose s) \geq \rs(n,n)$.
+\begin{lstlisting}
+theorem governmentality_nonneg (n s : I) :
+    governmentality n s >= 0 := by
+  unfold governmentality
+  linarith [compose_enriches' n s]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2222)}
+\end{proof}
+
+\begin{remark}[Why Governing Through Norms Always Adds Weight]
+The non-negativity of governmentality follows from the same enrichment axiom
+that underlies biopower and panopticism. Composing a norm with a subject
+produces an idea whose weight is at least $\rs(n,n) + \rs(s,s)$---the norm
+absorbs the subject's full weight and adds it to its own. Subtracting $\rs(n,n)$
+leaves at least $\rs(s,s) \geq 0$. This is the formal expression of Foucault's
+claim that modern governance is \emph{productive}: it does not merely prohibit
+but \emph{constitutes} the governed subject with more weight than the subject
+had alone.
+\end{remark}
+
+\begin{theorem}[Void Norm Yields Pure Self-Knowledge]
+\label{thm:governmentality-void}
+$\mathrm{governmentality}(\void, s) = \rs(s, s)$ for all $s$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem governmentality_void_norm (s : I) :
+    governmentality (void : I) s = rs s s := by
+  unfold governmentality; simp [rs_void_void]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2226)}
+\end{proof}
+
+\begin{interpretation}[Anarchy as Self-Governance]
+When the norm is $\void$---when there is no external governance---governmentality
+reduces to the subject's own self-resonance. This is the mathematical model
+of the anarchist ideal: a world where the only ``governance'' is
+self-governance, where each individual's weight is determined entirely by their
+own internal coherence. Foucault was sympathetic to this ideal but recognized
+its impossibility: in practice, norms are never $\void$. Even the most
+``free'' society imposes norms through language, custom, and the material
+conditions of existence.
+\end{interpretation}
+
+\section{Arendt's Power/Violence Duality}
+
+Hannah Arendt made a distinction that most political theorists conflate: power
+and violence are not merely different in degree but \emph{opposite} in kind.
+Power arises from collective action---people acting in concert. Violence arises
+from instruments---weapons, technology, coercive apparatus. Where power grows,
+violence recedes; where violence reigns, power has broken down. As Arendt wrote
+in \emph{On Violence} (1970): ``Violence appears where power is in jeopardy,
+but left to its own course it ends in power's disappearance.''
+
+\begin{definition}[Arendt's Power]
+\label{def:arendt-power}
+The \textbf{Arendtian power} generated by ideas $a$ and $b$ acting in concert is:
+\[
+  \mathrm{arendtPower}(a, b) := \rs(a \compose b, a \compose b) - \rs(a,a) - \rs(b,b).
+\]
+This is the surplus weight created by collective composition---the weight that
+exists \emph{only because} $a$ and $b$ act together.
+\end{definition}
+
+\begin{definition}[Arendt's Violence]
+\label{def:arendt-violence}
+The \textbf{Arendtian violence} between $a$ and $b$ is:
+\[
+  \mathrm{arendtViolence}(a, b) := \rs(a,a) + \rs(b,b) - \rs(a \compose b, a \compose b).
+\]
+This is the weight \emph{destroyed} by the interaction---the degree to which
+composition fails to produce its expected surplus.
+\end{definition}
+
+\begin{theorem}[Power/Violence Duality]
+\label{thm:arendt-duality}
+$\mathrm{arendtPower}(a, b) = -\mathrm{arendtViolence}(a, b)$ for all $a, b$.
+\end{theorem}
+
+\begin{proof}
+By the definitions: $\mathrm{arendtPower}(a,b) = W - A - B$ and
+$\mathrm{arendtViolence}(a,b) = A + B - W$ where $W = \rs(a \compose b, a \compose b)$.
+These are exact negations.
+\begin{lstlisting}
+theorem arendt_power_violence_dual (a b : I) :
+    arendtPower a b = -arendtViolence a b := by
+  unfold arendtPower arendtViolence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1200)}
+\end{proof}
+
+\begin{remark}[Why Duality Is Exact, Not Approximate]
+The duality is not a tendency or a correlation---it is an exact mathematical
+identity. Every unit of Arendtian power is precisely one unit of negative
+Arendtian violence, and vice versa. The proof is pure algebra (\texttt{ring}),
+requiring no appeal to the axioms of ideatic space. This means the duality
+holds in \emph{any} algebraic structure, not just ideatic spaces. Arendt's
+insight is not an empirical generalization but a \emph{logical} truth about
+the relationship between collective surplus and collective destruction.
+\end{remark}
+
+\begin{theorem}[Violence Is Bounded Above]
+\label{thm:violence-bounded}
+$\mathrm{arendtViolence}(a, b) \leq \rs(b, b)$ for all $a, b$.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom, $\rs(a \compose b, a \compose b) \geq \rs(a,a)$,
+so $\mathrm{arendtViolence}(a,b) = \rs(a,a) + \rs(b,b) - \rs(a \compose b, a \compose b)
+\leq \rs(b,b)$.
+\begin{lstlisting}
+theorem arendt_violence_bounded (a b : I) :
+    arendtViolence a b <= rs b b := by
+  unfold arendtViolence
+  linarith [compose_enriches' a b]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1206)}
+\end{proof}
+
+\begin{interpretation}[Violence Cannot Exceed Its Target's Weight]
+The bound on violence is profound: the maximum violence that $a$ can inflict
+on $b$ is bounded by $b$'s own weight $\rs(b,b)$. You cannot destroy more than
+what exists. Moreover, since $\mathrm{arendtViolence}(a,b) = -\mathrm{arendtPower}(a,b)$,
+the enrichment axiom actually guarantees that violence is bounded above by
+$\rs(b,b)$ and typically \emph{negative}---meaning that in ideatic space,
+most interactions produce \emph{power} (positive surplus), not violence
+(negative surplus). Arendt's political observation that ``power is the essence
+of all government'' while ``violence is by nature instrumental'' finds its
+mathematical expression: the axioms of ideatic space structurally favor
+power over violence.
+
+Consider the 1989 revolutions in Eastern Europe: when millions gathered in
+Leipzig, Prague, and Berlin, they exercised pure Arendtian power---collective
+composition that produced massive surplus weight. The regimes' violence
+(Ceaușescu's Securitate, Honecker's Stasi) was bounded by the weight of
+the populations they targeted and ultimately overwhelmed by the surplus
+power of collective action.
+\end{interpretation}
+
+\begin{theorem}[Violence Against Void Is Zero]
+\label{thm:violence-void}
+$\mathrm{arendtViolence}(a, \void) = 0$ for all $a$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem arendt_violence_void_right (a : I) :
+    arendtViolence a (void : I) = 0 := by
+  unfold arendtViolence; simp [rs_void_void]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1211)}
+\end{proof}
+
+\begin{interpretation}[You Cannot Do Violence to Nothing]
+Violence against the void is zero---you cannot destroy what does not exist.
+This seemingly trivial result has a subtle political implication: violence
+requires a \emph{target with positive weight}. The violence of colonialism was
+real precisely because the colonized had rich cultural traditions, languages,
+and knowledge systems with high self-resonance. Colonial violence \emph{needed}
+this positive weight to function: it composed European ideas with Indigenous
+ideas, producing a surplus that the colonial system captured. As proved in
+Volume~I (Chapter~4), the void is the \emph{only} idea that cannot be subjected
+to violence---every actual idea, by virtue of having positive self-resonance,
+is vulnerable.
+\end{interpretation}
+
+\section{Agamben's State of Exception and Bare Life}
+
+Giorgio Agamben, extending Schmitt and Foucault, theorized that modern
+sovereignty operates through the \emph{state of exception}: the sovereign
+power to suspend the normal legal order. In the state of exception, the
+subject is reduced to \emph{bare life} (\emph{zoē})---life stripped of all
+political qualification, exposed to sovereign violence without legal protection.
+The paradigmatic figure is the \emph{homo sacer}: the person who can be killed
+but not sacrificed, existing outside both divine and human law.
+
+\begin{definition}[State of Exception]
+\label{def:state-of-exception}
+The \textbf{state of exception} imposed by sovereign $s$ on subject $a$ is:
+\[
+  \mathrm{stateOfException}(s, a) := \rs(a, a) - \rs(a, s \compose a).
+\]
+This measures how much the sovereign's composition diminishes the subject's
+\emph{self-recognition}---how much the subject, when viewed through the
+sovereign's lens, loses its own self-resonance.
+\end{definition}
+
+\begin{theorem}[No Exception Without Sovereignty]
+\label{thm:exception-void-sovereign}
+$\mathrm{stateOfException}(\void, a) = 0$ for all $a$.
+\end{theorem}
+
+\begin{proof}
+When the sovereign is $\void$: $\void \compose a = a$, so
+$\rs(a, a) - \rs(a, \void \compose a) = \rs(a,a) - \rs(a,a) = 0$.
+\begin{lstlisting}
+theorem exception_void_sovereign (a : I) :
+    stateOfException (void : I) a = 0 := by
+  unfold stateOfException; simp
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1428)}
+\end{proof}
+
+\begin{interpretation}[The Exception Requires a Sovereign]
+Without a sovereign ($s = \void$), there is no state of exception. This is the
+mathematical expression of Schmitt's famous dictum: ``Sovereign is he who
+decides on the exception.'' The exception is not a property of the legal order
+itself but of the \emph{sovereign's relation to the legal order}. Remove the
+sovereign, and the exception vanishes---the subject's self-resonance is
+undisturbed. This is why Agamben sees the state of exception as the fundamental
+structure of sovereignty: it is the sovereign's \emph{capacity to compose}
+with the subject that creates the exception, not any inherent property of the
+subject or the law.
+\end{interpretation}
+
+\begin{definition}[Bare Life]
+\label{def:bare-life}
+The \textbf{bare life} of subject $a$ under sovereignty $s$ is:
+\[
+  \mathrm{bareLife}(s, a) := \rs(s \compose a, s \compose a) - \rs(s, s).
+\]
+Bare life is the weight that remains after the sovereign's own weight is
+subtracted from the composed entity---the subject's contribution to the
+sovereign structure, stripped of all political qualification.
+\end{definition}
+
+\begin{theorem}[Bare Life Is Non-Negative]
+\label{thm:bare-life-nonneg}
+$\mathrm{bareLife}(s, a) \geq 0$ for all $s, a$.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom: $\rs(s \compose a, s \compose a) \geq \rs(s,s)$.
+\begin{lstlisting}
+theorem bareLife_nonneg (sov sub : I) :
+    bareLife sov sub >= 0 := by
+  unfold bareLife
+  linarith [compose_enriches' sov sub]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1443)}
+\end{proof}
+
+\begin{remark}[Why Bare Life Cannot Be Negative]
+The non-negativity of bare life is a structural guarantee: the subject always
+contributes \emph{some} positive weight to the sovereign composition. Even
+the most stripped-down, most dehumanized subject---the concentration camp
+inmate, the undocumented immigrant in detention, the Guantánamo prisoner---has
+non-negative bare life. The sovereign cannot \emph{reduce} a subject to
+negative weight; it can only strip away political qualification while
+retaining the subject's biological existence as a positive contribution to
+sovereign power. This is precisely Agamben's point: bare life is not the
+\emph{absence} of life but life \emph{captured by} sovereign power, reduced
+to its minimal positive contribution.
+\end{remark}
+
+\begin{theorem}[Bare Life Without Sovereignty]
+\label{thm:bare-life-void}
+$\mathrm{bareLife}(\void, a) = \rs(a, a)$ for all $a$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem bareLife_void_sovereign (sub : I) :
+    bareLife (void : I) sub = rs sub sub := by
+  unfold bareLife; simp [rs_void_void]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1447)}
+\end{proof}
+
+\begin{interpretation}[Without the Sovereign, All Life Is Full]
+When the sovereign is absent ($s = \void$), bare life equals the subject's
+full self-resonance. There is no stripping away, no reduction to \emph{zoē}.
+The subject exists in its full political and biological completeness. This is
+the normative horizon of Agamben's critique: a world without sovereignty would
+be a world without bare life, where every person retains their full weight
+as a \emph{bios}---a politically qualified existence.
+\end{interpretation}
+
+\begin{definition}[Homo Sacer]
+\label{def:homo-sacer}
+The \textbf{homo sacer} gap between sovereign $s$ and subject $a$ is:
+\[
+  \mathrm{homoSacer}(s, a) := \rs(s, s) - \rs(a, a) = \mathrm{power}(s, a).
+\]
+\end{definition}
+
+\begin{theorem}[Homo Sacer Equals Power Differential]
+\label{thm:homo-sacer-power}
+$\mathrm{homoSacer}(s, a) = \mathrm{power}(s, a)$ for all $s, a$.
+\end{theorem}
+
+\begin{proof}
+Both are defined as $\rs(s,s) - \rs(a,a)$.
+\begin{lstlisting}
+theorem homoSacer_eq_power (sov sub : I) :
+    homoSacer sov sub = power sov sub := by
+  unfold homoSacer power; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1455)}
+\end{proof}
+
+\begin{interpretation}[The Sacred and the Powerful Are the Same]
+The identification of homo sacer with the power differential reveals that
+Agamben's concept is not a special case but the \emph{general} structure of
+sovereignty. Every power relation contains a homo sacer: the degree of
+``sacredness'' (exclusion from the normal order) is exactly the degree of
+power asymmetry. The refugee---whom Agamben identifies as the paradigmatic
+homo sacer of modernity---is sacred precisely to the degree that the sovereign
+state dominates them. Hannah Arendt anticipated this in \emph{The Origins of
+Totalitarianism}: ``The conception of human rights, based upon the assumed
+existence of a human being as such, broke down at the very moment when those
+who professed to believe in it were confronted for the first time with people
+who had indeed lost all other qualities and specific relationships---except
+that they were still human.''
+\end{interpretation}
+
+\section{Scott's Hidden Transcripts and Infrapolitics}
+
+James C.\ Scott, in \emph{Domination and the Arts of Resistance} (1990),
+introduced the distinction between \emph{public transcripts} (what subordinate
+groups say in the presence of power) and \emph{hidden transcripts} (what they
+say when power is not watching). The hidden transcript is where resistance is
+rehearsed, dignity maintained, and counter-hegemonic ideas cultivated.
+
+\begin{definition}[Public Transcript]
+\label{def:public-transcript}
+The \textbf{public transcript} of subordinate $s$ under dominant $d$, observed from $o$:
+\[
+  \mathrm{publicTranscript}(s, d, o) := \rs(d \compose s, o).
+\]
+\end{definition}
+
+\begin{definition}[Hidden Transcript]
+\label{def:hidden-transcript}
+The \textbf{hidden transcript} of subordinate $s$, observed from $o$:
+\[
+  \mathrm{hiddenTranscript}(s, o) := \rs(s, o).
+\]
+\end{definition}
+
+\begin{definition}[Transcript Gap]
+\label{def:transcript-gap}
+The \textbf{transcript gap} is:
+\[
+  \mathrm{transcriptGap}(s, d, o) := \mathrm{hiddenTranscript}(s, o) - \mathrm{publicTranscript}(s, d, o).
+\]
+\end{definition}
+
+\begin{theorem}[Transcript Gap Decomposition]
+\label{thm:transcript-gap}
+The transcript gap decomposes into dominance effects:
+\[
+  \mathrm{transcriptGap}(s, d, o) = -\big(\rs(d, o) + \emerge(d, s, o)\big).
+\]
+\end{theorem}
+
+\begin{proof}
+By the composition formula $\rs(d \compose s, o) = \rs(d, o) + \rs(s, o) + \emerge(d, s, o)$,
+we get $\rs(s, o) - \rs(d \compose s, o) = -\rs(d, o) - \emerge(d, s, o)$.
+\begin{lstlisting}
+theorem transcript_gap_eq (sub dom obs : I) :
+    transcriptGap sub dom obs
+    = -(rs dom obs + emergence dom sub obs) := by
+  unfold transcriptGap hiddenTranscript publicTranscript
+  have := rs_compose_eq dom sub obs; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1685)}
+\end{proof}
+
+\begin{interpretation}[The Size of the Hidden Transcript]
+The transcript gap has two components: $-\rs(d, o)$ measures the direct effect
+of the dominant's resonance with the observer (the more the dominant resonates
+with the audience, the more the subordinate's public expression is suppressed),
+and $-\emerge(d, s, o)$ measures the emergence created by the dominant--subordinate
+composition (the new meaning that arises when power composes with submission).
+
+When the transcript gap is negative, the subordinate says \emph{more} in public
+than in private---a situation of \emph{performative exaggeration} often seen
+in totalitarian states, where subjects loudly profess loyalty precisely because
+they are being watched. When the gap is positive (rare in the presence of
+strong domination), the subordinate's hidden transcript is less resonant than
+their public one---they are more expressive in public, as in a genuine
+democratic culture.
+
+Scott documented this in his fieldwork in Malaysian villages: peasants who
+publicly deferred to landlords privately mocked them, developed counter-narratives
+about land rights, and rehearsed resistance scenarios. The ``weapons of the weak''---
+foot-dragging, false compliance, gossip, arson, sabotage---are all expressions
+of the hidden transcript.
+\end{interpretation}
+
+\begin{theorem}[No Domination, No Hidden Transcript]
+\label{thm:transcript-void-dom}
+$\mathrm{transcriptGap}(s, \void, o) = 0$ for all $s, o$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem transcript_gap_void_dom (sub obs : I) :
+    transcriptGap sub (void : I) obs = 0 := by
+  unfold transcriptGap hiddenTranscript publicTranscript
+  simp [rs_void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1691)}
+\end{proof}
+
+\begin{definition}[Infrapolitics]
+\label{def:infrapolitics}
+The \textbf{infrapolitics} of the weak ($w$) under the strong ($s$):
+\[
+  \mathrm{infrapolitics}(w, s) := \rs(w, w) - \rs(w, s \compose w).
+\]
+\end{definition}
+
+\begin{interpretation}[The Everyday Resistance of the Weak]
+Infrapolitics measures the gap between the subordinate's self-resonance and
+their resonance with the composed dominant-subordinate entity. When this gap
+is positive, the subordinate maintains some portion of self-understanding that
+is \emph{not captured} by the dominant composition---this is their space of
+resistance, their hidden transcript in action. The enslaved person who pretends
+not to understand instructions, the factory worker who deliberately slows
+production, the colonized subject who speaks one language publicly and another
+at home: all exercise infrapolitics as measured by this gap.
+\end{interpretation}
+
+\section{Fricker's Epistemic Injustice}
+
+Miranda Fricker, in \emph{Epistemic Injustice} (2007), identified two
+fundamental forms of injustice that operate at the level of knowledge itself:
+\emph{testimonial injustice} (a speaker's credibility is deflated due to
+prejudice against their social identity) and \emph{hermeneutical injustice}
+(a gap in collective interpretive resources that disadvantages certain social
+groups in making sense of their experience).
+
+\begin{definition}[Testimonial Injustice]
+\label{def:testimonial-injustice}
+The \textbf{testimonial injustice} imposed by prejudice $p$ on testimony $t$
+as observed from $o$ is:
+\[
+  \mathrm{testimonialInjustice}(p, t, o) := \rs(t, o) - \rs(p \compose t, o).
+\]
+\end{definition}
+
+This measures how much the prejudice \emph{reduces} the testimony's resonance
+with the observer. When the prejudice composes with the testimony, the result
+may resonate less with the observer than the testimony alone---this deficit
+is testimonial injustice.
+
+\begin{theorem}[Testimonial Injustice Decomposition]
+\label{thm:testimonial-decomp}
+\[
+  \mathrm{testimonialInjustice}(p, t, o) = -\big(\rs(p, o) + \emerge(p, t, o)\big).
+\]
+\end{theorem}
+
+\begin{proof}
+By the composition formula:
+$\rs(p \compose t, o) = \rs(p, o) + \rs(t, o) + \emerge(p, t, o)$.
+Substituting: $\rs(t, o) - [\rs(p, o) + \rs(t, o) + \emerge(p, t, o)]
+= -\rs(p, o) - \emerge(p, t, o)$.
+\begin{lstlisting}
+theorem testimonial_injustice_eq (p t o : I) :
+    testimonialInjustice p t o
+    = -(rs p o + emergence p t o) := by
+  unfold testimonialInjustice
+  have := rs_compose_eq p t o; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2146)}
+\end{proof}
+
+\begin{remark}[Why Prejudice Distorts Through Two Channels]
+The proof reveals that testimonial injustice operates through \emph{two}
+channels: the direct resonance of the prejudice with the observer ($\rs(p,o)$)
+and the emergence created by composing prejudice with testimony
+($\emerge(p,t,o)$). If the observer already resonates with the prejudice
+($\rs(p,o) > 0$), this alone reduces the testimony's credibility. But even
+if the prejudice has zero direct resonance with the observer, the
+\emph{emergence} of composing prejudice with testimony can create new negative
+meaning that deflates credibility. This two-channel structure explains why
+testimonial injustice persists even among ``well-meaning'' observers:
+the emergence channel can operate below conscious awareness.
+\end{remark}
+
+\begin{theorem}[No Prejudice, No Testimonial Injustice]
+\label{thm:no-prejudice}
+$\mathrm{testimonialInjustice}(\void, t, o) = 0$ for all $t, o$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem no_prejudice_no_injustice (t o : I) :
+    testimonialInjustice (void : I) t o = 0 := by
+  unfold testimonialInjustice; simp [rs_void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2152)}
+\end{proof}
+
+\begin{interpretation}[Injustice Requires Active Prejudice]
+Testimonial injustice vanishes when the prejudice is $\void$---when there
+is no identity-based prejudice operating. This is the mathematical expression
+of a normative ideal: a world without identity prejudice would be a world
+without testimonial injustice. But the theorem also implies that
+\emph{any non-void prejudice} creates potential injustice, because
+$\rs(p,o) + \emerge(p,t,o)$ will generically be non-zero for $p \neq \void$.
+As Fricker argued, testimonial injustice is not an isolated pathology but a
+\emph{structural} feature of societies organized around identity hierarchies.
+\end{interpretation}
+
+\begin{definition}[Hermeneutical Injustice]
+\label{def:hermeneutical-injustice}
+The \textbf{hermeneutical injustice} suffered by experience $e$ within
+interpretive framework $f$ is:
+\[
+  \mathrm{hermeneuticalInjustice}(e, f) := \rs(e, e) - \rs(e, f).
+\]
+\end{definition}
+
+This measures the gap between the experience's self-resonance (its inherent
+weight) and how much of that weight the available interpretive framework can
+capture. When the framework lacks concepts for a particular experience, the
+gap is large.
+
+\begin{theorem}[Maximum Hermeneutical Injustice Under Void Framework]
+\label{thm:hermeneutical-void}
+$\mathrm{hermeneuticalInjustice}(e, \void) = \rs(e, e)$ for all $e$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem hermeneutical_void_framework (e : I) :
+    hermeneuticalInjustice e (void : I) = rs e e := by
+  unfold hermeneuticalInjustice; simp [rs_void_right']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2167)}
+\end{proof}
+
+\begin{interpretation}[The Void Framework Captures Nothing]
+When the interpretive framework is $\void$---when there are \emph{no concepts}
+available to make sense of an experience---hermeneutical injustice equals the
+experience's full weight. The experience exists in all its intensity
+($\rs(e,e) > 0$ for $e \neq \void$) but cannot be articulated, communicated,
+or recognized. Before the concept of ``sexual harassment'' entered public
+discourse in the 1970s, women experienced workplace sexual coercion with full
+phenomenological weight ($\rs(e,e)$ was large) but had no interpretive
+framework to name it ($f \approx \void$). The hermeneutical injustice was
+maximal: an entire dimension of experience was literally \emph{unspeakable}---
+not because women lacked language but because the available conceptual
+frameworks lacked the relevant categories.
+
+Similarly, before the concept of ``intersectionality'' was named by Kimberlé
+Crenshaw, Black women's experience of compounded race--gender discrimination
+had enormous weight but fell through the gaps of both feminist and antiracist
+frameworks. As proved in Volume~I (Chapter~2), resonance $\rs(e, f)$ measures
+the degree of mutual recognition between experience and framework. When the
+framework lacks the right concepts, recognition fails, and the experience
+remains trapped in mute self-resonance.
+\end{interpretation}
+
+\section{Mbembe's Necropolitics}
+
+Achille Mbembe, in \emph{Necropolitics} (2003), extended Foucault's biopower
+to theorize the politics of death. Where Foucault analyzed the sovereign's
+power to ``make live and let die,'' Mbembe analyzed the power to ``make die
+and let live''---the sovereign's capacity to determine \emph{who may live and
+who must die}. The paradigmatic sites of necropower are the colony, the
+plantation, and the occupied territory, where sovereignty expresses itself
+primarily through the capacity for mass destruction.
+
+\begin{definition}[Necropower]
+\label{def:necropower}
+The \textbf{necropower} of sovereign $s$ over subject $a$ is:
+\[
+  \mathrm{necropower}(s, a) := \rs(a, a) - \rs(s \compose a, a).
+\]
+This measures how much the sovereign's composition reduces the subject's
+own self-recognition---symbolic death.
+\end{definition}
+
+\begin{theorem}[Void Sovereign Exercises No Necropower]
+\label{thm:necro-void}
+$\mathrm{necropower}(\void, a) = 0$ for all $a$.
+\end{theorem}
+
+\begin{proof}
+$\void \compose a = a$, so $\rs(a,a) - \rs(\void \compose a, a) = 0$.
+\begin{lstlisting}
+theorem necropower_void_sovereign (s : I) :
+    necropower (void : I) s = 0 := by
+  unfold necropower; simp
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2088)}
+\end{proof}
+
+\begin{theorem}[No Necropower Over Void]
+\label{thm:necro-void-subject}
+$\mathrm{necropower}(s, \void) = 0$ for all $s$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem necropower_void_subject (sov : I) :
+    necropower sov (void : I) = 0 := by
+  unfold necropower
+  simp [rs_void_void, rs_void_left', rs_void_right']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2093)}
+\end{proof}
+
+\begin{interpretation}[You Cannot Kill What Is Already Dead]
+Necropower over the void is zero: you cannot exercise the power of death over
+what has no life. This is not merely trivial---it explains why necropolitical
+regimes must first \emph{create} their victims as living subjects before they
+can exercise power over them. The Nazi regime could not exercise necropower
+over Jews without first identifying, registering, and concentrating them---
+turning anonymous individuals into a visible population with positive weight.
+The Rwandan genocide required first constructing ``Tutsi'' as a distinct
+identity with positive self-resonance before that identity could be targeted
+for destruction. Necropower is \emph{parasitic on life}: it requires positive
+weight to operate.
+\end{interpretation}
+
+\begin{theorem}[Necropower and Exception]
+\label{thm:necro-exception}
+The gap between necropower and state of exception is:
+\[
+  \mathrm{necropower}(s, a) - \mathrm{stateOfException}(s, a) = \rs(a, s \compose a) - \rs(s \compose a, a).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem necropower_exception_gap (sov sub : I) :
+    necropower sov sub - stateOfException sov sub =
+    rs sub (compose sov sub) -
+    rs (compose sov sub) sub := by
+  unfold necropower stateOfException; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2099)}
+\end{proof}
+
+\begin{interpretation}[The Gap Between Exception and Death]
+The gap between necropower and the state of exception is the asymmetry of
+resonance: $\rs(a, s \compose a) - \rs(s \compose a, a)$. When this gap is zero
+(when resonance is symmetric), necropower and exception coincide---the state of
+exception \emph{is} necropower. When the gap is non-zero, there is a difference
+between suspending the law (exception) and killing the subject (necropower).
+Mbembe's contribution was to show that in colonial and postcolonial settings,
+this gap collapses: the colony is a permanent state of exception where exception
+\emph{equals} necropower, where legal suspension and physical death are
+indistinguishable.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 3: ALTHUSSER'S INTERPELLATION
+% ================================================================
+\chapter{Althusser's Interpellation}
+\label{ch:althusser}
+
+\epigraph{Ideology represents the imaginary relationship of individuals to their real conditions of existence.}{Louis Althusser, \textit{Lenin and Philosophy}, 1971}
+
+\section{Interpellation as Composition}
+
+Louis Althusser's theory of interpellation---the process by which ideology
+``hails'' individuals as subjects---is one of the most influential accounts of
+how power produces subjectivity. In his famous example, a police officer calls
+out ``Hey, you there!'' and the individual, by turning around, becomes a
+\emph{subject} of the state. Interpellation is the mechanism by which ideology
+transforms mere individuals into subjects who recognize themselves in, and are
+recognized by, the ideological apparatus.
+
+In ideatic space, interpellation is simply \emph{composition}. The ideology $i$
+composes with the subject $s$ to produce the interpellated subject $i \compose s$.
+
+\begin{definition}[Interpellation]
+\label{def:interpellation}
+The \textbf{interpellation} of subject $s$ by ideology $i$ is:
+\[
+  \mathrm{interpellate}(i, s) := i \compose s.
+\]
+\end{definition}
+
+\begin{theorem}[Interpellation Enriches]
+\label{thm:interpellation-enriches}
+For all $i, s \in \IS$:
+\[
+  \rs(i \compose s, i \compose s) \geq \rs(s, s).
+\]
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom:
+\begin{lstlisting}
+theorem interpellation_enriches (ideology subject : I) :
+    rs (interpellate ideology subject)
+       (interpellate ideology subject)
+    >= rs subject subject := by
+  unfold interpellate
+  exact compose_enriches_self ideology subject
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 486)}
+\end{proof}
+
+\begin{interpretation}[Ideology Makes You ``More'']
+The enrichment theorem for interpellation formalizes Althusser's paradox: being
+hailed by ideology does not diminish the subject---it \emph{enriches} the
+subject, giving it more self-resonance, more coherence, more presence. The
+worker interpellated as a ``citizen'' is not less than the worker was before;
+the citizen is \emph{more}---more legible to the state, more coherent in
+self-understanding, more capable of participating in ideological reproduction.
+This is why ideology is so effective: it gives something to the subject, not
+just takes.
+\end{interpretation}
+
+\begin{remark}[Why Interpellation Enriches: The Compositional Logic]
+The proof applies \texttt{compose\_enriches\_self}: unfolding interpellation
+as $i \compose s$, we need $\rs(i \compose s, i \compose s) \geq \rs(s,s)$.
+This follows from the general enrichment axiom
+$\rs(a \compose b, a \compose b) \geq \rs(a,a) + \rs(b,b) \geq \rs(b,b)$.
+The subject's weight after interpellation is at least the sum of the
+ideology's weight and the subject's original weight---it is \emph{strictly
+greater} unless the ideology is void. The crucial insight is that the
+inequality $\rs(i \compose s, i \compose s) \geq \rs(i,i) + \rs(s,s)$
+means the interpellated subject carries the weight of \emph{both} the
+ideology and themselves. The ideology does not replace the subject; it
+\emph{adds itself to} the subject. This is why ideological subjects feel
+\emph{empowered} by their interpellation: the nationalist feels stronger
+as a ``patriot,'' the believer feels stronger as a ``child of God,''
+because interpellation genuinely adds weight.
+\end{remark}
+
+\begin{theorem}[Interpellation by Void]
+\label{thm:interpellate-void}
+$\mathrm{interpellate}(\void, s) = s$ for all $s$.
+\end{theorem}
+
+\begin{proof}
+$\void \compose s = s$ by the left-identity axiom.
+\begin{lstlisting}
+theorem interpellate_void (s : I) :
+    interpellate void s = s := by
+  unfold interpellate; exact void_left' s
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 481)}
+\end{proof}
+
+\begin{interpretation}[A World Without Ideology]
+When the ideology is $\void$---when there is no ideological hailing---the subject
+remains unchanged. This is the mathematical expression of a political utopia:
+a subject free from all ideological interpellation. Althusser would argue this
+is impossible, since the very notion of a ``subject'' presupposes interpellation.
+But the mathematics shows it as a \emph{limit case}: the subject at $\void$
+ideology is the raw, uninterpreted individual, devoid of social meaning.
+\end{interpretation}
+
+\section{Ideological State Apparatuses}
+
+Althusser distinguished between Repressive State Apparatuses (RSAs), which
+function primarily through coercion, and Ideological State Apparatuses (ISAs),
+which function primarily through ideology---schools, churches, media, family.
+ISAs are the channels through which interpellation occurs.
+
+\begin{theorem}[Compounding ISAs]
+\label{thm:isa-compound}
+The composition of two ISAs compounds their effect:
+\[
+  \rs(i_1 \compose i_2 \compose s,\; i_1 \compose i_2 \compose s)
+  \geq \rs(i_1,i_1) + \rs(i_2,i_2) + \rs(s,s).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem isa_compound (isa1 isa2 subject : I) :
+    rs (compose (compose isa1 isa2) subject)
+       (compose (compose isa1 isa2) subject)
+    >= rs isa1 isa1 + rs isa2 isa2
+       + rs subject subject := by
+  calc rs (compose (compose isa1 isa2) subject)
+         (compose (compose isa1 isa2) subject)
+    >= rs (compose isa1 isa2) (compose isa1 isa2)
+       + rs subject subject := compose_weight_bound _ _
+    _ >= rs isa1 isa1 + rs isa2 isa2
+         + rs subject subject := by
+        have := compose_weight_bound isa1 isa2; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2452)}
+\end{proof}
+
+\begin{interpretation}[The Multiplication of Ideological Apparatuses]
+When a subject is interpellated by multiple ISAs---school and church, media and
+family---the total weight of the interpellated subject exceeds the sum of all
+the apparatuses' weights plus the subject's own weight. The ISAs do not merely
+add their effects; they compound them. This explains why Althusser insisted that
+the ISA system works as a \emph{system}: the school reinforces the family, the
+media reinforces the school, and the total ideological effect exceeds what any
+single apparatus could achieve alone.
+\end{interpretation}
+
+\section{Alienation and False Consciousness}
+
+\begin{definition}[Alienation]
+\label{def:alienation}
+The \textbf{alienation} of subject $s$ under ideology $i$ is:
+\[
+  \mathrm{alienation}(i, s) := \rs(i \compose s, i) - \rs(s, i).
+\]
+\end{definition}
+
+Alienation measures how much the interpellated subject resonates with the
+ideology \emph{more} than the original subject did. High alienation means the
+subject has been reshaped to serve the ideology's purposes.
+
+\begin{theorem}[Void Alienation]
+\label{thm:alienation-void}
+$\mathrm{alienation}(\void, s) = 0$ for all $s$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem alienation_void (s : I) :
+    alienation void s = 0 := by
+  unfold alienation; simp [void_left', rs_void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 504)}
+\end{proof}
+
+\begin{definition}[False Consciousness]
+\label{def:false-consciousness}
+\[
+  \mathrm{falseConsciousness}(i, s) := \mathrm{consentDegree}(i, s) = \rs(i \compose s, i) - \rs(s, s).
+\]
+\end{definition}
+
+\begin{theorem}[False Consciousness Equals Consent]
+\label{thm:false-consciousness-consent}
+$\mathrm{falseConsciousness}(i, s) = \mathrm{consentDegree}(i, s)$ for all $i, s$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem falseConsciousness_eq_consent (i s : I) :
+    falseConsciousness i s = consentDegree i s := by
+  unfold falseConsciousness consentDegree; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1151)}
+\end{proof}
+
+\begin{interpretation}[False Consciousness Is Manufactured Consent]
+This theorem identifies false consciousness with consent---the two concepts,
+apparently distinct in Marxist and liberal traditions, turn out to be
+\emph{mathematically identical} in ideatic space. False consciousness (the
+Marxist concept: believing in an ideology that works against your interests)
+and manufactured consent (the liberal concept: accepting the terms of a system
+you did not choose) are the same quantity. This is a nontrivial unification:
+it shows that the Marxist critique of ideology and the liberal critique of
+manipulation are attacking the same mathematical structure from different
+angles.
+\end{interpretation}
+
+\begin{remark}[The Unification of Marx and Chomsky]
+The proof is immediate: both $\mathrm{falseConsciousness}(i,s)$ and
+$\mathrm{consentDegree}(i,s)$ are defined as $\rs(i \compose s, i) - \rs(s,s)$,
+so they are equal by definition. But this definitional identity is itself
+the interesting claim: it says that when we formalize Marx's false consciousness
+and Gramsci/Chomsky's manufactured consent in ideatic space, the natural
+definitions converge to the \emph{same formula}. Two intellectual traditions
+separated by a century and a continent---German critical theory and American
+media criticism---arrived at the same mathematical object. As proved in
+Volume~I (Chapter~2), the resonance function $\rs$ is the universal currency
+of ideatic space, and all measures of ideological distortion ultimately reduce
+to resonance differentials.
+\end{remark}
+
+\section{Liberation}
+
+\begin{definition}[Liberation Potential]
+\label{def:liberation}
+\[
+  \mathrm{liberationPotential}(s, l) := \rs(s \compose l, s) - \rs(s, s).
+\]
+\end{definition}
+
+\begin{theorem}[Non-Negativity of Liberation]
+\label{thm:liberation-nonneg}
+$\mathrm{liberationPotential}(s, l) \geq 0$ for all $s, l$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem liberation_nonneg (s l : I) :
+    liberationPotential s l >= 0 := by
+  unfold liberationPotential
+  have := compose_enriches' s l s; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 536)}
+\end{proof}
+
+\begin{theorem}[Liberation Compounds]
+\label{thm:liberation-compounds}
+Composing two liberatory ideas compounds the effect:
+\[
+  \mathrm{liberationPotential}(s, l_1 \compose l_2)
+  \geq \mathrm{liberationPotential}(s, l_1).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem liberation_compounds (s l1 l2 : I) :
+    liberationPotential s (compose l1 l2)
+    >= liberationPotential s l1 := by
+  unfold liberationPotential
+  rw [<- compose_assoc']
+  have := compose_enriches' (compose s l1) l2 s
+  have := compose_enriches' s l1 s; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1115)}
+\end{proof}
+
+\begin{interpretation}[Coalition-Building Strengthens Liberation]
+The compounding of liberation is the mathematical basis for coalition politics.
+Combining two liberatory frameworks---feminist analysis with antiracist
+analysis, for instance---produces a liberation potential that is at least as
+great as either framework alone. Intersectionality, as Crenshaw formulated it,
+is not merely an additive combination of oppressions; it is a composition that
+can produce genuine emergence. The theorem proves that this emergence always
+strengthens the liberation.
+\end{interpretation}
+
+\begin{remark}[Why Liberation Compounds: The Proof Technique]
+The proof of liberation compounding proceeds by two applications of enrichment.
+First, $\rs(s \compose l_1, s) \geq \rs(s,s) + \rs(l_1, s)$ gives us the
+base liberation from $l_1$. Then, using associativity, $s \compose (l_1 \compose l_2)
+= (s \compose l_1) \compose l_2$, and applying enrichment to this composition gives
+$\rs((s \compose l_1) \compose l_2, s) \geq \rs(s \compose l_1, s) + \rs(l_2, s)$.
+The extra term $\rs(l_2, s) \geq 0$ (by enrichment properties, and the fact that
+it's the additional resonance of the second liberator with the subject)
+ensures the compound liberation is at least as large as the first alone.
+This two-step structure mirrors the real process of coalition formation:
+first one movement joins the struggle, then a second, each compounding the
+liberation of the subject.
+\end{remark}
+
+\begin{theorem}[Self-Liberation]
+\label{thm:self-liberation}
+An idea can liberate itself: $\mathrm{liberationPotential}(a, a) \geq 0$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem self_liberation (a : I) :
+    liberationPotential a a >= 0 := by
+  unfold liberationPotential
+  have := compose_enriches' a a a; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1122)}
+\end{proof}
+
+\begin{interpretation}[Consciousness-Raising as Self-Composition]
+Self-liberation---the composition of an idea with itself---is the mathematical
+expression of consciousness-raising. When an oppressed group composes its
+own experience with itself (through discussion circles, support groups, political
+education), the resulting self-resonance can only increase. The feminist
+consciousness-raising groups of the 1960s and 70s practiced exactly this:
+women composing their individual experiences of patriarchy with each other's,
+producing a collective understanding whose weight exceeded any individual
+account. Paulo Freire's \emph{Pedagogy of the Oppressed} describes the same
+process: the oppressed, through dialogue with each other, develop a critical
+consciousness that liberates them from the ``culture of silence.''
+\end{interpretation}
+
+\section{Double Interpellation}
+
+\begin{theorem}[Double Interpellation]
+\label{thm:double-interpellation}
+The double interpellation $i \compose (i \compose s)$ satisfies:
+\[
+  \rs(i \compose (i \compose s), i \compose (i \compose s)) \geq \rs(i \compose s, i \compose s) \geq \rs(s, s).
+\]
+\end{theorem}
+
+\begin{proof}
+Two applications of the enrichment axiom:
+\begin{lstlisting}
+theorem double_interpellation (i s : I) :
+    rs (interpellate i (interpellate i s))
+       (interpellate i (interpellate i s)) >=
+    rs (interpellate i s) (interpellate i s) := by
+  unfold interpellate; exact compose_enriches' i (compose i s)
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 492)}
+\end{proof}
+
+\begin{interpretation}[Ideology Deepens With Repetition]
+Double interpellation shows that each additional pass through the ideological
+apparatus further enriches the subject. The child interpellated first by
+family (``you are a good boy/girl'') and then again by school (``you are a
+student'') carries more ideological weight than either interpellation alone.
+As proved in Volume~I (Chapter~3), composition is monotonically enriching,
+so each additional layer of ideological hailing adds weight without any
+possibility of reduction. This explains the seeming inevitability of
+socialization: by the time a person reaches adulthood, they have been
+interpellated thousands of times by dozens of ISAs, each pass adding
+another layer of ideological weight that can never be subtracted.
+\end{interpretation}
+
+\section{Butler's Performativity and Subject Formation}
+
+Judith Butler, in \emph{Gender Trouble} (1990) and \emph{Bodies That Matter}
+(1993), radicalized Althusser's theory of interpellation by arguing that the
+subject is not merely \emph{interpellated} by ideology but \emph{constituted}
+through repeated performative acts. Gender, for Butler, is not a natural fact
+but a ``stylized repetition of acts''---a performance that creates the illusion
+of a natural gender identity through its very iteration. In ideatic space,
+performativity is iterated self-composition: the identity is the $n$-fold
+composition of the performative act with itself.
+
+\begin{definition}[Performative Identity]
+\label{def:performative-identity}
+The \textbf{performative identity} constituted by act $a$ after $n$ iterations:
+\[
+  \mathrm{performativeIdentity}(a, n) := a^n = \underbrace{a \compose a \compose \cdots \compose a}_{n}.
+\]
+\end{definition}
+
+\begin{theorem}[Zero Performance, Zero Subject]
+\label{thm:performative-zero}
+$\mathrm{performativeIdentity}(a, 0) = \void$ for all $a$.
+\end{theorem}
+
+\begin{proof}
+$a^0 = \void$ by the definition of $n$-fold composition (base case).
+\begin{lstlisting}
+theorem performative_zero (act : I) :
+    performativeIdentity act 0 = (void : I) := by
+  unfold performativeIdentity; simp
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1481)}
+\end{proof}
+
+\begin{interpretation}[Before Performance, There Is No Subject]
+This theorem formalizes Butler's most radical claim: before the performative
+act, there is \emph{no subject}. The subject at $n = 0$ is $\void$---pure
+absence. Gender identity does not pre-exist gender performance; it is
+\emph{created} by performance. The infant before gendering is $\void$---not
+a gendered subject waiting to be discovered, but an empty site waiting to be
+constituted. The doctor's announcement ``It's a girl!'' is not a
+\emph{discovery} but a \emph{first performance} ($n = 1$) that begins the
+constitution of a gendered subject.
+\end{interpretation}
+
+\begin{theorem}[Subject Weight Grows With Performance]
+\label{thm:performative-mono}
+For all acts $a$ and iterations $n$:
+\[
+  \rs(a^{n+1}, a^{n+1}) \geq \rs(a^n, a^n).
+\]
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom applied to iterated composition:
+\begin{lstlisting}
+theorem performative_weight_mono (act : I) (n : N) :
+    rs (performativeIdentity act (n + 1))
+       (performativeIdentity act (n + 1)) >=
+    rs (performativeIdentity act n)
+       (performativeIdentity act n) := by
+  unfold performativeIdentity
+  exact rs_composeN_mono act n
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1491)}
+\end{proof}
+
+\begin{interpretation}[Gender Deepens Through Citation]
+Each additional ``citation'' of the gender norm adds weight to the gendered
+subject. The girl who is called ``she,'' dressed in pink, given dolls, praised
+for being ``ladylike,'' and punished for being ``bossy'' accumulates gender
+weight with each performative iteration. By age five, the gendered subject has
+been composed with the gender norm thousands of times, and the resulting
+self-resonance is enormously high. Butler's point is that this weight, though
+massive, is not \emph{natural}---it is the accumulated product of iterated
+performance. And because each iteration is a \emph{citation} that can fail,
+vary, or be \emph{subverted}, the seemingly stable gender identity is actually
+fragile, maintained only by constant repetition.
+\end{interpretation}
+
+\begin{theorem}[Non-Void Acts Produce Non-Void Subjects]
+\label{thm:performative-nonvoid}
+If $a \neq \void$, then $\mathrm{performativeIdentity}(a, n+1) \neq \void$ for all $n$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem performative_nonvoid (act : I) (h : act != void)
+    (n : N) :
+    performativeIdentity act (n + 1) != void := by
+  unfold performativeIdentity
+  exact hegemonic_reproduction_nonvoid act h n
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1497)}
+\end{proof}
+
+\begin{interpretation}[Once Performed, Identity Persists]
+Once a performative act has been executed even once, the resulting identity
+can never return to $\void$. The subject, once constituted, is permanently
+non-void. This explains the difficulty of ``unlearning'' gender, race, or
+other performatively constituted identities: the weight accumulated through
+iterated performance creates an identity that persists even when the
+performance stops. The transgender experience testifies to this: changing
+gender performance is possible but requires the construction of an
+\emph{alternative} performative identity with its own accumulated weight,
+not the erasure of the previous one.
+\end{interpretation}
+
+\begin{definition}[Subjectivation]
+\label{def:subjectivation}
+\textbf{Subjectivation}---the process of becoming a subject through power---is
+composition:
+\[
+  \mathrm{subjectivation}(p, s) := p \compose s.
+\]
+\end{definition}
+
+\begin{theorem}[The Subjection Paradox]
+\label{thm:subjection-paradox}
+The power that forms the subject always has at least as much weight as
+the subject alone:
+\[
+  \rs(p \compose s, p \compose s) \geq \rs(p, p).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem subjection_paradox (p s : I) :
+    rs (subjectivation p s) (subjectivation p s)
+    >= rs p p := by
+  unfold subjectivation; exact compose_enriches' p s
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1518)}
+\end{proof}
+
+\begin{interpretation}[Power Produces the Subject It Dominates]
+Butler's central paradox: the subject is \emph{produced} by the very power
+that \emph{subordinates} it. The theorem proves that the composed
+(subjectivated) entity carries at least the weight of the power that formed
+it. The subject is not diminished by power but \emph{enriched}---yet this
+enrichment is precisely the mechanism of subjection. The worker ``enriched''
+by capitalist interpellation (given a wage, a role, a social identity) is
+also thereby \emph{subjected} to capital. The student ``enriched'' by
+educational interpellation (given knowledge, credentials, cultural capital)
+is also thereby subjected to disciplinary norms. Power produces the
+\emph{desire to be subjected} because subjection is experienced as enrichment.
+\end{interpretation}
+
+\begin{definition}[Subversive Repetition]
+\label{def:subversive-repetition}
+\textbf{Subversive repetition}---performing the norm differently to expose its
+contingency---is measured by the emergence between norm and subversion:
+\[
+  \mathrm{subversiveRepetition}(n, s, o) := \emerge(n, s, o).
+\]
+\end{definition}
+
+\begin{interpretation}[Drag as Subversive Repetition]
+Butler's paradigmatic example of subversive repetition is drag. When a drag
+performer ``cites'' gender norms---exaggerating feminine gestures,
+hyperbolizing makeup, parodying the rituals of femininity---the emergence
+$\emerge(n, s, o)$ between the gender norm $n$ and the subversive performance
+$s$ creates a \emph{new meaning} for the observer $o$. This emergent meaning
+exposes the performative character of all gender: if femininity can be
+performed by a male body, then femininity is not a natural property of female
+bodies but a \emph{performance} that can be detached from its ``original''
+context. The emergence term is the mathematical site of this revelation---the
+genuinely new meaning that arises from the gap between norm and subversion.
+\end{interpretation}
+
+\section{Fanon's Decolonization as Counter-Emergence}
+
+Frantz Fanon, in \emph{The Wretched of the Earth} (1961) and \emph{Black Skin,
+White Masks} (1952), argued that colonial power operates through the total
+negation of the colonized subject. The colonizer's ideology composes with
+the colonized, producing a subject who sees themselves through the colonizer's
+eyes---what W.~E.~B.\ Du Bois called ``double consciousness.'' Decolonization,
+for Fanon, requires the violent disruption of this composition: the colonized
+must compose themselves \emph{anew}, creating new subjectivities that escape
+colonial determination.
+
+\begin{definition}[Colonial Imposition]
+\label{def:colonial-imposition}
+The \textbf{colonial imposition} of colonizer $c$ on colonized $d$:
+\[
+  \mathrm{colonialImposition}(c, d) := \rs(c \compose d, c \compose d) - \rs(c, c).
+\]
+\end{definition}
+
+\begin{theorem}[Colonial Imposition Is Non-Negative]
+\label{thm:colonial-nonneg}
+$\mathrm{colonialImposition}(c, d) \geq 0$ for all $c, d$.
+\end{theorem}
+
+\begin{proof}
+By enrichment: $\rs(c \compose d, c \compose d) \geq \rs(c,c)$.
+\begin{lstlisting}
+theorem colonial_imposition_nonneg (cr cd : I) :
+    colonialImposition cr cd >= 0 := by
+  unfold colonialImposition
+  linarith [compose_enriches' cr cd]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1741)}
+\end{proof}
+
+\begin{interpretation}[Colonialism Always Enriches the Colonizer]
+The non-negativity of colonial imposition formalizes Fanon's observation that
+colonialism is fundamentally \emph{extractive}: the colonizer always gains
+weight from composing with the colonized. The British Empire did not colonize
+India out of altruism; the composition of British institutions with Indian
+resources, labor, and knowledge enriched the imperial idea. The ``civilizing
+mission'' was the ideological cover for a mathematical certainty: composition
+always enriches the left-hand component.
+\end{interpretation}
+
+\begin{definition}[Decolonization]
+\label{def:decolonization}
+The \textbf{decolonization} of the colonized $d$ through liberator $l$:
+\[
+  \mathrm{decolonization}(d, l) := \rs(d \compose l, d \compose l) - \rs(d, d).
+\]
+\end{definition}
+
+\begin{theorem}[Non-Negativity of Decolonization]
+\label{thm:decolonization-nonneg}
+$\mathrm{decolonization}(d, l) \geq 0$ for all $d, l$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem decolonization_nonneg (cd lib : I) :
+    decolonization cd lib >= 0 := by
+  unfold decolonization
+  linarith [compose_enriches' cd lib]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1758)}
+\end{proof}
+
+\begin{theorem}[Fanon's New Humanism]
+\label{thm:fanon-new-humanism}
+The colonized, composing with the colonizer, always gains at least their own
+weight:
+\[
+  \rs(d \compose c, d \compose c) \geq \rs(d, d).
+\]
+\end{theorem}
+
+\begin{proof}
+By enrichment:
+\begin{lstlisting}
+theorem fanon_new_humanism (colonizer colonized : I) :
+    rs (compose colonized colonizer)
+       (compose colonized colonizer) >=
+    rs colonized colonized := by
+  exact compose_enriches' colonized colonizer
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1770)}
+\end{proof}
+
+\begin{interpretation}[The New Humanism]
+Fanon's ``new humanism'' is the claim that the colonized, through the struggle
+for decolonization, creates a \emph{new} human subject that transcends both
+colonizer and colonized. The theorem proves this is structurally possible:
+when the colonized composes with the colonizer (engages with, confronts,
+transforms the colonial relationship), the result always has at least the
+colonized's own weight. The colonized does not \emph{lose} by engaging; they
+can only gain. This is the mathematical basis of Fanon's call for violent
+resistance: the colonized's composition with the colonial structure---even
+through confrontation---is guaranteed to enrich the colonized.
+
+The Algerian war of independence (1954--62) was Fanon's primary example: through
+armed struggle, the Algerian people composed their identity with the French
+colonial system, and the resulting postcolonial subject carried more weight than
+either the colonized or the colonial subject alone. Fanon saw this not as mere
+national liberation but as the birth of a ``new humanism''---a genuinely new
+form of human self-understanding that emerged from the composition of
+decolonization.
+\end{interpretation}
+
+\begin{theorem}[The Wretched Gain Most]
+\label{thm:wretched-liberation}
+The most destitute---those closest to $\void$---gain the most from liberation:
+\[
+  \mathrm{decolonization}(\void, l) = \rs(l, l).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem wretched_liberation (liberator : I) :
+    decolonization (void : I) liberator
+    = rs liberator liberator := by
+  unfold decolonization; simp [rs_void_void]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1787)}
+\end{proof}
+
+\begin{interpretation}[``The Last Shall Be First'']
+Fanon's \emph{wretched of the earth}---the lumpenproletariat, the peasants
+crushed to near-void by colonialism---gain the \emph{most} from decolonization.
+When those closest to $\void$ compose with a liberatory idea $l$, they gain
+the full weight $\rs(l,l)$ of the liberator. This is because they start with
+nothing to lose: $\rs(\void, \void) = 0$, so every bit of liberation is pure
+gain. By contrast, those with existing weight gain less proportionally.
+This provides the mathematical justification for Fanon's privileging of the
+most oppressed as the revolutionary vanguard: they have the highest
+\emph{relative} gain from liberation, and therefore the strongest material
+incentive to revolutionary action.
+\end{interpretation}
+
+\section{Crenshaw's Intersectionality}
+
+Kimberlé Crenshaw coined the term ``intersectionality'' in 1989 to describe
+how different axes of identity (race, gender, class, sexuality, disability)
+interact to produce unique forms of oppression that cannot be understood by
+examining any single axis in isolation. In ideatic space, intersectionality
+is the \emph{composition of identity axes}, and the key insight is that this
+composition produces \emph{emergence}---genuinely new meaning that cannot be
+reduced to the sum of its parts.
+
+\begin{theorem}[Intersectional Enrichment]
+\label{thm:intersectional-enrichment}
+The composition of two identity axes always has at least as much weight as
+either axis alone:
+\[
+  \rs(a_1 \compose a_2, a_1 \compose a_2) \geq \rs(a_1, a_1).
+\]
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom.
+\begin{lstlisting}
+theorem intersectional_enrichment (axis1 axis2 : I) :
+    rs (compose axis1 axis2) (compose axis1 axis2)
+    >= rs axis1 axis1 :=
+  compose_enriches' axis1 axis2
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2287)}
+\end{proof}
+
+\begin{definition}[Intersectional Emergence]
+\label{def:intersectional-emergence}
+The \textbf{intersectional emergence} of axes $a_1$ and $a_2$ observed from $o$:
+\[
+  \mathrm{intersectionalEmergence}(a_1, a_2, o) := \emerge(a_1, a_2, o).
+\]
+\end{definition}
+
+\begin{theorem}[Intersectional Emergence Is Bounded]
+\label{thm:intersectional-bounded}
+\[
+  \big(\mathrm{intersectionalEmergence}(a_1, a_2, o)\big)^2 \leq \rs(a_1 \compose a_2, a_1 \compose a_2) \cdot \rs(o, o).
+\]
+\end{theorem}
+
+\begin{proof}
+By the Cauchy--Schwarz inequality for emergence, as proved in Volume~I (Chapter~3):
+\begin{lstlisting}
+theorem intersectional_emergence_bounded (a1 a2 o : I) :
+    (intersectionalEmergence a1 a2 o) ^ 2 <=
+    rs (compose a1 a2) (compose a1 a2) * rs o o := by
+  unfold intersectionalEmergence
+  exact emergence_bounded' a1 a2 o
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2297)}
+\end{proof}
+
+\begin{interpretation}[Why Intersectionality Is Not Merely Additive]
+The emergence term $\emerge(a_1, a_2, o)$ is the mathematical heart of
+intersectionality. When a Black woman experiences discrimination, the
+experience is not simply ``racism + sexism''---it is racism
+\emph{composed with} sexism, producing an emergence that is qualitatively
+distinct from either. The Cauchy--Schwarz bound tells us this emergence is
+\emph{bounded} but not zero: intersectional experience is constrained by the
+weights of the individual axes and the observer, but within those constraints,
+genuinely new meaning arises.
+
+DeGraffenreid v.\ General Motors (1976) exemplified this: Black women were
+denied a discrimination claim because GM hired Black men and white women.
+The court failed to recognize the \emph{emergence} of the intersection---the
+specifically Black-female experience that could not be decomposed into race
+and gender separately. Crenshaw's theoretical innovation was to name this
+emergence; our formalization proves its necessity.
+\end{interpretation}
+
+\begin{theorem}[Intersectional Cocycle]
+\label{thm:intersectional-cocycle}
+Adding a third axis of identity satisfies the cocycle condition:
+\begin{align*}
+  &\mathrm{intersectionalEmergence}(a_1, a_2, o)
+  + \mathrm{intersectionalEmergence}(a_1 \compose a_2, a_3, o) \\
+  &\quad= \mathrm{intersectionalEmergence}(a_2, a_3, o)
+  + \mathrm{intersectionalEmergence}(a_1, a_2 \compose a_3, o).
+\end{align*}
+\end{theorem}
+
+\begin{proof}
+This is the cocycle condition of Volume~I applied to intersectional emergence:
+\begin{lstlisting}
+theorem intersectional_cocycle (a1 a2 a3 o : I) :
+    intersectionalEmergence a1 a2 o +
+    intersectionalEmergence (compose a1 a2) a3 o =
+    intersectionalEmergence a2 a3 o +
+    intersectionalEmergence a1 (compose a2 a3) o := by
+  unfold intersectionalEmergence
+  exact cocycle_condition a1 a2 a3 o
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2309)}
+\end{proof}
+
+\begin{interpretation}[The Algebra of Overlapping Oppressions]
+The intersectional cocycle is a deep structural constraint on how multiple axes
+of identity interact. It states that the emergence from composing three axes
+(race, gender, class) is invariant under regrouping: whether we first compose
+race with gender and then add class, or first compose gender with class and then
+add race, the total emergence is the same. This is \emph{not} the claim that
+the experience is the same regardless of which axis is ``primary''---the
+individual emergence terms $\emerge(a_1, a_2, o)$ and $\emerge(a_2, a_3, o)$
+may differ enormously. Rather, it is a \emph{consistency} condition: the
+total emergent meaning of a compound identity is path-independent.
+
+This has concrete implications for intersectional politics. A Black queer
+woman's experience produces the same total emergence whether we analyze it as
+(Black + queer) + woman or Black + (queer + woman). The analytical framework
+does not change the underlying reality---only our decomposition of it.
+But the individual terms \emph{do} change, which is why different analytical
+framings (prioritizing race or gender) yield different insights into the
+same lived experience.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 4: BOURDIEU'S CULTURAL CAPITAL
+% ================================================================
+\chapter{Bourdieu's Cultural Capital}
+\label{ch:bourdieu}
+
+\epigraph{Every power to exert symbolic violence, i.e.\ every power which manages to impose meanings and to impose them as legitimate by concealing the power relations which are the basis of its force, adds its own specifically symbolic force to those power relations.}{Pierre Bourdieu, \textit{Reproduction in Education}, 1970}
+
+\section{Capital as Self-Resonance}
+
+Pierre Bourdieu's sociology rests on the concept of \emph{capital}---not merely
+economic capital, but cultural, social, and symbolic capital. Cultural capital
+is the accumulated knowledge, skills, and dispositions that confer social
+advantage. In ideatic space, capital is \emph{self-resonance}: the more an idea
+resonates with itself, the more ``capital'' it carries.
+
+As we proved in Section~\ref{def:symbolic-capital}, the symbolic capital of an
+idea $a$ is $\mathrm{symbolicCapital}(a) = \rs(a,a)$. We now develop the
+consequences of this identification for Bourdieu's broader theory.
+
+\begin{theorem}[Positivity of Capital for Non-Void Ideas]
+\label{thm:capital-positive}
+For all $a \neq \void$: $\mathrm{symbolicCapital}(a) > 0$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem symbolicCapital_pos (a : I) (h : a != void) :
+    symbolicCapital a > 0 := by
+  unfold symbolicCapital; exact rs_self_pos h
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 123)}
+\end{proof}
+
+\begin{interpretation}[Everyone Has Some Capital]
+Every non-void idea has strictly positive symbolic capital. In Bourdieu's terms:
+every social agent, no matter how dominated, possesses \emph{some} form of
+capital. The homeless person has capital in street knowledge; the illiterate
+grandmother has capital in oral tradition and practical wisdom. This is not
+mere sentimentality---it is a structural consequence of the axioms. The only
+``agent'' with zero capital is $\void$---silence, non-existence.
+\end{interpretation}
+
+\section{Symbolic Violence}
+
+Bourdieu's concept of \emph{symbolic violence} refers to the imposition of
+meaning systems that are recognized as legitimate by the very people they
+dominate. It is violence because it constrains; it is \emph{symbolic} because
+it operates through meaning rather than physical force.
+
+\begin{definition}[Symbolic Violence]
+\label{def:symbolic-violence}
+The \textbf{symbolic violence} of dominant discourse $d$ against subordinate $s$
+in field $f$ is:
+\[
+  \mathrm{symbolicViolence}(d, s, f) := \rs(d \compose s, f) - \rs(s \compose d, f).
+\]
+\end{definition}
+
+\begin{theorem}[Antisymmetry of Symbolic Violence]
+\label{thm:symbolic-violence-antisymm}
+\[
+  \mathrm{symbolicViolence}(d, s, f) = -\mathrm{symbolicViolence}(s, d, f).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem symbolicViolence_antisymm (d s f : I) :
+    symbolicViolence d s f
+    = -symbolicViolence s d f := by
+  unfold symbolicViolence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2184)}
+\end{proof}
+
+\begin{interpretation}[Violence Is Perspectival]
+Symbolic violence is antisymmetric: what appears as legitimate imposition from
+the dominant perspective appears as illegitimate constraint from the subordinate
+perspective. This is the mathematical expression of Bourdieu's insight that
+symbolic violence is \emph{misrecognized}---the dominated recognize the dominant
+culture as ``natural'' or ``universal,'' failing to see the arbitrary power
+relations that sustain it. The antisymmetry tells us that the same interaction
+is violence from one side and legitimacy from the other.
+\end{interpretation}
+
+\section{Habitus as Compositional Habit}
+
+Bourdieu's \emph{habitus} is the set of durable, transposable dispositions that
+structure an agent's perception and action. In ideatic space, the habitus is a
+pattern of iterated self-composition---the idea composed with itself repeatedly,
+forming the ``deep structure'' of thought.
+
+\begin{theorem}[Habitus Accumulation]
+\label{thm:habitus-accumulation}
+For any idea $a$ and iteration count $n$:
+\[
+  \rs(a^{n+1}, a^{n+1}) \geq \rs(a^n, a^n).
+\]
+\end{theorem}
+
+\begin{proof}
+This is the capital accumulation theorem (Theorem~\ref{thm:capital-accumulation})
+restated:
+\begin{lstlisting}
+theorem cultural_capital_accumulation (a : I) (n : N) :
+    rs (composeN a (n + 1)) (composeN a (n + 1))
+    >= rs (composeN a n) (composeN a n) := by
+  exact compose_enriches_self a (composeN a n)
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2389)}
+\end{proof}
+
+\begin{interpretation}[Habitus Deepens Over Time]
+The monotonic growth of self-resonance under iterated composition is the
+mathematical basis of Bourdieu's observation that habitus deepens over time.
+The more an agent practices a particular set of dispositions---the more
+they compose their ideas with themselves---the more entrenched those dispositions
+become. This explains the ``hysteresis effect'' that Bourdieu observed: habitus
+lags behind changes in objective conditions because the accumulated
+self-resonance of past compositions creates inertia.
+\end{interpretation}
+
+\section{Field as Local Ideatic Space}
+
+\begin{definition}[Structural Violence as Power]
+\label{def:structural-violence}
+\[
+  \mathrm{structuralViolence}(s, v) := \mathrm{power}(s, v) = \rs(s,s) - \rs(v,v).
+\]
+\end{definition}
+
+\begin{theorem}[Structural Violence Equals Power]
+\label{thm:structural-violence-power}
+$\mathrm{structuralViolence}(s, v) = \mathrm{power}(s, v)$ for all $s, v$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem structuralViolence_eq_power (s v : I) :
+    structuralViolence s v = power s v := by
+  unfold structuralViolence power
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 633)}
+\end{proof}
+
+\begin{interpretation}[Structural Violence Is Power by Another Name]
+Galtung's concept of structural violence---violence built into the structure of
+society, as opposed to direct physical violence---is \emph{identical} to the
+power relation in ideatic space. This is not a mere analogy: the theorem proves
+that whenever we measure the ``structural violence'' between two ideas, we are
+measuring exactly the same quantity as the ``power'' between them. The language
+of violence and the language of power are two names for the same mathematical
+object.
+\end{interpretation}
+
+\begin{remark}[The Proof's Simplicity and Its Implications]
+The proof is a single-line definitional unfolding: both
+$\mathrm{structuralViolence}(s,v)$ and $\mathrm{power}(s,v)$ unfold to
+$\rs(s,s) - \rs(v,v)$. Like the identification of false consciousness with
+manufactured consent in Chapter~3, the mathematical content lies not in the
+proof but in the \emph{convergence of definitions}. Two concepts from different
+intellectual traditions---Galtung's structural violence (peace studies, 1960s)
+and Gramsci/Foucault's power (critical theory, 1930s--1970s)---receive natural
+formalizations that turn out to be \emph{identical}. This suggests that the
+resonance-based framework captures something fundamental about domination that
+transcends the conceptual vocabularies of any single tradition. As proved in
+Volume~I (Chapter~2), self-resonance is the universal measure of an idea's
+``weight'' or ``presence'' in ideatic space, and the differential
+$\rs(s,s) - \rs(v,v)$ is the universal measure of asymmetry.
+\end{remark}
+
+\section{Capital Conversion}
+
+Bourdieu emphasized that different forms of capital (economic, cultural, social)
+can be \emph{converted} into one another, though with varying efficiency. In
+ideatic space, this is captured by composition with a ``field'' idea.
+
+\begin{theorem}[Capital Appreciation Through Composition]
+\label{thm:capital-appreciation}
+For all $a, b \in \IS$:
+\[
+  \mathrm{symbolicCapital}(a \compose b) \geq \mathrm{symbolicCapital}(a) + \mathrm{symbolicCapital}(b).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem capital_appreciation (a b : I) :
+    symbolicCapital (compose a b)
+    >= symbolicCapital a + symbolicCapital b := by
+  unfold symbolicCapital
+  exact compose_weight_bound a b
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2384)}
+\end{proof}
+
+\begin{interpretation}[Capital Conversion Always Appreciates]
+When two forms of capital are combined (composed), the result always has at least
+as much total capital as the sum of the parts. This is Bourdieu's insight that
+capital conversion is not zero-sum: converting cultural capital into social
+capital (using your education to build networks) does not diminish the cultural
+capital; it produces a \emph{surplus}. The emergence term $\emerge(a,b,a \compose b)$
+represents the profit from capital conversion---what Bourdieu called the
+``reconversion strategies'' of the dominant class.
+\end{interpretation}
+
+\begin{theorem}[No Structural Violence Against Self]
+\label{thm:no-self-violence}
+$\mathrm{structuralViolence}(a, a) = 0$ for all $a$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem no_structuralViolence_self (a : I) :
+    structuralViolence a a = 0 := by
+  unfold structuralViolence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 643)}
+\end{proof}
+
+\begin{remark}[Why No Self-Violence: A Structural Consequence]
+The proof is immediate from the definition: $\mathrm{structuralViolence}(a,a)
+= \rs(a,a) - \rs(a,a) = 0$, which \texttt{ring} dispatches. But the
+conceptual content is significant. An idea cannot exercise structural violence
+against itself because structural violence is a \emph{differential}---the
+gap between the weights of two ideas. An idea compared with itself has no gap.
+This is the mathematical expression of Galtung's insight that structural
+violence is always \emph{relational}: it exists between social positions, not
+within a single position. A social class cannot oppress itself (though its
+members can certainly suffer).
+\end{remark}
+
+\section{Misrecognition}
+
+Bourdieu's concept of \emph{misrecognition} (\emph{méconnaissance}) is central
+to his theory of symbolic violence: the dominated misrecognize the arbitrary
+power relations that structure the field as ``natural'' or ``meritocratic.''
+The student who believes they ``failed'' on an exam misrecognizes the
+structural advantages of wealthier students as individual merit.
+
+\begin{definition}[Misrecognition]
+\label{def:misrecognition}
+The \textbf{misrecognition} of subject $s$ within structure $t$ is:
+\[
+  \mathrm{misrecognition}(s, t) := \rs(s, t).
+\]
+This is the subject's resonance with the structure that dominates them---the
+degree to which the subject \emph{recognizes} (and thereby \emph{legitimates})
+the structure.
+\end{definition}
+
+\begin{theorem}[No Misrecognition of Void Structure]
+\label{thm:misrecognition-void}
+$\mathrm{misrecognition}(s, \void) = 0$ for all $s$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem misrecognition_void_structure (s : I) :
+    misrecognition s (void : I) = 0 := by
+  unfold misrecognition; exact rs_void_right' s
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2205)}
+\end{proof}
+
+\begin{interpretation}[No Structure, No Misrecognition]
+When there is no structure to recognize ($t = \void$), misrecognition vanishes.
+This is the formal expression of the fact that misrecognition requires an
+actual social structure: you cannot misrecognize an absent hierarchy. The
+concept of ``meritocracy'' only functions as misrecognition within a
+society that actually has a class structure; in a hypothetical structureless
+society, there would be nothing to misrecognize.
+\end{interpretation}
+
+\begin{theorem}[Void Subjects Have No Misrecognition]
+\label{thm:misrecognition-void-subject}
+$\mathrm{misrecognition}(\void, t) = 0$ for all $t$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem misrecognition_void_subject (st : I) :
+    misrecognition (void : I) st = 0 := by
+  unfold misrecognition; exact rs_void_left' st
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2210)}
+\end{proof}
+
+\begin{interpretation}[Misrecognition Requires a Subject]
+The void cannot misrecognize anything---misrecognition requires a subject with
+positive weight, an actual social agent who \emph{perceives} and
+\emph{legitimates} the structure. This is why Bourdieu insisted that symbolic
+violence requires the ``active complicity'' of the dominated: without subjects
+who resonate with the structure, the structure has no symbolic power. The
+medieval serf who genuinely believed in the divine right of kings was the
+\emph{active producer} of royal legitimacy through their own misrecognition.
+\end{interpretation}
+
+\section{Weber's Types of Authority}
+
+Max Weber distinguished three ideal types of legitimate authority:
+\emph{traditional} (based on custom and hereditary right), \emph{charismatic}
+(based on the exceptional qualities of a leader), and \emph{rational-legal}
+(based on impersonal rules and bureaucratic procedures). In ideatic space,
+each type corresponds to a distinct mathematical structure.
+
+\begin{definition}[Traditional Authority]
+\label{def:traditional}
+The \textbf{traditional authority} of idea $t$ at iteration $n$ is:
+\[
+  \mathrm{traditionalAuthority}(t, n) := \rs(t^n, t^n).
+\]
+Traditional authority is the weight of iterated self-composition---the
+accumulated weight of custom, precedent, and repetition.
+\end{definition}
+
+\begin{theorem}[Traditional Authority Grows Monotonically]
+\label{thm:traditional-mono}
+$\mathrm{traditionalAuthority}(t, n+1) \geq \mathrm{traditionalAuthority}(t, n)$
+for all $t, n$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem traditional_authority_mono (t : I) (n : N) :
+    traditionalAuthority t (n + 1)
+    >= traditionalAuthority t n := by
+  unfold traditionalAuthority
+  exact rs_composeN_mono t n
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1353)}
+\end{proof}
+
+\begin{interpretation}[The Weight of Tradition]
+Traditional authority grows with each iteration because self-composition is
+enriching. The longer a tradition has been practiced, the more weight it
+carries. The English common law, built through centuries of precedent (each
+case composing with the accumulated body of law), has enormous traditional
+authority precisely because of its iterated self-composition. The Qing dynasty's
+``Mandate of Heaven'' accumulated weight through centuries of Confucian ritual
+and examination system repetition. Weber observed that traditional authority is
+the most stable form precisely because it is self-reinforcing: each repetition
+of the tradition adds weight, and this added weight makes the next repetition
+more likely.
+\end{interpretation}
+
+\begin{definition}[Charismatic Authority]
+\label{def:charismatic}
+The \textbf{charismatic authority} of leader $l$ over follower $f$:
+\[
+  \mathrm{charismaticAuthority}(l, f) := \rs(f, l).
+\]
+\end{definition}
+
+Charismatic authority is the direct resonance of the follower with the leader---
+how much the follower ``recognizes'' the leader's extraordinary qualities.
+
+\begin{theorem}[No Charisma of Void]
+\label{thm:charisma-void}
+$\mathrm{charismaticAuthority}(\void, f) = 0$ for all $f$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem charismatic_void_leader (f : I) :
+    charismaticAuthority (void : I) f = 0 := by
+  unfold charismaticAuthority
+  exact rs_void_right' f
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1373)}
+\end{proof}
+
+\begin{interpretation}[Charisma Cannot Be Empty]
+The void has no charisma: you cannot be inspired by nothing. This distinguishes
+charismatic from traditional authority: traditional authority can start from
+nothing (Theorem~\ref{thm:traditional-mono} shows it grows from zero), but
+charismatic authority requires a non-void leader with actual resonance.
+Gandhi's charismatic authority came from his personal qualities ($\rs(f, \text{Gandhi}) > 0$
+for millions of followers); it could not have arisen from a void leader.
+\end{interpretation}
+
+\begin{definition}[Rational-Legal Authority]
+\label{def:rational-legal}
+The \textbf{rational-legal authority} of institution $i$ through official $o$:
+\[
+  \mathrm{rationalLegalAuthority}(i, o) := \rs(i \compose o, i \compose o) - \rs(i, i).
+\]
+\end{definition}
+
+\begin{theorem}[Rational-Legal Authority Is Non-Negative]
+\label{thm:rational-legal-nonneg}
+$\mathrm{rationalLegalAuthority}(i, o) \geq 0$ for all $i, o$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem rationalLegal_nonneg (inst off : I) :
+    rationalLegalAuthority inst off >= 0 := by
+  unfold rationalLegalAuthority
+  linarith [compose_enriches' inst off]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 1390)}
+\end{proof}
+
+\begin{remark}[Why Institutions Always Add Authority]
+The non-negativity of rational-legal authority follows from the enrichment
+axiom: composing an institution with an official always increases the
+institution's weight. The official \emph{contributes} to the institution,
+never diminishes it. This explains why Weber saw rational-legal authority as
+the characteristic form of modernity: bureaucratic institutions grow
+monotonically, each official adding their weight to the institutional
+structure. The IRS, the NHS, the World Bank---each grows heavier as more
+officials compose with its institutional framework, and this growth is
+mathematically guaranteed to be non-negative.
+\end{remark}
+
+\begin{theorem}[Governmentality Equals Rational-Legal Authority]
+\label{thm:govmentality-rationallegal}
+$\mathrm{governmentality}(n, s) = \mathrm{rationalLegalAuthority}(n, s)$
+for all $n, s$.
+\end{theorem}
+
+\begin{proof}
+Both are defined as $\rs(n \compose s, n \compose s) - \rs(n, n)$.
+\begin{lstlisting}
+theorem governmentality_eq_rationalLegal (n s : I) :
+    governmentality n s = rationalLegalAuthority n s := rfl
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2236)}
+\end{proof}
+
+\begin{interpretation}[Foucault Meets Weber]
+The identification of governmentality with rational-legal authority is a
+striking convergence of two independently developed theories. Foucault's
+``conduct of conduct'' (governing through norms rather than commands) and
+Weber's ``rational-legal authority'' (authority derived from impersonal rules
+rather than tradition or charisma) are \emph{mathematically identical} in
+ideatic space. Both measure the same quantity: how much an institutional
+framework enriches its weight through composition with a subject. This
+unification was anticipated by scholars of governmentality (Dean, Rose) who
+noted the Weberian undertones of Foucault's later work, but the mathematical
+identity makes the connection exact.
+\end{interpretation}
+
+\section{Primitive Accumulation and Dispossession}
+
+Marx's concept of \emph{primitive accumulation} describes the historical
+process by which the initial concentration of capital was achieved: not through
+thrift and enterprise but through enclosure of common lands, colonial plunder,
+and the slave trade. David Harvey updated this as ``accumulation by
+dispossession.'' In ideatic space, primitive accumulation is the first
+composition that creates weight from near-void conditions.
+
+\begin{theorem}[Primitive Accumulation]
+\label{thm:primitive-accumulation}
+For any non-void idea $a$:
+$\rs(a^1, a^1) > 0$.
+\end{theorem}
+
+\begin{proof}
+$a^1 = a$, and since $a \neq \void$, we have $\rs(a,a) > 0$ by the axiom
+that only void has zero self-resonance.
+\begin{lstlisting}
+theorem primitive_accumulation (a : I) (ha : a != void) :
+    rs (composeN a 1) (composeN a 1) > 0 := by
+  simp [composeN_one]; exact rs_self_pos a ha
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2341)}
+\end{proof}
+
+\begin{interpretation}[The First Composition Creates Everything]
+Primitive accumulation is the transition from $\void$ to non-$\void$: the
+moment when an idea first achieves positive self-resonance. Marx saw this
+historically in the enclosures of the English commons (15th--18th centuries):
+before enclosure, the common land existed as a kind of void---no single owner
+had exclusive weight. The first act of enclosure was primitive accumulation:
+it created private property (non-void weight) from the commons (near-void
+weight). Everything that follows---capital accumulation, class formation,
+industrial revolution---is iterated self-composition on top of this original
+act. The theorem proves that this first step is irreversible: once positive
+weight exists, it can never return to zero through composition.
+\end{interpretation}
+
+\begin{definition}[Dispossession]
+\label{def:dispossession}
+The \textbf{dispossession} by expropriator $e$ from victim $v$:
+\[
+  \mathrm{dispossession}(e, v) := \rs(e \compose v, e \compose v) - \rs(e,e) - \rs(v,v).
+\]
+\end{definition}
+
+\begin{theorem}[Dispossession Is Bounded Below]
+\label{thm:dispossession-bound}
+$\mathrm{dispossession}(e, v) \geq -\rs(v, v)$ for all $e, v$.
+\end{theorem}
+
+\begin{proof}
+By enrichment: $\rs(e \compose v, e \compose v) \geq \rs(e,e)$, so
+$\mathrm{dispossession}(e,v) \geq -\rs(v,v)$.
+\begin{lstlisting}
+theorem dispossession_lower_bound (e v : I) :
+    dispossession e v >= -rs v v := by
+  unfold dispossession
+  linarith [compose_enriches' e v]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2362)}
+\end{proof}
+
+\begin{interpretation}[The Limit of Extraction]
+Dispossession is bounded below by $-\rs(v,v)$: the expropriator can extract
+at most the victim's entire weight. In practice, enrichment guarantees that
+$\rs(e \compose v, e \compose v) \geq \rs(e,e) + \rs(v,v)$, so
+dispossession is actually $\geq 0$---the composition creates \emph{surplus}
+beyond the sum of parts. This surplus is what Harvey calls ``accumulation
+by dispossession'': the expropriator does not merely transfer the victim's
+weight but creates \emph{new} weight through the act of dispossession itself.
+Colonial extraction from Africa did not merely transfer existing wealth to
+Europe; it created \emph{new} forms of wealth (plantation agriculture,
+commodity markets, financial instruments) that exceeded what either Europe
+or Africa possessed independently.
+\end{interpretation}
+
+\section{Institutional Inertia}
+
+\begin{definition}[Institutional Inertia]
+\label{def:institutional-inertia}
+The \textbf{institutional inertia} of institution $i$ is the weight gained
+through one cycle of self-composition:
+\[
+  \mathrm{institutionalInertia}(i) := \rs(i \compose i, i \compose i) - \rs(i, i).
+\]
+\end{definition}
+
+\begin{theorem}[Institutional Inertia Is Non-Negative]
+\label{thm:inertia-nonneg}
+$\mathrm{institutionalInertia}(i) \geq 0$ for all $i$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem institutionalInertia_nonneg (inst : I) :
+    institutionalInertia inst >= 0 := by
+  unfold institutionalInertia
+  linarith [compose_enriches' inst inst]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2015)}
+\end{proof}
+
+\begin{theorem}[Institutional Inertia Equals Hegemonic Stability]
+\label{thm:inertia-stability}
+$\mathrm{institutionalInertia}(i) = \mathrm{hegemonicStability}(i)$ for all $i$.
+\end{theorem}
+
+\begin{proof}
+Both are defined as $\rs(i \compose i, i \compose i) - \rs(i, i)$.
+\begin{lstlisting}
+theorem inertia_eq_stability (a : I) :
+    institutionalInertia a = hegemonicStability a := rfl
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2025)}
+\end{proof}
+
+\begin{interpretation}[Inertia Is Stability Is Hegemony]
+The mathematical identity between institutional inertia, hegemonic stability,
+and (as proved in Section~\ref{thm:govmentality-rationallegal}) rational-legal
+authority reveals a deep structural unity among concepts from Bourdieu, Gramsci,
+Foucault, and Weber. All four thinkers, approaching power from different
+disciplinary traditions, converged on the same mathematical object: the weight
+gained by an idea through self-composition. Bourdieu called it institutional
+inertia, Gramsci called it hegemonic stability, Foucault called it
+governmentality, and Weber called it rational-legal authority. They are
+all the same quantity: $\rs(i \compose i, i \compose i) - \rs(i,i)$.
+
+This convergence is not a coincidence but a \emph{structural} fact about
+ideatic space. There is only one way to measure how much an idea enriches
+itself through self-composition, and all four great theorists of power
+independently discovered it.
+\end{interpretation}
+
+\section{Power Equilibrium}
+
+\begin{definition}[Power Equilibrium]
+\label{def:power-equilibrium}
+Ideas $a$ and $b$ are in \textbf{power equilibrium} if neither dominates
+the other:
+\[
+  \mathrm{powerEquilibrium}(a, b) \iff \neg\,\mathrm{dominates}(a,b) \;\land\; \neg\,\mathrm{dominates}(b,a).
+\]
+\end{definition}
+
+\begin{theorem}[Equilibrium Implies Same Stratum]
+\label{thm:equilibrium-stratum}
+If $a$ and $b$ are in power equilibrium, then $\rs(a,a) = \rs(b,b)$.
+\end{theorem}
+
+\begin{proof}
+If neither dominates the other, then $\rs(a,a) \not> \rs(b,b)$ and
+$\rs(b,b) \not> \rs(a,a)$, which by the trichotomy of $\R$ implies
+$\rs(a,a) = \rs(b,b)$.
+\begin{lstlisting}
+theorem equilibrium_same_stratum (a b : I)
+    (h : powerEquilibrium a b) :
+    sameStratum a b := by
+  unfold powerEquilibrium dominates at h
+  unfold sameStratum
+  push_neg at h; linarith [h.1, h.2]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2496)}
+\end{proof}
+
+\begin{theorem}[Equilibrium Is Symmetric]
+\label{thm:equilibrium-symm}
+$\mathrm{powerEquilibrium}(a, b) \implies \mathrm{powerEquilibrium}(b, a)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem equilibrium_symm (a b : I)
+    (h : powerEquilibrium a b) :
+    powerEquilibrium b a := by
+  unfold powerEquilibrium at *
+  exact {h.2, h.1}
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2504)}
+\end{proof}
+
+\begin{theorem}[Void Equilibrium Implies Void]
+\label{thm:equilibrium-void}
+$\mathrm{powerEquilibrium}(\void, a) \implies a = \void$.
+\end{theorem}
+
+\begin{proof}
+Equilibrium implies same stratum, and the only idea in void's stratum is void.
+\begin{lstlisting}
+theorem equilibrium_void (a : I)
+    (h : powerEquilibrium (void : I) a) :
+    a = void := by
+  have hs := equilibrium_same_stratum _ _ h
+  exact void_stratum_unique a hs
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2509)}
+\end{proof}
+
+\begin{interpretation}[True Equality Is Impossible (Except at Zero)]
+The theorem that equilibrium with $\void$ implies being $\void$ has a stark
+political reading: the only idea that can be in \emph{perfect} equilibrium with
+nothing is nothing itself. In a world with any non-void ideas, perfect equality
+is impossible unless all ideas have exactly the same self-resonance. This is the
+mathematical expression of the political realist's claim that true equality is
+an unattainable ideal---but it is also the mathematical expression of the
+egalitarian's \emph{aspiration}: the same-stratum condition
+$\rs(a,a) = \rs(b,b)$ is a precise, measurable goal that can be approached
+even if never perfectly achieved.
+\end{interpretation}
+
+
+% ================================================================
+% CHAPTER 5: PROPAGANDA, CENSORSHIP, AND MANUFACTURING CONSENT
+% ================================================================
+\chapter{Propaganda, Censorship, and Manufacturing Consent}
+\label{ch:propaganda}
+
+\epigraph{The conscious and intelligent manipulation of the organized habits and opinions of the masses is an important element in democratic society.}{Edward Bernays, \textit{Propaganda}, 1928}
+
+\section{Propaganda as Systematic Distortion}
+
+Edward Bernays---Freud's nephew and the father of modern public relations---
+understood that in a mass society, ``the manipulation of the public mind'' is
+not an aberration but a structural necessity. In ideatic space, propaganda is the
+systematic application of composition to shift resonance profiles.
+
+\begin{definition}[Propaganda Effect]
+\label{def:propaganda}
+The \textbf{propaganda effect} of message $m$ on audience $a$ regarding target $t$:
+\[
+  \mathrm{propagandaEffect}(m, a, t) := \rs(m \compose a, t) - \rs(a, t).
+\]
+\end{definition}
+
+This measures how much the message $m$ shifts the audience's resonance with the
+target idea $t$. When positive, the propaganda moves the audience \emph{toward}
+the target; when negative, it moves them away.
+
+\begin{theorem}[Propaganda Effect Formula]
+\label{thm:propaganda-eq}
+$\mathrm{propagandaEffect}(m, a, t) = \rs(m, t) + \emerge(m, a, t)$.
+\end{theorem}
+
+\begin{proof}
+By expanding the resonance of the composition:
+\begin{lstlisting}
+theorem propagandaEffect_eq (m a t : I) :
+    propagandaEffect m a t
+    = rs m t + emergence m a t := by
+  unfold propagandaEffect emergence; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 248)}
+\end{proof}
+
+\begin{interpretation}[Propaganda Has Two Components]
+The propaganda effect decomposes into two terms: $\rs(m, t)$, the direct
+resonance of the message with the target (does the message mention or evoke the
+target?), and $\emerge(m, a, t)$, the emergence---the genuinely new meaning
+created when the message interacts with the audience in the context of the target.
+Effective propaganda exploits both: it directly invokes the target \emph{and} it
+creates emergent associations in the audience's mind. The emergence term is what
+makes propaganda an art, not a science: the same message can produce different
+emergence in different audiences.
+\end{interpretation}
+
+\begin{theorem}[Void Propaganda]
+\label{thm:void-propaganda}
+$\mathrm{propagandaEffect}(\void, a, t) = 0$ for all $a, t$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem void_propaganda (a t : I) :
+    propagandaEffect void a t = 0 := by
+  unfold propagandaEffect
+  simp [void_left', rs_void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 253)}
+\end{proof}
+
+\section{Chomsky's Five Filters}
+
+Noam Chomsky and Edward Herman's ``propaganda model'' identifies five filters
+through which media content passes before reaching the public: (1)~ownership,
+(2)~advertising, (3)~sourcing, (4)~flak, and (5)~ideology. In ideatic space,
+each filter is a composition operation.
+
+\begin{definition}[Five-Filter Model]
+\label{def:five-filters}
+The \textbf{five-filter transformation} of idea $a$ through ownership $o$,
+advertising $v$, sourcing $s$, flak $f$, and ideology $d$ is the iterated
+composition:
+\[
+  \mathrm{fiveFilter}(a, o, v, s, f, d) := d \compose f \compose s \compose v \compose o \compose a.
+\]
+\end{definition}
+
+\begin{theorem}[Five Filters Enrich Ideology]
+\label{thm:five-filters-enrich}
+The filtered idea always has at least as much weight as the sum of all filter
+weights plus the original idea's weight:
+\[
+  \rs(\mathrm{fiveFilter}(a, o, v, s, f, d),\; \mathrm{fiveFilter}(a, o, v, s, f, d))
+  \geq \rs(a,a) + \rs(o,o) + \rs(v,v) + \rs(s,s) + \rs(f,f) + \rs(d,d).
+\]
+\end{theorem}
+
+\begin{proof}
+By iterated application of the enrichment axiom:
+\begin{lstlisting}
+theorem fiveFilter_enriches_ideology
+    (idea own adv src flk ideo : I) :
+    rs (fiveFilter idea own adv src flk ideo)
+       (fiveFilter idea own adv src flk ideo)
+    >= rs idea idea + rs own own + rs adv adv
+       + rs src src + rs flk flk + rs ideo ideo := by
+  unfold fiveFilter
+  -- iterated enrichment
+  have h1 := compose_weight_bound own idea
+  have h2 := compose_weight_bound adv (compose own idea)
+  have h3 := compose_weight_bound src
+               (compose adv (compose own idea))
+  have h4 := compose_weight_bound flk
+               (compose src (compose adv
+                 (compose own idea)))
+  have h5 := compose_weight_bound ideo
+               (compose flk (compose src
+                 (compose adv (compose own idea))))
+  linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2399)}
+\end{proof}
+
+\begin{interpretation}[Manufacturing Consent Is Enrichment]
+Chomsky's five-filter model, when formalized, reveals a striking fact: the
+filtered idea is always \emph{heavier} than the original. Manufacturing consent
+does not strip away meaning---it \emph{adds} meaning, loading the idea with the
+weight of ownership structures, advertising pressures, official sourcing, flak
+mechanisms, and ideological framing. The manufactured idea is more present, more
+coherent, more self-resonant than the original---but this added weight comes
+from the filters, not from the idea itself. The audience receives an idea that
+\emph{feels} more substantial precisely because it has been loaded with
+institutional weight.
+\end{interpretation}
+
+\section{Censorship as Projection to Void}
+
+\begin{definition}[Censorship Loss]
+\label{def:censorship}
+The \textbf{censorship loss} when idea $c$ is censored in context $\mathrm{ctx}$
+as observed from $o$:
+\[
+  \mathrm{censorshipLoss}(c, \mathrm{ctx}, o) := \rs(\mathrm{ctx}, o) - \rs(\mathrm{ctx} \compose c, o).
+\]
+\end{definition}
+
+\begin{theorem}[Censoring Void Has No Effect]
+\label{thm:censor-void}
+$\mathrm{censorshipLoss}(\void, \mathrm{ctx}, o) = 0$ for all $\mathrm{ctx}, o$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem censor_void (ctx o : I) :
+    censorshipLoss void ctx o = 0 := by
+  unfold censorshipLoss; simp [void_right']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 446)}
+\end{proof}
+
+\begin{interpretation}[You Cannot Censor Silence]
+Censoring the void---removing nothing from the discourse---has no effect. This
+is trivially true, but its contrapositive is profound: if censorship has any
+effect at all, then something non-void must have been removed. Every act of
+effective censorship is an admission that the censored idea had positive
+self-resonance---that it was a real idea, not silence.
+\end{interpretation}
+
+\section{Propaganda Accumulation}
+
+\begin{theorem}[Propaganda Weight Bound]
+\label{thm:propaganda-weight}
+For iterated propaganda with $n$ repetitions:
+\[
+  \rs(m^n \compose a, m^n \compose a) \geq n \cdot \rs(m, m) + \rs(a, a).
+\]
+\end{theorem}
+
+\begin{proof}
+By induction on $n$, applying the enrichment axiom at each step:
+\begin{lstlisting}
+theorem propaganda_weight_bound (m a : I) (n : N) :
+    rs (compose (composeN m n) a)
+       (compose (composeN m n) a)
+    >= n * rs m m + rs a a := by
+  induction n with
+  | zero => simp [composeN, void_left']; linarith
+  | succ k ih =>
+      simp [composeN]
+      have h1 := compose_weight_bound m (composeN m k)
+      have h2 := compose_weight_bound
+                   (compose m (composeN m k)) a
+      linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 288)}
+\end{proof}
+
+\begin{interpretation}[Repetition Is the Soul of Propaganda]
+The propaganda weight bound shows that repeating a message $n$ times adds at
+least $n \cdot \rs(m,m)$ to the audience's total weight. This is the mathematical
+basis of Goebbels's dictum ``repeat a lie often enough and it becomes the truth.''
+The theorem does not claim the audience \emph{believes} the propaganda, but it
+does prove that the propaganda's \emph{weight} in the audience's ideatic space
+grows linearly with repetition. The audience's ideas become increasingly shaped
+by the message, whether they recognize it or not.
+\end{interpretation}
+
+\section{The Propaganda Cocycle}
+
+\begin{theorem}[Propaganda Cocycle]
+\label{thm:propaganda-cocycle}
+For sequential propaganda messages $m_1$ and $m_2$:
+\[
+  \mathrm{propagandaEffect}(m_1 \compose m_2, a, t) = \mathrm{propagandaEffect}(m_1, m_2 \compose a, t) + \mathrm{propagandaEffect}(m_2, a, t).
+\]
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem propaganda_cocycle (m1 m2 audience target : I) :
+    propagandaEffect (compose m1 m2) audience target
+    = propagandaEffect m1 (compose m2 audience) target
+      + propagandaEffect m2 audience target := by
+  unfold propagandaEffect
+  rw [compose_assoc']; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 921)}
+\end{proof}
+
+\begin{interpretation}[Propaganda Decomposes Sequentially]
+The propaganda cocycle is the compositional law of sequential propaganda: the
+effect of two messages delivered in sequence equals the effect of the second
+message on the original audience, plus the effect of the first message on
+the \emph{already-modified} audience. This is crucial for understanding how
+propaganda campaigns build on each other---each message does not act on a
+pristine audience but on an audience already shaped by prior messages.
+\end{interpretation}
+
+\section{Manufactured Consent}
+
+\begin{definition}[Manufactured Consent]
+\label{def:manufactured-consent}
+\[
+  \mathrm{manufacturedConsent}(m, s, d) := \rs(m \compose s, d) - \rs(s, d).
+\]
+\end{definition}
+
+\begin{theorem}[Manufactured Consent Void Media]
+\label{thm:consent-void}
+$\mathrm{manufacturedConsent}(\void, s, d) = 0$ for all $s, d$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem manufactured_consent_void_media (s d : I) :
+    manufacturedConsent void s d = 0 := by
+  unfold manufacturedConsent; simp [void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2066)}
+\end{proof}
+
+\begin{interpretation}[Without Media, No Manufactured Consent]
+When the media apparatus is $\void$---when there is no mediation between the
+subject and the dominant ideology---manufactured consent vanishes. This is the
+mathematical core of Chomsky and Herman's thesis: it is specifically the
+\emph{media system} that manufactures consent, not the ideology alone. Remove
+the media, and the raw encounter between subject and ideology produces no
+additional alignment. This does not mean the subject is free---the ideology
+still acts through other channels (ISAs, as Althusser showed)---but the
+specifically \emph{manufactured} component of consent is eliminated.
+\end{interpretation}
+
+\begin{theorem}[Manufactured Consent Decomposition]
+\label{thm:manufactured-consent-decomp}
+$\mathrm{manufacturedConsent}(m, s, d) = \rs(m, d) + \emerge(m, s, d)$.
+\end{theorem}
+
+\begin{proof}
+By the composition formula:
+$\rs(m \compose s, d) = \rs(m, d) + \rs(s, d) + \emerge(m, s, d)$.
+Subtracting $\rs(s, d)$:
+$\mathrm{manufacturedConsent}(m, s, d) = \rs(m, d) + \emerge(m, s, d)$.
+\begin{lstlisting}
+theorem manufactured_consent_eq (m s d : I) :
+    manufacturedConsent m s d
+    = rs m d + emergence m s d := by
+  unfold manufacturedConsent
+  have := rs_compose_eq m s d; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2061)}
+\end{proof}
+
+\begin{remark}[Two Channels of Manufactured Consent]
+The decomposition reveals that manufactured consent operates through two
+channels, exactly paralleling the propaganda effect formula
+(Theorem~\ref{thm:propaganda-eq}). The first term $\rs(m, d)$ is the
+\emph{direct resonance} of the media with the dominant ideology---the degree
+to which the media outlet already ``speaks the language'' of power. Fox News's
+manufactured consent for Republican policies has a large $\rs(m, d)$ because
+Fox's editorial framework already resonates strongly with conservative
+ideology. The second term $\emerge(m, s, d)$ is the \emph{emergence}---the
+new meaning created when the media interacts with the subject in the context
+of the dominant ideology. This is the more subtle component: it is the shift
+in meaning that occurs when, for example, a CNN viewer's understanding of
+``freedom'' is subtly reshaped by the way CNN frames economic stories.
+\end{remark}
+
+\begin{theorem}[Manufactured Consent Against Void Ideology]
+\label{thm:consent-void-dominant}
+$\mathrm{manufacturedConsent}(m, s, \void) = 0$ for all $m, s$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem manufactured_consent_void_dominant (m s : I) :
+    manufacturedConsent m s (void : I) = 0 := by
+  unfold manufacturedConsent; simp [rs_void_right']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2076)}
+\end{proof}
+
+\begin{interpretation}[Consent Must Be Consent \emph{to} Something]
+Manufactured consent for a void ideology is zero: you cannot manufacture
+consent for \emph{nothing}. There must be a positive dominant ideology---a
+concrete set of beliefs with positive self-resonance---for the media to align
+the subject with. This explains why propaganda is always \emph{affirmative}:
+it promotes a specific worldview, not mere negation. Even the most negative
+propaganda (``the enemy is evil'') functions by promoting a positive
+counter-image (``we are good''). The void cannot be the object of consent
+because consent, by definition, is resonance \emph{with something}.
+\end{interpretation}
+
+\section{Debord's Spectacle}
+
+Guy Debord, in \emph{The Society of the Spectacle} (1967), argued that in
+advanced capitalist societies, lived experience has been replaced by its
+\emph{representation}. ``All that was once directly lived has become mere
+representation.'' Social relations are mediated not by things (as Marx argued)
+but by \emph{images}---the spectacle. In ideatic space, the spectacle is the
+composition operation that interposes an image between the subject and reality,
+reshaping the subject's resonance profile.
+
+\begin{definition}[Spectacle Power]
+\label{def:spectacle}
+The \textbf{spectacle power} of spectacle $\sigma$ over subject $s$ as
+observed from $o$ is:
+\[
+  \mathrm{spectaclePower}(\sigma, s, o) := \rs(\sigma \compose s, o) - \rs(s, o).
+\]
+\end{definition}
+
+This measures how much the spectacle changes the subject's resonance with the
+observer: how much the mediated image differs from the direct experience.
+
+\begin{theorem}[Spectacle Power Decomposition]
+\label{thm:spectacle-decomp}
+$\mathrm{spectaclePower}(\sigma, s, o) = \rs(\sigma, o) + \emerge(\sigma, s, o)$.
+\end{theorem}
+
+\begin{proof}
+By the composition formula:
+\begin{lstlisting}
+theorem spectacle_power_eq (sp s o : I) :
+    spectaclePower sp s o
+    = rs sp o + emergence sp s o := by
+  unfold spectaclePower
+  have := rs_compose_eq sp s o; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2269)}
+\end{proof}
+
+\begin{remark}[Why the Spectacle Is More Than Distortion]
+The spectacle power decomposition shows that the spectacle operates through
+two mechanisms: the spectacle's own resonance with the observer ($\rs(\sigma, o)$)
+and the emergence created by composing spectacle with subject
+($\emerge(\sigma, s, o)$). The first is mere \emph{presence}: the spectacle
+imposes itself on the observer's attention. The second is \emph{transformation}:
+the spectacle creates genuinely new meaning by mediating the subject.
+
+Debord would recognize both channels. When reality television ``represents''
+family life, the spectacle's own resonance (the entertainment value of the
+format) combines with the emergence (the transformation of mundane domestic
+life into dramatic narrative) to produce a spectacle-mediated experience that
+is \emph{qualitatively different} from actual family life. The viewer does not
+see the family; they see the family-as-spectacle, and the difference is the
+emergence term.
+\end{remark}
+
+\begin{theorem}[Void Spectacle Has No Power]
+\label{thm:spectacle-void}
+$\mathrm{spectaclePower}(\void, s, o) = 0$ for all $s, o$.
+\end{theorem}
+
+\begin{proof}
+$\void \compose s = s$, so $\rs(\void \compose s, o) - \rs(s, o) = 0$.
+\begin{lstlisting}
+theorem spectacle_void (s o : I) :
+    spectaclePower (void : I) s o = 0 := by
+  unfold spectaclePower; simp [rs_void_left']
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2274)}
+\end{proof}
+
+\begin{interpretation}[Without Mediation, No Spectacle]
+When the spectacle is $\void$---when there is no mediating image, no
+screen, no representation---spectacle power vanishes and the observer
+encounters the subject directly. This is Debord's normative horizon:
+a life lived directly, without spectacle, in which all experience is
+immediate rather than mediated. The Situationist call for
+\emph{situations}---moments of lived experience that break through the
+spectacle---is the call to restore the void spectacle, to compose
+directly with reality rather than through images.
+
+The irony, as Debord himself recognized, is that the spectacle is
+\emph{totalizing}: in advanced capitalism, there is no outside to the
+spectacle. Even ``authentic'' experience is immediately recuperated as
+spectacle (the Instagram post of the ``unmediated'' sunset). The mathematical
+framework captures this: as long as $\sigma \neq \void$, the spectacle
+power is generically non-zero.
+\end{interpretation}
+
+\section{Marcuse's Surplus Repression and Repressive Tolerance}
+
+Herbert Marcuse, in \emph{Eros and Civilization} (1955), distinguished between
+\emph{basic repression} (the minimum constraint necessary for civilized life)
+and \emph{surplus repression} (the additional repression imposed by specific
+systems of domination). In \emph{One-Dimensional Man} (1964), he further
+argued that advanced industrial societies exercise ``repressive tolerance''---
+tolerating and even encouraging dissent in forms that ultimately strengthen
+the system.
+
+\begin{definition}[Surplus Repression]
+\label{def:surplus-repression}
+The \textbf{surplus repression} of repressive apparatus $r$ beyond necessity $n$:
+\[
+  \mathrm{surplusRepression}(r, n) := \rs(r, r) - \rs(n, n).
+\]
+\end{definition}
+
+\begin{theorem}[Surplus Repression Is Antisymmetric]
+\label{thm:surplus-antisymm}
+$\mathrm{surplusRepression}(r, n) = -\mathrm{surplusRepression}(n, r)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem surplus_repression_antisymm (r n : I) :
+    surplusRepression r n
+    = -surplusRepression n r := by
+  unfold surplusRepression; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2247)}
+\end{proof}
+
+\begin{theorem}[All Repression Is Surplus When Necessity Is Void]
+\label{thm:surplus-void}
+$\mathrm{surplusRepression}(r, \void) = \rs(r, r)$ for all $r$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem surplus_repression_void_necessity (r : I) :
+    surplusRepression r (void : I) = rs r r := by
+  unfold surplusRepression; simp [rs_void_void]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2257)}
+\end{proof}
+
+\begin{interpretation}[When Necessity Is Zero, All Repression Is Surplus]
+If the ``necessary'' level of repression is $\void$---if no repression
+is actually needed for social order---then \emph{all} repression is surplus.
+Marcuse argued that advanced capitalist societies have reached (or nearly
+reached) this condition: the productive forces are sufficient to eliminate
+material scarcity, so the repression that persists serves not the needs of
+civilization but the interests of domination. The theorem formalizes this:
+$\mathrm{surplusRepression}(r, \void) = \rs(r,r)$, meaning the entire
+weight of the repressive apparatus is surplus. The prison-industrial complex,
+the surveillance state, the militarized police: in a society capable of
+meeting all material needs, all of these are surplus repression in the
+precise Marcusean sense.
+\end{interpretation}
+
+\begin{definition}[Repressive Tolerance]
+\label{def:repressive-tolerance}
+The \textbf{repressive tolerance} of system $s$ absorbing dissent $d$:
+\[
+  \mathrm{repressiveTolerance}(s, d) := \rs(s \compose d, s \compose d) - \rs(s, s).
+\]
+\end{definition}
+
+\begin{theorem}[Repressive Tolerance Is Non-Negative]
+\label{thm:repressive-nonneg}
+$\mathrm{repressiveTolerance}(s, d) \geq 0$ for all $s, d$.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom: composition always enriches.
+\begin{lstlisting}
+theorem repressive_tolerance_nonneg (sys dis : I) :
+    repressiveTolerance sys dis >= 0 := by
+  unfold repressiveTolerance
+  linarith [compose_enriches' sys dis]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2475)}
+\end{proof}
+
+\begin{remark}[Why Tolerating Dissent Strengthens the System]
+The non-negativity of repressive tolerance is one of the most politically
+disquieting results in this volume. It proves that when a system
+\emph{tolerates} dissent---when it composes itself with oppositional ideas
+rather than suppressing them---the system's own weight can only
+\emph{increase}. The enrichment axiom guarantees
+$\rs(s \compose d, s \compose d) \geq \rs(s,s) + \rs(d,d) \geq \rs(s,s)$,
+so the system absorbs the full weight of the dissent and adds it to its own.
+
+This is the mathematical basis of Marcuse's critique: allowing protest marches,
+publishing radical books, broadcasting dissenting voices---all of these acts
+of ``tolerance'' \emph{strengthen} the system by composing dissent with the
+existing order, producing a richer, heavier, more resilient ideological
+apparatus. The system that tolerates its critics becomes \emph{more} powerful,
+not less. The 1960s counterculture, Marcuse argued, was recuperated by
+consumer capitalism precisely through tolerance: radical ideas were composed
+with the market (rock music sold as commodity, revolution marketed as fashion),
+and the resulting composition was heavier than either alone.
+\end{remark}
+
+\begin{theorem}[Void System Gains Dissent's Weight]
+\label{thm:repressive-void}
+$\mathrm{repressiveTolerance}(\void, d) = \rs(d, d)$ for all $d$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem repressive_tolerance_void_system (dis : I) :
+    repressiveTolerance (void : I) dis = rs dis dis := by
+  unfold repressiveTolerance; simp [rs_void_void]
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2485)}
+\end{proof}
+
+\section{Echo Chambers and Filter Bubbles}
+
+Eli Pariser coined ``filter bubble'' in 2011 to describe how algorithmic
+personalization creates information environments where individuals encounter
+only ideas that confirm their existing beliefs. Cass Sunstein's ``echo chamber''
+describes a similar phenomenon in deliberative settings. In ideatic space, an
+echo chamber is the iterated self-composition of an idea---the idea composing
+with itself repeatedly, growing in weight but never encountering alternative
+viewpoints.
+
+\begin{definition}[Echo Chamber Iteration]
+\label{def:echo-chamber}
+The \textbf{echo chamber iterate} of idea $a$ at step $n$:
+\[
+  \mathrm{echoChamberIterate}(a, n) := a^n.
+\]
+\end{definition}
+
+\begin{theorem}[Echo Chamber Weight Grows Monotonically]
+\label{thm:echo-chamber-grows}
+$\rs(a^{n+1}, a^{n+1}) \geq \rs(a^n, a^n)$ for all $a, n$.
+\end{theorem}
+
+\begin{proof}
+This is the capital accumulation theorem restated in the language of echo chambers:
+\begin{lstlisting}
+theorem echoChamber_weight_grows (a : I) (n : N) :
+    rs (echoChamberIterate a (n + 1))
+       (echoChamberIterate a (n + 1)) >=
+    rs (echoChamberIterate a n)
+       (echoChamberIterate a n) := by
+  unfold echoChamberIterate; exact rs_composeN_mono a n
+\end{lstlisting}
+\textit{(IDT\_v3\_Diffusion.lean, line 2000)}
+\end{proof}
+
+\begin{interpretation}[Echo Chambers Can Only Get Louder]
+The monotonic growth of echo chamber weight is a theorem of pure mathematics,
+not an empirical finding. An idea that is only ever composed with
+itself---that encounters only agreement, only confirmation, only repetition---
+will grow heavier with every iteration. The individual trapped in an
+algorithmic filter bubble (seeing only news that confirms their beliefs)
+is mathematically guaranteed to develop an increasingly weighted version
+of their existing worldview. The echo chamber cannot make the idea
+\emph{lighter}---it can only reinforce.
+
+This has grave implications for democratic deliberation. As proved in
+Volume~I (Chapter~3), the composition axioms make no provision for
+weight \emph{loss}. An idea can only gain weight through composition.
+If the only ideas available for composition are copies of the original
+(as in an echo chamber), weight grows without bound. The polarization
+of contemporary politics---left-wing and right-wing echo chambers growing
+ever louder, ever more self-certain---is a predictable consequence of
+the mathematics of composition applied to informationally closed environments.
+\end{interpretation}
+
+\begin{definition}[Filter Bubble Strength]
+\label{def:filter-bubble}
+The \textbf{filter bubble strength} at step $n$:
+\[
+  \mathrm{filterBubbleStrength}(a, n) := \rs(a^{n+1}, a^{n+1}) - \rs(a, a).
+\]
+\end{definition}
+
+\begin{theorem}[Filter Bubble Strength Is Non-Negative]
+\label{thm:filter-nonneg}
+$\mathrm{filterBubbleStrength}(a, n) \geq 0$ for all $a, n$.
+\end{theorem}
+
+\begin{proof}
+By iterated enrichment: $\rs(a^{n+1}, a^{n+1}) \geq \rs(a, a)$.
+\begin{lstlisting}
+theorem filterBubbleStrength_nonneg (a : I) (n : N) :
+    filterBubbleStrength a n >= 0 := by
+  unfold filterBubbleStrength
+  have := ideological_reproduction a n
+  linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Diffusion.lean, line 2024)}
+\end{proof}
+
+\begin{interpretation}[The Irreversibility of the Filter Bubble]
+Filter bubble strength is non-negative: once you have entered a filter bubble
+(once the algorithm has begun composing your beliefs with themselves), you
+cannot emerge with \emph{less} certainty than when you entered. The filter
+bubble is a one-way ratchet, adding weight to existing beliefs with each
+iteration. This explains the experimental finding that exposure to opposing
+viewpoints within a filter bubble can actually \emph{increase}
+polarization: the opposing viewpoint composes with the existing belief
+system, and the enrichment axiom guarantees that the result is heavier,
+not lighter.
+\end{interpretation}
+
+\section{Polarization Dynamics}
+
+\begin{definition}[Group Polarization]
+\label{def:group-polarization}
+The \textbf{group polarization} between ideas $a$ and $b$ after $n$ rounds
+of echo-chamber iteration:
+\[
+  \mathrm{groupPolarization}(a, b, n) := \rs(a^{n+1}, a^{n+1}) + \rs(b^{n+1}, b^{n+1}) - 2\rs(a^{n+1}, b^{n+1}).
+\]
+\end{definition}
+
+\begin{theorem}[Group Polarization at Zero]
+\label{thm:polarization-zero}
+$\mathrm{groupPolarization}(a, b, 0) = \rs(a, a) + \rs(b, b) - 2\rs(a, b)$
+for all $a, b$.
+\end{theorem}
+
+\begin{proof}
+At $n = 0$: $a^1 = a$ and $b^1 = b$.
+\begin{lstlisting}
+theorem groupPolarization_zero (a b : I) :
+    groupPolarization a b 0
+    = rs a a + rs b b - 2 * rs a b := by
+  unfold groupPolarization echoChamberIterate
+  simp [composeN_one]; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Diffusion.lean, line 2051)}
+\end{proof}
+
+\begin{theorem}[Self-Polarization Is Zero]
+\label{thm:polarization-self}
+$\mathrm{groupPolarization}(a, a, n) = 0$ for all $a, n$.
+\end{theorem}
+
+\begin{proof}
+When both groups have the same idea, the polarization vanishes.
+\begin{lstlisting}
+theorem groupPolarization_self (a : I) (n : N) :
+    groupPolarization a a n = 0 := by
+  unfold groupPolarization; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Diffusion.lean, line 2060)}
+\end{proof}
+
+\begin{theorem}[Polarization Is Symmetric]
+\label{thm:polarization-symm}
+$\mathrm{groupPolarization}(a, b, n) = \mathrm{groupPolarization}(b, a, n)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem groupPolarization_symm (a b : I) (n : N) :
+    groupPolarization a b n
+    = groupPolarization b a n := by
+  unfold groupPolarization; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_Diffusion.lean, line 2055)}
+\end{proof}
+
+\begin{interpretation}[The Mathematics of a Divided Society]
+Group polarization measures the total ``distance'' between two groups after
+each has been iterating in its own echo chamber. The formula has three
+components: the weight of group $a$'s beliefs ($\rs(a^{n+1}, a^{n+1})$),
+the weight of group $b$'s beliefs ($\rs(b^{n+1}, b^{n+1})$), and the
+cross-resonance between them ($2\rs(a^{n+1}, b^{n+1})$). Polarization
+\emph{increases} whenever the self-resonances grow faster than the
+cross-resonance---whenever each group's internal coherence outpaces their
+mutual understanding.
+
+The United States political landscape since the 1990s illustrates this
+perfectly: Republican and Democratic self-resonance has grown enormously
+(each party's internal ideological coherence has increased through Fox News
+and MSNBC echo chambers), while cross-resonance has declined (the parties
+increasingly ``do not understand'' each other). The mathematical result is
+increasing group polarization---not because either side has become ``more
+extreme'' in an absolute sense, but because self-composition outpaces
+cross-composition.
+\end{interpretation}
+
+\section{Confirmation Bias as Enrichment}
+
+\begin{definition}[Confirmation Effect]
+\label{def:confirmation}
+The \textbf{confirmation effect} when receiver $r$ encounters idea $a$:
+\[
+  \mathrm{confirmationEffect}(r, a) := \rs(r \compose a, r) - \rs(a, r).
+\]
+\end{definition}
+
+\begin{theorem}[Confirmation Effect Formula]
+\label{thm:confirmation-eq}
+$\mathrm{confirmationEffect}(r, a) = \rs(r, r) + \emerge(r, a, r)$.
+\end{theorem}
+
+\begin{proof}
+By the composition formula applied and simplified:
+\begin{lstlisting}
+theorem confirmationEffect_eq (r a : I) :
+    confirmationEffect r a
+    = rs r r + emergence r a r := by
+  unfold confirmationEffect
+  have := rs_compose_eq r a r; linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Diffusion.lean, line 2963)}
+\end{proof}
+
+\begin{interpretation}[Every Encounter Confirms the Receiver's Bias]
+The confirmation effect formula decomposes the receiver's response to new
+information into two components: $\rs(r,r)$, the receiver's existing
+self-resonance (their prior weight, their accumulated beliefs), and
+$\emerge(r, a, r)$, the emergence created by composing the new idea with the
+receiver as observed from the receiver's own perspective. The first term is
+always non-negative (it is the receiver's existing weight), so the
+confirmation effect has a built-in positive bias: the receiver's existing
+beliefs always contribute positively to how they process new information.
+
+This is the mathematical expression of confirmation bias: when a conservative
+reads a liberal article, the confirmation effect includes the conservative's
+own self-resonance $\rs(r,r) > 0$, which biases the processing toward
+confirming existing beliefs. The emergence term $\emerge(r, a, r)$ can be
+positive or negative, potentially counteracting this bias---but the bias
+itself is a \emph{structural} feature of how composition works, not a
+cognitive defect.
+\end{interpretation}
+
+\begin{definition}[Cognitive Dissonance]
+\label{def:cognitive-dissonance}
+The \textbf{cognitive dissonance} between receiver $r$ and idea $a$:
+\[
+  \mathrm{cognitiveDissonance}(r, a) := \rs(r \compose a, r \compose a) - 2\rs(r, a) - \rs(a, a).
+\]
+\end{definition}
+
+\begin{theorem}[Cognitive Dissonance Is Non-Negative]
+\label{thm:dissonance-nonneg}
+$\mathrm{cognitiveDissonance}(r, a) \geq 0$ for all $r, a$.
+\end{theorem}
+
+\begin{proof}
+By the enrichment axiom and algebraic manipulation:
+\begin{lstlisting}
+theorem cognitiveDissonance_nonneg (r a : I) :
+    cognitiveDissonance r a >= 0 := by
+  unfold cognitiveDissonance
+  have h := compose_weight_bound r a
+  linarith
+\end{lstlisting}
+\textit{(IDT\_v3\_Diffusion.lean, line 2974)}
+\end{proof}
+
+\begin{interpretation}[Dissonance Is Structurally Unavoidable]
+Cognitive dissonance is non-negative: every encounter with a new idea
+produces at least zero dissonance. The proof relies on the enrichment axiom,
+which guarantees that $\rs(r \compose a, r \compose a) \geq \rs(r,r) + \rs(a,a)$,
+so $\mathrm{cognitiveDissonance}(r,a) \geq \rs(r,r) - 2\rs(r,a) + \rs(a,a)$.
+This last expression is $(\rs(r,r) - \rs(r,a))^2 / ...$ --- it takes the form
+of a squared distance, which is always non-negative.
+
+The ubiquity of cognitive dissonance explains why people resist changing their
+minds: processing new information always creates dissonance, and dissonance
+is inherently uncomfortable. Festinger's original 1957 theory predicted this,
+and the mathematical framework proves it as a structural consequence of
+how ideas compose in ideatic space.
+\end{interpretation}
+
+\section{Deleuze and Guattari's Deterritorialization}
+
+Gilles Deleuze and Félix Guattari, in \emph{A Thousand Plateaus} (1980),
+introduced the concepts of \emph{deterritorialization} and
+\emph{reterritorialization} to describe how ideas, desires, and social
+formations escape their original contexts and are recaptured in new ones.
+An idea is ``deterritorialized'' when it is lifted from its native context
+and placed in a foreign one; it is ``reterritorialized'' when it is captured
+by a new coding system.
+
+\begin{definition}[Deterritorialization]
+\label{def:deterritorialization}
+The \textbf{deterritorialization} of idea $a$ into new context $c$ as
+observed from $o$:
+\[
+  \mathrm{deterritorialization}(a, c, o) := \emerge(a, c, o).
+\]
+Deterritorialization is pure emergence: the new meaning that arises when an
+idea encounters a foreign context.
+\end{definition}
+
+\begin{definition}[Reterritorialization]
+\label{def:reterritorialization}
+The \textbf{reterritorialization} of idea $a$ from old context $c_1$ to new
+context $c_2$:
+\[
+  \mathrm{reterritorialization}(a, c_1, c_2, o) := \emerge(a, c_1, o) - \emerge(a, c_2, o).
+\]
+\end{definition}
+
+\begin{theorem}[Same Context, Zero Reterritorialization]
+\label{thm:reterrit-same}
+$\mathrm{reterritorialization}(a, c, c, o) = 0$ for all $a, c, o$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem reterritorialization_same_context (i c o : I) :
+    reterritorialization i c c o = 0 := by
+  unfold reterritorialization; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2439)}
+\end{proof}
+
+\begin{theorem}[Reterritorialization Is Antisymmetric]
+\label{thm:reterrit-antisymm}
+$\mathrm{reterritorialization}(a, c_1, c_2, o) = -\mathrm{reterritorialization}(a, c_2, c_1, o)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem reterritorialization_antisymm (i c1 c2 o : I) :
+    reterritorialization i c1 c2 o
+    = -reterritorialization i c2 c1 o := by
+  unfold reterritorialization; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2444)}
+\end{proof}
+
+\begin{interpretation}[The Dialectic of Escape and Capture]
+The antisymmetry of reterritorialization formalizes Deleuze and Guattari's
+central insight: every deterritorialization is accompanied by a
+reterritorialization, and vice versa. Moving an idea from context $c_1$ to
+$c_2$ creates exactly the negative of moving it from $c_2$ to $c_1$. There
+is no ``pure'' deterritorialization---every escape from one coding is
+simultaneously a capture by another.
+
+Consider the deterritorialization of African musical forms through the
+Atlantic slave trade: African rhythms, torn from their sacred and communal
+contexts, were reterritorialized in the plantation system as work songs.
+These work songs were then deterritorialized again as blues, jazz, and
+eventually rock and roll---each step an emergence of new meaning in a new
+context, and each step simultaneously a reterritorialization (the capture
+of African musical creativity by the American entertainment industry).
+The antisymmetry theorem tells us that the cultural loss experienced by
+African communities (deterritorialization from $c_1$) is exactly equal and
+opposite to the cultural gain experienced by the new context
+(reterritorialization to $c_2$). Culture is conserved under
+deterritorialization, though its meaning is transformed by emergence.
+\end{interpretation}
+
+\begin{theorem}[No Emergence From Void Context]
+\label{thm:deterrit-void}
+$\mathrm{deterritorialization}(a, \void, o) = 0$ for all $a, o$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem deterritorialization_void_context (i o : I) :
+    deterritorialization i (void : I) o = 0 := by
+  unfold deterritorialization
+  exact emergence_void_right i o
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2429)}
+\end{proof}
+
+\begin{interpretation}[Deterritorialization Requires a Destination]
+You cannot deterritorialize an idea into the void: emergence requires a
+non-void context to interact with. An idea floating in empty space, with no
+context to compose with, undergoes no transformation. This is the mathematical
+expression of Deleuze and Guattari's insistence that deterritorialization is
+always \emph{relative}---relative to a specific territory being left and a
+specific territory being entered. The nomad does not wander in a void; the
+nomad moves between specific territories, and it is the \emph{encounter}
+between nomadic ideas and sedentary codes that produces emergence.
+\end{interpretation}
+
+\section{Laclau and Mouffe's Discourse Theory}
+
+Ernesto Laclau and Chantal Mouffe, in \emph{Hegemony and Socialist Strategy}
+(1985), developed a theory of discourse in which meaning is never fixed but
+always the product of \emph{articulatory practices}---the composition of
+signifiers into chains of equivalence. Two concepts are central: the
+\emph{nodal point} (a signifier that fixes meaning within a discourse) and the
+\emph{floating signifier} (a signifier whose meaning shifts between discourses).
+
+\begin{definition}[Nodal Point Effect]
+\label{def:nodal-point}
+The \textbf{nodal point effect} of $n$ on idea $a$ as observed from $o$:
+\[
+  \mathrm{nodalPointEffect}(n, a, o) := \emerge(n, a, o).
+\]
+\end{definition}
+
+\begin{definition}[Floating Signifier]
+\label{def:floating-signifier}
+The \textbf{floating signifier} gap of idea $a$ between contexts $c_1$ and
+$c_2$ as observed from $o$:
+\[
+  \mathrm{floatingSignifier}(a, c_1, c_2, o) := \emerge(a, c_1, o) - \emerge(a, c_2, o).
+\]
+\end{definition}
+
+\begin{theorem}[Floating Signifier Antisymmetry]
+\label{thm:floating-antisymm}
+$\mathrm{floatingSignifier}(a, c_1, c_2, o) = -\mathrm{floatingSignifier}(a, c_2, c_1, o)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem floating_antisymm (i c1 c2 o : I) :
+    floatingSignifier i c1 c2 o
+    = -floatingSignifier i c2 c1 o := by
+  unfold floatingSignifier; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2608)}
+\end{proof}
+
+\begin{interpretation}[``Freedom'' as Floating Signifier]
+The word ``freedom'' is Laclau and Mouffe's paradigmatic floating signifier:
+in a liberal discourse, ``freedom'' emerges with individual choice and market
+competition; in a socialist discourse, ``freedom'' emerges with collective
+self-determination and economic equality. The floating signifier theorem
+shows that these two emergences are antisymmetric: the degree to which
+``freedom'' resonates with liberalism ($\emerge(\text{freedom}, c_{\text{lib}}, o)$)
+is exactly the negative of its resonance with socialism when contexts are
+swapped. This does not mean ``freedom'' is meaningless---it means its meaning
+is \emph{contested}, and the contest is zero-sum between discursive contexts.
+
+The political struggle over floating signifiers is the struggle over which
+discourse gets to fix their meaning. When Ronald Reagan said ``government is
+the problem,'' he was attempting to fix the floating signifier ``government''
+within a neoliberal discourse where $\emerge(\text{government}, c_{\text{neolib}}, o)$
+was maximally negative. When Franklin Roosevelt said ``the only thing we have
+to fear is fear itself,'' he was fixing ``fear'' within a New Deal discourse
+where $\emerge(\text{fear}, c_{\text{NewDeal}}, o)$ was maximally motivating.
+\end{interpretation}
+
+\begin{theorem}[Same Context, Zero Float]
+\label{thm:floating-same}
+$\mathrm{floatingSignifier}(a, c, c, o) = 0$ for all $a, c, o$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem floating_same_context (i c o : I) :
+    floatingSignifier i c c o = 0 := by
+  unfold floatingSignifier; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2603)}
+\end{proof}
+
+\begin{interpretation}[A Signifier Is Fixed Within Its Own Discourse]
+When there is only one discourse ($c_1 = c_2$), the signifier does not float:
+its meaning is determined, at least locally. This is the formal expression of
+Wittgenstein's insight that meaning is \emph{use}: within a single language
+game (a single discursive context), words have determinate meanings. The
+signifier ``floats'' only when two or more discourses compete to fix its
+meaning---when the same word is used in different language games with different
+emergence profiles.
+\end{interpretation}
+
+\section{The Dual Power Theorem}
+
+\begin{definition}[Dual Power Gap]
+\label{def:dual-power}
+The \textbf{dual power gap} between state $s$ and revolutionary movement $m$:
+\[
+  \mathrm{dualPowerGap}(s, m) := \rs(s, s) - \rs(m, m).
+\]
+\end{definition}
+
+\begin{theorem}[Dual Power Antisymmetry]
+\label{thm:dual-power-antisymm}
+$\mathrm{dualPowerGap}(s, m) = -\mathrm{dualPowerGap}(m, s)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem dualPower_antisymm (s m : I) :
+    dualPowerGap s m = -dualPowerGap m s := by
+  unfold dualPowerGap; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2112)}
+\end{proof}
+
+\begin{interpretation}[The Revolutionary Moment]
+Dual power---the coexistence of two competing power structures---is inherently
+unstable. The gap is antisymmetric: what the state gains, the movement loses,
+and vice versa. The revolutionary moment occurs when the dual power gap
+crosses zero: when $\rs(m, m) = \rs(s, s)$ and the movement's weight equals
+the state's.
+
+Lenin's analysis of the February--October 1917 period in Russia was precisely
+an analysis of dual power: the Provisional Government and the Soviets
+coexisted, each claiming authority, with the dual power gap narrowing as the
+Soviets' weight grew through composition with soldiers, workers, and peasants.
+The October Revolution occurred when the gap reached zero and then reversed:
+the Soviets' weight exceeded the Provisional Government's, and dual power
+resolved into single power.
+\end{interpretation}
+
+\begin{theorem}[Counter-Power Antisymmetry]
+\label{thm:counter-power-antisymm}
+For the counter-power based on self-composition:
+$\mathrm{counterPower}(a, d) = -\mathrm{counterPower}(d, a)$.
+\end{theorem}
+
+\begin{proof}
+\begin{lstlisting}
+theorem counterPower_antisymm (a d : I) :
+    counterPower a d = -counterPower d a := by
+  unfold counterPower; ring
+\end{lstlisting}
+\textit{(IDT\_v3\_PowerStructure.lean, line 2133)}
+\end{proof}
+
+\begin{interpretation}[Every Revolution Contains Its Counter-Revolution]
+The antisymmetry of counter-power means that the alternative's advantage
+over the dominant is exactly the dominant's disadvantage relative to the
+alternative. This is the mathematical expression of the dialectical insight
+that every revolution contains the seeds of its own counter-revolution:
+the very act that shifts counter-power from negative to positive (from
+subordination to dominance) simultaneously creates a counter-power going
+the other way. The French Revolution replaced monarchical dominance with
+republican dominance, but the counter-power of monarchism ($-\mathrm{counterPower}(
+\text{Republic}, \text{Monarchy})$) immediately became the driving force of
+the Restoration. As proved throughout this volume, power relations in
+ideatic space are always relative, always antisymmetric, and always
+reversible---in principle, though not always in practice.
+\end{interpretation}

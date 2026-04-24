@@ -1,0 +1,354 @@
+% ================================================================
+% IDEATIC DIFFUSION THEORY v2:
+% The Hilbert Space of Meaning
+% ================================================================
+\documentclass[11pt,openany]{book}
+
+% --- Geometry ---
+\usepackage[margin=1in]{geometry}
+
+% --- Fonts and encoding ---
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+
+% --- Math ---
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+
+% --- Graphics and colors ---
+\usepackage{graphicx}
+\usepackage[dvipsnames]{xcolor}
+
+% --- Cross-referencing ---
+\usepackage[colorlinks=true,linkcolor=MidnightBlue,citecolor=OliveGreen,urlcolor=BrickRed]{hyperref}
+\usepackage{cleveref}
+
+% --- Code listings for Lean ---
+\usepackage{listings}
+\lstdefinelanguage{Lean4}{
+  morekeywords={theorem,lemma,def,class,structure,instance,where,
+    variable,import,open,namespace,end,section,
+    by,exact,intro,induction,cases,rfl,simp,omega,calc,have,show,
+    apply,rw,push_neg,with,generalizing,let,match,if,then,else,
+    return,do,for,in,private,noncomputable,set_option},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[n]{/-}{-/},
+  morestring=[b]",
+  literate={→}{{$\to$}}1 {←}{{$\leftarrow$}}1 {↦}{{$\mapsto$}}1
+           {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {λ}{{$\lambda$}}1
+           {≤}{{$\leq$}}1 {≥}{{$\geq$}}1 {≠}{{$\neq$}}1
+           {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1 {¬}{{$\neg$}}1
+           {∈}{{$\in$}}1 {∉}{{$\notin$}}1 {⊆}{{$\subseteq$}}1
+           {ℕ}{{$\mathbb{N}$}}1 {ℤ}{{$\mathbb{Z}$}}1 {ℝ}{{$\mathbb{R}$}}1
+           {∘}{{$\circ$}}1 {×}{{$\times$}}1
+}
+\lstset{
+  language=Lean4,
+  basicstyle=\small\ttfamily,
+  keywordstyle=\color{MidnightBlue}\bfseries,
+  commentstyle=\color{OliveGreen}\itshape,
+  stringstyle=\color{BrickRed},
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  numbers=none,
+  xleftmargin=1em,
+  xrightmargin=1em,
+  aboveskip=1em,
+  belowskip=1em,
+}
+
+% --- Epigraphs ---
+\usepackage{epigraph}
+\setlength{\epigraphwidth}{0.7\textwidth}
+
+% --- Theorem environments ---
+\theoremstyle{definition}
+\newtheorem{axiom}{Axiom}[chapter]
+\newtheorem{definition}[axiom]{Definition}
+
+\theoremstyle{plain}
+\newtheorem{theorem}[axiom]{Theorem}
+\newtheorem{proposition}[axiom]{Proposition}
+\newtheorem{lemma}[axiom]{Lemma}
+\newtheorem{corollary}[axiom]{Corollary}
+
+\theoremstyle{remark}
+\newtheorem{remark}[axiom]{Remark}
+\newtheorem{example}[axiom]{Example}
+\newtheorem{interpretation}[axiom]{Interpretation}
+
+% --- Custom commands (v1 compatibility) ---
+\newcommand{\IS}{\mathcal{I}}               % Ideatic space
+\newcommand{\compose}{\circ}                 % Composition
+\newcommand{\void}{\mathbf{0}}              % Void
+\newcommand{\res}{\sim}                      % Resonance
+\newcommand{\depth}{\operatorname{d}}       % Depth
+\newcommand{\transmit}{\tau}                 % Transmission
+\newcommand{\compN}[2]{#1^{\langle #2 \rangle}} % composeN
+\newcommand{\Filt}[1]{\mathcal{F}_{#1}}     % Depth filtration
+\newcommand{\orbit}[2]{#1^{[#2]}}           % Iterate/orbit
+
+% --- Custom commands (v2: Hilbert space) ---
+\newcommand{\Hspace}{\mathcal{H}}            % Hilbert space
+\newcommand{\embed}[1]{\varphi(#1)}          % Embedding φ(a)
+\newcommand{\rs}[2]{\langle\!\langle #1, #2 \rangle\!\rangle}  % resonanceStrength
+\newcommand{\ip}[2]{\langle #1, #2 \rangle}  % inner product
+\newcommand{\nrm}[1]{\lVert #1 \rVert}       % norm
+\newcommand{\proj}[2]{\operatorname{proj}_{#1}\!\left(#2\right)} % projection
+\newcommand{\cosangle}[2]{\theta(#1,#2)}     % angle between ideas
+\newcommand{\Gram}{\mathbf{G}}               % Gram matrix
+\newcommand{\RMat}{\mathbf{R}}               % Resonance matrix
+\newcommand{\payoff}[2]{\pi_{#1}(#2)}        % payoff
+
+\newcommand{\lean}[1]{\lstinline[language=Lean4]{#1}}
+
+% --- Title ---
+\title{%
+  \vspace{-2cm}
+  {\LARGE\scshape Ideatic Diffusion Theory v2}\\[0.5cm]
+  {\Large The Hilbert Space of Meaning}\\[1cm]
+  {\large A Mathematical Theory of Ideas, Resonance,\\
+  and Strategic Interaction,\\[0.3cm]
+  with Machine-Verified Proofs in Lean~4}
+}
+\author{}
+\date{}
+
+\begin{document}
+
+% ================================================================
+% FRONT MATTER
+% ================================================================
+\frontmatter
+
+\maketitle
+\thispagestyle{empty}
+
+\vfill
+\begin{center}
+\textit{For every mind that has ever felt\\
+the geometry of a thought taking shape.}
+\end{center}
+\vfill
+
+\clearpage
+
+% --- Abstract ---
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+This book develops \textbf{Ideatic Diffusion Theory v2} (IDT\,v2), a mathematical
+framework in which ideas are embedded into a real Hilbert space $\Hspace$ via
+a structure-preserving map $\varphi : \IS \to \Hspace$. The central innovation
+is that \emph{resonance} between ideas becomes an \emph{inner product}:
+\[
+  \rs{a}{b} \;=\; \ip{\embed{a}}{\embed{b}},
+\]
+and \emph{composition} of ideas maps to vector \emph{addition}:
+\[
+  \embed{a \compose b} \;=\; \embed{a} + \embed{b}.
+\]
+This simple pair of axioms yields a remarkably rich geometric theory of meaning.
+The Cauchy--Schwarz inequality becomes a fundamental limit on cross-cultural
+understanding. The distance between ideas becomes a genuine metric---making
+Kuhn's ``incommensurability'' measurable rather than metaphorical. Persuasion
+reduces to orthogonal projection, Nash equilibria in meaning games admit
+geometric characterization, and the spectral decomposition of the resonance
+matrix reveals the principal modes of cultural agreement.
+
+The book is organized in four parts. Part~I (Chapters~\ref{ch:geometry}--\ref{ch:orthogonality})
+establishes the Hilbert space foundations: the embedding axioms, resonance as
+inner product, the metric of meaning, the relationship between depth and norm,
+and the structure of orthogonal (unrelated) ideas. Part~II
+(Chapters~\ref{ch:payoffs}--\ref{ch:spectral}) develops the game theory of
+meaning: payoffs as inner products, Nash equilibria in Hilbert space,
+cooperation and conflict as angular relationships, persuasion as projection,
+and spectral theory of cultural networks. Parts~III and~IV (Chapters~11--20)
+extend the theory to dynamics, learning, and applications across the humanities.
+
+Every theorem has been verified by the Lean~4 proof assistant, ensuring absolute
+logical correctness. The formalization demonstrates that the Hilbert space
+embedding is not merely a metaphor but a precise mathematical structure with
+non-trivial consequences.
+
+\clearpage
+
+% --- Preface ---
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+\epigraph{The limits of my language mean the limits of my world.}{Ludwig Wittgenstein, \textit{Tractatus Logico-Philosophicus}}
+
+The first edition of this book---\textit{Ideatic Diffusion Theory: A
+Mathematical Foundation for the Study of Ideas}---introduced ideas as elements
+of a monoid with a reflexive, symmetric, non-transitive resonance relation and
+a subadditive depth function. That framework yielded rich structural theorems
+about composition, transmission, and cultural dynamics, but it left a
+fundamental question unanswered: \emph{how strong} is the resonance between two
+ideas?
+
+In IDT~v1, resonance was a binary relation: two ideas either resonate or they
+do not. This is a useful abstraction, but it misses the quantitative nuance that
+pervades actual intellectual life. Darwin's theory of natural selection resonates
+more strongly with Wallace's independent discovery than with Lamarck's earlier
+theory of inheritance---but all three resonate to some degree. Binary resonance
+cannot express this gradation.
+
+IDT~v2 resolves this limitation by embedding the ideatic space into a real
+Hilbert space and identifying resonance strength with the inner product. The
+result is a \emph{geometry of meaning}: ideas become vectors, resonance becomes
+angle, composition becomes addition, and the full apparatus of functional
+analysis becomes available for studying the structure of thought.
+
+This is not merely a technical refinement. The passage from binary resonance to
+inner-product resonance is analogous to the passage from qualitative to
+quantitative physics---from ``heavy'' and ``light'' to mass measured in
+kilograms. It transforms IDT from a qualitative structural theory into a
+quantitative geometric one, opening entirely new domains of application:
+game-theoretic analysis of communication, spectral analysis of cultural
+networks, optimization-theoretic accounts of persuasion, and metric-space
+approaches to intellectual history.
+
+\subsection*{How to Read This Book}
+
+This book addresses three audiences simultaneously:
+
+\begin{itemize}
+\item \textbf{For humanists}: Every mathematical result is accompanied by an
+``Interpretation'' block explaining its significance for philosophy, literary
+theory, anthropology, or cultural studies. You may skip proofs on first reading.
+
+\item \textbf{For mathematicians}: The Hilbert space framework is standard, but
+the interpretive lens is novel. The game-theoretic and spectral-theoretic
+results have genuine mathematical content.
+
+\item \textbf{For formalists}: Every theorem is machine-verified in Lean~4. The
+complete formalization is available as a companion repository.
+\end{itemize}
+
+\subsection*{What Is New in v2}
+
+The key innovations of this second edition are:
+
+\begin{enumerate}
+\item \textbf{Hilbert space embedding}: Ideas map to vectors in a real Hilbert
+space $\Hspace$ via $\varphi : \IS \to \Hspace$.
+
+\item \textbf{Quantitative resonance}: $\rs{a}{b} = \ip{\embed{a}}{\embed{b}}$
+replaces the binary resonance relation.
+
+\item \textbf{Composition as addition}: $\embed{a \compose b} = \embed{a} +
+\embed{b}$ gives composition geometric content.
+
+\item \textbf{Game theory of meaning}: Communication games where payoffs are
+inner products, with geometric characterization of equilibria.
+
+\item \textbf{Spectral theory of culture}: Eigendecomposition of the resonance
+(Gram) matrix reveals principal cultural dimensions.
+
+\item \textbf{Persuasion as projection}: The geometry of how ideas influence
+each other, formalized as orthogonal projection.
+\end{enumerate}
+
+\subsection*{Acknowledgments}
+
+The development of IDT~v2 owes debts to many traditions: to Peter G\"ardenfors,
+whose \emph{Conceptual Spaces} anticipated the idea of embedding meanings in
+geometric spaces; to Charles Osgood, whose semantic differential pioneered the
+measurement of meaning; to Tomas Mikolov and colleagues, whose word2vec
+demonstrated that distributional semantics yields genuine geometric structure;
+and to the communities of Lean~4 and Mathlib, whose tools made machine
+verification possible.
+
+\clearpage
+
+% --- Table of Contents ---
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\clearpage
+
+% ================================================================
+% MAIN MATTER
+% ================================================================
+\mainmatter
+
+% ================================================================
+% PART I: FOUNDATIONS OF THE HILBERT THEORY
+% ================================================================
+\part{Foundations of the Hilbert Theory}
+\label{part:foundations}
+
+\input{tex_v2_chapters/ch01}
+\input{tex_v2_chapters/ch02}
+\input{tex_v2_chapters/ch03}
+\input{tex_v2_chapters/ch04}
+\input{tex_v2_chapters/ch05}
+
+% ================================================================
+% PART II: THE GAME THEORY OF MEANING
+% ================================================================
+\part{The Game Theory of Meaning}
+\label{part:game-theory}
+
+\input{tex_v2_chapters/ch06}
+\input{tex_v2_chapters/ch07}
+\input{tex_v2_chapters/ch08}
+\input{tex_v2_chapters/ch09}
+\input{tex_v2_chapters/ch10}
+
+% ================================================================
+% PART III: DYNAMICS AND LEARNING IN MEANING SPACE
+% ================================================================
+\part{Dynamics and Learning in Meaning Space}
+\label{part:dynamics}
+
+\input{tex_v2_chapters/ch11}
+\input{tex_v2_chapters/ch12}
+\input{tex_v2_chapters/ch13}
+\input{tex_v2_chapters/ch14}
+\input{tex_v2_chapters/ch15}
+
+% ================================================================
+% PART IV: APPLICATIONS ACROSS THE HUMANITIES
+% ================================================================
+\part{Applications Across the Humanities}
+\label{part:applications}
+
+\input{tex_v2_chapters/ch16}
+\input{tex_v2_chapters/ch17}
+\input{tex_v2_chapters/ch18}
+\input{tex_v2_chapters/ch19}
+\input{tex_v2_chapters/ch20}
+
+% ================================================================
+% BACK MATTER
+% ================================================================
+\backmatter
+
+\chapter*{Notation Index}
+\addcontentsline{toc}{chapter}{Notation Index}
+
+\begin{tabular}{lll}
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Introduced} \\
+\hline
+$\IS$ & Ideatic space & Ch.~\ref{ch:geometry} \\
+$\Hspace$ & Hilbert space of meanings & Ch.~\ref{ch:geometry} \\
+$\varphi$ & Embedding $\IS \to \Hspace$ & Ch.~\ref{ch:geometry} \\
+$\compose$ & Composition of ideas & Ch.~\ref{ch:geometry} \\
+$\void$ & Void (identity/zero vector) & Ch.~\ref{ch:geometry} \\
+$\rs{a}{b}$ & Resonance strength & Ch.~\ref{ch:resonance} \\
+$\ip{x}{y}$ & Inner product in $\Hspace$ & Ch.~\ref{ch:resonance} \\
+$\nrm{x}$ & Norm in $\Hspace$ & Ch.~\ref{ch:resonance} \\
+$d(a,b)$ & Meaning distance & Ch.~\ref{ch:metric} \\
+$\depth(a)$ & Depth (combinatorial complexity) & Ch.~\ref{ch:depth-norm} \\
+$\cosangle{a}{b}$ & Angle between ideas & Ch.~\ref{ch:cooperation} \\
+$\proj{v}{w}$ & Projection of $w$ onto $v$ & Ch.~\ref{ch:persuasion} \\
+$\RMat$ & Resonance matrix & Ch.~\ref{ch:spectral} \\
+$\Gram$ & Gram matrix & Ch.~\ref{ch:spectral} \\
+$\payoff{i}{s}$ & Payoff of player $i$ & Ch.~\ref{ch:payoffs} \\
+\end{tabular}
+
+\end{document}

@@ -9,6 +9,62 @@
 
 % ── Introduction ──────────────────────────────────────────────────────
 
+The study of strategic communication has a distinguished lineage in
+philosophy, economics, and the social sciences.  David Lewis's
+\emph{Convention}~\cite{lewis1969} established that signalling systems
+can arise purely from coordination, without any prior agreement or
+external enforcement---a result that shattered the prevailing view that
+meaning must be stipulated by authority.\footnote{Lewis's central
+insight was that a ``convention'' is a regularity in behaviour, sustained
+by mutual expectations and mutual preferences, that solves a
+\emph{coordination problem}.  Signalling conventions are the paradigm
+case: sender and receiver have no conflict of interest, only a shared
+need to coordinate on which signal maps to which meaning.}  Lewis's
+framework, however, assumed common knowledge of a shared signalling
+code, leaving open the question of how such codes originate.
+
+Brian Skyrms's \emph{Signals: Evolution, Learning, and
+Information}~\cite{skyrms2010} took up precisely this question, showing
+through evolutionary game theory that signalling conventions can emerge
+from initially random behaviour through reinforcement learning and
+natural selection.  Skyrms demonstrated that even the simplest learning
+dynamics---such as Roth--Erev reinforcement---converge to signalling
+equilibria with high probability, suggesting that the capacity for
+meaningful communication requires no cognitive sophistication beyond the
+ability to repeat rewarded behaviour.
+
+Crawford and Sobel's~\cite{crawford1982} cheap talk model introduced
+the possibility of \emph{conflict} between sender and receiver.  In
+their framework, a sender with private information transmits a
+costless message to a receiver who then takes an action affecting
+both parties' payoffs.  The central result is that the amount of
+information transmitted in equilibrium decreases as the divergence
+of interests increases.  When interests are perfectly aligned, full
+revelation is possible; when they are opposed, only a ``babbling
+equilibrium'' survives in which the signal carries no information
+at all.\footnote{Cho and Kreps~\cite{cho1987} refined the analysis
+of signalling games by introducing the \emph{Intuitive Criterion},
+which eliminates implausible equilibria by asking whether a deviation
+could be ``reasonably'' attributed to a particular sender type.
+Their refinement has been enormously influential in economics but
+assumes that receivers can reason counterfactually about sender
+types---an assumption that IDT replaces with the compositional
+structure of repertoires.}
+
+The framework developed in this chapter departs from all of these
+predecessors in a single decisive respect: \emph{payoffs depend on
+interpretations, not on signals or actions}.  In Crawford and Sobel's
+model, the receiver takes an action (e.g., choosing a policy) and
+payoffs depend on that action and the state of the world.  In IDT,
+there is no ``action'' separate from interpretation---the receiver's
+response \emph{is} the composition of the signal with their repertoire,
+and the sender's payoff depends on the resulting list of composed
+ideas.  This shift has profound consequences.  It means that the
+same signal, sent to two receivers with different repertoires, can
+yield entirely different payoffs for the sender---not because the
+receivers ``chose'' different responses, but because their existing
+conceptual structures composed differently with the signal.
+
 In every human society, actors choose signals strategically: a politician
 picks rhetoric, a suitor offers gifts, a priest designs liturgy.  The
 sender's fundamental problem is that they cannot control how receivers
@@ -33,6 +89,46 @@ ideas.
 (\S\ref{sec:ch2:depth}), study \emph{resonance in game outcomes}
 (\S\ref{sec:ch2:resonance}), and explore \emph{strategic properties}
 (\S\ref{sec:ch2:strategic}).  All eighteen theorems are machine-verified.
+
+\subsection*{Historical Context: From Animal Signals to Game Theory}
+
+The application of game-theoretic reasoning to communication long
+predates its formalisation in economics.  Zahavi's \emph{handicap
+principle}~\cite{zahavi1975} proposed that animal signals must be
+\emph{costly} to be honest: the peacock's tail is reliable precisely
+because it is expensive to produce and maintain, so only genuinely
+fit males can afford it.  Maynard Smith and Harper~\cite{maynardsmith2003}
+systematised this insight in \emph{Animal Signals}, distinguishing
+between ``assessment signals'' (whose reliability is guaranteed by
+physical constraints) and ``conventional signals'' (whose reliability
+depends on equilibrium maintenance).
+
+Anthropologists were quick to adopt these models.  Irons~\cite{irons2001}
+applied the handicap principle to religious ritual, arguing that costly
+ceremonies serve as honest signals of commitment to the group.  Sosis
+and Alcorta~\cite{sosis2003} extended this analysis to explain the
+persistence of apparently irrational religious behaviours as adaptive
+signalling mechanisms.  Henrich~\cite{henrich2009} argued that
+``credibility-enhancing displays''---actions that are costly and
+consistent with professed beliefs---are the primary mechanism by which
+cultural learners identify reliable models to imitate.
+
+The IDT framework subsumes these approaches by shifting attention from
+the \emph{cost} of the signal to the \emph{structure} of the receiver's
+repertoire.  Whether a signal is ``honest'' in the Zahavian sense
+depends not on its production cost but on how it composes with what
+receivers already believe.  A cheap signal can be perfectly informative
+to a receiver whose repertoire is aligned with the sender's intentions,
+while an expensive signal can be entirely uninformative to a receiver
+whose conceptual apparatus is orthogonal to the sender's meaning.
+This reframing dissolves the sharp distinction between ``cheap talk''
+and ``costly signalling'' that has organised the literature since
+Crawford and Sobel.\footnote{The dissolution is not merely
+philosophical.  Formally, cost enters IDT through the depth of the
+signal: a ``costly'' signal is one of high depth, and
+Theorem~\ref{thm:outcome-depth-bound} shows that the effect of depth
+is linearly bounded by the receiver's existing depth.  Cost without
+receptivity is wasted.}
 
 % ── §1. The Signalling Game ──────────────────────────────────────────
 \section{The Signalling Game}
@@ -155,6 +251,72 @@ of any signal.  Totalitarian receivers are, paradoxically, the easiest
 to communicate with.
 \end{remark}
 
+\begin{example}[Political Rhetoric and the Single-Issue Voter]
+Consider a political campaign targeting single-issue voters.  A voter
+whose entire repertoire consists of a single idea---say, $r = \text{``gun
+rights''}$---will interpret \emph{every} campaign signal through that
+lens.  A speech about healthcare becomes $r \compose s_{\text{health}}$;
+a speech about foreign policy becomes $r \compose s_{\text{foreign}}$.
+By Theorem~\ref{thm:singleton-outcome}, each speech produces exactly one
+interpretation, and that interpretation is entirely determined by the
+voter's fixed idea composed with the signal.  The campaign strategist
+thus faces a simple optimisation problem: choose the signal~$s$ that
+maximises $\Pay_S([r \compose s])$.  In practice, this means framing
+\emph{every} issue in terms of gun rights, regardless of the actual
+topic---a strategy familiar to any observer of American politics.
+\end{example}
+
+\begin{example}[The Azan (Islamic Call to Prayer)]
+\label{ex:azan}
+The muezzin's call to prayer (azan) is a signal broadcast to an entire
+city.  Its \emph{content} is fixed---the same Arabic phrases, five times
+daily---but its \emph{interpretations} vary dramatically across
+receivers.  For the devout Muslim, the azan composes with a deep
+repertoire of theological ideas, producing an interpretation that
+activates obligations, memories of communal worship, and eschatological
+awareness.  For the tourist, the azan composes with a shallow repertoire
+of aesthetic or orientalist ideas, producing an interpretation centred on
+exoticism or architectural appreciation.  For the neighbouring resident
+of a different faith, the repertoire may contain ideas of territorial
+assertion or noise pollution, yielding an entirely different composed
+idea.\footnote{This example illustrates why Theorem~\ref{thm:outcome-length}
+is significant: the azan produces exactly $|G.\Rep|$ interpretations,
+one per schema in the receiver's repertoire.  The \emph{number} of
+thoughts provoked is a property of the receiver, not the signal.}
+
+The IDT framework captures this without resorting to ``context'' as an
+unexplained primitive.  The differences in interpretation are fully
+determined by the differences in repertoire, and the sender (the
+muezzin, or the institution that mandates the call) can reason about
+these differences through the audience structure theorems of
+\S\ref{sec:ch2:audience}.
+\end{example}
+
+\subsection*{Discussion: Why Payoffs Depend on Interpretations}
+
+The decision to make payoffs depend on \emph{interpretations} rather
+than \emph{actions} is the central modelling choice of this chapter, and
+it warrants explicit justification.  In classical game theory, a receiver
+observes a signal and then ``chooses an action'' from some action set.
+Payoffs depend on the action chosen and possibly on the state of the
+world.  This framework assumes that interpretation and action are
+separate: the receiver first \emph{understands} the signal, then
+\emph{decides} what to do.
+
+IDT collapses this distinction.  The receiver's ``action'' \emph{is}
+their interpretation---the composition $r \compose s$ of the signal with
+their repertoire.  There is no separate decision stage because the
+receiver does not ``choose'' how to interpret; interpretation is
+determined by the compositional structure of their existing ideas.  This
+modelling choice is motivated by the ethnographic observation that most
+cultural communication does not involve deliberate choice at the point
+of reception.  When a congregant hears a sermon, they do not first
+decode the words and then select a response; their response \emph{is}
+the composition of the sermon with their existing beliefs, memories,
+and conceptual categories.  The payoff to the preacher depends on what
+the congregant \emph{thinks}, not on what they ``do'' in any
+behaviourist sense.
+
 % ── §3. Audience Structure ───────────────────────────────────────────
 \section{Audience Structure}
 \label{sec:ch2:audience}
@@ -211,6 +373,53 @@ $n$~copies of the signal itself:
 By induction on~$n$, using $\void \compose s = s$ at each step.
 See \texttt{blank\_audience}.
 \end{proof}
+
+\begin{remark}[Connection to Information Theory]
+\label{rem:info-theory}
+The audience structure theorems have a natural information-theoretic
+interpretation.  The merged audience theorem
+(Theorem~\ref{thm:merged-audience}) states that interpretation
+distributes over concatenation of audiences.  In Shannon's
+framework~\cite{shannon1948}, this corresponds to the statement that
+sending the same codeword through two independent channels produces
+independent outputs---the channels do not interact.  The blank audience
+theorem (Theorem~\ref{thm:blank-audience}) identifies a special case:
+an audience of void ideas is an \emph{identity channel} that transmits
+the signal unchanged.  In information-theoretic terms, the blank
+audience has maximum channel capacity---it introduces no noise, no
+distortion, and no loss.  Every bit of the sender's signal passes
+through unaltered.
+
+This analogy should not be pushed too far.  Unlike Shannon channels,
+IDT composition is not stochastic; it is a deterministic algebraic
+operation.  But the structural parallel illuminates why the audience
+theorems take the form they do: they describe how the ``channel''
+(the receiver's repertoire) transforms the ``message'' (the signal).
+\end{remark}
+
+\begin{example}[Cargo Cults as Blank Audience Phenomena]
+\label{ex:cargo-cults}
+The cargo cults of Melanesia provide a striking illustration of
+near-blank audience reception.\footnote{See Worsley~\cite{worsley1957}
+for the classic anthropological treatment, and Lindstrom~\cite{lindstrom1993}
+for a critical reassessment of the ``cargo cult'' concept itself.}  When
+Pacific Islanders first encountered Allied military technology during
+World War II, many communities had no existing repertoire of ideas about
+industrial production, global logistics, or military strategy.  Their
+repertoire, with respect to these signals, was close to void.
+
+By Theorem~\ref{thm:blank-audience}, a near-void repertoire produces
+interpretations close to the signal itself.  The Melanesian observers
+thus ``received'' the signals---the arrival of ships, the construction
+of airstrips, the delivery of cargo---more or less as raw phenomena,
+unmediated by the conceptual apparatus that would have led a Western
+observer to interpret them as instances of industrial logistics.  The
+ritual reproduction of airstrips and control towers was not
+``irrational''; it was the natural consequence of composing novel
+signals with a repertoire that lacked the relevant compositional
+structure.  The signal passed through nearly unchanged, and the
+resulting interpretation was the signal itself.
+\end{example}
 
 % ── §4. Depth Bounds on Outcomes ─────────────────────────────────────
 \section{Depth Bounds on Outcomes}
@@ -281,6 +490,55 @@ $r_i \compose s_1$ and $r_i \compose s_2$ resonate.
 By induction on the repertoire, applying resonance-compose-left at each
 step.  See \texttt{resonant\_signals\_resonant\_outcomes}.
 \end{proof}
+
+\subsection*{Discussion: Resonance as the Foundation of Comparative Anthropology}
+
+Theorem~\ref{thm:resonant-signals-outcomes} has a profound methodological
+implication: it \emph{justifies cross-cultural comparison}.  The
+persistent anxiety of comparative anthropology---articulated most sharply
+in Needham's \emph{Structure and Sentiment}~\cite{needham1962} and
+renewed in the ``ontological turn'' of Viveiros de
+Castro~\cite{viveirosdecastro2004}---is that comparison across cultures
+is illegitimate because the ``same'' institution may mean entirely
+different things in different societies.  Marriage among the Kachin is
+not marriage among the English; sacrifice among the Nuer is not sacrifice
+among the ancient Greeks.
+
+The resonance theorem dissolves this anxiety by distinguishing between
+\emph{identity} and \emph{resonance}.  Cross-cultural comparison does
+not require that two cultural signals be identical; it requires only that
+they \emph{resonate}---that they share sufficient compositional structure
+to produce structurally related outcomes.  If the Roman Saturnalia and
+modern Christmas are resonant signals ($s_{\text{Sat}} \res
+s_{\text{Xmas}}$), then the theorem guarantees that for \emph{any}
+receiver~$r_i$, the interpretations $r_i \compose s_{\text{Sat}}$ and
+$r_i \compose s_{\text{Xmas}}$ will themselves resonate.  The comparison
+is legitimate not because the festivals are ``the same'' but because
+their compositional structures are sufficiently aligned to produce
+structurally related interpretations.
+
+\begin{example}[Christmas and Saturnalia]
+\label{ex:christmas-saturnalia}
+The structural resonance between the Roman Saturnalia and modern
+Christmas has been noted since at least the early Church
+Fathers.\footnote{See Miles~\cite{miles1912} for the classic historical
+treatment and Nissenbaum~\cite{nissenbaum1996} for a social history of
+how Christmas absorbed Saturnalian elements in the American context.}
+Both involve: (i)~a period of festivity during the winter solstice;
+(ii)~the temporary suspension or inversion of ordinary social
+hierarchies (masters serving slaves; adults deferring to children);
+(iii)~the exchange of gifts; (iv)~feasting and communal consumption.
+
+These structural parallels are precisely the kind of shared compositional
+features that ground resonance in IDT\@.  A Roman citizen composing
+Saturnalia with their repertoire of ideas about social hierarchy,
+reciprocity, and seasonal renewal produces an interpretation that
+\emph{resonates with}---but is not identical to---the interpretation
+produced by a modern American composing Christmas with their own
+repertoire.  The theorem guarantees that this resonance is not
+accidental but structural: it is a consequence of the compositional
+alignment of the two signals.
+\end{example}
 
 % ── §6. Strategic Properties ─────────────────────────────────────────
 \section{Strategic Properties}
@@ -354,6 +612,51 @@ the same interpretive effect as a single complex ritual.  Ceremonial
 structure is algebraically decomposable.
 \end{remark}
 
+\begin{example}[The Catholic Mass as Sequential Signal]
+\label{ex:catholic-mass}
+The Catholic Mass consists of a fixed sequence of signals: the
+Introductory Rites (greeting, penitential act, \emph{Gloria}), the
+Liturgy of the Word (readings, psalm, Gospel, homily), the Liturgy of
+the Eucharist (offertory, consecration, communion), and the Concluding
+Rites (blessing, dismissal).  By Theorem~\ref{thm:sequential-signal},
+the interpretive effect of this four-part sequence is identical to
+the effect of a single compound signal $s_{\text{intro}} \compose
+s_{\text{word}} \compose s_{\text{eucharist}} \compose s_{\text{conclude}}$.
+
+This equivalence has a practical consequence that liturgists have long
+understood intuitively: the \emph{order} of the parts matters (because
+composition is generally not commutative), but the \emph{division} into
+parts is liturgically neutral (because sequential delivery equals
+compound delivery).  A Mass celebrated with all four parts in sequence
+produces exactly the same interpretive outcome as one in which the
+entire rite were somehow delivered as a single act.\footnote{This
+observation illuminates debates about liturgical reform.  The Second
+Vatican Council's restructuring of the Mass (1962--1965) altered the
+\emph{signals} but preserved the sequential structure.  By the
+sequential signal theorem, the reform changed outcomes only insofar
+as it changed the composed signal $s_1 \compose s_2 \compose s_3
+\compose s_4$, not by virtue of reorganising the decomposition.}
+\end{example}
+
+\begin{remark}[Connections to Computer Science: Monadic Composition]
+\label{rem:monadic}
+The sequential signal theorem has a natural reading in terms of monadic
+composition in functional programming.  The interpretation function
+$\operatorname{interpret}(\Rep, -)$ acts as a \emph{Kleisli arrow} for
+a list monad: it takes a signal and returns a list of ideas.  The
+sequential signal theorem then states that Kleisli composition is
+associative---that ``binding'' twice is the same as binding once with
+the composed signal.  This is precisely the monad associativity law:
+$(\mu \circ T\mu) = (\mu \circ \mu T)$.
+
+For the computationally inclined reader, this correspondence is not
+merely an analogy.  The Lean~4 formalisation exploits it directly:
+the proof of \texttt{sequential\_signal} proceeds by rewriting with
+\texttt{List.map\_map} (functoriality) and \texttt{compose\_assoc}
+(associativity), which are exactly the two ingredients needed to
+verify the monad laws.
+\end{remark}
+
 \begin{theorem}[Void Captures Signal]
 \label{thm:void-captures}
 If $\void \in G.\Rep$, then $s \in \operatorname{outcome}(G, s)$.
@@ -388,6 +691,52 @@ produce is bounded by their existing depth plus the signal's depth.  The
 receiver's capacity limits understanding, not the sender's intent---a
 formalisation of ``you can't teach beyond the student's readiness.''
 \end{remark}
+
+\begin{remark}[Open Question: Tight Bounds]
+\label{rem:tight-bounds}
+Is the bound in Theorem~\ref{thm:max-outcome-depth} tight?  That is,
+for every $d_R \geq 0$ and $d_S \geq 0$, does there exist a game~$G$
+with $\operatorname{maxInterpDepth}(G.\Rep) = d_R$ and a signal~$s$ with
+$\depth(s) = d_S$ such that
+$\operatorname{maxInterpDepth}(\operatorname{outcome}(G,s)) = d_R + d_S$?
+The answer is yes: take a repertoire containing a single idea of
+depth~$d_R$ whose composition with any signal of depth~$d_S$ produces an
+idea of depth exactly~$d_R + d_S$.  The ``leaf'' construction of
+Chapter~1 provides such examples.  However, it remains open whether
+tightness holds for \emph{natural} repertoires arising in ethnographic
+practice, where the compositional structure of ideas may impose
+additional constraints.  We conjecture that for ``generically chosen''
+repertoires---those not specifically engineered to saturate the
+bound---the actual maximum interpretation depth grows
+sublinearly in $\depth(s)$.
+\end{remark}
+
+\begin{example}[A Socratic Dialogue as Bounded Signalling]
+\label{ex:socratic}
+In a Socratic dialogue, the teacher (Socrates) sends a sequence of
+signals---questions---to a student.  Each question~$q_k$ has some
+depth $\depth(q_k)$, and the student's repertoire evolves as
+$\Rep_0 \to \Rep_1 \to \cdots$ via sequential interpretation.  By
+Theorem~\ref{thm:max-outcome-depth}, the student's maximum
+interpretation depth after question~$k$ satisfies
+$\operatorname{maxInterpDepth}(\Rep_k) \leq
+\operatorname{maxInterpDepth}(\Rep_{k-1}) + \depth(q_k)$.
+
+Telescoping, the student's depth after $n$~questions is bounded by
+$\operatorname{maxInterpDepth}(\Rep_0) + \sum_{k=1}^{n} \depth(q_k)$.
+This formalises the Socratic insight that learning is \emph{incremental}:
+the teacher cannot leap the student from depth~0 to depth~100 in a
+single question, no matter how profound.  Each question contributes at
+most its own depth to the student's understanding.  The ``art'' of
+Socratic teaching consists in choosing questions whose depth is
+calibrated to the student's current capacity---deep enough to extend
+understanding, but not so deep as to be uninterpretable.\footnote{Plato's
+\emph{Meno} dramatises exactly this calibration problem.  Socrates leads
+the slave boy through a sequence of geometrical questions, each of which
+extends the boy's understanding by a small increment.  The depth bound
+theorem explains why this incremental strategy is not merely pedagogically
+wise but \emph{mathematically necessary}.}
+\end{example}
 
 \begin{theorem}[Babbling Payoff]
 \label{thm:babbling-payoff}

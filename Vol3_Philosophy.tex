@@ -1,0 +1,254 @@
+\documentclass[11pt,oneside]{book}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{epigraph}
+\usepackage{tocloft}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{axiom_def}[theorem]{Axiom}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{interpretation}[theorem]{Interpretation}
+
+\lstdefinelanguage{Lean4}{
+  morekeywords={theorem,lemma,def,noncomputable,class,instance,where,
+    variable,open,namespace,section,end,import,structure,inductive,
+    match,with,fun,let,in,if,then,else,do,return,have,show,by,
+    exact,rfl,simp,linarith,nlinarith,ring,intro,apply,rw,unfold,
+    calc,sorry,Prop,Type,Sort,axiom,extends,deriving},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[s]{/-}{-/},
+  morestring=[b]",
+}
+
+\lstset{
+  language=Lean4,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red},
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  xleftmargin=1em,
+  xrightmargin=1em,
+}
+
+\newcommand{\rs}{\mathrm{rs}}
+\newcommand{\emerge}{\kappa}
+\newcommand{\compose}{\circ}
+\newcommand{\void}{\varepsilon}
+\newcommand{\IS}{\mathcal{I}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+
+\title{\Huge\bfseries The Math of Ideas\\[0.3em]
+\LARGE Volume III: Philosophy\\[0.5em]
+\Large Wittgenstein, Hermeneutics, and the Formal Structure of Understanding}
+\author{A Formal Treatment with Machine-Verified Proofs\\[0.3em]
+\normalsize\textit{Part of the series ``The Math of Ideas''}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\frontmatter
+
+\chapter*{Preface}
+
+This is the third volume in the series \emph{The Math of Ideas}. Where Volume~I
+established the foundations---the eight axioms of the ideatic space
+$(\IS, \compose, \void, \rs)$ and the emergence function
+$\emerge(a,b,c) = \rs(a \compose b, c) - \rs(a,c) - \rs(b,c)$---this volume
+brings those axioms into direct dialogue with the central texts of
+philosophy of meaning.
+
+The philosophical tradition has produced some of humanity's deepest insights
+about meaning, understanding, and interpretation. Wittgenstein showed that
+meaning is use. Gadamer revealed that understanding is always situated.
+Heidegger uncovered the structures of being-in-the-world. Derrida demonstrated
+that meaning is always deferred. Hegel traced the dialectical development of
+ideas through history. Each of these insights has been expressed in prose
+of extraordinary subtlety and power. None has been \emph{proved}.
+
+This volume proves them. Or rather: it identifies the precise formal content of
+each philosophical claim, states it as a theorem within the IDT framework,
+and provides a machine-verified proof. In doing so, it discovers that some
+claims are theorems (they follow from the axioms), some are definitions
+(they name structures already present in the formalism), and some are
+\emph{false}---they require assumptions beyond what the axioms provide.
+The last category is perhaps the most valuable: it tells us exactly where
+philosophical intuition outruns mathematical structure, and what additional
+axioms would be needed to recover the philosopher's original insight.
+
+Every theorem in this volume has been formally verified in Lean~4 with zero
+\texttt{sorry} axioms. The Lean source files are:
+\begin{itemize}
+\item \texttt{IDT\_v3\_Wittgenstein.lean} --- 370 theorems on language games,
+rule-following, private language, family resemblance, hinge propositions,
+aspect-seeing, meaning blindness, and the Tractatus/Investigations divide.
+
+\item \texttt{IDT\_v3\_Interpretation.lean} --- 478 theorems on fusion of
+horizons, iterated reading, the hermeneutic circle, prejudice, interpretive
+depth, communication asymmetry, tradition, and intertextuality.
+
+\item \texttt{IDT\_v3\_Phenomenology.lean} --- 197 theorems on intentionality,
+horizons, givenness, the reduction, temporality, intersubjectivity,
+embodiment, the lifeworld, Heidegger's being-in-the-world, Merleau-Ponty's
+flesh, and Levinas's face.
+
+\item \texttt{IDT\_v3\_Dialectics.lean} --- 225 theorems on thesis/antithesis/synthesis,
+Aufhebung decomposition, iterated dialectics, Adorno's non-identical,
+master-slave, dialectic of enlightenment, and dialectical sequences.
+\end{itemize}
+
+The reader is assumed to be familiar with Volume~I, whose results are
+cited throughout as ``Theorem~I.\emph{X.Y}.'' No prior knowledge of
+formal logic or proof assistants is required, though occasional Lean~4
+code snippets are included for those who wish to verify the proofs
+directly.
+
+\vspace{1em}
+\noindent\textit{A note on philosophical engagement.} This book is not a
+\emph{summary} of Wittgenstein, Gadamer, Heidegger, Derrida, Hegel, or
+any other philosopher. It is a \emph{reply}. The formalism agrees with
+these thinkers on many points, disagrees on others, and in several cases
+reveals structural insights that the philosophers themselves could not have
+seen without the mathematics. We treat these thinkers as interlocutors,
+not as authorities.
+
+\tableofcontents
+
+\mainmatter
+
+%==========================================================================
+\part{Wittgenstein}
+%==========================================================================
+
+\input{tex_v2_chapters/vol3_ch1_5}
+
+%==========================================================================
+\part{Hermeneutics and Phenomenology}
+%==========================================================================
+
+\input{tex_v2_chapters/vol3_ch6_10}
+
+%==========================================================================
+\part{Dialectics and Synthesis}
+%==========================================================================
+
+\input{tex_v2_chapters/vol3_ch11_15}
+
+%==========================================================================
+% END MATTER
+%==========================================================================
+
+\backmatter
+
+\chapter*{Appendix: Index of Lean Theorems by Philosopher}
+
+The following index maps each philosopher discussed in this volume to the
+principal Lean~4 theorems that formalize their ideas. File references use
+the prefix \texttt{IDT\_v3\_} throughout.
+
+\begin{description}[style=nextline]
+\item[Wittgenstein]
+  \texttt{Wittgenstein.lean}: \texttt{gameMove\_void\_player} (W1),
+  \texttt{gameScore\_decompose} (W5),
+  \texttt{formOfLife\_absorb} (W15),
+  \texttt{familyRelated\_self} (W26),
+  \texttt{family\_resemblance\_non\_transitive} (W113),
+  \texttt{private\_language\_argument} (W51),
+  \texttt{beetle\_drops\_out} (W63),
+  \texttt{publiclyInvisible\_is\_void} (W59),
+  \texttt{rule\_paradox\_same\_output} (W42),
+  \texttt{community\_decides} (W103),
+  \texttt{void\_is\_hinge} (W133),
+  \texttt{duck\_rabbit} (W72),
+  \texttt{meaning\_eq\_said\_plus\_shown} (W156),
+  \texttt{tractarian\_compositional} (W152),
+  \texttt{investigations\_beyond\_tractatus} (W153).
+
+\item[Gadamer]
+  \texttt{Interpretation.lean}: \texttt{fusionOfHorizons} (def),
+  \texttt{fusion\_enriches\_reader},
+  \texttt{fusion\_assoc},
+  \texttt{hermeneutic\_circle\_resolves},
+  \texttt{hermeneutic\_total\_emergence},
+  \texttt{void\_prejudice\_no\_emergence},
+  \texttt{compositional\_prejudice},
+  \texttt{readN\_enriches},
+  \texttt{perfect\_communication\_iff}.
+
+\item[Husserl]
+  \texttt{Phenomenology.lean}: \texttt{intentionalAct\_eq},
+  \texttt{intentionality\_enriches},
+  \texttt{noematic\_decomposition},
+  \texttt{noetic\_decomposition},
+  \texttt{reduction\_decomposition},
+  \texttt{passiveSynthesis\_symmetric},
+  \texttt{resonance\_passive\_active},
+  \texttt{layered\_constitution},
+  \texttt{sharesEidos\_iff\_emergence}.
+
+\item[Heidegger]
+  \texttt{Phenomenology.lean}: \texttt{dasein\_empty\_world},
+  \texttt{dasein\_no\_projection},
+  \texttt{beingTowardDeath\_decomposition},
+  \texttt{readyToHand\_linear},
+  \texttt{clearing\_cocycle},
+  \texttt{thrownness\_nonneg},
+  \texttt{ecstatic\_temporality}.
+
+\item[Hegel]
+  \texttt{Dialectics.lean}: \texttt{synthesis\_enriches\_thesis},
+  \texttt{aufhebung\_decomposition},
+  \texttt{dialectical\_cocycle},
+  \texttt{iteratedSynthesis\_enriches},
+  \texttt{dialecticalSequence\_enriches},
+  \texttt{negation\_of\_negation\_enriches}.
+
+\item[Adorno]
+  \texttt{Dialectics.lean}: \texttt{nonIdentical},
+  \texttt{resistance\_eq},
+  \texttt{adorno\_balance},
+  \texttt{negation\_residue\_nonneg}.
+
+\item[Derrida]
+  \texttt{Semiotics.lean}: \texttt{differance},
+  \texttt{derrida\_trace},
+  \texttt{supplement\_void}.
+  \texttt{Dialectics.lean}: \texttt{reificationDeficit\_eq\_aufhebung}.
+
+\item[Levinas]
+  \texttt{Phenomenology.lean}: \texttt{face\_excess\_bounded},
+  \texttt{totality\_plus\_infinity},
+  \texttt{saying\_and\_said},
+  \texttt{ethicalSurplus\_lower\_bound},
+  \texttt{substitution\_antisymmetric}.
+
+\item[Merleau-Ponty]
+  \texttt{Phenomenology.lean}: \texttt{chiasm\_antisymmetric},
+  \texttt{reversible\_symmetric},
+  \texttt{motorIntentionality\_decomposition},
+  \texttt{intercorporeality\_cocycle}.
+\end{description}
+
+\end{document}

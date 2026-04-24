@@ -1,0 +1,213 @@
+\documentclass[11pt,oneside]{book}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{epigraph}
+\usepackage{tocloft}
+
+% Theorem environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{axiom_def}[theorem]{Axiom}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{interpretation}[theorem]{Interpretation}
+
+% Lean code listings
+\lstdefinelanguage{Lean4}{
+  morekeywords={theorem,lemma,def,noncomputable,class,instance,where,
+    variable,open,namespace,section,end,import,structure,inductive,
+    match,with,fun,let,in,if,then,else,do,return,have,show,by,
+    exact,rfl,simp,linarith,nlinarith,ring,intro,apply,rw,unfold,
+    calc,sorry,Prop,Type,Sort,axiom,extends,deriving},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[s]{/-}{-/},
+  morestring=[b]",
+}
+
+\lstset{
+  language=Lean4,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red},
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  xleftmargin=1em,
+  xrightmargin=1em,
+}
+
+% Custom commands
+\newcommand{\rs}{\mathrm{rs}}
+\newcommand{\emerge}{\kappa}
+\newcommand{\compose}{\circ}
+\newcommand{\void}{\varepsilon}
+\newcommand{\IS}{\mathcal{I}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+
+\title{\Huge\bfseries The Math of Ideas\\[0.3em]
+\LARGE Volume V: Power, Knowledge, and Ethics\\[0.5em]
+\Large Critical Theory, Epistemology, and Moral Philosophy in Ideatic Space}
+\author{A Formal Treatment with Machine-Verified Proofs\\[0.3em]
+\normalsize\textit{Part of the series ``The Math of Ideas''}}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\frontmatter
+
+\chapter*{Preface}
+
+This is the fifth volume in the series \emph{The Math of Ideas}. The first volume
+established the foundations: eight axioms governing how ideas compose, resonate,
+and give rise to emergence. Volume~II studied games and strategic interaction;
+Volume~III examined the philosophy of meaning; Volume~IV formalized semiotics
+and cultural transmission. This volume turns to what is arguably the most
+consequential domain of all: \emph{power, knowledge, and ethics}---three
+dimensions that, we shall argue, are not separate subjects but three perspectives
+on a single mathematical phenomenon.
+
+The central thesis of this volume is that \textbf{power, knowledge, and ethics
+are three perspectives on how ideas compose with asymmetric resonance}. When
+one idea dominates another in self-resonance, we call it \emph{power}. When
+ideas compose to form justified beliefs, we call the process \emph{knowledge}.
+When we ask how the surplus created by composition---the emergence---should be
+distributed, we enter the domain of \emph{ethics}. But mathematically, these
+are all instances of the same operations: composition, resonance, and emergence.
+
+This unification is not a rhetorical gesture. It is a proven mathematical fact.
+Every theorem in this volume is derived from the same eight axioms established in
+Volume~I, and every proof has been verified in Lean~4 with zero \texttt{sorry}
+axioms. The Lean formalization comprises:
+
+\begin{itemize}
+\item \texttt{IDT\_v3\_PowerStructure.lean} --- 335 theorems on power, hegemony,
+ideology, domination, censorship, and institutional structure.
+\item \texttt{IDT\_v3\_Ethics.lean} --- 199 theorems on moral weight, virtue,
+utility, justice, care, dilemmas, and responsibility.
+\item \texttt{IDT\_v3\_Epistemology.lean} --- 118 theorems on belief, knowledge,
+justification, paradigms, coherence, and epistemic injustice.
+\item \texttt{IDT\_v3\_Diffusion.lean} --- 319 theorems on transmission,
+reception, propaganda, echo chambers, polarization, and media.
+\end{itemize}
+
+This is not a textbook \emph{about} Gramsci, Foucault, Rawls, or Kuhn. It is a
+\emph{reply} to them---a demonstration that their deepest insights can be stated
+as theorems and their arguments can be made rigorous. Where they relied on
+metaphor, we provide proof. Where they gestured at structure, we exhibit it.
+And where they disagreed, the mathematics sometimes reveals that they were
+saying the same thing in different notation.
+
+\vspace{1em}
+
+The volume is organized in three parts:
+
+\begin{enumerate}
+\item \textbf{Part I: Power and Ideology} (Chapters 1--5) formalizes the
+political theory of Gramsci, Foucault, Althusser, Bourdieu, and the theory
+of propaganda and censorship.
+
+\item \textbf{Part II: Epistemology} (Chapters 6--10) formalizes the
+epistemology of Kuhn, Popper, Quine, and the social epistemologists,
+including the theory of epistemic injustice.
+
+\item \textbf{Part III: Ethics} (Chapters 11--15) formalizes the moral
+philosophy of Kant, Mill, Aristotle, and Rawls, culminating in our own
+theory of the ethics of ideas.
+\end{enumerate}
+
+\tableofcontents
+
+\mainmatter
+
+%==========================================================================
+\part{Power and Ideology}
+%==========================================================================
+
+\input{tex_v2_chapters/vol5_ch1_5}
+
+%==========================================================================
+\part{Epistemology}
+%==========================================================================
+
+\input{tex_v2_chapters/vol5_ch6_10}
+
+%==========================================================================
+\part{Ethics}
+%==========================================================================
+
+\input{tex_v2_chapters/vol5_ch11_15}
+
+%==========================================================================
+% END MATTER
+%==========================================================================
+
+\chapter*{Appendix: Complete Lean 4 Formalization}
+
+All theorems in this book have been formally verified in Lean~4 using the
+\texttt{IdeaticSpace} type class defined in \texttt{IDT\_v3\_Foundations.lean}.
+The formalization for this volume comprises the following files:
+
+\begin{itemize}
+\item \texttt{IDT\_v3\_PowerStructure.lean} --- 335 theorems. Power relations,
+hegemony, symbolic capital, ideology, propaganda, resistance, biopower,
+censorship, interpellation, structural violence, Arendt's power/violence
+distinction, Lukes's three dimensions, Weber's authority types, Butler's
+performativity, Habermas's colonization, Mouffe's agonism, Scott's hidden
+transcripts, Fanon's decolonization, and institutional analysis.
+
+\item \texttt{IDT\_v3\_Ethics.lean} --- 199 theorems. Moral weight, utility,
+universalizability, virtue and character, care, the veil of ignorance,
+moral disagreement and synthesis, cooperation surplus, attribution
+impossibility, act/rule utilitarianism, deontological residue, moral luck,
+self-constitution, contractualism, Parfit's personal identity, capability,
+moral dilemmas, trolley problems, moral realism/anti-realism, Kant's
+categorical imperative, moral generalism/particularism, incommensurability,
+supererogation, Kohlberg's stages, reactive attitudes, collective
+responsibility, intergenerational justice, demandingness, is/ought gap,
+thick concepts, moral perception, tolerance, authority, communitarianism,
+eudaimonia, dirty hands, rights, and the utility monster.
+
+\item \texttt{IDT\_v3\_Epistemology.lean} --- 118 theorems. Belief, strong
+belief, doubt, suspension of judgment, doxastic capacity, justification,
+JTB knowledge, self-knowledge, epistemic luck, Gettier cases, foundationalism,
+coherentism, paradigm shifts, incommensurability, Kuhn loss, falsification,
+corroboration, Quinean revision and holism, underdetermination, Bayesian
+updating, testimony, trust, credibility deficit, testimonial injustice,
+hermeneutical gap, collective epistemology, radical skepticism, a priori/a
+posteriori, synthetic a priori, intellectual humility, open-mindedness,
+epistemic resilience, and iterated knowledge.
+
+\item \texttt{IDT\_v3\_Diffusion.lean} --- 319 theorems. Reception, transmission
+emergence, chain transmission, resonance shift, preservation, population
+resonance, agreement, conservative transmission, fidelity, iterated
+reception, fixed points, canonical ideas, contagion models, broadcast,
+signal degradation/amplification, gatekeeping, super-spreaders, vaccination,
+disagreement, polarization, echo chambers, filter bubbles, network
+transmission, distortion chains, consensus, viral potency, cascade
+dynamics, resistance/absorption, semantic drift, competitive advantage,
+path dependence, channel noise, McLuhan's media theory, Debord's spectacle,
+Chomsky's five filters, adoption thresholds, influence, group polarization,
+affective polarization, diffusion kernels, mixing coefficients, ergodic
+dynamics, mutation, and thermodynamic analogies.
+\end{itemize}
+
+\end{document}

@@ -1,0 +1,525 @@
+% =============================================================
+%  Chapter 6 — Interpretive Equilibrium
+%  Lean source: FormalAnthropology/IDT_Signal_Ch06.lean
+% =============================================================
+\chapter{Interpretive Equilibrium}
+\label{ch:equilibrium}
+
+\epigraph{%
+  ``A convention is a regularity in behavior, sustained by an interest in
+  coordination and an expectation that others will do their part.''}%
+  {David Lewis, \textit{Convention} (1969)}
+
+% ----------------------------------------------------------------
+\section{Introduction: Why Cultures Don't Change}
+\label{sec:eq-intro}
+
+Every anthropologist eventually confronts the same puzzle: if cultures are
+``arbitrary'' in Saussure's sense---if there is no deep reason for driving
+on the left rather than the right, for shaking hands rather than bowing,
+for calling a dog \emph{dog} rather than \emph{chien}---then why do cultures
+persist at all?  Why doesn't every generation re-randomize its conventions?
+
+The game-theoretic answer, originating with Thomas Schelling's
+\emph{Strategy of Conflict} (1960) and formalized by David Lewis in
+\emph{Convention} (1969), is deceptively simple: cultural forms persist
+because \emph{no individual can profitably deviate}.  They are Nash equilibria
+of an implicit coordination game.  A greeting ritual need not be optimal in
+any absolute sense; it need only be \emph{locally stable}---better than any
+unilateral alternative.
+
+This chapter transplants that insight into the framework of Ideatic Diffusion
+Theory.  We define an \emph{interpretation game}---a triple of a repertoire
+(the receiver's cultural background), a sender payoff, and a receiver
+payoff---and show that the concept of equilibrium has rich structural
+consequences when the action space is an ideatic space $\IS$ equipped with
+composition $\compose$, void $\void$, depth $\depth$, and resonance
+$\res$.
+
+The central results of the chapter fall into three groups.  First,
+\emph{existence}: void (silence) is always an equilibrium when it weakly
+dominates, and constant-payoff games admit universal equilibria
+(\S\ref{sec:eq-babbling}).  Second, \emph{structure}: outcomes preserve
+repertoire length, depth is linearly bounded, and void preserves depth
+exactly (\S\ref{sec:eq-structure}--\S\ref{sec:eq-depth}).  Third,
+\emph{robustness}: equilibria survive payoff agreement, monotone transforms,
+and void extension (\S\ref{sec:eq-resonance}--\S\ref{sec:eq-advanced}).
+
+Throughout, we provide anthropological commentary and Lean~4 code listings
+that verify every theorem with zero \texttt{sorry} axioms.
+
+
+% ================================================================
+\section{Core Definitions}
+\label{sec:eq-defs}
+
+\begin{definition}[Repertoire]
+\label{def:repertoire}
+A \emph{repertoire} is a finite list of ideas in $\IS$:
+\[
+  \mathrm{Rep} \;=\; \mathrm{List}\;\IS.
+\]
+It represents the receiver's stock of cultural concepts, categories, and
+schemas---what they bring to any interpretive encounter.%
+\footnote{In Bourdieu's terms, the repertoire is the agent's \emph{habitus}
+rendered as a finite enumeration of conceptual dispositions.}
+\end{definition}
+
+\begin{definition}[Interpretation]
+\label{def:interpret}
+Given a repertoire $R = [r_1,\dots,r_n]$ and a signal $s\in\IS$, the
+\emph{interpretation} of $s$ through $R$ is
+\[
+  \mathrm{interpret}(R, s) \;=\; [r_1\compose s,\;\dots,\;r_n\compose s].
+\]
+Each background idea is composed with the incoming signal, producing a list
+of new ideas---one per schema the receiver already holds.
+\end{definition}
+
+\begin{lstlisting}[caption={Interpretation in Lean~4.}]
+def interpret (rep : Repertoire I) (signal : I) : List I :=
+  rep.map (fun r => IdeaticSpace.compose r signal)
+\end{lstlisting}
+
+\begin{definition}[Interpretation Game]
+\label{def:interp-game}
+An \emph{interpretation game} $G = (R, u_S, u_R)$ consists of
+\begin{enumerate}
+  \item a repertoire $R$ (the receiver's cultural background),
+  \item a sender payoff $u_S : \mathrm{List}\;\IS \to \mathbb{N}$,
+  \item a receiver payoff $u_R : \mathrm{List}\;\IS \to \mathbb{N}$.
+\end{enumerate}
+Payoffs depend on the \emph{interpretation} (the list of composed ideas),
+not on the signal directly.  This captures the anthropological insight that
+meaning is always mediated by the receiver's culture.
+\end{definition}
+
+\begin{lstlisting}[caption={The interpretation game structure.}]
+structure InterpGame (I : Type*) [IdeaticSpace I] where
+  repertoire : Repertoire I
+  sender_payoff : List I -> ℕ
+  receiver_payoff : List I -> ℕ
+\end{lstlisting}
+
+\begin{definition}[Outcome]
+\label{def:outcome}
+The \emph{outcome} of sending signal $s$ in game $G$ is the interpretation
+produced by composing the repertoire with $s$:
+\[
+  \mathrm{outcome}(G, s) \;=\; \mathrm{interpret}(G.\mathrm{Rep},\; s).
+\]
+\end{definition}
+
+\begin{definition}[Equilibrium]
+\label{def:equilibrium}
+A signal $s$ is an \emph{equilibrium} of game $G$ if no alternative signal
+$s'$ yields a strictly higher sender payoff:
+\[
+  \mathrm{IsEquilibrium}(G, s) \;\iff\;
+  \forall\, s'.\;
+  u_S\!\bigl(\mathrm{outcome}(G, s')\bigr)
+  \;\le\;
+  u_S\!\bigl(\mathrm{outcome}(G, s)\bigr).
+\]
+This is the Nash equilibrium condition for the sender, given the receiver's
+fixed repertoire.%
+\footnote{We suppress the receiver's strategic choice in this formalization,
+treating the repertoire as exogenous.  Chapter~\ref{ch:multireceiver}
+relaxes this.}
+\end{definition}
+
+\begin{lstlisting}[caption={Equilibrium in Lean~4.}]
+def IsEquilibrium (G : InterpGame I) (s : I) : Prop :=
+  forall (s' : I), G.sender_payoff (outcome G s') <=
+    G.sender_payoff (outcome G s)
+\end{lstlisting}
+
+
+% ================================================================
+\section{Babbling Equilibrium and Constant-Payoff Games}
+\label{sec:eq-babbling}
+
+The deepest result of Lewis's \emph{Convention} is often overlooked: in
+\emph{every} signalling game, there exists a ``babbling'' equilibrium in
+which signals carry no information.  In IDT, this corresponds to the void
+signal.
+
+\begin{theorem}[Outcome of Void]
+\label{thm:outcome-void}
+$\mathrm{outcome}(G, \void) = G.\mathrm{Rep}.$
+Silence leaves meaning unchanged: the interpretation of void through any
+repertoire is the repertoire itself.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+By induction on the repertoire list.  The base case is trivial.  For the
+inductive step, $r\compose\void = r$ by the right-identity axiom of
+$\IS$, so the head is preserved and the tail follows from the inductive
+hypothesis.
+\end{proof}
+
+This result is the linchpin of everything that follows.  It says that
+silence is \emph{transparent}: the receiver's world is unchanged.  In
+anthropological terms, a ritual that communicates nothing leaves the
+participants exactly where they were.
+
+\begin{theorem}[Babbling Equilibrium / Schelling's Silence (6.1)]
+\label{thm:babbling-equilibrium}
+If no signal produces a strictly better payoff than silence, then $\void$
+is an equilibrium:
+\[
+  \bigl(\forall\,s.\; u_S(\mathrm{outcome}(G,s)) \le
+  u_S(\mathrm{outcome}(G,\void))\bigr)
+  \;\implies\;
+  \mathrm{IsEquilibrium}(G,\void).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Immediate from the definition of \textsf{IsEquilibrium}: the hypothesis
+\emph{is} the conclusion.
+\end{proof}
+
+Lewis (1969) showed that babbling equilibria exist in every signalling game.
+In IDT, the proof is one line---because the algebraic structure of $\IS$
+(specifically, the existence of $\void$) guarantees a universal fallback.
+This is the formal foundation of Schelling's focal-point theory: when
+nothing you say can improve on silence, silence is optimal.
+
+\begin{theorem}[Constant-Payoff Equilibrium (6.2)]
+\label{thm:constant-payoff-equilibrium}
+If every signal yields the same payoff~$k$, then every signal is an equilibrium:
+\[
+  \bigl(\forall\,s.\; u_S(\mathrm{outcome}(G,s)) = k\bigr)
+  \;\implies\;
+  \forall\,s.\;\mathrm{IsEquilibrium}(G,s).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+For any candidate deviator $s'$, rewrite both payoffs to $k$ and apply
+$k\le k$.
+\end{proof}
+
+Anthropologically, constant-payoff games formalize \emph{radical cultural
+relativism}: if all rituals are equally valued, none faces selection pressure,
+and every cultural form persists indefinitely.  The theorem explains why
+highly egalitarian societies display persistent ritual variation---there is
+no payoff gradient to drive convergence.
+
+\begin{theorem}[Equilibrium is Reflexive (6.3)]
+\label{thm:equilibrium-refl}
+Every signal is at least as good as itself:
+$u_S(\mathrm{outcome}(G,s)) \le u_S(\mathrm{outcome}(G,s))$.
+\end{theorem}
+
+This is the trivial direction of the Nash definition---every strategy weakly
+dominates itself.  Though mathematically obvious, it serves as the base case
+for inductive proofs of equilibrium preservation in later chapters.
+
+
+% ================================================================
+\section{Outcome Structural Properties}
+\label{sec:eq-structure}
+
+Outcomes have a rigid structure: signals transform but never create or
+destroy ideas.
+
+\begin{theorem}[Outcome Length Invariance (6.4)]
+\label{thm:outcome-length}
+$|\mathrm{outcome}(G, s)| = |G.\mathrm{Rep}|$ for all signals $s$.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+$\mathrm{outcome}$ is a \texttt{List.map}, which preserves length.
+\end{proof}
+
+Cultural contact does not change how many schemas a society holds---it
+transforms each one.  The ``size'' of a culture's conceptual inventory is
+invariant under external signalling.  This is a non-trivial constraint: it
+rules out models in which signals can spontaneously generate new categories
+in the receiver's mind.%
+\footnote{Category \emph{creation} requires mechanisms beyond simple
+composition---see the discussion of ``conceptual blending'' in
+Chapter~\ref{ch:lossy}.}
+
+\begin{theorem}[Outcome Length Independence (6.5)]
+\label{thm:outcome-length-eq}
+Two different signals produce interpretation lists of the same length:
+$|\mathrm{outcome}(G, s_1)| = |\mathrm{outcome}(G, s_2)|$.
+\end{theorem}
+
+An immediate corollary of Theorem~\ref{thm:outcome-length}: both sides
+equal $|G.\mathrm{Rep}|$.  Game-theoretically, the ``action space'' of
+interpretations has constant dimensionality across all possible signals.
+
+\begin{theorem}[Empty Repertoire Trivial Outcome (6.6)]
+\label{thm:empty-repertoire-outcome}
+A receiver with no ideas produces no interpretations:
+$\mathrm{outcome}(\langle [], \ldots\rangle, s) = []$.
+\end{theorem}
+
+A mind with zero cultural content cannot interpret anything.  There is no
+``raw perception''---interpretation requires prior ideas.  This is the
+formal counterpart of Kant's dictum: ``Intuitions without concepts are
+blind.''
+
+\begin{theorem}[Singleton Repertoire Outcome (6.7)]
+\label{thm:singleton-outcome}
+A single-idea mind produces exactly one interpretation:
+$\mathrm{outcome}(\langle [r], \ldots\rangle, s) = [r\compose s]$.
+\end{theorem}
+
+Monocultural societies have exactly one interpretation of every event.
+The singleton case is the simplest non-trivial example and will serve as
+a running test case in Chapters~\ref{ch:persuasion}--\ref{ch:multireceiver}.
+
+
+% ================================================================
+\section{Depth Bounds on Outcomes}
+\label{sec:eq-depth}
+
+The depth function $\depth$ measures interpretive complexity.  How does it
+behave under the \texttt{outcome} operation?
+
+\begin{theorem}[Outcome Depth Bound (6.8)]
+\label{thm:outcome-depth-bound}
+\[
+  \sum_{i} \depth\bigl(\mathrm{outcome}(G,s)_i\bigr)
+  \;\le\;
+  \sum_{i} \depth(r_i) \;+\; |R|\cdot\depth(s).
+\]
+The total depth of all interpretations is bounded by the repertoire's total
+depth plus the repertoire size times the signal depth.
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Induction on the repertoire.  At each step, the depth of $r\compose s$ is
+at most $\depth(r) + \depth(s)$ by the subadditivity of composition depth.
+Summing over $|R|$ elements yields the bound.
+\end{proof}
+
+Game-theoretically, the sender's ``persuasive reach'' is linearly bounded
+by signal complexity times audience size.  This result foreshadows the
+persuasion bounds of Chapter~\ref{ch:persuasion}: even before introducing
+formal limits on marginal depth, we see that total impact is $O(|R|\cdot\depth(s))$.
+
+\begin{theorem}[Void Outcome Preserves Depth (6.9)]
+\label{thm:void-outcome-depth}
+$\mathrm{depthSum}(\mathrm{outcome}(G,\void)) = \mathrm{depthSum}(G.\mathrm{Rep}).$
+\end{theorem}
+
+Silence preserves total interpretive complexity exactly---not just
+approximately, but with zero loss.  The ``cost'' of silence is exactly zero
+in every dimension.
+
+\begin{lstlisting}[caption={Outcome depth bound in Lean~4.}]
+theorem outcome_depth_bound
+    (rep : Repertoire I) (s : I) (sp rp : List I -> ℕ) :
+    depthSum (outcome (<rep, sp, rp> : InterpGame I) s) <=
+    depthSum rep + rep.length * IdeaticSpace.depth s
+\end{lstlisting}
+
+
+% ================================================================
+\section{Resonance and Equilibrium}
+\label{sec:eq-resonance}
+
+Resonance ($\res$) captures structural similarity between ideas.  How does
+it interact with equilibrium?
+
+\begin{theorem}[Resonant Signals Produce Resonant Outcomes (6.10)]
+\label{thm:resonant-signals-outcomes}
+If $s_1\res s_2$, then for each background idea $r$ in the repertoire,
+$r\compose s_1 \res r\compose s_2$.
+\end{theorem}
+
+Structurally similar rituals---Christmas and Hanukkah, weddings across
+cultures---produce structurally similar experiences for each participant.
+This is why comparative anthropology is possible at all: resonant signals
+yield resonant interpretations, ensuring that cross-cultural comparison is
+not an act of pure projection.
+
+\begin{theorem}[Self-Resonance of Outcomes (6.11)]
+\label{thm:outcome-self-resonance}
+Every outcome resonates with itself at each position:
+$r\compose s \res r\compose s$.
+\end{theorem}
+
+A trivial consequence of the reflexivity of resonance, but conceptually
+important: a single signal always produces self-consistent interpretations.
+No signal can produce an internally contradictory outcome.
+
+\begin{theorem}[Equilibrium Under Payoff Agreement (6.12)]
+\label{thm:equilibrium-payoff-agreement}
+If two games $G_1, G_2$ have the same repertoire and their sender payoffs
+agree on all outcomes, then an equilibrium for $G_2$ is an equilibrium
+for $G_1$:
+\[
+  \bigl(G_1.\mathrm{Rep} = G_2.\mathrm{Rep}\bigr)
+  \;\wedge\;
+  \bigl(\forall\,s.\; u_{S,1}(\mathrm{outcome}(G_1,s)) = u_{S,2}(\mathrm{outcome}(G_2,s))\bigr)
+  \;\implies\;
+  \bigl(\mathrm{IsEquilibrium}(G_2,s) \implies \mathrm{IsEquilibrium}(G_1,s)\bigr).
+\]
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Substitute the payoff agreement into the equilibrium condition for $G_2$ and
+apply it to $G_1$.
+\end{proof}
+
+If a cultural form is stable in one payoff environment, it remains stable in
+any environment that produces the same relative rankings.  This is the formal
+version of the sociological observation that institutions survive ``rebranding''
+as long as the underlying incentive structure is preserved.
+
+
+% ================================================================
+\section{Composition and Sequential Signalling}
+\label{sec:eq-composition}
+
+Cultural communication is rarely a single signal.  Rituals have multiple
+acts; conversations have turns.  This section studies how equilibrium
+interacts with sequential composition.
+
+\begin{theorem}[Sequential Signal Composition (6.13)]
+\label{thm:sequential-signal}
+$(r\compose s_1)\compose s_2 = r\compose(s_1\compose s_2).$
+\end{theorem}
+
+A ritual with two acts can be understood as a single compound act---but only
+from the perspective of someone who has already absorbed the first act into
+their background.  This is the associativity axiom of $\IS$, applied to the
+signalling context.
+
+\begin{theorem}[Equilibrium Stability Under Void Extension (6.14)]
+\label{thm:equilibrium-void-extension}
+$\mathrm{outcome}(G,\; s\compose\void) = \mathrm{outcome}(G,s).$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+For each $r$ in the repertoire, $r\compose(s\compose\void) = r\compose s$
+by the right-identity axiom.  Hence the map is pointwise equal.
+\end{proof}
+
+Padding a message with silence doesn't change the game.  This is the formal
+version of ``cheap talk is irrelevant when it carries no information.''  In
+anthropological terms, the elaborate silences that frame ritual speech
+(the pause before a toast, the breath before a prayer) are formally inert
+with respect to the equilibrium structure.
+
+\begin{theorem}[Dual Repertoire Combination (6.15)]
+\label{thm:dual-repertoire}
+$\mathrm{outcome}(\langle R_1\!+\!+\!R_2, \ldots\rangle, s)
+= \mathrm{outcome}(\langle R_1,\ldots\rangle, s)
+\!+\!+\;\mathrm{outcome}(\langle R_2,\ldots\rangle, s).$
+\end{theorem}
+
+A bilingual mind's interpretation is the union of each language's
+interpretation.  There is no mysterious ``third space'' of bilingual
+meaning---just the disjoint combination.%
+\footnote{This is a strong claim that will be qualified in
+Chapter~\ref{ch:echo}, where iterated self-interpretation can create
+genuinely new structures through repeated composition.}
+
+\begin{lstlisting}[caption={Dual repertoire combination in Lean~4.}]
+theorem dual_repertoire_outcome
+    (rep_1 rep_2 : Repertoire I) (s : I) (sp rp : List I -> ℕ) :
+    outcome (<rep_1 ++ rep_2, sp, rp> : InterpGame I) s =
+    outcome (<rep_1, sp, rp> : InterpGame I) s ++
+    outcome (<rep_2, sp, rp> : InterpGame I) s
+\end{lstlisting}
+
+
+% ================================================================
+\section{Advanced Equilibrium Properties}
+\label{sec:eq-advanced}
+
+We close with three theorems on the robustness of equilibria under
+transformations of the payoff structure.
+
+\begin{theorem}[Maximum Payoff Equilibrium (6.16)]
+\label{thm:max-payoff-equilibrium}
+If a signal $s$ achieves the maximum possible sender payoff~$M$,
+then $s$ is an equilibrium:
+\[
+  u_S(\mathrm{outcome}(G,s)) = M
+  \;\wedge\;
+  \forall\,s'.\; u_S(\mathrm{outcome}(G,s')) \le M
+  \;\implies\;
+  \mathrm{IsEquilibrium}(G,s).
+\]
+\end{theorem}
+
+The most sacred ritual---the one that maximizes collective effervescence
+(Durkheim)---is always in equilibrium because nothing can improve on the
+maximum.  This is tautological in isolation, but gains force in combination
+with depth bounds: since persuasion is bounded (Chapter~\ref{ch:persuasion}),
+the maximum payoff is itself bounded.
+
+\begin{theorem}[Equilibrium Preserved Under Monotone Transform (6.17)]
+\label{thm:equilibrium-monotone}
+If $f:\mathbb{N}\to\mathbb{N}$ is monotone and $s$ is an equilibrium under
+payoff~$u_S$, then $s$ is an equilibrium under $f\circ u_S$:
+\[
+  (a\le b \implies f(a)\le f(b))
+  \;\wedge\;
+  \mathrm{IsEquilibrium}(G,s)
+  \;\implies\;
+  \forall\,s'.\; f(u_S(\mathrm{outcome}(G,s'))) \le f(u_S(\mathrm{outcome}(G,s))).
+\]
+\end{theorem}
+
+Cultural stability is robust under monotone revaluation.  If a society
+decides that all payoffs should be doubled (inflation), squared (increasing
+returns), or logarithmically compressed (diminishing marginal utility), the
+same cultural forms remain stable.  The theorem identifies the essential
+feature: it is the \emph{ordering} of payoffs, not their magnitudes, that
+determines equilibrium.
+
+\begin{theorem}[Void Equilibrium in Zero-Payoff Games (6.18)]
+\label{thm:void-equilibrium-zero}
+In a game where every signal yields zero payoff, void is an equilibrium:
+$\mathrm{IsEquilibrium}(\langle R, \lambda\_.\,0, \lambda\_.\,0\rangle,\;\void).$
+\end{theorem}
+
+\begin{proof}[Proof sketch]
+Every signal gives payoff~$0$, so every signal is an equilibrium
+(Theorem~\ref{thm:constant-payoff-equilibrium} with $k=0$).  In particular,
+$\void$ is.
+\end{proof}
+
+In a society where communication carries no reward (Durkheim's \emph{anomie}),
+silence is trivially optimal.  This is the formal model of communicative
+breakdown: when nothing matters, nothing is said.
+
+\begin{lstlisting}[caption={Void equilibrium in zero-payoff games.}]
+theorem void_equilibrium_zero_game (rep : Repertoire I) :
+    IsEquilibrium
+      (<rep, fun _ => 0, fun _ => 0> : InterpGame I)
+      (IdeaticSpace.void : I)
+\end{lstlisting}
+
+
+% ================================================================
+\section{Conclusion}
+\label{sec:eq-conclusion}
+
+This chapter established the game-theoretic foundations of interpretive
+stability within IDT\@.  We showed that the algebraic structure of ideatic
+spaces---composition, void, depth, resonance---yields a rich theory of
+equilibrium without any additional axioms.
+
+Three themes will recur in the chapters ahead.  First, \emph{void as
+universal fallback}: silence is always available and always stable
+(Theorem~\ref{thm:babbling-equilibrium}).  Second, \emph{linear depth
+bounds}: the impact of any signal is bounded by its own complexity times
+the audience size (Theorem~\ref{thm:outcome-depth-bound}).  Third,
+\emph{resonance preservation}: structurally similar inputs yield
+structurally similar outputs
+(Theorem~\ref{thm:resonant-signals-outcomes}).
+
+Chapter~\ref{ch:persuasion} turns from equilibrium existence to the
+\emph{limits} of persuasion: how much can a signal change a receiver's
+depth, and why propaganda is subadditive.

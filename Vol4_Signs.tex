@@ -1,0 +1,394 @@
+\documentclass[11pt,oneside]{book}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{mathrsfs}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tikz}
+\usepackage{epigraph}
+\usepackage{tocloft}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{axiom_def}[theorem]{Axiom}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{interpretation}[theorem]{Interpretation}
+
+\lstdefinelanguage{Lean4}{
+  morekeywords={theorem,lemma,def,noncomputable,class,instance,where,
+    variable,open,namespace,section,end,import,structure,inductive,
+    match,with,fun,let,in,if,then,else,do,return,have,show,by,
+    exact,rfl,simp,linarith,nlinarith,ring,intro,apply,rw,unfold,
+    calc,sorry,Prop,Type,Sort,axiom,extends,deriving},
+  sensitive=true,
+  morecomment=[l]{--},
+  morecomment=[s]{/-}{-/},
+  morestring=[b]",
+}
+
+\lstset{
+  language=Lean4,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{blue}\bfseries,
+  commentstyle=\color{gray}\itshape,
+  stringstyle=\color{red},
+  breaklines=true,
+  frame=single,
+  backgroundcolor=\color{gray!5},
+  xleftmargin=1em,
+  xrightmargin=1em,
+  literate={→}{{$\to$}}1 {←}{{$\leftarrow$}}1 {↦}{{$\mapsto$}}1
+           {∀}{{$\forall$}}1 {∃}{{$\exists$}}1 {λ}{{$\lambda$}}1
+           {≤}{{$\leq$}}1 {≥}{{$\geq$}}1 {≠}{{$\neq$}}1
+           {∧}{{$\wedge$}}1 {∨}{{$\vee$}}1 {¬}{{$\neg$}}1
+           {∈}{{$\in$}}1 {∉}{{$\notin$}}1 {⊆}{{$\subseteq$}}1
+           {ℕ}{{$\mathbb{N}$}}1 {ℤ}{{$\mathbb{Z}$}}1 {ℝ}{{$\mathbb{R}$}}1
+           {∘}{{$\circ$}}1 {×}{{$\times$}}1 {⟨}{{$\langle$}}1 {⟩}{{$\rangle$}}1
+           {↔}{{$\leftrightarrow$}}1 {·}{{$\cdot$}}1 {ε}{{$\varepsilon$}}1
+           {∩}{{$\cap$}}1 {₀}{{$_0$}}1,
+}
+
+\newcommand{\rs}{\mathrm{rs}}
+\newcommand{\emerge}{\kappa}
+\newcommand{\compose}{\circ}
+\newcommand{\void}{\varepsilon}
+\newcommand{\IS}{\mathcal{I}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\N}{\mathbb{N}}
+
+\title{\Huge\bfseries The Math of Ideas\\[0.3em]
+\LARGE Volume IV: Signs and Culture\\[0.5em]
+\Large Semiotics, Poetics, Narrative, and Translation}
+\author{A Formal Treatment with Machine-Verified Proofs\\[0.3em]
+\normalsize\textit{Part of the series ``The Math of Ideas''}}
+\date{}
+
+\begin{document}
+\maketitle
+
+% ================================================================
+% PREFACE
+% ================================================================
+\frontmatter
+
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+\epigraph{The limits of my language mean the limits of my world.}{Ludwig Wittgenstein, \textit{Tractatus Logico-Philosophicus}}
+
+This is the fourth volume of \textit{The Math of Ideas}, a series that develops
+a rigorous mathematical framework for the phenomena traditionally studied by the
+humanities --- meaning, culture, narrative, aesthetics, translation, and social
+life. Volume~I established the foundations: the eight axioms of an
+\textit{IdeaticSpace} that capture the algebraic structure of ideas, their
+composition, and the emergence of new meaning from combination. Volume~IV takes
+those same eight axioms and develops from them a \textit{formal semiotics} ---
+the mathematics of signs, codes, literary form, narrative structure, translation,
+and aesthetic experience.
+
+The ambition is immodest: to show that the central insights of Saussure, Peirce,
+Barthes, Eco, Lotman, Shklovsky, Jakobson, Propp, Bakhtin, Genette, Ricoeur,
+Benjamin, Venuti, Kant, and Adorno can be captured as theorems within a single
+deductive system, and that these theorems can be \textit{machine-verified} in
+the Lean~4 proof assistant. This is not an act of reductionism --- reducing the
+richness of literature and culture to dry formalism --- but an act of
+\textit{translation}: rendering the profound intuitions of these thinkers into a
+language where their logical relationships become visible, their hidden
+assumptions become explicit, and their consequences can be rigorously derived.
+
+\subsection*{What This Volume Covers}
+
+The volume is organized into three parts:
+
+\begin{itemize}[leftmargin=2em]
+\item \textbf{Part~I: Formal Semiotics} (Chapters~1--5) develops the
+  mathematics of signs. We formalize Saussure's arbitrariness of the sign,
+  Peirce's triadic semiosis, Barthes's theory of myth, Eco's open and closed
+  works, and Lotman's semiosphere --- all as consequences of the eight axioms.
+
+\item \textbf{Part~II: Poetics and Narrative} (Chapters~6--10) turns to literary
+  form. Shklovsky's defamiliarization, Jakobson's poetic function, the full
+  apparatus of rhetorical figures (metaphor, metonymy, irony, hyperbole),
+  narrative structure from Propp through Ricoeur, Bakhtin's heteroglossia, and
+  the formal constraints of verse --- all receive axiomatic treatment.
+
+\item \textbf{Part~III: Translation and Aesthetics} (Chapters~11--15) addresses
+  the movement of meaning across languages and the nature of aesthetic
+  experience. Benjamin's theory of translation, the problem of
+  untranslatability, Kant's aesthetics of the beautiful and sublime, Adorno's
+  dialectical aesthetics, and a synthetic mathematical aesthetics are developed
+  as theorems.
+\end{itemize}
+
+\subsection*{The Lean Proofs}
+
+Every theorem in this volume has been machine-verified in Lean~4. The proofs are
+contained in five files:
+
+\begin{center}
+\begin{tabular}{llr}
+\textbf{File} & \textbf{Domain} & \textbf{Theorems} \\
+\hline
+\texttt{IDT\_v3\_Semiotics.lean} & Signs, codes, ideology & 327 \\
+\texttt{IDT\_v3\_Poetics.lean} & Verse, rhetoric, figuration & 251 \\
+\texttt{IDT\_v3\_Narrative.lean} & Story, plot, narrative theory & 240 \\
+\texttt{IDT\_v3\_Translation.lean} & Translation, fidelity, equivalence & 301 \\
+\texttt{IDT\_v3\_Aesthetics.lean} & Beauty, sublimity, taste & 207 \\
+\hline
+& \textbf{Total} & \textbf{1,326}
+\end{tabular}
+\end{center}
+
+All five files import \texttt{IDT\_v3\_Foundations.lean}, which provides the
+eight axioms. No additional axioms are introduced; every result in this volume
+is a consequence of the foundational eight.
+
+\subsection*{How to Read This Volume}
+
+The reader who has worked through Volume~I will find the mathematical language
+familiar. We use $\IS$ for an IdeaticSpace, $\compose$ for composition,
+$\void$ for the null utterance, $\rs(a, b)$ for resonance, and
+$\emerge(a, b, c) = \rs(a \compose b, c) - \rs(a, c) - \rs(b, c)$ for
+emergence. The eight axioms are recalled below for convenience.
+
+The reader approaching from the humanities --- a literary theorist, a
+semiotician, a translator --- should not be intimidated by the formalism. Each
+theorem is followed by an \textit{Interpretation} that explains its significance
+in plain language and connects it to the tradition. The Lean code listings are
+provided for verification but can be skipped without loss of understanding.
+
+The reader approaching from mathematics or computer science will find a rich
+source of examples of how abstract algebra (monoids, cocycles, equivalence
+relations, group actions) arises naturally in the analysis of cultural
+phenomena.
+
+\subsection*{The Eight Axioms}
+
+For reference, the eight axioms of an IdeaticSpace, as established in Volume~I:
+
+\begin{axiom_def}[A1: Associativity]
+For all ideas $a, b, c \in \IS$:
+$\quad (a \compose b) \compose c = a \compose (b \compose c)$
+\end{axiom_def}
+
+\begin{axiom_def}[A2: Left Identity]
+For all $a \in \IS$: $\quad \void \compose a = a$
+\end{axiom_def}
+
+\begin{axiom_def}[A3: Right Identity]
+For all $a \in \IS$: $\quad a \compose \void = a$
+\end{axiom_def}
+
+\begin{axiom_def}[R1: Void Target Annihilation]
+For all $a \in \IS$: $\quad \rs(a, \void) = 0$
+\end{axiom_def}
+
+\begin{axiom_def}[R2: Void Source Annihilation]
+For all $a \in \IS$: $\quad \rs(\void, a) = 0$
+\end{axiom_def}
+
+\begin{axiom_def}[E1: Self-Resonance Non-Negativity]
+For all $a \in \IS$: $\quad \rs(a, a) \geq 0$
+\end{axiom_def}
+
+\begin{axiom_def}[E2: Nondegeneracy]
+For all $a \in \IS$: $\quad \rs(a, a) = 0 \implies a = \void$
+\end{axiom_def}
+
+\begin{axiom_def}[E3: Emergence Boundedness]
+For all $a, b, c \in \IS$:
+$\quad \emerge(a, b, c)^2 \leq \rs(a \compose b, a \compose b) \cdot \rs(c, c)$
+\end{axiom_def}
+
+\begin{axiom_def}[E4: Composition Enriches]
+For all $a, b \in \IS$:
+$\quad \rs(a \compose b, a \compose b) \geq \rs(a, a)$
+\end{axiom_def}
+
+\vspace{1em}
+
+These eight axioms --- three algebraic, two annihilation, four analytic ---
+generate the entire theory. Every theorem in this volume, from the arbitrariness
+of the sign to the impossibility of perfect translation to the formal structure
+of beauty, is a logical consequence of these eight statements.
+
+\vspace{2em}
+\hfill \textit{--- The Author, 2026}
+
+\tableofcontents
+
+% ================================================================
+% MAIN MATTER
+% ================================================================
+\mainmatter
+
+% ----------------------------------------------------------------
+% PART I: FORMAL SEMIOTICS
+% ----------------------------------------------------------------
+\part{Formal Semiotics}
+\label{part:semiotics}
+
+\input{tex_v2_chapters/vol4_ch1_5}
+
+% ----------------------------------------------------------------
+% PART II: POETICS AND NARRATIVE
+% ----------------------------------------------------------------
+\part{Poetics and Narrative}
+\label{part:poetics}
+
+\input{tex_v2_chapters/vol4_ch6_10}
+
+% ----------------------------------------------------------------
+% PART III: TRANSLATION AND AESTHETICS
+% ----------------------------------------------------------------
+\part{Translation and Aesthetics}
+\label{part:translation}
+
+\input{tex_v2_chapters/vol4_ch11_15}
+
+% ================================================================
+% BACK MATTER
+% ================================================================
+\backmatter
+
+\chapter*{Afterword: What Formalization Reveals}
+\addcontentsline{toc}{chapter}{Afterword}
+
+\epigraph{Mathematics is the art of giving the same name to different things.}{Henri Poincar\'{e}}
+
+We have traveled a long arc in this volume --- from Saussure's insight that
+meaning is differential, through the triadic semiosis of Peirce, the mythologies
+of Barthes, the narrative structures of Propp and Ricoeur, the agonies of
+translation, and finally to the formal structure of beauty itself. Along the
+way, a single mathematical concept has served as our guiding thread:
+\textit{emergence}.
+
+The emergence function $\emerge(a, b, c) = \rs(a \compose b, c) - \rs(a, c) -
+\rs(b, c)$ measures the irreducible surplus that arises when ideas are combined.
+It is this surplus that makes a sign more than a label (Chapter~1), an index
+more than a correlation (Chapter~2), a myth more than a statement (Chapter~3),
+a poem more than a sequence of words (Chapters~6--10), a translation more than
+a substitution cipher (Chapter~11), and a work of art more than an artifact
+(Chapters~13--15).
+
+What has formalization revealed that was not already apparent?
+
+\textbf{First}, that the seemingly disparate insights of twentieth-century
+semiotics, literary theory, translation studies, and aesthetics are
+\textit{logically connected}. Saussure's arbitrariness and Peirce's iconicity
+are not competing theories but complementary consequences of the same axioms
+(Chapters~1--2). Barthes's myth and Eco's open work are both about emergence,
+differing only in whether it is suppressed or celebrated (Chapters~3--4).
+Benjamin's ``pure language'' and Kant's ``purposiveness without purpose'' are
+both limit concepts in the same emergence framework (Chapters~11, 13).
+
+\textbf{Second}, that certain impossibility results are genuine theorems, not
+mere pessimism. The impossibility of perfectly faithful non-trivial translation
+(Theorem~11.6), the exclusivity of iconicity and symbolic reference
+(Theorem~2.5), the zero originality of kitsch (Theorem~14.3) --- these are not
+opinions but mathematical necessities, given the axioms.
+
+\textbf{Third}, that the cocycle condition --- the associativity constraint on
+emergence that falls out of Axiom~A1 --- is the hidden structural law governing
+narrative (the three-act cocycle, the monomyth cocycle, Ricoeur's mimesis
+cocycle), translation (the chain distortion decomposition), and aesthetic
+experience (the dialectic cocycle, the habituation cocycle). Wherever meaning is
+built up through sequential composition, the cocycle constrains what is possible.
+
+\textbf{Fourth}, that the vocabulary of formal mathematics --- equivalence
+relations, group actions, triangle inequalities, fixed points, conservation
+laws --- maps onto the vocabulary of cultural theory with startling precision.
+Taste is an equivalence relation. Translation is a group action. Aesthetic
+proximity satisfies a triangle inequality. The untranslatable is a fixed point
+of the identity. These are not metaphors; they are theorems.
+
+We do not claim that this formalization exhausts the meaning of the works we
+have engaged. Saussure's \textit{Cours} is more than Theorem~1.1; the
+\textit{Recherche} is more than a cocycle. But we do claim that the formal
+skeleton we have exposed is genuinely \textit{there} --- that it is part of
+what these works mean, and that seeing it clearly enriches rather than diminishes
+our understanding.
+
+The 1,326 machine-verified theorems in this volume constitute, we believe, the
+largest body of formally proved results in the humanities. They are offered not
+as the last word but as the first word in a new kind of conversation between
+mathematics and culture.
+
+\vspace{2em}
+
+\chapter*{Notation Index}
+\addcontentsline{toc}{chapter}{Notation Index}
+
+\begin{tabular}{lll}
+\textbf{Symbol} & \textbf{Name} & \textbf{Definition} \\
+\hline
+$\IS$ & Ideatic space & The space of ideas \\
+$\compose$ & Composition & Binary operation on ideas \\
+$\void$ & Void & The null utterance / silence \\
+$\rs(a, b)$ & Resonance & How $a$ resonates with $b$ \\
+$\emerge(a, b, c)$ & Emergence & $\rs(a \compose b, c) - \rs(a, c) - \rs(b, c)$ \\
+$w(a)$ & Weight & $\rs(a, a)$, self-resonance \\
+$a^{\langle n \rangle}$ & $n$-fold composition & $\mathrm{composeN}(a, n)$ \\
+$\phi, \psi$ & Translation maps & Functions $\IS \to \IS$ \\
+$\mathrm{fid}(\phi, a, b)$ & Translation fidelity & $\rs(\phi(a), \phi(b)) - \rs(a, b)$ \\
+\end{tabular}
+
+\vspace{2em}
+
+\chapter*{Lean File Reference}
+\addcontentsline{toc}{chapter}{Lean File Reference}
+
+All proofs are machine-verified in Lean~4 using Mathlib. The source files are
+organized as follows:
+
+\begin{description}[leftmargin=3em]
+\item[\texttt{IDT\_v3\_Foundations.lean}] The eight axioms (class
+  \texttt{IdeaticSpace}) and basic derived notions: emergence, weight,
+  composeN, sameIdea, leftLinear, polysemous.
+
+\item[\texttt{IDT\_v3\_Semiotics.lean}] 327~theorems. Saussure (arbitrariness,
+  connotation, structural opposition, minimal pairs, paradigmatic/syntagmatic).
+  Peirce (icon, index, symbol, sign irreducibility). Barthes (myth, naturalization,
+  third-order signs). Eco (open/closed texts). Lotman (semiosphere, frozen/living
+  signs, hegemony, ethical encounter). Digital semiotics (emoji, meme, hashtag).
+  Biosemiotics (umwelt, functional tone). Grand semiotic dichotomy and master
+  cocycle.
+
+\item[\texttt{IDT\_v3\_Poetics.lean}] 251~theorems. Repetition and anaphora.
+  Meter (iamb, trochee, spondee, regular meter). Rhyme (perfect, near, strength).
+  Compression and condensation. Variation and parallelism. Chiasmus and
+  antithesis. Metaphor, metonymy, synecdoche, hyperbole, litotes, oxymoron,
+  zeugma. Sonnet structure (Shakespearean, Petrarchan, volta). Enjambment.
+  Prosody (rising/falling rhythm, caesura). Stanza and couplet. Tragic-sublime
+  link.
+
+\item[\texttt{IDT\_v3\_Narrative.lean}] 240~theorems. Narrative weight and
+  emergence. Defamiliarization and dramatic tension. Rhetoric (signal, context,
+  pathos). Three-act structure. Climax and closure. Propp's functions. Hero's
+  journey and monomyth. Barthes's five codes. Focalization and temporal
+  asymmetry. Narrator reliability and dramatic irony. Chekhov's gun. Frame
+  narratives. Intertextuality. Ricoeur's mimesis. Masterplot. Iser's reader
+  response. Derrida's trace. Kristeva's transposition. Greimas's actantial model.
+  Jakobson's functions. Spivak's subaltern. Narrative entropy.
+
+\item[\texttt{IDT\_v3\_Aesthetics.lean}] 207~theorems. Beauty, ugliness, and
+  neutrality. The sublime. Taste as equivalence relation. Originality and kitsch.
+  Camp. Aesthetic surprise and defamiliarization. Benjamin's aura. Adorno's
+  critique and dialectic. Rancière's distribution of the sensible. Bourdieu's
+  cultural capital and symbolic violence. Aesthetic experience. Artistic form and
+  coherence. Recursive art. Co-creation. Aesthetic resistance. Paradigm shift.
+  Aesthetic depth and completeness.
+\end{description}
+
+\end{document}
